@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import logoCreme from "@assets/logo-mariage-affro-02.svg";
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -9,13 +10,8 @@ export default function Footer() {
       <div className="container mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1">
-            <Link to="/" className="flex flex-col mb-6">
-              <span className="text-xl font-bold tracking-wider text-white leading-none">
-                MARIAGE AFRO
-              </span>
-              <span className="text-[10px] text-white/50 tracking-widest uppercase mt-1">
-                Afro & Mixed Wedding Platform
-              </span>
+            <Link to="/" className="block mb-6">
+              <img src={logoCreme} alt="Mariage Afro" className="h-24 w-auto" />
             </Link>
             <p className="text-white/60 text-sm leading-relaxed max-w-xs">
               {t("footer.tagline")}

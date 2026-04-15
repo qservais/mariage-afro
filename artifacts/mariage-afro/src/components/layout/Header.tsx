@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import logoColor from "@assets/logo-mariage-affro-01.svg";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -38,13 +39,8 @@ export default function Header() {
       }`}
     >
       <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
-        <Link to="/" className="flex flex-col">
-          <span className="text-xl md:text-2xl font-bold tracking-wider text-primary leading-none">
-            MARIAGE AFRO
-          </span>
-          <span className="text-[10px] md:text-xs text-muted-foreground tracking-widest uppercase mt-1">
-            Afro & Mixed Wedding Platform
-          </span>
+        <Link to="/" className="flex items-center">
+          <img src={logoColor} alt="Mariage Afro" className="h-10 md:h-12 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
