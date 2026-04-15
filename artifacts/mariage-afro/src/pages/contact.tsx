@@ -1,10 +1,11 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Phone, Mail, MapPin } from "lucide-react";
 
 import {
   Form,
@@ -33,9 +34,41 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+const rdvModes = [
+  {
+    icon: <Phone className="w-6 h-6 text-primary" />,
+    title: "Par téléphone",
+    desc: "Appelez-nous directement pour discuter de votre projet. Disponible du lundi au vendredi, 9h–18h.",
+    action: "Appeler maintenant",
+    href: "tel:+32400000000"
+  },
+  {
+    icon: <Mail className="w-6 h-6 text-primary" />,
+    title: "Par e-mail",
+    desc: "Envoyez-nous votre demande par écrit. Nous vous répondons dans les 24 heures ouvrables.",
+    action: "Envoyer un e-mail",
+    href: "mailto:info@mariageafro.be"
+  },
+  {
+    icon: <MapPin className="w-6 h-6 text-primary" />,
+    title: "En personne",
+    desc: "Rencontrons-nous dans nos bureaux à Bruxelles, sur rendez-vous uniquement, pour une consultation personnalisée.",
+    action: "Prendre rendez-vous",
+    href: "#contact-form"
+  }
+];
+
 export default function Contact() {
   const { t } = useTranslation();
   const { toast } = useToast();
+
+  useEffect(() => {
+    document.title = "Contact — Mariage Afro";
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) {
+      meta.setAttribute("content", "Contactez l'équipe Mariage Afro pour organiser votre mariage afro ou mixte en Belgique. Consultation gratuite disponible.");
+    }
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -83,14 +116,14 @@ export default function Contact() {
     <div className="w-full pt-28">
       <section className="py-20 bg-background">
         <div className="container mx-auto px-6 md:px-12 text-center">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-bold font-serif mb-6 text-foreground"
           >
             {t("contact.title")}
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -101,7 +134,50 @@ export default function Contact() {
         </div>
       </section>
 
-      <section className="py-20 bg-white">
+      {/* 3 RDV Modes */}
+      <section className="py-20 bg-white border-b border-border">
+        <div className="container mx-auto px-6 md:px-12 max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-14"
+          >
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Nous contacter</span>
+            <h2 className="text-3xl md:text-4xl font-bold font-serif text-foreground">
+              Choisissez votre mode de contact
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {rdvModes.map((mode, i) => (
+              <motion.div
+                key={mode.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12 }}
+                className="flex flex-col items-start bg-background border border-border p-8 hover:border-primary transition-colors group"
+              >
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                  {mode.icon}
+                </div>
+                <h3 className="text-lg font-bold font-serif text-foreground mb-3">{mode.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed flex-grow mb-6">{mode.desc}</p>
+                <a
+                  href={mode.href}
+                  className="inline-block text-xs uppercase tracking-widest font-bold text-primary border-b border-primary pb-0.5 hover:border-transparent transition-all"
+                >
+                  {mode.action}
+                </a>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form */}
+      <section id="contact-form" className="py-20 bg-white">
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <motion.div
@@ -109,6 +185,7 @@ export default function Contact() {
               animate={{ opacity: 1, x: 0 }}
               className="bg-card p-10 border border-border shadow-sm"
             >
+              <h3 className="text-2xl font-serif font-bold mb-8 text-foreground">Envoyez-nous un message</h3>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -200,10 +277,10 @@ export default function Contact() {
                       <FormItem>
                         <FormLabel>{t("contact.form.message")}</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="..." 
-                            className="min-h-[150px] bg-white border-border rounded-none focus-visible:ring-primary resize-none" 
-                            {...field} 
+                          <Textarea
+                            placeholder="..."
+                            className="min-h-[150px] bg-white border-border rounded-none focus-visible:ring-primary resize-none"
+                            {...field}
                             data-testid="textarea-contact-message"
                           />
                         </FormControl>
@@ -212,8 +289,8 @@ export default function Contact() {
                     )}
                   />
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14"
                     disabled={mutation.isPending}
                     data-testid="button-contact-submit"
@@ -243,26 +320,35 @@ export default function Contact() {
               className="flex flex-col justify-between"
             >
               <div className="mb-10">
-                <img 
-                  src={contactImg} 
-                  alt="Wedding Rings" 
+                <img
+                  src={contactImg}
+                  alt="Wedding Rings"
                   className="w-full h-[400px] object-cover rounded-sm shadow-md"
                 />
               </div>
               <div className="bg-background p-10 border border-border">
                 <h3 className="text-2xl font-serif font-bold mb-6 text-foreground">Informations Pratiques</h3>
-                <div className="space-y-4 text-muted-foreground">
-                  <p className="flex items-center">
-                    <span className="w-10 font-bold text-primary">Email</span>
-                    <a href={`mailto:${t("footer.email")}`} className="hover:text-primary">{t("footer.email")}</a>
-                  </p>
-                  <p className="flex items-center">
-                    <span className="w-10 font-bold text-primary">Tél</span>
-                    <a href={`tel:${t("footer.phone")}`} className="hover:text-primary">{t("footer.phone")}</a>
-                  </p>
-                  <p className="flex items-center">
-                    <span className="w-10 font-bold text-primary">Lieu</span>
-                    <span>{t("footer.address")} (Sur rendez-vous uniquement)</span>
+                <div className="space-y-5 text-muted-foreground">
+                  <div className="flex items-center gap-4">
+                    <Mail className="w-5 h-5 text-primary flex-shrink-0" />
+                    <a href={`mailto:${t("footer.email")}`} className="hover:text-primary transition-colors">
+                      {t("footer.email")}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Phone className="w-5 h-5 text-primary flex-shrink-0" />
+                    <a href={`tel:${t("footer.phone")}`} className="hover:text-primary transition-colors">
+                      {t("footer.phone")}
+                    </a>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span>{t("footer.address")} — sur rendez-vous uniquement</span>
+                  </div>
+                </div>
+                <div className="mt-8 pt-8 border-t border-border">
+                  <p className="text-sm text-muted-foreground">
+                    Nous sommes disponibles du lundi au vendredi, de 9h à 18h. Consultations gratuites sur rendez-vous.
                   </p>
                 </div>
               </div>

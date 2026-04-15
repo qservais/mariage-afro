@@ -3,6 +3,15 @@ import { Resend } from "resend";
 
 const router = Router();
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 router.post("/contact", async (req, res) => {
   const { name, email, phone, date, type, message } = req.body;
 
@@ -21,19 +30,26 @@ router.post("/contact", async (req, res) => {
 
   const resend = new Resend(apiKey);
 
+  const safeName = escapeHtml(String(name));
+  const safeEmail = escapeHtml(String(email));
+  const safePhone = escapeHtml(String(phone || "Non renseigné"));
+  const safeDate = escapeHtml(String(date || "Non renseignée"));
+  const safeType = escapeHtml(String(type || "Non renseigné"));
+  const safeMessage = escapeHtml(String(message));
+
   const { error } = await resend.emails.send({
     from: "Mariage Afro <noreply@mariage-afro.com>",
     to: "info@mariage-afro.com",
-    subject: `Nouvelle demande de RDV — ${name}`,
+    subject: `Nouvelle demande de RDV — ${safeName}`,
     html: `
       <h2>Nouvelle demande de rendez-vous</h2>
-      <p><strong>Nom :</strong> ${name}</p>
-      <p><strong>Email :</strong> ${email}</p>
-      <p><strong>Téléphone :</strong> ${phone || "Non renseigné"}</p>
-      <p><strong>Date envisagée :</strong> ${date || "Non renseignée"}</p>
-      <p><strong>Type de mariage :</strong> ${type || "Non renseigné"}</p>
+      <p><strong>Nom :</strong> ${safeName}</p>
+      <p><strong>Email :</strong> ${safeEmail}</p>
+      <p><strong>Téléphone :</strong> ${safePhone}</p>
+      <p><strong>Date envisagée :</strong> ${safeDate}</p>
+      <p><strong>Type de mariage :</strong> ${safeType}</p>
       <p><strong>Message :</strong></p>
-      <p>${message}</p>
+      <p style="white-space: pre-wrap;">${safeMessage}</p>
     `,
   });
 

@@ -1,16 +1,46 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import bannerImg from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
 
+const team = [
+  {
+    name: "Amara Diallo",
+    role: "Fondatrice & Wedding Planner",
+    initial: "AD",
+    bio: "Spécialisée dans les mariages afro depuis 10 ans, Amara allie tradition et modernité pour créer des cérémonies uniques."
+  },
+  {
+    name: "Chloé Mbeki",
+    role: "Coordinatrice Senior",
+    initial: "CM",
+    bio: "Passionnée par les cultures africaines, Chloé veille à ce que chaque détail reflète l'identité du couple."
+  },
+  {
+    name: "Ismaël Fontaine",
+    role: "Responsable Prestataires",
+    initial: "IF",
+    bio: "Ismaël sélectionne et coordonne notre réseau exclusif de prestataires spécialisés en mariage afro et mixte."
+  }
+];
+
 export default function About() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    document.title = "Notre Histoire — Mariage Afro";
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) {
+      meta.setAttribute("content", "Découvrez l'équipe de Mariage Afro, première plateforme premium dédiée aux mariages afro et mixtes en Belgique.");
+    }
+  }, []);
 
   return (
     <div className="w-full pt-28">
       {/* Header */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-6 md:px-12 text-center">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-bold font-serif mb-6 text-foreground"
@@ -37,9 +67,9 @@ export default function About() {
             <p>
               L'organisation d'un mariage mixte ou d'un mariage afro traditionnel demande une expertise particulière. Il faut savoir naviguer entre différentes attentes familiales, harmoniser des coutumes parfois très différentes, et surtout, créer un événement qui ressemble au couple tout en honorant ses origines.
             </p>
-            <img 
-              src={bannerImg} 
-              alt="Black and white wedding moment" 
+            <img
+              src={bannerImg}
+              alt="Black and white wedding moment"
               className="w-full h-auto my-12 rounded-sm"
             />
             <h2 className="text-3xl font-serif text-foreground mt-12 mb-6">Notre Vision</h2>
@@ -73,6 +103,45 @@ export default function About() {
               <div className="text-4xl md:text-6xl font-bold font-serif mb-2">100%</div>
               <div className="uppercase tracking-widest text-sm">Clients Satisfaits</div>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-6 md:px-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Notre Équipe</span>
+            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
+              Des experts à votre service
+            </h2>
+            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
+            {team.map((member, i) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.12 }}
+                className="flex flex-col items-center text-center bg-white border border-border p-10 shadow-sm"
+              >
+                <div className="w-24 h-24 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center mb-6">
+                  <span className="text-2xl font-bold text-primary font-serif">{member.initial}</span>
+                </div>
+                <h3 className="text-xl font-bold font-serif text-foreground mb-1">{member.name}</h3>
+                <p className="text-xs uppercase tracking-widest text-primary font-bold mb-4">{member.role}</p>
+                <div className="w-10 h-0.5 bg-primary mb-4"></div>
+                <p className="text-muted-foreground text-sm leading-relaxed">{member.bio}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

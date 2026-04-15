@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
@@ -8,7 +9,15 @@ import bannerImg from "@assets/pexels-is0-shot-2150184196-31518214_1776285262172
 
 export default function Prestations() {
   const { t } = useTranslation();
-  
+
+  useEffect(() => {
+    document.title = "Prestataires — Mariage Afro";
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) {
+      meta.setAttribute("content", "Photographes, vidéastes, traiteurs, fleuristes : trouvez les meilleurs prestataires pour votre mariage afro ou mixte en Belgique.");
+    }
+  }, []);
+
   const vendorCategories = t("prestations.items", { returnObjects: true }) as string[];
 
   const icons = [

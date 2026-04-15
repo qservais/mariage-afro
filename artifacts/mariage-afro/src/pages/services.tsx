@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
@@ -7,6 +8,14 @@ import servicesBg from "@assets/pexels-darina-belonogova-7193204_1776285262172.j
 
 export default function Services() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    document.title = "Services — Mariage Afro";
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) {
+      meta.setAttribute("content", "Découvrez nos services de wedding planning complet, coordination jour-J et sélection de prestataires pour votre mariage afro ou mixte en Belgique.");
+    }
+  }, []);
 
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
