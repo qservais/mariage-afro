@@ -12,6 +12,7 @@ import Contact from "@/pages/contact";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/layout/FloatingCTA";
+import ScrollToTop from "@/components/layout/ScrollToTop";
 import "./i18n";
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
+      <ScrollToTop />
       <Header />
       <main className="flex-1">
         <Routes>

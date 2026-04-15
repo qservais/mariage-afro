@@ -235,7 +235,7 @@ export default function Home() {
             <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-10">
             {serviceCards.map((card, index) => (
               <motion.div
                 key={card.num}
@@ -335,7 +335,7 @@ export default function Home() {
             <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials.map((item, i) => (
               <motion.div
                 key={i}

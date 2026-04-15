@@ -51,7 +51,7 @@ export default function Services() {
       {/* Services List — 3 main services */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-10">
             {[1, 2, 3].map((i) => (
               <motion.div
                 key={i}

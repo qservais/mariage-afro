@@ -8,10 +8,10 @@ export default function Footer() {
   return (
     <footer className="bg-[#141414] text-white pt-20 pb-8">
       <div className="container mx-auto px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-          <div className="col-span-1 md:col-span-1">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-16">
+          <div className="col-span-2 md:col-span-1">
             <Link to="/" className="block mb-6">
-              <img src={logoCreme} alt="Mariage Afro" className="h-24 w-auto" />
+              <img src={logoCreme} alt="Mariage Afro" className="h-20 w-auto" />
             </Link>
             <p className="text-white/60 text-sm leading-relaxed max-w-xs">
               {t("footer.tagline")}
