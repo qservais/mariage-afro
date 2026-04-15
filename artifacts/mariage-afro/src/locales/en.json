@@ -1,0 +1,93 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "prestations": "Vendors",
+    "realisations": "Portfolio",
+    "about": "About",
+    "contact": "Contact",
+    "cta": "Book an appointment"
+  },
+  "hero": {
+    "tagline": "Afro & Mixed Wedding Platform",
+    "title": "Your wedding, exactly as you imagine it.",
+    "subtitle": "Belgium's first premium platform dedicated to Afro and mixed weddings. We understand your traditions, your families, and your vision.",
+    "cta_primary": "Discover our services",
+    "cta_secondary": "View our portfolio"
+  },
+  "value_props": {
+    "title": "Why choose Mariage Afro?",
+    "item1_title": "Cultural Expertise",
+    "item1_desc": "A deep understanding of your traditions and customs for an authentic celebration.",
+    "item2_title": "Premium Network",
+    "item2_desc": "Exclusive access to the best specialized vendors in Belgium.",
+    "item3_title": "Tailored Support",
+    "item3_desc": "Personalized guidance to bring your unique vision to life.",
+    "item4_title": "Absolute Serenity",
+    "item4_desc": "Enjoy your day, we manage every detail with excellence."
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "From full planning to day-of coordination, we offer solutions adapted to your needs.",
+    "item1_title": "Full Planning",
+    "item1_desc": "We handle the entire organization of your wedding, from venue search to day-of coordination.",
+    "item1_cta": "Learn more",
+    "item2_title": "Partial Planning",
+    "item2_desc": "You've already started planning but need help finalizing preparations and coordinating vendors.",
+    "item2_cta": "Learn more",
+    "item3_title": "Day-of Coordination",
+    "item3_desc": "Fully enjoy your day, we orchestrate the flow and manage any unforeseen events.",
+    "item3_cta": "Learn more"
+  },
+  "film_de_miel": {
+    "label": "Immortalize the moment",
+    "title": "Honeymoon Film",
+    "desc": "Relive the emotion of your wedding through an exceptional cinematic film. Our videographers capture every glance, every smile, for a lasting memory.",
+    "cta": "Watch an excerpt"
+  },
+  "prestations": {
+    "title": "Our Vendors",
+    "subtitle": "A network of handpicked professionals to elevate your event.",
+    "items": [
+      "Photography",
+      "Video & Film",
+      "DJ & Entertainment",
+      "Floral Decoration",
+      "Catering",
+      "Hair & Makeup",
+      "Venue Rental",
+      "Transport & Limousines"
+    ]
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Tell us about your project. We are here to listen and advise you.",
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "date": "Wedding Date (desired)",
+      "type": "Service Type",
+      "type_options": {
+        "complete": "Full Planning",
+        "partial": "Partial Planning",
+        "day_of": "Day-of Coordination",
+        "other": "Other request"
+      },
+      "message": "Tell us about your wedding...",
+      "submit": "Send request",
+      "submitting": "Sending...",
+      "success": "Your request has been sent successfully. We will contact you shortly.",
+      "error": "An error occurred. Please try again."
+    }
+  },
+  "footer": {
+    "tagline": "Belgium's first premium platform dedicated to Afro and mixed weddings.",
+    "address": "Brussels, Belgium",
+    "email": "info@mariage-afro.com",
+    "phone": "+32 XXX XX XX XX",
+    "legal": "Legal Notice",
+    "privacy": "Privacy Policy",
+    "made_by": "Site realized by Done. — madebydone.be"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Diensten",
+    "prestations": "Leveranciers",
+    "realisations": "Realisaties",
+    "about": "Over Ons",
+    "contact": "Contact",
+    "cta": "Maak een afspraak"
+  },
+  "hero": {
+    "tagline": "Afro & Mixed Wedding Platform",
+    "title": "Jouw bruiloft, precies zoals je het je voorstelt.",
+    "subtitle": "Het eerste premium platform in België gewijd aan Afro en gemengde bruiloften. Wij begrijpen jullie tradities, jullie families en jullie visie.",
+    "cta_primary": "Ontdek onze diensten",
+    "cta_secondary": "Bekijk onze realisaties"
+  },
+  "value_props": {
+    "title": "Waarom kiezen voor Mariage Afro?",
+    "item1_title": "Culturele Expertise",
+    "item1_desc": "Een diep begrip van jullie tradities en gebruiken voor een authentieke viering.",
+    "item2_title": "Premium Netwerk",
+    "item2_desc": "Exclusieve toegang tot de beste gespecialiseerde leveranciers in België.",
+    "item3_title": "Begeleiding op Maat",
+    "item3_desc": "Persoonlijke begeleiding om jullie unieke visie tot leven te brengen.",
+    "item4_title": "Absolute Rust",
+    "item4_desc": "Geniet van jullie dag, wij beheren elk detail met uitmuntendheid."
+  },
+  "services": {
+    "title": "Onze Diensten",
+    "subtitle": "Van volledige planning tot coördinatie op de dag zelf, wij bieden oplossingen op maat van jullie behoeften.",
+    "item1_title": "Volledige Organisatie",
+    "item1_desc": "Wij nemen de volledige organisatie van jullie bruiloft op ons, van het zoeken naar een locatie tot de coördinatie op de dag zelf.",
+    "item1_cta": "Meer weten",
+    "item2_title": "Gedeeltelijke Organisatie",
+    "item2_desc": "Jullie zijn al begonnen met plannen maar hebben hulp nodig bij de afronding en coördinatie van leveranciers.",
+    "item2_cta": "Meer weten",
+    "item3_title": "Coördinatie op de Dag Zelf",
+    "item3_desc": "Geniet ten volle van jullie dag, wij orkestreren het verloop en beheren onvoorziene omstandigheden.",
+    "item3_cta": "Meer weten"
+  },
+  "film_de_miel": {
+    "label": "Vereeuwig het moment",
+    "title": "Huwelijksfilm",
+    "desc": "Herbeleef de emotie van jullie bruiloft door een uitzonderlijke film. Onze videografen leggen elke blik, elke glimlach vast, voor een blijvende herinnering.",
+    "cta": "Bekijk een fragment"
+  },
+  "prestations": {
+    "title": "Onze Leveranciers",
+    "subtitle": "Een netwerk van zorgvuldig geselecteerde professionals om jullie evenement te sublimeren.",
+    "items": [
+      "Fotografie",
+      "Video & Film",
+      "DJ & Animatie",
+      "Bloemendecoratie",
+      "Catering & Traiteur",
+      "Kapper & Make-up",
+      "Zaalverhuur",
+      "Vervoer & Limousines"
+    ]
+  },
+  "contact": {
+    "title": "Contacteer Ons",
+    "subtitle": "Vertel ons over jullie project. Wij zijn er om te luisteren en jullie te adviseren.",
+    "form": {
+      "name": "Naam & Voornaam",
+      "email": "E-mailadres",
+      "phone": "Telefoonnummer",
+      "date": "Trouwdatum (gewenst)",
+      "type": "Type dienst",
+      "type_options": {
+        "complete": "Volledige Organisatie",
+        "partial": "Gedeeltelijke Organisatie",
+        "day_of": "Coördinatie op de Dag Zelf",
+        "other": "Andere aanvraag"
+      },
+      "message": "Vertel ons over jullie bruiloft...",
+      "submit": "Aanvraag verzenden",
+      "submitting": "Verzenden...",
+      "success": "Jouw aanvraag is succesvol verzonden. We nemen binnenkort contact met je op.",
+      "error": "Er is een fout opgetreden. Probeer het opnieuw."
+    }
+  },
+  "footer": {
+    "tagline": "Het eerste premium platform gewijd aan Afro en gemengde bruiloften in België.",
+    "address": "Brussel, België",
+    "email": "info@mariage-afro.com",
+    "phone": "+32 XXX XX XX XX",
+    "legal": "Wettelijke vermeldingen",
+    "privacy": "Privacybeleid",
+    "made_by": "Site gerealiseerd door Done. — madebydone.be"
+  }
+}

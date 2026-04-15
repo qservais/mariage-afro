@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Mariage Afro"
+version = "1.0.0"
+id = "artifacts/mariage-afro"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21974
+
+[services.development]
+run = "pnpm --filter @workspace/mariage-afro run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mariage-afro", "run", "build" ]
+publicDir = "artifacts/mariage-afro/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21974"
+BASE_PATH = "/"

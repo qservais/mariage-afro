@@ -1,0 +1,93 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "services": "Services",
+    "prestations": "Prestations",
+    "realisations": "Réalisations",
+    "about": "À Propos",
+    "contact": "Contact",
+    "cta": "Prendre rendez-vous"
+  },
+  "hero": {
+    "tagline": "Afro & Mixed Wedding Platform",
+    "title": "Votre mariage, exactement comme vous l'imaginez.",
+    "subtitle": "La première plateforme premium en Belgique dédiée aux mariages afro et mixtes. Nous comprenons vos traditions, vos familles et votre vision.",
+    "cta_primary": "Découvrir nos services",
+    "cta_secondary": "Voir nos réalisations"
+  },
+  "value_props": {
+    "title": "Pourquoi choisir Mariage Afro ?",
+    "item1_title": "Expertise Culturelle",
+    "item1_desc": "Une compréhension profonde de vos traditions et coutumes pour une célébration authentique.",
+    "item2_title": "Réseau Premium",
+    "item2_desc": "Accès exclusif aux meilleurs prestataires spécialisés en Belgique.",
+    "item3_title": "Accompagnement Sur-Mesure",
+    "item3_desc": "Un suivi personnalisé pour donner vie à votre vision unique.",
+    "item4_title": "Sérénité Absolue",
+    "item4_desc": "Profitez de votre journée, nous gérons les moindres détails avec excellence."
+  },
+  "services": {
+    "title": "Nos Services",
+    "subtitle": "De l'accompagnement complet à la coordination le jour J, nous proposons des solutions adaptées à vos besoins.",
+    "item1_title": "Organisation Complète",
+    "item1_desc": "Nous prenons en charge l'intégralité de l'organisation de votre mariage, de la recherche de la salle à la coordination le jour J.",
+    "item1_cta": "En savoir plus",
+    "item2_title": "Organisation Partielle",
+    "item2_desc": "Vous avez déjà commencé l'organisation mais avez besoin d'aide pour finaliser les préparatifs et coordonner les prestataires.",
+    "item2_cta": "En savoir plus",
+    "item3_title": "Coordination Jour J",
+    "item3_desc": "Profitez pleinement de votre journée, nous orchestrons le déroulement et gérons les imprévus.",
+    "item3_cta": "En savoir plus"
+  },
+  "film_de_miel": {
+    "label": "Immortalisez l'instant",
+    "title": "Film de Miel",
+    "desc": "Revivez l'émotion de votre mariage à travers un film cinématographique exceptionnel. Nos vidéastes capturent chaque regard, chaque sourire, pour un souvenir impérissable.",
+    "cta": "Voir un extrait"
+  },
+  "prestations": {
+    "title": "Nos Prestataires",
+    "subtitle": "Un réseau de professionnels triés sur le volet pour sublimer votre événement.",
+    "items": [
+      "Photographie",
+      "Vidéo & Film",
+      "DJ & Animation",
+      "Décoration florale",
+      "Catering & Traiteur",
+      "Coiffure & Maquillage",
+      "Location de salle",
+      "Transport & Limousines"
+    ]
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Parlez-nous de votre projet. Nous sommes là pour vous écouter et vous conseiller.",
+    "form": {
+      "name": "Nom & Prénom",
+      "email": "Adresse e-mail",
+      "phone": "Numéro de téléphone",
+      "date": "Date du mariage (souhaitée)",
+      "type": "Type de service",
+      "type_options": {
+        "complete": "Organisation Complète",
+        "partial": "Organisation Partielle",
+        "day_of": "Coordination Jour J",
+        "other": "Autre demande"
+      },
+      "message": "Parlez-nous de votre mariage...",
+      "submit": "Envoyer la demande",
+      "submitting": "Envoi en cours...",
+      "success": "Votre demande a bien été envoyée. Nous vous contacterons très prochainement.",
+      "error": "Une erreur est survenue. Veuillez réessayer."
+    }
+  },
+  "footer": {
+    "tagline": "La première plateforme premium dédiée aux mariages afro et mixtes en Belgique.",
+    "address": "Bruxelles, Belgique",
+    "email": "info@mariage-afro.com",
+    "phone": "+32 XXX XX XX XX",
+    "legal": "Mentions légales",
+    "privacy": "Politique de confidentialité",
+    "made_by": "Site réalisé par Done. — madebydone.be"
+  }
+}
