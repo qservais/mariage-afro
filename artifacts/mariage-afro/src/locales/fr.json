@@ -65,7 +65,38 @@
     "item2_cta": "En savoir plus",
     "item3_title": "Coordination Jour J",
     "item3_desc": "Profitez pleinement de votre journée, nous orchestrons le déroulement et gérons les imprévus.",
-    "item3_cta": "En savoir plus"
+    "item3_cta": "En savoir plus",
+    "item4_title": "Destination Wedding",
+    "item4_desc": "Votre mariage de rêve n'a pas de frontières. Nous organisons des mariages afro et mixtes d'exception à l'international : Maroc, Sénégal, Côte d'Ivoire, Portugal et bien plus encore.",
+    "item4_cta": "En savoir plus"
+  },
+  "platform": {
+    "label": "Notre approche unique",
+    "title": "Une plateforme, pas un simple wedding planner",
+    "desc": "Mariage Afro, c'est l'accès à un écosystème complet : un réseau de plus de 50 prestataires vérifiés, une expertise culturelle rare, et une équipe dédiée pour orchestrer chaque aspect de votre mariage afro ou mixte en Belgique.",
+    "point1_num": "50+",
+    "point1_title": "Prestataires vérifiés",
+    "point1_desc": "Photographes, vidéastes, traiteurs, DJs — tous spécialisés et sélectionnés pour les mariages afro et mixtes.",
+    "point2_num": "12+",
+    "point2_title": "Cultures maîtrisées",
+    "point2_desc": "Nous connaissons vos traditions, vos rituels et les codes d'un mariage mixte réussi.",
+    "point3_num": "1",
+    "point3_title": "Interlocuteur dédié",
+    "point3_desc": "Un seul contact, de la première consultation jusqu'au lendemain de votre mariage.",
+    "cta": "Prendre rendez-vous"
+  },
+  "testimonials": {
+    "label": "Ils nous font confiance",
+    "title": "Ce que disent nos couples",
+    "item1_quote": "Mariage Afro a su parfaitement marier nos deux cultures. Chaque détail était pensé, chaque prestataire exceptionnel. Notre mariage a dépassé toutes nos attentes.",
+    "item1_name": "Kemi & Thomas",
+    "item1_origin": "Mariage afro-belge · Bruxelles 2024",
+    "item2_quote": "La coordination le jour J était impeccable. On a pu profiter pleinement sans se soucier de la logistique. Une équipe professionnelle et humaine.",
+    "item2_name": "Adja & Sébastien",
+    "item2_origin": "Mariage sénégalo-français · Anvers 2024",
+    "item3_quote": "Grâce à leur réseau de prestataires, nous avons trouvé exactement ce dont nous avions besoin. Le film de notre mariage est tout simplement magnifique.",
+    "item3_name": "Fatima & Johan",
+    "item3_origin": "Mariage mixte · Gand 2023"
   },
   "film_de_miel": {
     "label": "Immortalisez l'instant",

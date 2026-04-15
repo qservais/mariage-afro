@@ -11,6 +11,7 @@ import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import FloatingCTA from "@/components/layout/FloatingCTA";
 import "./i18n";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ function Router() {
         </Routes>
       </main>
       <Footer />
+      <FloatingCTA />
     </div>
   );
 }

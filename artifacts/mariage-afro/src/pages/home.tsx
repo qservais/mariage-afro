@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car } from "lucide-react";
+import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote } from "lucide-react";
 
 import heroImage from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
 import aboutImage from "@assets/pexels-pavel-danilyuk-8815279_1776285262172.jpg";
@@ -60,6 +60,42 @@ export default function Home() {
     { icon: <Car className="w-7 h-7 text-primary" />, label: t("prestations.items.7") }
   ];
 
+  const platformPoints = [
+    {
+      num: t("platform.point1_num"),
+      title: t("platform.point1_title"),
+      desc: t("platform.point1_desc")
+    },
+    {
+      num: t("platform.point2_num"),
+      title: t("platform.point2_title"),
+      desc: t("platform.point2_desc")
+    },
+    {
+      num: t("platform.point3_num"),
+      title: t("platform.point3_title"),
+      desc: t("platform.point3_desc")
+    }
+  ];
+
+  const testimonials = [
+    {
+      quote: t("testimonials.item1_quote"),
+      name: t("testimonials.item1_name"),
+      origin: t("testimonials.item1_origin")
+    },
+    {
+      quote: t("testimonials.item2_quote"),
+      name: t("testimonials.item2_name"),
+      origin: t("testimonials.item2_origin")
+    },
+    {
+      quote: t("testimonials.item3_quote"),
+      name: t("testimonials.item3_name"),
+      origin: t("testimonials.item3_origin")
+    }
+  ];
+
   return (
     <div className="w-full">
       {/* Hero Section */}
@@ -70,7 +106,7 @@ export default function Home() {
             alt="Wedding Reception"
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-black/45" />
         </div>
 
         <div className="container relative z-10 mx-auto px-6 md:px-12">
@@ -80,7 +116,7 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.2 }}
             className="max-w-3xl text-white"
           >
-            <span className="inline-block text-xs md:text-sm uppercase tracking-[0.3em] mb-6 font-medium">
+            <span className="inline-block text-xs md:text-sm uppercase tracking-[0.3em] mb-6 font-medium opacity-80">
               {t("hero.tagline")}
             </span>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 font-serif">
@@ -105,6 +141,56 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Platform Differentiator Section */}
+      <section className="py-24 md:py-36 bg-foreground text-white">
+        <div className="container mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-6">
+                {t("platform.label")}
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold font-serif leading-tight mb-8">
+                {t("platform.title")}
+              </h2>
+              <p className="text-lg text-white/70 leading-relaxed mb-10">
+                {t("platform.desc")}
+              </p>
+              <Link to="/contact">
+                <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-8">
+                  {t("platform.cta")}
+                </Button>
+              </Link>
+            </motion.div>
+
+            <div className="grid grid-cols-1 gap-6">
+              {platformPoints.map((point, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.15 }}
+                  className="flex gap-6 items-start border border-white/10 p-8 bg-white/5 hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex-shrink-0 w-16 h-16 border border-primary flex items-center justify-center">
+                    <span className="text-2xl font-bold text-primary font-serif">{point.num}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold mb-2">{point.title}</h3>
+                    <p className="text-white/60 leading-relaxed text-sm">{point.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Value Props Section */}
       <section className="py-24 md:py-32 bg-background">
         <div className="container mx-auto px-6 md:px-12">
@@ -115,7 +201,7 @@ export default function Home() {
             <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {[1, 2, 3, 4].map((i, index) => (
               <motion.div
                 key={i}
@@ -182,9 +268,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Film de Miel (Video Section) */}
+      {/* Film de Miel — Sub-brand Section */}
       <section className="relative py-32 bg-black text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-40">
+        <div className="absolute inset-0 z-0 opacity-35">
           <video
             src={videoSrc}
             autoPlay
@@ -200,19 +286,35 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl bg-black/60 backdrop-blur-sm p-12 md:p-16 border border-white/10"
+            className="max-w-3xl bg-black/65 backdrop-blur-sm p-12 md:p-16 border border-white/10"
           >
-            <span className="inline-block text-primary uppercase tracking-widest text-sm font-bold mb-4">
-              {t("film_de_miel.label")}
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold font-serif mb-6">
-              {t("film_de_miel.title")}
-            </h2>
+            <div className="mb-8">
+              <span className="inline-block text-xs uppercase tracking-[0.4em] text-white/50 font-medium mb-3 block">
+                {t("film_de_miel.label")}
+              </span>
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <div className="w-10 h-px bg-primary"></div>
+                <span
+                  className="text-3xl md:text-4xl font-bold font-serif tracking-wide"
+                  style={{ color: "#c9a96e" }}
+                >
+                  Film de Miel
+                </span>
+                <div className="w-10 h-px bg-primary"></div>
+              </div>
+              <span className="text-xs uppercase tracking-[0.25em] text-white/40 font-medium">
+                by Mariage Afro
+              </span>
+            </div>
             <p className="text-lg text-white/80 leading-relaxed mb-10">
               {t("film_de_miel.desc")}
             </p>
             <Link to="/realisations">
-              <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white rounded-none uppercase tracking-wider h-12 px-8 bg-transparent">
+              <Button
+                variant="outline"
+                className="rounded-none uppercase tracking-wider h-12 px-8 bg-transparent"
+                style={{ borderColor: "#c9a96e", color: "#c9a96e" }}
+              >
                 {t("film_de_miel.cta")}
               </Button>
             </Link>
@@ -220,8 +322,45 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="py-24 md:py-36 bg-background">
+        <div className="container mx-auto px-6 md:px-12">
+          <motion.div {...fadeIn} className="text-center mb-16 md:mb-20">
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">
+              {t("testimonials.label")}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
+              {t("testimonials.title")}
+            </h2>
+            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+            {testimonials.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
+                className="bg-white border border-border p-10 flex flex-col relative"
+              >
+                <Quote className="w-8 h-8 text-primary/25 mb-6 flex-shrink-0" />
+                <p className="text-muted-foreground leading-relaxed italic flex-grow mb-8 text-base">
+                  "{item.quote}"
+                </p>
+                <div className="border-t border-border pt-6">
+                  <p className="font-bold text-foreground text-sm tracking-wide">{item.name}</p>
+                  <p className="text-xs text-primary mt-1 uppercase tracking-wider">{item.origin}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Prestations Grid Preview */}
-      <section className="py-24 md:py-32 bg-background">
+      <section className="py-24 md:py-32 bg-white">
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-16">
             <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("home.prestations_label")}</span>
@@ -231,7 +370,7 @@ export default function Home() {
             <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 md:gap-6">
             {prestationsItems.map((item, i) => (
               <motion.div
                 key={i}
@@ -239,7 +378,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="group border border-border bg-white p-8 flex flex-col items-center justify-center text-center hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
+                className="group border border-border bg-background p-8 flex flex-col items-center justify-center text-center hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
               >
                 <div className="mb-4">{item.icon}</div>
                 <h3 className="font-semibold text-sm text-foreground">{item.label}</h3>
@@ -258,7 +397,7 @@ export default function Home() {
       </section>
 
       {/* About Preview */}
-      <section className="py-24 md:py-32 bg-white">
+      <section className="py-24 md:py-32 bg-background">
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -270,7 +409,7 @@ export default function Home() {
               <img
                 src={aboutImage}
                 alt="Mixed Wedding Ceremony"
-                className="w-full h-[600px] object-cover rounded-sm shadow-xl"
+                className="w-full h-[400px] md:h-[600px] object-cover rounded-sm shadow-xl"
               />
             </motion.div>
 
@@ -329,7 +468,7 @@ export default function Home() {
       </section>
 
       {/* Services image accent */}
-      <section className="h-[300px] md:h-[450px] relative overflow-hidden">
+      <section className="h-[200px] md:h-[400px] relative overflow-hidden">
         <img
           src={servicesImg}
           alt="Wedding Details"

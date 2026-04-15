@@ -65,7 +65,38 @@
     "item2_cta": "Learn more",
     "item3_title": "Day-of Coordination",
     "item3_desc": "Fully enjoy your day, we orchestrate the flow and manage any unforeseen events.",
-    "item3_cta": "Learn more"
+    "item3_cta": "Learn more",
+    "item4_title": "Destination Wedding",
+    "item4_desc": "Your dream wedding has no borders. We organize exceptional Afro and mixed weddings internationally: Morocco, Senegal, Ivory Coast, Portugal and beyond.",
+    "item4_cta": "Learn more"
+  },
+  "platform": {
+    "label": "Our unique approach",
+    "title": "A platform, not just a wedding planner",
+    "desc": "Mariage Afro gives you access to a complete ecosystem: a network of 50+ verified vendors, rare cultural expertise, and a dedicated team to orchestrate every aspect of your Afro or mixed wedding in Belgium.",
+    "point1_num": "50+",
+    "point1_title": "Verified vendors",
+    "point1_desc": "Photographers, videographers, caterers, DJs — all specialized and selected for Afro and mixed weddings.",
+    "point2_num": "12+",
+    "point2_title": "Cultures mastered",
+    "point2_desc": "We know your traditions, your rituals, and the codes of a successful mixed wedding.",
+    "point3_num": "1",
+    "point3_title": "Dedicated contact",
+    "point3_desc": "One single point of contact, from the first consultation to the day after your wedding.",
+    "cta": "Book an appointment"
+  },
+  "testimonials": {
+    "label": "They trust us",
+    "title": "What our couples say",
+    "item1_quote": "Mariage Afro perfectly blended our two cultures. Every detail was thoughtful, every vendor exceptional. Our wedding exceeded all our expectations.",
+    "item1_name": "Kemi & Thomas",
+    "item1_origin": "Afro-Belgian wedding · Brussels 2024",
+    "item2_quote": "The day-of coordination was flawless. We could fully enjoy ourselves without worrying about logistics. A professional and warm team.",
+    "item2_name": "Adja & Sébastien",
+    "item2_origin": "Senegalese-French wedding · Antwerp 2024",
+    "item3_quote": "Thanks to their vendor network, we found exactly what we needed. The film of our wedding is simply magnificent.",
+    "item3_name": "Fatima & Johan",
+    "item3_origin": "Mixed wedding · Ghent 2023"
   },
   "film_de_miel": {
     "label": "Immortalize the moment",

@@ -37,7 +37,38 @@
     "item2_cta": "Meer weten",
     "item3_title": "Coördinatie op de Dag Zelf",
     "item3_desc": "Geniet ten volle van jullie dag, wij orkestreren het verloop en beheren onvoorziene omstandigheden.",
-    "item3_cta": "Meer weten"
+    "item3_cta": "Meer weten",
+    "item4_title": "Destination Wedding",
+    "item4_desc": "Jullie droombruiloft kent geen grenzen. Wij organiseren uitzonderlijke Afro en gemengde bruiloften internationaal: Marokko, Senegal, Ivoorkust, Portugal en nog veel meer.",
+    "item4_cta": "Meer weten"
+  },
+  "platform": {
+    "label": "Onze unieke aanpak",
+    "title": "Een platform, niet zomaar een wedding planner",
+    "desc": "Mariage Afro geeft u toegang tot een compleet ecosysteem: een netwerk van meer dan 50 geverifieerde leveranciers, zeldzame culturele expertise en een toegewijd team om elk aspect van uw Afro of gemengd huwelijk in België te orkestreren.",
+    "point1_num": "50+",
+    "point1_title": "Geverifieerde leveranciers",
+    "point1_desc": "Fotografen, videografen, cateraars, DJ's — allemaal gespecialiseerd en geselecteerd voor Afro en gemengde bruiloften.",
+    "point2_num": "12+",
+    "point2_title": "Culturen beheerst",
+    "point2_desc": "Wij kennen jullie tradities, jullie rituelen en de codes van een geslaagd gemengd huwelijk.",
+    "point3_num": "1",
+    "point3_title": "Toegewijde contactpersoon",
+    "point3_desc": "Één enkel aanspreekpunt, van het eerste consult tot de dag na jullie bruiloft.",
+    "cta": "Maak een afspraak"
+  },
+  "testimonials": {
+    "label": "Zij vertrouwen ons",
+    "title": "Wat onze koppels zeggen",
+    "item1_quote": "Mariage Afro heeft onze twee culturen perfect samengebracht. Elk detail was doordacht, elke leverancier uitzonderlijk. Onze bruiloft overtrof al onze verwachtingen.",
+    "item1_name": "Kemi & Thomas",
+    "item1_origin": "Afro-Belgisch huwelijk · Brussel 2024",
+    "item2_quote": "De coördinatie op de dag zelf was perfect. We konden volop genieten zonder ons druk te maken over de logistiek. Een professioneel en menselijk team.",
+    "item2_name": "Adja & Sébastien",
+    "item2_origin": "Senegalees-Frans huwelijk · Antwerpen 2024",
+    "item3_quote": "Dankzij hun leveranciersnetwerk vonden we precies wat we nodig hadden. De film van onze bruiloft is gewoon prachtig.",
+    "item3_name": "Fatima & Johan",
+    "item3_origin": "Gemengd huwelijk · Gent 2023"
   },
   "film_de_miel": {
     "label": "Vereeuwig het moment",
