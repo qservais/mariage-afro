@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -63,7 +63,7 @@ export default function Services() {
                 <p className="text-muted-foreground leading-relaxed mb-8 flex-grow">
                   {t(`services.item${i}_desc`)}
                 </p>
-                <Link href="/contact">
+                <Link to="/contact">
                   <Button variant="outline" className="rounded-none border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-wider w-full">
                     {t(`services.item${i}_cta`)}
                   </Button>

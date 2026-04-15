@@ -3,37 +3,37 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import bannerImg from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
 
-const team = [
-  {
-    name: "Amara Diallo",
-    role: "Fondatrice & Wedding Planner",
-    initial: "AD",
-    bio: "Spécialisée dans les mariages afro depuis 10 ans, Amara allie tradition et modernité pour créer des cérémonies uniques."
-  },
-  {
-    name: "Chloé Mbeki",
-    role: "Coordinatrice Senior",
-    initial: "CM",
-    bio: "Passionnée par les cultures africaines, Chloé veille à ce que chaque détail reflète l'identité du couple."
-  },
-  {
-    name: "Ismaël Fontaine",
-    role: "Responsable Prestataires",
-    initial: "IF",
-    bio: "Ismaël sélectionne et coordonne notre réseau exclusif de prestataires spécialisés en mariage afro et mixte."
-  }
-];
-
 export default function About() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    document.title = "Notre Histoire — Mariage Afro";
+    document.title = `${t("about.title")} — Mariage Afro`;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", "Découvrez l'équipe de Mariage Afro, première plateforme premium dédiée aux mariages afro et mixtes en Belgique.");
+      meta.setAttribute("content", t("about.text1"));
     }
-  }, []);
+  }, [t]);
+
+  const team = [
+    {
+      name: t("about.team_member1_name"),
+      role: t("about.team_member1_role"),
+      initial: "AD",
+      bio: t("about.team_member1_bio")
+    },
+    {
+      name: t("about.team_member2_name"),
+      role: t("about.team_member2_role"),
+      initial: "CM",
+      bio: t("about.team_member2_bio")
+    },
+    {
+      name: t("about.team_member3_name"),
+      role: t("about.team_member3_role"),
+      initial: "IF",
+      bio: t("about.team_member3_bio")
+    }
+  ];
 
   return (
     <div className="w-full pt-28">
@@ -45,7 +45,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-bold font-serif mb-6 text-foreground"
           >
-            Notre Histoire
+            {t("about.title")}
           </motion.h1>
         </div>
       </section>
@@ -59,26 +59,18 @@ export default function About() {
             className="prose prose-lg md:prose-xl text-muted-foreground mx-auto"
           >
             <p className="text-2xl text-foreground font-serif leading-relaxed mb-8">
-              "Mariage Afro est né d'un constat simple : l'amour n'a pas de frontières, mais il a des racines."
+              "{t("about.quote")}"
             </p>
-            <p>
-              Créée en 2023, notre plateforme est le fruit de la passion de professionnels de l'événementiel qui souhaitaient offrir aux couples afro et mixtes de Belgique un espace où leurs cultures seraient comprises, valorisées et célébrées avec élégance.
-            </p>
-            <p>
-              L'organisation d'un mariage mixte ou d'un mariage afro traditionnel demande une expertise particulière. Il faut savoir naviguer entre différentes attentes familiales, harmoniser des coutumes parfois très différentes, et surtout, créer un événement qui ressemble au couple tout en honorant ses origines.
-            </p>
+            <p>{t("about.text1")}</p>
+            <p>{t("about.text2")}</p>
             <img
               src={bannerImg}
               alt="Black and white wedding moment"
               className="w-full h-auto my-12 rounded-sm"
             />
-            <h2 className="text-3xl font-serif text-foreground mt-12 mb-6">Notre Vision</h2>
-            <p>
-              Nous croyons que l'excellence réside dans les détails. Chaque mariage que nous accompagnons est traité comme une œuvre d'art unique. Nous avons rassemblé les meilleurs prestataires de Belgique, spécialisés et passionnés, pour vous offrir un service premium.
-            </p>
-            <p>
-              Que vous rêviez d'une cérémonie traditionnelle intime ou d'une grande réception fusionnant deux cultures, nous sommes là pour transformer votre vision en une réalité exceptionnelle.
-            </p>
+            <h2 className="text-3xl font-serif text-foreground mt-12 mb-6">{t("about.vision_title")}</h2>
+            <p>{t("about.vision_text1")}</p>
+            <p>{t("about.vision_text2")}</p>
           </motion.div>
         </div>
       </section>
@@ -88,20 +80,20 @@ export default function About() {
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-              <div className="text-4xl md:text-6xl font-bold font-serif mb-2">150+</div>
-              <div className="uppercase tracking-widest text-sm">Mariages Célébrés</div>
+              <div className="text-4xl md:text-6xl font-bold font-serif mb-2">{t("about.stat1_value")}</div>
+              <div className="uppercase tracking-widest text-sm">{t("about.stat1_label")}</div>
             </motion.div>
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
-              <div className="text-4xl md:text-6xl font-bold font-serif mb-2">50+</div>
-              <div className="uppercase tracking-widest text-sm">Prestataires Premium</div>
+              <div className="text-4xl md:text-6xl font-bold font-serif mb-2">{t("about.stat2_value")}</div>
+              <div className="uppercase tracking-widest text-sm">{t("about.stat2_label")}</div>
             </motion.div>
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
-              <div className="text-4xl md:text-6xl font-bold font-serif mb-2">12</div>
-              <div className="uppercase tracking-widest text-sm">Cultures Représentées</div>
+              <div className="text-4xl md:text-6xl font-bold font-serif mb-2">{t("about.stat3_value")}</div>
+              <div className="uppercase tracking-widest text-sm">{t("about.stat3_label")}</div>
             </motion.div>
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 }}>
-              <div className="text-4xl md:text-6xl font-bold font-serif mb-2">100%</div>
-              <div className="uppercase tracking-widest text-sm">Clients Satisfaits</div>
+              <div className="text-4xl md:text-6xl font-bold font-serif mb-2">{t("about.stat4_value")}</div>
+              <div className="uppercase tracking-widest text-sm">{t("about.stat4_label")}</div>
             </motion.div>
           </div>
         </div>
@@ -116,9 +108,9 @@ export default function About() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Notre Équipe</span>
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("about.team_label")}</span>
             <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
-              Des experts à votre service
+              {t("about.team_title")}
             </h2>
             <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>

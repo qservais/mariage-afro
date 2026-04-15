@@ -34,41 +34,41 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const rdvModes = [
-  {
-    icon: <Phone className="w-6 h-6 text-primary" />,
-    title: "Par téléphone",
-    desc: "Appelez-nous directement pour discuter de votre projet. Disponible du lundi au vendredi, 9h–18h.",
-    action: "Appeler maintenant",
-    href: "tel:+32400000000"
-  },
-  {
-    icon: <Mail className="w-6 h-6 text-primary" />,
-    title: "Par e-mail",
-    desc: "Envoyez-nous votre demande par écrit. Nous vous répondons dans les 24 heures ouvrables.",
-    action: "Envoyer un e-mail",
-    href: "mailto:info@mariageafro.be"
-  },
-  {
-    icon: <MapPin className="w-6 h-6 text-primary" />,
-    title: "En personne",
-    desc: "Rencontrons-nous dans nos bureaux à Bruxelles, sur rendez-vous uniquement, pour une consultation personnalisée.",
-    action: "Prendre rendez-vous",
-    href: "#contact-form"
-  }
-];
-
 export default function Contact() {
   const { t } = useTranslation();
   const { toast } = useToast();
 
   useEffect(() => {
-    document.title = "Contact — Mariage Afro";
+    document.title = `${t("contact.title")} — Mariage Afro`;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", "Contactez l'équipe Mariage Afro pour organiser votre mariage afro ou mixte en Belgique. Consultation gratuite disponible.");
+      meta.setAttribute("content", t("contact.subtitle"));
     }
-  }, []);
+  }, [t]);
+
+  const rdvModes = [
+    {
+      icon: <Phone className="w-6 h-6 text-primary" />,
+      title: t("contact.rdv_phone_title"),
+      desc: t("contact.rdv_phone_desc"),
+      action: t("contact.rdv_phone_cta"),
+      href: `tel:${t("footer.phone")}`
+    },
+    {
+      icon: <Mail className="w-6 h-6 text-primary" />,
+      title: t("contact.rdv_email_title"),
+      desc: t("contact.rdv_email_desc"),
+      action: t("contact.rdv_email_cta"),
+      href: `mailto:${t("footer.email")}`
+    },
+    {
+      icon: <MapPin className="w-6 h-6 text-primary" />,
+      title: t("contact.rdv_inperson_title"),
+      desc: t("contact.rdv_inperson_desc"),
+      action: t("contact.rdv_inperson_cta"),
+      href: "#contact-form"
+    }
+  ];
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -143,9 +143,9 @@ export default function Contact() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Nous contacter</span>
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("contact.rdv_label")}</span>
             <h2 className="text-3xl md:text-4xl font-bold font-serif text-foreground">
-              Choisissez votre mode de contact
+              {t("contact.rdv_title")}
             </h2>
           </motion.div>
 
@@ -185,7 +185,7 @@ export default function Contact() {
               animate={{ opacity: 1, x: 0 }}
               className="bg-card p-10 border border-border shadow-sm"
             >
-              <h3 className="text-2xl font-serif font-bold mb-8 text-foreground">Envoyez-nous un message</h3>
+              <h3 className="text-2xl font-serif font-bold mb-8 text-foreground">{t("contact.form_title")}</h3>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -255,7 +255,7 @@ export default function Contact() {
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="bg-white border-border rounded-none focus-visible:ring-primary">
-                              <SelectValue placeholder="Sélectionnez un service" />
+                              <SelectValue placeholder={t("contact.form.type_placeholder")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -327,7 +327,7 @@ export default function Contact() {
                 />
               </div>
               <div className="bg-background p-10 border border-border">
-                <h3 className="text-2xl font-serif font-bold mb-6 text-foreground">Informations Pratiques</h3>
+                <h3 className="text-2xl font-serif font-bold mb-6 text-foreground">{t("contact.practical_title")}</h3>
                 <div className="space-y-5 text-muted-foreground">
                   <div className="flex items-center gap-4">
                     <Mail className="w-5 h-5 text-primary flex-shrink-0" />
@@ -343,12 +343,12 @@ export default function Contact() {
                   </div>
                   <div className="flex items-start gap-4">
                     <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span>{t("footer.address")} — sur rendez-vous uniquement</span>
+                    <span>{t("footer.address")} — {t("contact.address_suffix")}</span>
                   </div>
                 </div>
                 <div className="mt-8 pt-8 border-t border-border">
                   <p className="text-sm text-muted-foreground">
-                    Nous sommes disponibles du lundi au vendredi, de 9h à 18h. Consultations gratuites sur rendez-vous.
+                    {t("contact.practical_hours")}
                   </p>
                 </div>
               </div>

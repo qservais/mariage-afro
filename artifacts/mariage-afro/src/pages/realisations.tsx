@@ -13,21 +13,9 @@ import img8 from "@assets/pexels-nudethephotographer-34543838_1776285262172.jpg"
 
 type Category = "tous" | "photo" | "video";
 
-const gallery: { src: string; alt: string; category: "photo" | "video" }[] = [
-  { src: img1, alt: "Cérémonie de mariage afro", category: "photo" },
-  { src: img2, alt: "Couple mixte célébrant leur union", category: "photo" },
-  { src: img3, alt: "Moment de tendresse en noir et blanc", category: "photo" },
-  { src: img4, alt: "Détail de robe de mariée", category: "video" },
-  { src: img5, alt: "Portrait de la mariée", category: "photo" },
-  { src: img6, alt: "Couple en pleine nature", category: "video" },
-  { src: img7, alt: "Alliances et détails de cérémonie", category: "photo" },
-  { src: img8, alt: "Moment romantique en soirée", category: "video" },
-];
-
-const tabs: { id: Category; label: string }[] = [
-  { id: "tous", label: "Tous" },
-  { id: "photo", label: "Photo" },
-  { id: "video", label: "Vidéo" },
+const galleryImages = [img1, img2, img3, img4, img5, img6, img7, img8];
+const galleryCategories: ("photo" | "video")[] = [
+  "photo", "photo", "photo", "video", "photo", "video", "photo", "video"
 ];
 
 export default function Realisations() {
@@ -35,12 +23,24 @@ export default function Realisations() {
   const [activeTab, setActiveTab] = useState<Category>("tous");
 
   useEffect(() => {
-    document.title = "Réalisations — Mariage Afro";
+    document.title = `${t("nav.realisations")} — Mariage Afro`;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", "Découvrez nos plus belles réalisations de mariages afro et mixtes en Belgique à travers notre galerie photo et vidéo.");
+      meta.setAttribute("content", t("realisations.subtitle"));
     }
-  }, []);
+  }, [t]);
+
+  const gallery = galleryImages.map((src, i) => ({
+    src,
+    alt: t(`realisations.img${i + 1}_alt`),
+    category: galleryCategories[i]
+  }));
+
+  const tabs = [
+    { id: "tous" as Category, label: t("realisations.filter_all") },
+    { id: "photo" as Category, label: t("realisations.filter_photo") },
+    { id: "video" as Category, label: t("realisations.filter_video") }
+  ];
 
   const filtered = activeTab === "tous" ? gallery : gallery.filter(img => img.category === activeTab);
 
@@ -62,7 +62,7 @@ export default function Realisations() {
             transition={{ delay: 0.2 }}
             className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
           >
-            Découvrez nos plus belles histoires d'amour à travers une sélection de moments inoubliables.
+            {t("realisations.subtitle")}
           </motion.p>
 
           {/* Filter Tabs */}
@@ -70,9 +70,9 @@ export default function Realisations() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex items-center justify-center gap-0 border border-border inline-flex mx-auto"
+            className="inline-flex border border-border"
             role="tablist"
-            aria-label="Filtrer les réalisations"
+            aria-label={t("nav.realisations")}
           >
             {tabs.map((tab) => (
               <button
@@ -120,7 +120,7 @@ export default function Realisations() {
                   />
                   {item.category === "video" && (
                     <div className="absolute top-4 right-4 bg-primary text-white text-xs uppercase tracking-widest px-2 py-1">
-                      Vidéo
+                      {t("realisations.filter_video")}
                     </div>
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500"></div>

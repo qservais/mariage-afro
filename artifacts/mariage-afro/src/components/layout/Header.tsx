@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
-  const [location] = useLocation();
+  const { pathname: location } = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -24,11 +24,11 @@ export default function Header() {
   };
 
   const navLinks = [
-    { href: "/", label: t("nav.home") },
-    { href: "/services", label: t("nav.services") },
-    { href: "/prestations", label: t("nav.prestations") },
-    { href: "/realisations", label: t("nav.realisations") },
-    { href: "/a-propos", label: t("nav.about") },
+    { to: "/", label: t("nav.home") },
+    { to: "/services", label: t("nav.services") },
+    { to: "/prestations", label: t("nav.prestations") },
+    { to: "/realisations", label: t("nav.realisations") },
+    { to: "/a-propos", label: t("nav.about") },
   ];
 
   return (
@@ -38,7 +38,7 @@ export default function Header() {
       }`}
     >
       <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
-        <Link href="/" className="flex flex-col">
+        <Link to="/" className="flex flex-col">
           <span className="text-xl md:text-2xl font-bold tracking-wider text-primary leading-none">
             MARIAGE AFRO
           </span>
@@ -52,10 +52,10 @@ export default function Header() {
           <nav className="flex items-center space-x-6">
             {navLinks.map((link) => (
               <Link
-                key={link.href}
-                href={link.href}
+                key={link.to}
+                to={link.to}
                 className={`text-sm font-medium tracking-wide transition-colors hover:text-primary ${
-                  location === link.href ? "text-primary" : "text-foreground"
+                  location === link.to ? "text-primary" : "text-foreground"
                 }`}
               >
                 {link.label}
@@ -86,7 +86,7 @@ export default function Header() {
             </button>
           </div>
 
-          <Link href="/contact">
+          <Link to="/contact">
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-wider text-xs px-6 py-5"
               data-testid="button-nav-cta"
@@ -100,6 +100,7 @@ export default function Header() {
         <button
           className="md:hidden text-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -118,11 +119,11 @@ export default function Header() {
             <nav className="flex flex-col space-y-6 mt-8">
               {navLinks.map((link) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  key={link.to}
+                  to={link.to}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`text-2xl font-bold tracking-wider ${
-                    location === link.href ? "text-primary" : "text-foreground"
+                    location === link.to ? "text-primary" : "text-foreground"
                   }`}
                 >
                   {link.label}
@@ -139,7 +140,7 @@ export default function Header() {
             </div>
 
             <div className="mt-auto pb-12">
-              <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-wider text-sm py-6">
                   {t("nav.cta")}
                 </Button>

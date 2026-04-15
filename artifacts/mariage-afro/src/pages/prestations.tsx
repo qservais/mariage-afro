@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,12 @@ export default function Prestations() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    document.title = "Prestataires — Mariage Afro";
+    document.title = `${t("prestations.title")} — Mariage Afro`;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", "Photographes, vidéastes, traiteurs, fleuristes : trouvez les meilleurs prestataires pour votre mariage afro ou mixte en Belgique.");
+      meta.setAttribute("content", t("prestations.subtitle"));
     }
-  }, []);
+  }, [t]);
 
   const vendorCategories = t("prestations.items", { returnObjects: true }) as string[];
 
@@ -89,11 +89,11 @@ export default function Prestations() {
         </div>
         <div className="relative z-10 container mx-auto px-6 max-w-3xl">
           <h2 className="text-3xl md:text-5xl font-bold font-serif text-white mb-8">
-            Trouvez les prestataires parfaits pour votre grand jour
+            {t("prestations.banner_title")}
           </h2>
-          <Link href="/contact">
+          <Link to="/contact">
             <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14 px-8 text-lg">
-              Demander le catalogue
+              {t("prestations.banner_cta")}
             </Button>
           </Link>
         </div>

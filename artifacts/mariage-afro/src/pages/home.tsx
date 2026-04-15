@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car } from "lucide-react";
@@ -17,9 +17,9 @@ export default function Home() {
     document.title = "Mariage Afro — Mariages Afro & Mixtes en Belgique";
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", "Mariage Afro est la première plateforme premium dédiée aux mariages afro et mixtes en Belgique. Trouvez vos prestataires et organisez votre grand jour.");
+      meta.setAttribute("content", t("hero.subtitle"));
     }
-  }, []);
+  }, [t]);
 
   const fadeIn = {
     initial: { opacity: 0, y: 30 },
@@ -30,34 +30,34 @@ export default function Home() {
 
   const serviceCards = [
     {
-      num: "01",
-      title: "Wedding Planning Complet",
-      desc: "De la vision à la réalité : nous orchestrons chaque détail de votre grand jour, de A à Z, dans le respect de vos traditions.",
+      num: t("home.service1_num"),
+      title: t("home.service1_title"),
+      desc: t("home.service1_desc"),
       href: "/services"
     },
     {
-      num: "02",
-      title: "Coordination Jour-J",
-      desc: "Votre journée se déroulera exactement comme vous l'avez rêvée. Notre équipe gère la logistique en coulisses.",
+      num: t("home.service2_num"),
+      title: t("home.service2_title"),
+      desc: t("home.service2_desc"),
       href: "/services"
     },
     {
-      num: "03",
-      title: "Sélection de Prestataires",
-      desc: "Accédez à notre réseau exclusif de prestataires spécialisés dans les mariages afro et mixtes en Belgique.",
+      num: t("home.service3_num"),
+      title: t("home.service3_title"),
+      desc: t("home.service3_desc"),
       href: "/prestations"
     }
   ];
 
   const prestationsItems = [
-    { icon: <Camera className="w-7 h-7 text-primary" />, label: "Photographes" },
-    { icon: <Video className="w-7 h-7 text-primary" />, label: "Vidéastes" },
-    { icon: <Music className="w-7 h-7 text-primary" />, label: "Animateurs & DJs" },
-    { icon: <Flower2 className="w-7 h-7 text-primary" />, label: "Fleuristes" },
-    { icon: <Utensils className="w-7 h-7 text-primary" />, label: "Traiteurs" },
-    { icon: <Scissors className="w-7 h-7 text-primary" />, label: "Coiffure & Maquillage" },
-    { icon: <MapPin className="w-7 h-7 text-primary" />, label: "Lieux de Réception" },
-    { icon: <Car className="w-7 h-7 text-primary" />, label: "Transport & Limousines" }
+    { icon: <Camera className="w-7 h-7 text-primary" />, label: t("prestations.items.0") },
+    { icon: <Video className="w-7 h-7 text-primary" />, label: t("prestations.items.1") },
+    { icon: <Music className="w-7 h-7 text-primary" />, label: t("prestations.items.2") },
+    { icon: <Flower2 className="w-7 h-7 text-primary" />, label: t("prestations.items.3") },
+    { icon: <Utensils className="w-7 h-7 text-primary" />, label: t("prestations.items.4") },
+    { icon: <Scissors className="w-7 h-7 text-primary" />, label: t("prestations.items.5") },
+    { icon: <MapPin className="w-7 h-7 text-primary" />, label: t("prestations.items.6") },
+    { icon: <Car className="w-7 h-7 text-primary" />, label: t("prestations.items.7") }
   ];
 
   return (
@@ -90,12 +90,12 @@ export default function Home() {
               {t("hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/services">
+              <Link to="/services">
                 <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto">
                   {t("hero.cta_primary")}
                 </Button>
               </Link>
-              <Link href="/realisations">
+              <Link to="/realisations">
                 <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto bg-transparent">
                   {t("hero.cta_secondary")}
                 </Button>
@@ -142,9 +142,9 @@ export default function Home() {
       <section className="py-24 md:py-32 bg-white">
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-16">
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Nos Services</span>
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("home.services_label")}</span>
             <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
-              Un accompagnement sur-mesure
+              {t("home.services_title")}
             </h2>
             <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
@@ -163,9 +163,9 @@ export default function Home() {
                 <h3 className="text-xl font-bold font-serif mb-4 text-foreground">{card.title}</h3>
                 <div className="w-10 h-0.5 bg-primary mb-6"></div>
                 <p className="text-muted-foreground leading-relaxed flex-grow mb-8">{card.desc}</p>
-                <Link href={card.href}>
+                <Link to={card.href}>
                   <Button variant="outline" className="rounded-none border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-wider w-full text-sm">
-                    En savoir plus
+                    {t("home.services_learn_more")}
                   </Button>
                 </Link>
               </motion.div>
@@ -173,9 +173,9 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-12">
-            <Link href="/services">
+            <Link to="/services">
               <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-10">
-                Voir tous nos services
+                {t("home.services_cta")}
               </Button>
             </Link>
           </div>
@@ -211,7 +211,7 @@ export default function Home() {
             <p className="text-lg text-white/80 leading-relaxed mb-10">
               {t("film_de_miel.desc")}
             </p>
-            <Link href="/realisations">
+            <Link to="/realisations">
               <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white rounded-none uppercase tracking-wider h-12 px-8 bg-transparent">
                 {t("film_de_miel.cta")}
               </Button>
@@ -224,9 +224,9 @@ export default function Home() {
       <section className="py-24 md:py-32 bg-background">
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-16">
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">Nos Prestataires</span>
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("home.prestations_label")}</span>
             <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
-              Tous vos besoins, un seul réseau
+              {t("home.prestations_title")}
             </h2>
             <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
@@ -248,9 +248,9 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-12">
-            <Link href="/prestations">
+            <Link to="/prestations">
               <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-10">
-                Découvrir tous les prestataires
+                {t("home.prestations_cta")}
               </Button>
             </Link>
           </div>
@@ -281,19 +281,19 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="lg:pl-10"
             >
-              <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-6">Notre Histoire</span>
+              <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-6">{t("home.about_label")}</span>
               <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground mb-8">
-                L'art de célébrer l'union de vos cultures
+                {t("home.about_title")}
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                Chaque histoire d'amour est unique, et lorsque deux cultures se rencontrent, elles méritent une célébration qui honore les deux héritages avec élégance et respect.
+                {t("home.about_text1")}
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed mb-10">
-                Chez Mariage Afro, nous avons créé le premier espace en Belgique où l'excellence de l'événementiel rencontre la richesse de vos traditions. Nous sélectionnons les meilleurs prestataires pour faire de votre vision une réalité inoubliable.
+                {t("home.about_text2")}
               </p>
-              <Link href="/a-propos">
+              <Link to="/a-propos">
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-8">
-                  Découvrir notre histoire
+                  {t("home.about_cta")}
                 </Button>
               </Link>
             </motion.div>
@@ -305,22 +305,22 @@ export default function Home() {
       <section className="py-28 bg-primary text-white">
         <div className="container mx-auto px-6 md:px-12 text-center max-w-3xl">
           <motion.div {...fadeIn}>
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-white/60 font-bold mb-6">Commencez dès aujourd'hui</span>
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-white/60 font-bold mb-6">{t("home.cta_label")}</span>
             <h2 className="text-3xl md:text-5xl font-bold font-serif mb-8 leading-tight">
-              Prêts à vivre le mariage de vos rêves ?
+              {t("home.cta_title")}
             </h2>
             <p className="text-lg text-white/80 leading-relaxed mb-10">
-              Prenez rendez-vous avec notre équipe pour une consultation gratuite. Nous construirons ensemble un projet à la mesure de votre amour et de vos cultures.
+              {t("home.cta_desc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact">
+              <Link to="/contact">
                 <Button className="bg-white text-primary hover:bg-white/90 rounded-none uppercase tracking-wider h-14 px-10 font-bold w-full sm:w-auto">
-                  Prendre rendez-vous
+                  {t("home.cta_primary")}
                 </Button>
               </Link>
-              <Link href="/services">
+              <Link to="/services">
                 <Button variant="outline" className="border-white text-white hover:bg-white hover:text-primary rounded-none uppercase tracking-wider h-14 px-10 bg-transparent w-full sm:w-auto">
-                  Voir nos services
+                  {t("home.cta_secondary")}
                 </Button>
               </Link>
             </div>
