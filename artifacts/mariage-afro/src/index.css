@@ -137,7 +137,7 @@
   --chart-5: 0 0% 100%;
 
   --app-font-sans: 'Montserrat', sans-serif;
-  --app-font-serif: Georgia, serif;
+  --app-font-serif: 'Montserrat', sans-serif;
   --app-font-mono: Menlo, monospace;
   --radius: 0.125rem; /* 2px max radius */
   --shadow-2xs: 0px 2px 0px 0px hsl(356 61% 25% / 0.00);
