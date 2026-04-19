@@ -4,13 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Heart, Images, ChevronLeft, ChevronRight, X } from "lucide-react";
 
-import img1 from "@assets/GM-00756.jpg_1776614313614.jpeg";
+import img1 from "@assets/WhatsApp-Image-2025-10-30-at-17.42.50_1776614313615.jpeg";
 import img2 from "@assets/GM-00679.jpg_1776614313614.jpeg";
 import img3 from "@assets/GM-00719.jpg_1776614313614.jpeg";
 import img4 from "@assets/GM-01293.jpg_1776614313614.jpeg";
 import img5 from "@assets/DSC05396.jpg_1776614313613.jpeg";
-import img6 from "@assets/MielMagGM-156of162.jpg_1776614313614.jpeg";
-import img7 from "@assets/New-Project-42.jpg_1776614313615.jpeg";
+import img6 from "@assets/New-Project-42.jpg_1776614313615.jpeg";
+import img7 from "@assets/MielmagMS-48of267.jpg_1776614313615.jpeg";
 import img8 from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 
 const FALLBACK_IMAGES = [img1, img2, img3, img4, img5, img6, img7, img8];

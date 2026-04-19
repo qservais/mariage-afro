@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote } from "lucide-react";
 
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
-import aboutImage from "@assets/New-Project-42.jpg_1776614313615.jpeg";
+import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
 import servicesImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import videoSrc from "@assets/Trailer-de-dingue_1776614330311.mp4";
 
