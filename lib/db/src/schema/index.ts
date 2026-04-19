@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, jsonb, uniqueIndex, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -63,6 +63,92 @@ export const partnerApplicationsTable = pgTable("partner_applications", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const couplesTable = pgTable("couples", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  partner1Name: text("partner1_name").notNull().default(""),
+  partner2Name: text("partner2_name").notNull().default(""),
+  weddingDate: text("wedding_date"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  userIdIdx: uniqueIndex("couples_user_id_idx").on(t.userId),
+}));
+
+export const budgetItemsTable = pgTable("budget_items", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  category: text("category").notNull(),
+  vendor: text("vendor"),
+  planned: integer("planned_cents").notNull().default(0),
+  actual: integer("actual_cents").notNull().default(0),
+  paid: boolean("paid").notNull().default(false),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const guestsTable = pgTable("guests", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull().default(""),
+  side: text("side").notNull().default("partner1"),
+  table: text("table_name"),
+  rsvp: text("rsvp").notNull().default("pending"),
+  diet: text("diet"),
+  email: text("email"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const planningTasksTable = pgTable("planning_tasks", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  title: text("title").notNull(),
+  dueDate: text("due_date"),
+  assignee: text("assignee"),
+  done: boolean("done").notNull().default(false),
+  category: text("category").notNull().default("preparation"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const clientVendorsTable = pgTable("client_vendors", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  category: text("category").notNull(),
+  name: text("name").notNull(),
+  contactName: text("contact_name"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  amount: integer("amount_cents").notNull().default(0),
+  status: text("status").notNull().default("contacted"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const clientDocumentsTable = pgTable("client_documents", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  fileType: text("file_type"),
+  size: integer("size_bytes").notNull().default(0),
+  category: text("category").notNull().default("misc"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const jourJEventsTable = pgTable("jour_j_events", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  time: text("time").notNull(),
+  title: text("title").notNull(),
+  responsible: text("responsible"),
+  done: boolean("done").notNull().default(false),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const insertLeadSchema = createInsertSchema(leadsTable).omit({
   id: true, createdAt: true, status: true, internalNote: true,
 });
@@ -86,3 +172,11 @@ export const insertPartnerApplicationSchema = createInsertSchema(partnerApplicat
 });
 export type InsertPartnerApplication = z.infer<typeof insertPartnerApplicationSchema>;
 export type PartnerApplication = typeof partnerApplicationsTable.$inferSelect;
+
+export type Couple = typeof couplesTable.$inferSelect;
+export type BudgetItem = typeof budgetItemsTable.$inferSelect;
+export type Guest = typeof guestsTable.$inferSelect;
+export type PlanningTask = typeof planningTasksTable.$inferSelect;
+export type ClientVendor = typeof clientVendorsTable.$inferSelect;
+export type ClientDocument = typeof clientDocumentsTable.$inferSelect;
+export type JourJEvent = typeof jourJEventsTable.$inferSelect;
