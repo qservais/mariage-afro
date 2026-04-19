@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { desc, eq, and, type SQL } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import {
   db,
   leadsTable,
@@ -163,37 +163,99 @@ router.post("/logout", (_req, res) => {
   res.redirect("/admin/login");
 });
 
-async function loadAll(filterType?: LeadType, filterStatus?: Status) {
-  const conds: SQL[] = [];
-  if (filterStatus) conds.push(eq(leadsTable.status, filterStatus));
-  const where = conds.length ? and(...conds) : undefined;
+type FeedRow = {
+  type: LeadType;
+  id: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  weddingDate: string | null;
+  services: string | null;
+  subject: string;
+  status: Status;
+  createdAt: Date;
+};
 
-  const [leads, vendors, venues, partners] = await Promise.all([
-    db.select().from(leadsTable).where(where).orderBy(desc(leadsTable.createdAt)).limit(500),
-    filterStatus
-      ? db.select().from(vendorRequestsTable).where(eq(vendorRequestsTable.status, filterStatus)).orderBy(desc(vendorRequestsTable.createdAt)).limit(500)
-      : db.select().from(vendorRequestsTable).orderBy(desc(vendorRequestsTable.createdAt)).limit(500),
-    filterStatus
-      ? db.select().from(venueRequestsTable).where(eq(venueRequestsTable.status, filterStatus)).orderBy(desc(venueRequestsTable.createdAt)).limit(500)
-      : db.select().from(venueRequestsTable).orderBy(desc(venueRequestsTable.createdAt)).limit(500),
-    filterStatus
-      ? db.select().from(partnerApplicationsTable).where(eq(partnerApplicationsTable.status, filterStatus)).orderBy(desc(partnerApplicationsTable.createdAt)).limit(500)
-      : db.select().from(partnerApplicationsTable).orderBy(desc(partnerApplicationsTable.createdAt)).limit(500),
-  ]);
+async function loadFeed(opts: {
+  filterType?: LeadType;
+  filterStatus?: Status;
+  page: number;
+  perPage: number;
+}): Promise<{ rows: FeedRow[]; total: number; totals: Record<LeadType, number> }> {
+  const { filterType, filterStatus, page, perPage } = opts;
+  const offset = (page - 1) * perPage;
 
-  type Row = {
-    type: LeadType; id: number; name: string; email: string; phone: string | null;
-    weddingDate: string | null; subject: string; status: string; createdAt: Date;
-  };
-  const all: Row[] = [
-    ...leads.map((l: typeof leads[number]): Row => ({ type: "lead", id: l.id, name: l.name, email: l.email, phone: l.phone, weddingDate: l.weddingDate, subject: (l.services ?? []).join(", ") || (l.category === "service-request" ? "Services" : "Lead général"), status: l.status, createdAt: l.createdAt })),
-    ...vendors.map((v: typeof vendors[number]): Row => ({ type: "vendor", id: v.id, name: v.name, email: v.email, phone: v.phone, weddingDate: v.weddingDate, subject: `${v.vendorName} · ${v.requestType}`, status: v.status, createdAt: v.createdAt })),
-    ...venues.map((v: typeof venues[number]): Row => ({ type: "venue", id: v.id, name: v.name, email: v.email, phone: v.phone, weddingDate: v.weddingDate, subject: `${v.venueName} · ${v.requestType}`, status: v.status, createdAt: v.createdAt })),
-    ...partners.map((p: typeof partners[number]): Row => ({ type: "partner", id: p.id, name: p.contactName, email: p.email, phone: p.phone, weddingDate: null, subject: `${p.businessName} · ${p.category}`, status: p.status, createdAt: p.createdAt })),
-  ];
-  all.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  const filtered = filterType ? all.filter(r => r.type === filterType) : all;
-  return { rows: filtered, totals: { lead: leads.length, vendor: vendors.length, venue: venues.length, partner: partners.length } };
+  // Unified feed across the 4 lead tables, paginated and ordered at the DB level.
+  // Each subquery exposes the same column shape so UNION ALL works.
+  const unionSql = sql`
+    SELECT 'lead'::text AS type, id, name, email, phone, wedding_date,
+           COALESCE(array_to_string(ARRAY(SELECT jsonb_array_elements_text(services)), ', '), '') AS services_text,
+           CASE WHEN category = 'service-request' THEN 'Demande services' ELSE 'Lead général' END AS subject,
+           status, created_at
+      FROM leads
+    UNION ALL
+    SELECT 'vendor'::text, id, name, email, phone, wedding_date, '' AS services_text,
+           vendor_name || ' · ' || request_type AS subject, status, created_at
+      FROM vendor_requests
+    UNION ALL
+    SELECT 'venue'::text, id, name, email, phone, wedding_date, '' AS services_text,
+           venue_name || ' · ' || request_type AS subject, status, created_at
+      FROM venue_requests
+    UNION ALL
+    SELECT 'partner'::text, id, contact_name AS name, email, phone, NULL::text AS wedding_date, '' AS services_text,
+           business_name || ' · ' || category AS subject, status, created_at
+      FROM partner_applications
+  `;
+
+  const filters = sql`
+    ${filterType ? sql`AND type = ${filterType}` : sql``}
+    ${filterStatus ? sql`AND status = ${filterStatus}` : sql``}
+  `;
+
+  const rowsRes = await db.execute<{
+    type: string;
+    id: number;
+    name: string;
+    email: string;
+    phone: string | null;
+    wedding_date: string | null;
+    services_text: string | null;
+    subject: string;
+    status: string;
+    created_at: Date;
+  }>(sql`
+    SELECT * FROM (${unionSql}) feed
+    WHERE 1=1 ${filters}
+    ORDER BY created_at DESC
+    LIMIT ${perPage} OFFSET ${offset}
+  `);
+
+  const countRes = await db.execute<{ count: string }>(sql`
+    SELECT COUNT(*)::text AS count FROM (${unionSql}) feed
+    WHERE 1=1 ${filters}
+  `);
+
+  const totalsRes = await db.execute<{ type: string; count: string }>(sql`
+    SELECT type, COUNT(*)::text AS count FROM (${unionSql}) feed GROUP BY type
+  `);
+
+  const totals: Record<LeadType, number> = { lead: 0, vendor: 0, venue: 0, partner: 0 };
+  for (const r of totalsRes.rows) totals[r.type as LeadType] = Number(r.count);
+
+  const rows: FeedRow[] = rowsRes.rows.map((r) => ({
+    type: r.type as LeadType,
+    id: r.id,
+    name: r.name,
+    email: r.email,
+    phone: r.phone,
+    weddingDate: r.wedding_date,
+    services: r.services_text,
+    subject: r.subject,
+    status: r.status as Status,
+    createdAt: r.created_at instanceof Date ? r.created_at : new Date(r.created_at),
+  }));
+
+  return { rows, total: Number(countRes.rows[0]?.count ?? 0), totals };
 }
 
 router.get("/", adminAuth, async (req, res) => {
@@ -202,9 +264,8 @@ router.get("/", adminAuth, async (req, res) => {
   const page = Math.max(1, Number(req.query.page) || 1);
   const perPage = 25;
 
-  const { rows, totals } = await loadAll(filterType, filterStatus);
-  const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
-  const pageRows = rows.slice((page - 1) * perPage, page * perPage);
+  const { rows: pageRows, total, totals } = await loadFeed({ filterType, filterStatus, page, perPage });
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
 
   const stats = `
     <div class="stats">
@@ -225,7 +286,7 @@ router.get("/", adminAuth, async (req, res) => {
     </form>`;
 
   const tableBody = pageRows.length === 0
-    ? `<tr><td colspan="7" class="empty">Aucune demande.</td></tr>`
+    ? `<tr><td colspan="9" class="empty">Aucune demande.</td></tr>`
     : pageRows.map(r => `
         <tr>
           <td>${escapeHtml(r.createdAt.toISOString().slice(0, 10))}</td>
@@ -233,6 +294,8 @@ router.get("/", adminAuth, async (req, res) => {
           <td><a href="/admin/leads/${r.type}/${r.id}">${escapeHtml(r.name)}</a></td>
           <td>${escapeHtml(r.email)}</td>
           <td>${escapeHtml(r.phone ?? "")}</td>
+          <td>${escapeHtml(r.weddingDate ?? "—")}</td>
+          <td>${escapeHtml(r.services ?? "")}</td>
           <td>${escapeHtml(r.subject)}</td>
           <td><span class="badge status-${r.status}">${STATUS_LABEL[r.status as Status] ?? r.status}</span></td>
         </tr>`).join("");
@@ -254,7 +317,7 @@ router.get("/", adminAuth, async (req, res) => {
       ${stats}
       ${filters}
       <table>
-        <thead><tr><th>Date</th><th>Type</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Sujet</th><th>Statut</th></tr></thead>
+        <thead><tr><th>Date</th><th>Type</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Date mariage</th><th>Services</th><th>Sujet</th><th>Statut</th></tr></thead>
         <tbody>${tableBody}</tbody>
       </table>
       ${pagination}

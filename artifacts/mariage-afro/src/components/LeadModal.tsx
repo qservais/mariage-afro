@@ -158,7 +158,6 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                   {t("contact.form_title")}
                 </h2>
               </div>
-              {/* labels use contact.form.* */}
               <button
                 type="button"
                 onClick={onClose}
