@@ -380,6 +380,36 @@
         "day_of": "Coördinatie op de Dag Zelf",
         "other": "Andere aanvraag"
       },
+      "guest_count": "Geschat aantal gasten",
+      "budget": "Geschat budget",
+      "budget_placeholder": "Selecteer een bereik",
+      "budget_options": {
+        "under_10k": "Minder dan € 10.000",
+        "10k_25k": "€ 10.000 – € 25.000",
+        "25k_50k": "€ 25.000 – € 50.000",
+        "over_50k": "Meer dan € 50.000",
+        "undecided": "Nog niet bepaald"
+      },
+      "wedding_type": "Type bruiloft",
+      "wedding_type_placeholder": "Kies het type ceremonie",
+      "wedding_type_options": {
+        "afro": "Afro-bruiloft",
+        "mixte": "Gemengde bruiloft",
+        "traditional": "Traditionele ceremonie",
+        "religious": "Religieuze ceremonie",
+        "other": "Anders"
+      },
+      "services": "Gewenste diensten (vink alles aan wat van toepassing is)",
+      "services_options": {
+        "wedding_planning": "Wedding Planning",
+        "decoration": "Decoratie & Scenografie",
+        "catering": "Catering",
+        "photo_video": "Foto & Video",
+        "dj_music": "DJ & Muziek",
+        "venue_search": "Locatie zoeken",
+        "coordination": "Coördinatie op de dag zelf",
+        "other": "Anders"
+      },
       "message": "Vertel ons over jullie bruiloft...",
       "submit": "Aanvraag verzenden",
       "submitting": "Verzenden...",

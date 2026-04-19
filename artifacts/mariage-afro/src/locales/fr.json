@@ -380,6 +380,36 @@
         "day_of": "Coordination Jour J",
         "other": "Autre demande"
       },
+      "guest_count": "Nombre d'invités estimé",
+      "budget": "Budget envisagé",
+      "budget_placeholder": "Sélectionnez une fourchette",
+      "budget_options": {
+        "under_10k": "Moins de 10 000 €",
+        "10k_25k": "10 000 € – 25 000 €",
+        "25k_50k": "25 000 € – 50 000 €",
+        "over_50k": "Plus de 50 000 €",
+        "undecided": "Pas encore défini"
+      },
+      "wedding_type": "Type de mariage",
+      "wedding_type_placeholder": "Choisissez le type de cérémonie",
+      "wedding_type_options": {
+        "afro": "Mariage afro",
+        "mixte": "Mariage mixte",
+        "traditional": "Cérémonie traditionnelle",
+        "religious": "Cérémonie religieuse",
+        "other": "Autre"
+      },
+      "services": "Services souhaités (cochez tout ce qui s'applique)",
+      "services_options": {
+        "wedding_planning": "Wedding Planning",
+        "decoration": "Décoration & Scénographie",
+        "catering": "Traiteur",
+        "photo_video": "Photo & Vidéo",
+        "dj_music": "DJ & Animation musicale",
+        "venue_search": "Recherche de lieu",
+        "coordination": "Coordination Jour J",
+        "other": "Autre"
+      },
       "message": "Parlez-nous de votre mariage...",
       "submit": "Envoyer la demande",
       "submitting": "Envoi en cours...",

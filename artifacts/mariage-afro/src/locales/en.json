@@ -380,6 +380,36 @@
         "day_of": "Day-of Coordination",
         "other": "Other request"
       },
+      "guest_count": "Estimated number of guests",
+      "budget": "Estimated budget",
+      "budget_placeholder": "Select a range",
+      "budget_options": {
+        "under_10k": "Under €10,000",
+        "10k_25k": "€10,000 – €25,000",
+        "25k_50k": "€25,000 – €50,000",
+        "over_50k": "Over €50,000",
+        "undecided": "Not decided yet"
+      },
+      "wedding_type": "Type of wedding",
+      "wedding_type_placeholder": "Choose ceremony type",
+      "wedding_type_options": {
+        "afro": "Afro wedding",
+        "mixte": "Mixed-culture wedding",
+        "traditional": "Traditional ceremony",
+        "religious": "Religious ceremony",
+        "other": "Other"
+      },
+      "services": "Services you're interested in (check all that apply)",
+      "services_options": {
+        "wedding_planning": "Wedding Planning",
+        "decoration": "Decoration & Scenography",
+        "catering": "Catering",
+        "photo_video": "Photo & Video",
+        "dj_music": "DJ & Music",
+        "venue_search": "Venue search",
+        "coordination": "Day-of coordination",
+        "other": "Other"
+      },
       "message": "Tell us about your wedding...",
       "submit": "Send request",
       "submitting": "Sending...",

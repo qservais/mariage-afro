@@ -20,16 +20,31 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
 import contactImg from "@assets/pexels-innocent-kapesa-760824113-18751317_1776285262172.jpg";
+
+const SERVICE_OPTIONS = [
+  "wedding_planning",
+  "decoration",
+  "catering",
+  "photo_video",
+  "dj_music",
+  "venue_search",
+  "coordination",
+  "other",
+] as const;
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Nom requis" }),
   email: z.string().email({ message: "Email invalide" }),
   phone: z.string().optional(),
   date: z.string().optional(),
-  type: z.string().min(1, { message: "Type de service requis" }),
+  guestCount: z.string().optional(),
+  budget: z.string().optional(),
+  weddingType: z.string().min(1, { message: "Type requis" }),
+  services: z.array(z.string()).default([]),
   message: z.string().min(10, { message: "Message requis (min 10 caractères)" })
 });
 
@@ -82,17 +97,31 @@ export default function Contact() {
       email: "",
       phone: "",
       date: prefillDate,
-      type: "",
+      guestCount: "",
+      budget: "",
+      weddingType: "",
+      services: [],
       message: prefillVenue ? `Lieu envisagé : ${prefillVenue}` : ""
     }
   });
 
   const mutation = useMutation({
     mutationFn: async (data: FormValues) => {
-      const response = await fetch("/api/contact", {
+      const payload = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone || null,
+        weddingDate: data.date || null,
+        guestCount: data.guestCount ? Number(data.guestCount) : null,
+        budget: data.budget || null,
+        weddingType: data.weddingType,
+        services: data.services ?? [],
+        message: data.message,
+      };
+      const response = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify(payload)
       });
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -251,25 +280,106 @@ export default function Contact() {
                     />
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="guestCount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("contact.form.guest_count")}</FormLabel>
+                          <FormControl>
+                            <Input type="number" min={0} placeholder="120" {...field} className="bg-white border-border rounded-none focus-visible:ring-primary" data-testid="input-guest-count" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="budget"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("contact.form.budget")}</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-white border-border rounded-none focus-visible:ring-primary" data-testid="select-budget">
+                                <SelectValue placeholder={t("contact.form.budget_placeholder")} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="under_10k">{t("contact.form.budget_options.under_10k")}</SelectItem>
+                              <SelectItem value="10k_25k">{t("contact.form.budget_options.10k_25k")}</SelectItem>
+                              <SelectItem value="25k_50k">{t("contact.form.budget_options.25k_50k")}</SelectItem>
+                              <SelectItem value="over_50k">{t("contact.form.budget_options.over_50k")}</SelectItem>
+                              <SelectItem value="undecided">{t("contact.form.budget_options.undecided")}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
-                    name="type"
+                    name="weddingType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("contact.form.type")}</FormLabel>
+                        <FormLabel>{t("contact.form.wedding_type")}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-white border-border rounded-none focus-visible:ring-primary">
-                              <SelectValue placeholder={t("contact.form.type_placeholder")} />
+                            <SelectTrigger className="bg-white border-border rounded-none focus-visible:ring-primary" data-testid="select-wedding-type">
+                              <SelectValue placeholder={t("contact.form.wedding_type_placeholder")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="complete">{t("contact.form.type_options.complete")}</SelectItem>
-                            <SelectItem value="partial">{t("contact.form.type_options.partial")}</SelectItem>
-                            <SelectItem value="day_of">{t("contact.form.type_options.day_of")}</SelectItem>
-                            <SelectItem value="other">{t("contact.form.type_options.other")}</SelectItem>
+                            <SelectItem value="afro">{t("contact.form.wedding_type_options.afro")}</SelectItem>
+                            <SelectItem value="mixte">{t("contact.form.wedding_type_options.mixte")}</SelectItem>
+                            <SelectItem value="traditional">{t("contact.form.wedding_type_options.traditional")}</SelectItem>
+                            <SelectItem value="religious">{t("contact.form.wedding_type_options.religious")}</SelectItem>
+                            <SelectItem value="other">{t("contact.form.wedding_type_options.other")}</SelectItem>
                           </SelectContent>
                         </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="services"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>{t("contact.form.services")}</FormLabel>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                          {SERVICE_OPTIONS.map((opt) => (
+                            <FormField
+                              key={opt}
+                              control={form.control}
+                              name="services"
+                              render={({ field }) => (
+                                <FormItem className="flex items-center gap-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(opt) ?? false}
+                                      onCheckedChange={(checked) => {
+                                        const current = field.value ?? [];
+                                        return checked
+                                          ? field.onChange([...current, opt])
+                                          : field.onChange(current.filter((v) => v !== opt));
+                                      }}
+                                      className="rounded-none border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                      data-testid={`checkbox-service-${opt}`}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer">
+                                    {t(`contact.form.services_options.${opt}`)}
+                                  </FormLabel>
+                                </FormItem>
+                              )}
+                            />
+                          ))}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
