@@ -147,6 +147,11 @@
     "form_title": "Have a venue in mind?",
     "form_desc": "Tell us about your dream venue and we will help you book and organize it.",
     "form_cta": "Tell us about it",
+    "form_name": "Full Name",
+    "form_venue": "Desired venue",
+    "form_venue_placeholder": "Venue name or city",
+    "form_date": "Wedding date",
+    "form_submit": "Send my request",
     "items": [
       {
         "name": "Domaine des Palmes",

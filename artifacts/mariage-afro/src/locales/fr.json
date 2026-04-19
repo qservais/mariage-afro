@@ -147,6 +147,11 @@
     "form_title": "Vous avez un lieu en tête ?",
     "form_desc": "Décrivez-nous votre lieu de rêve et nous vous accompagnerons pour le réserver et l'organiser.",
     "form_cta": "Nous en parler",
+    "form_name": "Nom & Prénom",
+    "form_venue": "Lieu envisagé",
+    "form_venue_placeholder": "Nom du lieu ou ville",
+    "form_date": "Date du mariage",
+    "form_submit": "Envoyer ma demande",
     "items": [
       {
         "name": "Domaine des Palmes",

@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MapPin, Users, Sparkles, CheckCircle2 } from "lucide-react";
@@ -26,6 +26,17 @@ interface Venue {
 
 export default function Lieux() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ name: "", venue: "", date: "" });
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (formData.name) params.set("name", formData.name);
+    if (formData.venue) params.set("venue", formData.venue);
+    if (formData.date) params.set("date", formData.date);
+    navigate(`/contact?${params.toString()}`);
+  };
 
   useEffect(() => {
     document.title = `${t("nav.venues")} — Mariage Afro`;
@@ -156,26 +167,82 @@ export default function Lieux() {
         </div>
       </section>
 
-      {/* Form nudge */}
+      {/* Form */}
       <section className="py-20 bg-background border-t border-border">
-        <div className="container mx-auto px-6 md:px-12 text-center max-w-2xl">
+        <div className="container mx-auto px-6 md:px-12 max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            className="text-center mb-10"
           >
             <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground mb-4">
               {t("venues.form_title")}
             </h2>
-            <p className="text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed">
               {t("venues.form_desc")}
             </p>
-            <Link to="/contact">
-              <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-10">
-                {t("venues.form_cta")}
-              </Button>
-            </Link>
           </motion.div>
+
+          <motion.form
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            onSubmit={handleSubmit}
+            className="bg-white border border-border p-8 md:p-10 space-y-5"
+            data-testid="form-venues"
+          >
+            <div>
+              <label htmlFor="venues-name" className="block text-xs uppercase tracking-widest font-bold text-foreground mb-2">
+                {t("venues.form_name")}
+              </label>
+              <input
+                id="venues-name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                data-testid="input-venues-name"
+              />
+            </div>
+            <div>
+              <label htmlFor="venues-venue" className="block text-xs uppercase tracking-widest font-bold text-foreground mb-2">
+                {t("venues.form_venue")}
+              </label>
+              <input
+                id="venues-venue"
+                type="text"
+                required
+                placeholder={t("venues.form_venue_placeholder")}
+                value={formData.venue}
+                onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
+                className="w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                data-testid="input-venues-venue"
+              />
+            </div>
+            <div>
+              <label htmlFor="venues-date" className="block text-xs uppercase tracking-widest font-bold text-foreground mb-2">
+                {t("venues.form_date")}
+              </label>
+              <input
+                id="venues-date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                className="w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                data-testid="input-venues-date"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 mt-2"
+              data-testid="button-venues-submit"
+            >
+              {t("venues.form_submit")}
+            </Button>
+          </motion.form>
         </div>
       </section>
 
