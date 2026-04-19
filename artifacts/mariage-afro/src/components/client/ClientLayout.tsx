@@ -7,12 +7,14 @@ import {
   LogOut, Menu, X, Heart, UserCircle,
 } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
+import OnboardingGate from "@/components/client/OnboardingGate";
 
 interface Couple {
   id: number;
   partner1Name: string;
   partner2Name: string;
   weddingDate: string | null;
+  onboardedAt: string | null;
 }
 
 const NAV = [
@@ -156,7 +158,9 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
         </div>
       </header>
 
-      <main className="px-4 sm:px-6 lg:px-10 py-8">{children ?? <Outlet />}</main>
+      <main className="px-4 sm:px-6 lg:px-10 py-8">
+        <OnboardingGate couple={couple}>{children ?? <Outlet />}</OnboardingGate>
+      </main>
     </div>
   );
 }

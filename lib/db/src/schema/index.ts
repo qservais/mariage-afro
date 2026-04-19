@@ -69,6 +69,11 @@ export const couplesTable = pgTable("couples", {
   partner1Name: text("partner1_name").notNull().default(""),
   partner2Name: text("partner2_name").notNull().default(""),
   weddingDate: text("wedding_date"),
+  ceremonyCity: text("ceremony_city"),
+  ceremonyVenue: text("ceremony_venue"),
+  guestEstimate: integer("guest_estimate"),
+  budget: integer("budget"),
+  onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({

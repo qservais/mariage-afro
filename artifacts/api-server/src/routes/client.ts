@@ -51,14 +51,22 @@ const coupleUpdateSchema = z.object({
   partner1Name: z.string().optional(),
   partner2Name: z.string().optional(),
   weddingDate: z.string().optional().nullable(),
+  ceremonyCity: z.string().optional().nullable(),
+  ceremonyVenue: z.string().optional().nullable(),
+  guestEstimate: z.coerce.number().int().nonnegative().optional().nullable(),
+  budget: z.coerce.number().int().nonnegative().optional().nullable(),
+  onboarded: z.boolean().optional(),
 });
 
 router.patch("/client/me", async (req, res) => {
   const r = req as unknown as AuthedRequest;
   const parsed = coupleUpdateSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const { onboarded, ...rest } = parsed.data;
+  const patch: Record<string, unknown> = { ...rest, updatedAt: new Date() };
+  if (onboarded) patch.onboardedAt = new Date();
   const [couple] = await db.update(couplesTable)
-    .set({ ...parsed.data, updatedAt: new Date() })
+    .set(patch)
     .where(eq(couplesTable.id, r.coupleId)).returning();
   res.json(couple);
 });
