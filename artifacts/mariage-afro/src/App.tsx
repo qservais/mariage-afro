@@ -1,11 +1,15 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Services from "@/pages/services";
-import Prestations from "@/pages/prestations";
+import Plateforme from "@/pages/plateforme";
+import Partenaires from "@/pages/prestations";
+import Lieux from "@/pages/lieux";
+import Shop from "@/pages/shop";
+import EspaceClient from "@/pages/espace-client";
 import Realisations from "@/pages/realisations";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
@@ -25,11 +29,16 @@ function Router() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/plateforme" element={<Plateforme />} />
           <Route path="/services" element={<Services />} />
-          <Route path="/prestations" element={<Prestations />} />
+          <Route path="/partenaires" element={<Partenaires />} />
+          <Route path="/prestations" element={<Navigate to="/partenaires" replace />} />
+          <Route path="/lieux" element={<Lieux />} />
           <Route path="/realisations" element={<Realisations />} />
+          <Route path="/shop" element={<Shop />} />
           <Route path="/a-propos" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/espace-client" element={<EspaceClient />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

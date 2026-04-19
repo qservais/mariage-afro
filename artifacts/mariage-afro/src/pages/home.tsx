@@ -45,7 +45,25 @@ export default function Home() {
       num: t("home.service3_num"),
       title: t("home.service3_title"),
       desc: t("home.service3_desc"),
-      href: "/prestations"
+      href: "/partenaires"
+    }
+  ];
+
+  const howSteps = [
+    {
+      num: t("home.how_step1_num"),
+      title: t("home.how_step1_title"),
+      desc: t("home.how_step1_desc")
+    },
+    {
+      num: t("home.how_step2_num"),
+      title: t("home.how_step2_title"),
+      desc: t("home.how_step2_desc")
+    },
+    {
+      num: t("home.how_step3_num"),
+      title: t("home.how_step3_title"),
+      desc: t("home.how_step3_desc")
     }
   ];
 
@@ -126,18 +144,70 @@ export default function Home() {
               {t("hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/services">
+              <Link to="/contact">
                 <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto">
                   {t("hero.cta_primary")}
                 </Button>
               </Link>
-              <Link to="/realisations">
+              <Link to="/plateforme">
                 <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto bg-transparent">
                   {t("hero.cta_secondary")}
                 </Button>
               </Link>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* How it works — 3 steps */}
+      <section className="py-24 md:py-32 bg-white">
+        <div className="container mx-auto px-6 md:px-12">
+          <motion.div {...fadeIn} className="text-center mb-16 md:mb-20 max-w-3xl mx-auto">
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">
+              {t("home.how_label")}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground mb-6 leading-tight">
+              {t("home.how_title")}
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              {t("home.how_subtitle")}
+            </p>
+            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 mb-12 relative">
+            {howSteps.map((step, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
+                className="relative bg-background border border-border p-8 md:p-10 flex flex-col"
+              >
+                <div className="flex items-baseline gap-4 mb-6">
+                  <span className="text-5xl md:text-6xl font-bold text-primary/15 font-serif leading-none">
+                    {step.num}
+                  </span>
+                  <div className="h-px flex-grow bg-primary/30"></div>
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold font-serif text-foreground mb-4 leading-tight">
+                  {step.title}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
+                  {step.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link to="/plateforme">
+              <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-10">
+                {t("home.how_cta")}
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -387,7 +457,7 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-12">
-            <Link to="/prestations">
+            <Link to="/partenaires">
               <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-10">
                 {t("home.prestations_cta")}
               </Button>

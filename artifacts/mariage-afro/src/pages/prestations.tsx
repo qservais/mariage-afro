@@ -144,7 +144,7 @@ export default function Prestations() {
             animate={{ opacity: 1 }}
             className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-5"
           >
-            {t("nav.prestations")}
+            {t("nav.partners")}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
