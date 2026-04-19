@@ -159,7 +159,12 @@
         "capacity": "100 — 350 invités",
         "style": "Domaine champêtre chic",
         "desc": "Un domaine d'exception entouré de jardins paysagers, idéal pour des mariages mixant tradition et élégance contemporaine. Salle modulable, terrasse panoramique et chapelle attenante.",
-        "options": ["Espace cérémonie extérieur", "Cuisine professionnelle", "Hébergement 30 personnes", "Parking 200 places"]
+        "options": [
+          "Espace cérémonie extérieur",
+          "Cuisine professionnelle",
+          "Hébergement 30 personnes",
+          "Parking 200 places"
+        ]
       },
       {
         "name": "Château de Bellevue",
@@ -167,7 +172,12 @@
         "capacity": "80 — 250 invités",
         "style": "Château historique",
         "desc": "Un château du 18ème siècle avec parc à l'anglaise. Cadre prestigieux pour des mariages afro élégants alliant traditions et grandeur.",
-        "options": ["Salons d'apparat", "Parc 5 hectares", "Suites nuptiales", "Service voiturier"]
+        "options": [
+          "Salons d'apparat",
+          "Parc 5 hectares",
+          "Suites nuptiales",
+          "Service voiturier"
+        ]
       },
       {
         "name": "La Verrière des Arts",
@@ -175,7 +185,12 @@
         "capacity": "60 — 180 invités",
         "style": "Loft industriel",
         "desc": "Espace urbain lumineux avec verrière d'origine. Parfait pour des mariages contemporains et des cérémonies fusion afro-européennes.",
-        "options": ["Lumière naturelle exceptionnelle", "Mobilier design inclus", "Espace DJ professionnel", "Vestiaire mariés"]
+        "options": [
+          "Lumière naturelle exceptionnelle",
+          "Mobilier design inclus",
+          "Espace DJ professionnel",
+          "Vestiaire mariés"
+        ]
       },
       {
         "name": "Le Pavillon Tropical",
@@ -183,7 +198,12 @@
         "capacity": "120 — 400 invités",
         "style": "Salle moderne tropicale",
         "desc": "Vaste salle de réception avec décoration aux accents tropicaux. Idéale pour des mariages afro festifs avec piste de danse XXL.",
-        "options": ["Piste de danse 100m²", "Bar sur mesure", "Sound system Bose", "Cuisine traiteur équipée"]
+        "options": [
+          "Piste de danse 100m²",
+          "Bar sur mesure",
+          "Sound system Bose",
+          "Cuisine traiteur équipée"
+        ]
       },
       {
         "name": "Le Mas de Liège",
@@ -191,7 +211,12 @@
         "capacity": "50 — 200 invités",
         "style": "Mas provençal",
         "desc": "Authentique mas en pierre avec cour intérieure et oliviers centenaires. Une bulle méditerranéenne pour des mariages intimistes.",
-        "options": ["Cour intérieure 300m²", "Piscine accessible", "10 chambres", "Chef sur place"]
+        "options": [
+          "Cour intérieure 300m²",
+          "Piscine accessible",
+          "10 chambres",
+          "Chef sur place"
+        ]
       },
       {
         "name": "Salle des Cultures",
@@ -199,7 +224,12 @@
         "capacity": "200 — 500 invités",
         "style": "Salle multiculturelle",
         "desc": "Grande salle pensée pour les célébrations multiculturelles. Espace neutre et modulable pour personnaliser entièrement votre décor.",
-        "options": ["500 invités assis", "Scène professionnelle", "Régie son et lumière", "Espace séparé cérémonie"]
+        "options": [
+          "500 invités assis",
+          "Scène professionnelle",
+          "Régie son et lumière",
+          "Espace séparé cérémonie"
+        ]
       }
     ]
   },
@@ -402,7 +432,8 @@
       "success_title": "Candidature reçue",
       "success_desc": "Nous étudions votre profil et revenons vers vous dans les 5 jours ouvrables.",
       "new_request": "Soumettre une autre candidature"
-    }
+    },
+    "add_to_project": "Ajouter à mon projet"
   },
   "realisations": {
     "subtitle": "Découvrez nos plus belles histoires d'amour à travers une sélection de moments inoubliables.",
@@ -416,7 +447,12 @@
     "img5_alt": "Portrait de la mariée",
     "img6_alt": "Couple en pleine nature",
     "img7_alt": "Alliances et détails de cérémonie",
-    "img8_alt": "Moment romantique en soirée"
+    "img8_alt": "Moment romantique en soirée",
+    "badge": "Histoires de couples",
+    "cta_title": "Votre histoire commence ici",
+    "cta_subtitle": "Confiez-nous votre mariage afro ou mixte en Belgique et créez un souvenir inoubliable.",
+    "cta_btn": "Nous contacter",
+    "title": "Nos Réalisations"
   },
   "about": {
     "title": "Notre Histoire",

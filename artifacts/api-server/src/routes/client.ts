@@ -11,6 +11,9 @@ import {
   clientVendorsTable,
   clientDocumentsTable,
   jourJEventsTable,
+  messagesTable,
+  weddingWebsitesTable,
+  weddingRsvpsTable,
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
@@ -341,6 +344,99 @@ router.delete("/client/jour-j/:id", async (req, res) => {
   await db.delete(jourJEventsTable)
     .where(and(eq(jourJEventsTable.id, id), eq(jourJEventsTable.coupleId, r.coupleId)));
   res.json({ success: true });
+});
+
+// ---------- Messages ----------
+const messageSchema = z.object({ content: z.string().min(1).max(5000) });
+
+router.get("/client/messages", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const rows = await db.select().from(messagesTable)
+    .where(eq(messagesTable.coupleId, r.coupleId))
+    .orderBy(asc(messagesTable.createdAt));
+  await db.update(messagesTable)
+    .set({ readAt: new Date() })
+    .where(and(eq(messagesTable.coupleId, r.coupleId), eq(messagesTable.authorRole, "admin")));
+  res.json(rows);
+});
+
+router.post("/client/messages", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = messageSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid" }); return; }
+  const [row] = await db.insert(messagesTable).values({
+    coupleId: r.coupleId,
+    authorRole: "couple",
+    content: parsed.data.content,
+  }).returning();
+  res.status(201).json(row);
+});
+
+// ---------- Wedding Website ----------
+const websiteSchema = z.object({
+  slug: z.string().min(3).max(60).regex(/^[a-z0-9-]+$/).optional(),
+  title: z.string().max(100).optional(),
+  welcomeMessage: z.string().max(2000).optional(),
+  weddingDate: z.string().optional(),
+  venue: z.string().max(200).optional(),
+  city: z.string().max(100).optional(),
+  programme: z.array(z.object({ time: z.string(), event: z.string() })).optional(),
+  active: z.boolean().optional(),
+  rsvpEnabled: z.boolean().optional(),
+});
+
+router.get("/client/wedding-website", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const [site] = await db.select().from(weddingWebsitesTable)
+    .where(eq(weddingWebsitesTable.coupleId, r.coupleId));
+  res.json(site ?? null);
+});
+
+router.patch("/client/wedding-website", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = websiteSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+
+  if (parsed.data.slug) {
+    const [existing] = await db.select({ id: weddingWebsitesTable.id })
+      .from(weddingWebsitesTable)
+      .where(eq(weddingWebsitesTable.slug, parsed.data.slug));
+    const [mine] = await db.select({ id: weddingWebsitesTable.id })
+      .from(weddingWebsitesTable)
+      .where(eq(weddingWebsitesTable.coupleId, r.coupleId));
+    if (existing && existing.id !== mine?.id) {
+      res.status(409).json({ error: "Ce slug est déjà pris" });
+      return;
+    }
+  }
+
+  const [current] = await db.select().from(weddingWebsitesTable)
+    .where(eq(weddingWebsitesTable.coupleId, r.coupleId));
+
+  if (!current) {
+    const slug = parsed.data.slug ?? `mariage-${r.coupleId}`;
+    const [row] = await db.insert(weddingWebsitesTable).values({
+      coupleId: r.coupleId,
+      slug,
+      ...parsed.data,
+    }).returning();
+    res.status(201).json(row);
+  } else {
+    const [row] = await db.update(weddingWebsitesTable)
+      .set(parsed.data)
+      .where(eq(weddingWebsitesTable.coupleId, r.coupleId))
+      .returning();
+    res.json(row);
+  }
+});
+
+// ---------- RSVP public-facing (no auth needed, outside requireCouple middleware) ----------
+export const rsvpSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.string().email().optional(),
+  attending: z.boolean(),
+  guestCount: z.number().int().min(1).max(20).default(1),
+  message: z.string().max(1000).optional(),
 });
 
 export default router;

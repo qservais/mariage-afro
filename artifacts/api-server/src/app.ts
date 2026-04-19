@@ -6,6 +6,9 @@ import { clerkMiddleware } from "@clerk/express";
 import { CLERK_PROXY_PATH, clerkProxyMiddleware } from "./middlewares/clerkProxyMiddleware";
 import router from "./routes";
 import adminRouter from "./routes/admin";
+import adminContentRouter from "./routes/admin-content";
+import marketplaceRouter from "./routes/marketplace";
+import weddingPublicRouter from "./routes/wedding-public";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -52,7 +55,13 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(clerkMiddleware());
 
+// Public routes first — before auth-protected routers
+app.use("/", weddingPublicRouter);
+app.use("/api", marketplaceRouter);
+
+// Auth-protected routes
 app.use("/api", router);
 app.use("/admin", adminRouter);
+app.use("/admin", adminContentRouter);
 
 export default app;

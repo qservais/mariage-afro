@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@clerk/react";
 import {
   MapPin,
   CheckCircle2,
@@ -15,6 +17,7 @@ import {
   Video,
   CalendarClock,
   Loader2,
+  PlusCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -149,6 +152,19 @@ const VENDORS = [
     verified: false,
   },
 ];
+
+interface DisplayVendor {
+  id: number;
+  name: string;
+  city: string;
+  category: string;
+  tagline: string;
+  services: string[];
+  rating: number;
+  image: string;
+  gallery: string[];
+  verified: boolean;
+}
 
 const ACTIONS: { key: VendorAction; icon: typeof FileText }[] = [
   { key: "quote", icon: FileText },
@@ -682,13 +698,48 @@ function BecomePartnerSection() {
 
 export default function Prestations() {
   const { t } = useTranslation();
-  const [activeFilter, setActiveFilter] = useState<number | null>(null);
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<{
     vendor: { id: number; name: string };
     action: VendorAction;
   } | null>(null);
+  const [addingId, setAddingId] = useState<number | null>(null);
 
   const categories = t("prestations.items", { returnObjects: true }) as string[];
+
+  const { data: apiVendors = [] } = useQuery<DisplayVendor[]>({
+    queryKey: ["marketplace-vendors"],
+    queryFn: async () => {
+      const res = await fetch("/api/marketplace/vendors");
+      if (!res.ok) return [];
+      const rows = await res.json();
+      return rows.map((v: Record<string, unknown>) => ({
+        id: v.id as number,
+        name: v.name as string,
+        city: v.city as string,
+        category: v.category as string,
+        tagline: v.tagline as string,
+        services: v.services as string[],
+        rating: v.rating as number,
+        image: (v.coverImage as string | null) || (v.images as string[])[0] || img1,
+        gallery: (v.images as string[]).slice(0, 3),
+        verified: v.verified as boolean,
+      }));
+    },
+  });
+
+  const displayVendors: DisplayVendor[] = useMemo(() => {
+    if (apiVendors.length > 0) return apiVendors;
+    return VENDORS.map((v) => ({ ...v, category: categories[v.categoryIndex] ?? "" }));
+  }, [apiVendors, categories]);
+
+  const uniqueCategories = useMemo(
+    () => [...new Set(displayVendors.map((v) => v.category))],
+    [displayVendors],
+  );
 
   useEffect(() => {
     document.title = `${t("prestations.title")} — Mariage Afro`;
@@ -697,12 +748,38 @@ export default function Prestations() {
   }, [t]);
 
   const filtered =
-    activeFilter === null ? VENDORS : VENDORS.filter((v) => v.categoryIndex === activeFilter);
+    activeFilter === null
+      ? displayVendors
+      : displayVendors.filter((v) => v.category === activeFilter);
 
   const filters = [
-    { label: t("prestations.filter_all"), value: null },
-    ...categories.map((cat, i) => ({ label: cat, value: i })),
+    { label: t("prestations.filter_all"), value: null as string | null },
+    ...uniqueCategories.map((cat) => ({ label: cat, value: cat })),
   ];
+
+  async function handleAddToProject(vendor: DisplayVendor) {
+    if (!isSignedIn) {
+      navigate("/espace-client/login");
+      return;
+    }
+    setAddingId(vendor.id);
+    try {
+      const res = await fetch(`/api/marketplace/vendors/${vendor.id}/add-to-project`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      if (res.ok) {
+        toast({ title: `${vendor.name} ajouté à votre projet !` });
+      } else {
+        toast({ title: "Erreur lors de l'ajout", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Erreur réseau", variant: "destructive" });
+    } finally {
+      setAddingId(null);
+    }
+  }
 
   return (
     <div className="w-full pt-28">
@@ -780,7 +857,7 @@ export default function Prestations() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <span className="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1">
-                      {categories[vendor.categoryIndex]}
+                      {vendor.category}
                     </span>
                     {vendor.verified && (
                       <span className="absolute top-4 right-4 bg-white/95 text-primary text-[10px] font-bold uppercase tracking-wider px-2 py-1 flex items-center gap-1">
@@ -838,6 +915,18 @@ export default function Prestations() {
                     </div>
 
                     <div className="mt-auto grid grid-cols-2 lg:grid-cols-3 gap-2">
+                      <button
+                        onClick={() => handleAddToProject(vendor)}
+                        disabled={addingId === vendor.id}
+                        className="col-span-2 lg:col-span-3 flex items-center justify-center gap-2 bg-primary text-white hover:bg-primary/90 text-[11px] font-bold uppercase tracking-wider py-2.5 px-2 transition-colors disabled:opacity-60"
+                      >
+                        {addingId === vendor.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <PlusCircle className="w-3.5 h-3.5" />
+                        )}
+                        {t("partners.add_to_project")}
+                      </button>
                       {ACTIONS.map(({ key, icon: Icon }) => (
                         <button
                           key={key}

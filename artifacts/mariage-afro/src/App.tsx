@@ -24,6 +24,9 @@ import VendorsPage from "@/pages/client/prestataires";
 import DocumentsPage from "@/pages/client/documents";
 import JourJPage from "@/pages/client/jour-j";
 import ProfilPage from "@/pages/client/profil";
+import CommunicationPage from "@/pages/client/communication";
+import SiteMariagePage from "@/pages/client/site-mariage";
+import MariagePublicPage from "@/pages/mariage-public";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/layout/FloatingCTA";
@@ -56,6 +59,16 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   const { pathname } = useLocation();
   const isClient = pathname.startsWith("/espace-client") || pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
+  const isWeddingPage = pathname.startsWith("/mariage/");
+
+  if (isWeddingPage) {
+    return (
+      <Routes>
+        <Route path="/mariage/:slug" element={<MariagePublicPage />} />
+        <Route path="*" element={<MariagePublicPage />} />
+      </Routes>
+    );
+  }
 
   if (isClient) {
     return (
@@ -73,6 +86,8 @@ function AppRoutes() {
           <Route path="prestataires" element={<VendorsPage />} />
           <Route path="documents" element={<DocumentsPage />} />
           <Route path="jour-j" element={<JourJPage />} />
+          <Route path="communication" element={<CommunicationPage />} />
+          <Route path="site" element={<SiteMariagePage />} />
           <Route path="profil" element={<ProfilPage />} />
           <Route path="*" element={<Navigate to="/espace-client/dashboard" replace />} />
         </Route>

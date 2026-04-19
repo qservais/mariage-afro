@@ -159,7 +159,12 @@
         "capacity": "100 — 350 guests",
         "style": "Chic country estate",
         "desc": "An exceptional estate surrounded by landscaped gardens, ideal for weddings mixing tradition and contemporary elegance. Modular hall, panoramic terrace and adjoining chapel.",
-        "options": ["Outdoor ceremony space", "Professional kitchen", "Lodging for 30 people", "Parking for 200 vehicles"]
+        "options": [
+          "Outdoor ceremony space",
+          "Professional kitchen",
+          "Lodging for 30 people",
+          "Parking for 200 vehicles"
+        ]
       },
       {
         "name": "Château de Bellevue",
@@ -167,7 +172,12 @@
         "capacity": "80 — 250 guests",
         "style": "Historic château",
         "desc": "An 18th-century château with English-style park. A prestigious setting for elegant Afro weddings combining tradition and grandeur.",
-        "options": ["State rooms", "5-hectare park", "Bridal suites", "Valet service"]
+        "options": [
+          "State rooms",
+          "5-hectare park",
+          "Bridal suites",
+          "Valet service"
+        ]
       },
       {
         "name": "La Verrière des Arts",
@@ -175,7 +185,12 @@
         "capacity": "60 — 180 guests",
         "style": "Industrial loft",
         "desc": "A bright urban space with original glass roof. Perfect for contemporary weddings and Afro-European fusion ceremonies.",
-        "options": ["Exceptional natural light", "Designer furniture included", "Professional DJ space", "Bridal lounge"]
+        "options": [
+          "Exceptional natural light",
+          "Designer furniture included",
+          "Professional DJ space",
+          "Bridal lounge"
+        ]
       },
       {
         "name": "Le Pavillon Tropical",
@@ -183,7 +198,12 @@
         "capacity": "120 — 400 guests",
         "style": "Tropical modern hall",
         "desc": "Vast reception hall with tropical accents. Ideal for festive Afro weddings with XXL dance floor.",
-        "options": ["100m² dance floor", "Custom bar", "Bose sound system", "Equipped catering kitchen"]
+        "options": [
+          "100m² dance floor",
+          "Custom bar",
+          "Bose sound system",
+          "Equipped catering kitchen"
+        ]
       },
       {
         "name": "Le Mas de Liège",
@@ -191,7 +211,12 @@
         "capacity": "50 — 200 guests",
         "style": "Provençal mas",
         "desc": "Authentic stone mas with inner courtyard and centuries-old olive trees. A Mediterranean bubble for intimate weddings.",
-        "options": ["300m² inner courtyard", "Accessible pool", "10 bedrooms", "On-site chef"]
+        "options": [
+          "300m² inner courtyard",
+          "Accessible pool",
+          "10 bedrooms",
+          "On-site chef"
+        ]
       },
       {
         "name": "Salle des Cultures",
@@ -199,7 +224,12 @@
         "capacity": "200 — 500 guests",
         "style": "Multicultural hall",
         "desc": "Large hall designed for multicultural celebrations. Neutral and modular space to fully personalize your decor.",
-        "options": ["500 seated guests", "Professional stage", "Sound and light booth", "Separate ceremony space"]
+        "options": [
+          "500 seated guests",
+          "Professional stage",
+          "Sound and light booth",
+          "Separate ceremony space"
+        ]
       }
     ]
   },
@@ -402,7 +432,8 @@
       "success_title": "Application received",
       "success_desc": "We'll review your profile and get back to you within 5 business days.",
       "new_request": "Submit another application"
-    }
+    },
+    "add_to_project": "Add to my project"
   },
   "realisations": {
     "subtitle": "Discover our most beautiful love stories through a selection of unforgettable moments.",
@@ -416,7 +447,12 @@
     "img5_alt": "Portrait of the bride",
     "img6_alt": "Couple in nature",
     "img7_alt": "Wedding rings and ceremony details",
-    "img8_alt": "Romantic evening moment"
+    "img8_alt": "Romantic evening moment",
+    "badge": "Couple Stories",
+    "cta_title": "Your story starts here",
+    "cta_subtitle": "Entrust us with your Afro or mixed wedding in Belgium and create an unforgettable memory.",
+    "cta_btn": "Contact us",
+    "title": "Our Weddings"
   },
   "about": {
     "title": "Our Story",

@@ -13,14 +13,12 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API framework**: Express 5
 - **Database**: PostgreSQL + Drizzle ORM
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
-- **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
 ## Key Commands
 
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
@@ -31,22 +29,68 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 ### Mariage Afro (`artifacts/mariage-afro`)
 - **Type**: React + Vite web app
 - **Preview path**: `/`
-- **Purpose**: V1 showcase website for Mariage Afro — premium Afro & mixed wedding platform in Belgium
-- **Stack**: React, Vite, Tailwind CSS, Framer Motion, Wouter, react-i18next, react-hook-form, Zod
-- **Languages**: FR (default), NL, EN — via react-i18next with translations in `public/locales/`
-- **Pages**: Home, Services, Prestations, Réalisations, À Propos, Contact
-- **Contact form**: POSTs to `/api/contact` — handled by the API server using Resend
-- **Images**: Uses attached wedding photos from `attached_assets/` via `@assets` Vite alias
+- **Purpose**: Premium platform for Afro & mixed weddings in Belgium
+- **Stack**: React, Vite, Tailwind CSS, Framer Motion, react-i18next, react-hook-form, Zod, @tanstack/react-query, Clerk
+- **Auth**: Clerk (`@clerk/react`) — sign-in at `/espace-client/login`, sign-up at `/espace-client/register`
+- **Languages**: FR (default), NL, EN — via react-i18next, translation files in `src/locales/`
+- **Images**: Wedding photos from `attached_assets/` via `@assets` Vite alias
 - **Branding**: Montserrat font, bordeaux (#68191e), crème (#fff4e4), dark (#141414)
+
+#### Public Pages
+- `/` — Home
+- `/plateforme` — Platform overview
+- `/services` — Services
+- `/partenaires` — Vendor marketplace (fetches from `/api/marketplace/vendors` with i18n fallback)
+- `/lieux` — Venue listing (fetches from `/api/marketplace/venues` with i18n fallback)
+- `/realisations` — Storytelling couple cards (fetches from `/api/marketplace/realisations` with fallback)
+- `/shop` — Shop
+- `/a-propos` — About
+- `/contact` — Contact form
+- `/mariage/:slug` — Public per-couple wedding page (programme + RSVP form, standalone without header/footer)
+
+#### Espace Client (protected, requires Clerk auth)
+- `/espace-client/dashboard` — Dashboard with 8 modules
+- `/espace-client/budget` — Budget tracker
+- `/espace-client/invites` — Guest list
+- `/espace-client/planning` — Planning tasks
+- `/espace-client/prestataires` — Saved vendors
+- `/espace-client/documents` — Documents
+- `/espace-client/jour-j` — Day-of timeline
+- `/espace-client/communication` — Couple ↔ Admin messaging thread
+- `/espace-client/site` — Wedding website builder (slug, title, programme, RSVP toggle)
+- `/espace-client/profil` — Profile
 
 ### API Server (`artifacts/api-server`)
 - **Type**: Express 5 API
 - **Preview path**: `/api`
-- **Routes**: GET /api/healthz, POST /api/contact
-- **Contact route**: Validates name/email/message, sends email via Resend (requires RESEND_API_KEY env var)
-- **Resend**: Configured to send from `noreply@mariage-afro.com` to `info@mariage-afro.com`
-- **Note**: If RESEND_API_KEY is not set, the contact form still responds 200 but skips sending
+- **Auth middleware**: Clerk (`@clerk/express`) — `clerkMiddleware()` global, `requireCouple` per-route
 
-## Environment Variables Needed for Production
+#### Middleware order (important — public routes must be BEFORE auth-protected router):
+1. `weddingPublicRouter` at `/` (public)
+2. `marketplaceRouter` at `/api` (public)
+3. Main `router` at `/api` (auth-protected via `requireCouple` in client.ts)
+4. `adminRouter` + `adminContentRouter` at `/admin`
 
-- `RESEND_API_KEY` — Required for the contact form to send emails via Resend
+#### API Routes
+- `GET /api/healthz` — Health check
+- `POST /api/contact` — Contact form (Resend email)
+- `GET /api/marketplace/vendors` — Public vendor list (DB or seeded)
+- `GET /api/marketplace/venues` — Public venue list
+- `GET /api/marketplace/realisations` — Public couple stories
+- `POST /api/marketplace/vendors/:id/add-to-project` — Add vendor to couple's project (Clerk auth)
+- `GET /api/client/me` — Couple profile
+- `PATCH /api/client/me` — Update couple profile
+- `GET/POST /api/client/messages` — Couple ↔ Admin messages
+- `GET/PATCH /api/client/wedding-website` — Per-couple wedding website config
+- `GET /api/wedding/:slug` — Public wedding page (no auth)
+- `POST /api/wedding/:slug/rsvp` — Submit RSVP (no auth)
+- Full CRUD under `/admin/content/` — vendors, venues, réalisations, messages, wedding-websites
+
+### DB (`lib/db`)
+- **Tables**: couples, budgetItems, guests, planningTasks, clientVendors, clientDocuments, jourJEvents, leads, marketplaceVendors, marketplaceVenues, realisations, messages, weddingWebsites, weddingRsvps
+
+## Environment Variables
+
+- `RESEND_API_KEY` — Required for contact form emails
+- `ADMIN_PASSWORD` — Required for admin panel access
+- `CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY` — Clerk auth

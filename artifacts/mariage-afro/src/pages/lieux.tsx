@@ -1,7 +1,8 @@
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { MapPin, Users, Sparkles, CheckCircle2 } from "lucide-react";
 
@@ -46,7 +47,31 @@ export default function Lieux() {
     }
   }, [t]);
 
-  const venues = (t("venues.items", { returnObjects: true }) as Venue[]) || [];
+  const { data: apiVenues = [] } = useQuery({
+    queryKey: ["marketplace-venues"],
+    queryFn: async () => {
+      const res = await fetch("/api/marketplace/venues");
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  const i18nVenues = (t("venues.items", { returnObjects: true }) as Venue[]) || [];
+
+  const venues: (Venue & { image?: string })[] = useMemo(() => {
+    if (apiVenues.length > 0) {
+      return apiVenues.map((v: Record<string, unknown>) => ({
+        name: v.name as string,
+        city: v.city as string,
+        capacity: v.capacity as string,
+        style: v.style as string,
+        desc: v.description as string,
+        options: v.options as string[],
+        image: (v.coverImage as string | null) || (v.images as string[])[0],
+      }));
+    }
+    return i18nVenues;
+  }, [apiVenues, i18nVenues]);
 
   return (
     <div className="w-full pt-28">
@@ -94,7 +119,7 @@ export default function Lieux() {
                 {/* Image */}
                 <div className="relative h-72 overflow-hidden flex-shrink-0">
                   <img
-                    src={VENUE_IMAGES[i % VENUE_IMAGES.length]}
+                    src={(venue as { image?: string }).image || VENUE_IMAGES[i % VENUE_IMAGES.length]}
                     alt={venue.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />

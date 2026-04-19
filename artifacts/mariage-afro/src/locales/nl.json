@@ -118,7 +118,12 @@
         "capacity": "100 — 350 gasten",
         "style": "Chic landgoed",
         "desc": "Een uitzonderlijk domein omringd door aangelegde tuinen, ideaal voor bruiloften die traditie en hedendaagse elegantie combineren. Modulaire zaal, panoramisch terras en aangrenzende kapel.",
-        "options": ["Buitenceremoneruimte", "Professionele keuken", "Logies voor 30 personen", "Parking voor 200 voertuigen"]
+        "options": [
+          "Buitenceremoneruimte",
+          "Professionele keuken",
+          "Logies voor 30 personen",
+          "Parking voor 200 voertuigen"
+        ]
       },
       {
         "name": "Château de Bellevue",
@@ -126,7 +131,12 @@
         "capacity": "80 — 250 gasten",
         "style": "Historisch kasteel",
         "desc": "Een 18e-eeuws kasteel met Engelse tuin. Een prestigieuze setting voor elegante Afro bruiloften die traditie en grandeur combineren.",
-        "options": ["Staatsiezalen", "5-hectare park", "Bruidssuites", "Valetdienst"]
+        "options": [
+          "Staatsiezalen",
+          "5-hectare park",
+          "Bruidssuites",
+          "Valetdienst"
+        ]
       },
       {
         "name": "La Verrière des Arts",
@@ -134,7 +144,12 @@
         "capacity": "60 — 180 gasten",
         "style": "Industriële loft",
         "desc": "Lichte stedelijke ruimte met originele glazen dak. Perfect voor hedendaagse bruiloften en Afro-Europese fusieceremonies.",
-        "options": ["Uitzonderlijk natuurlijk licht", "Designermeubilair inbegrepen", "Professionele DJ-ruimte", "Bruidslounge"]
+        "options": [
+          "Uitzonderlijk natuurlijk licht",
+          "Designermeubilair inbegrepen",
+          "Professionele DJ-ruimte",
+          "Bruidslounge"
+        ]
       },
       {
         "name": "Le Pavillon Tropical",
@@ -142,7 +157,12 @@
         "capacity": "120 — 400 gasten",
         "style": "Tropische moderne zaal",
         "desc": "Ruime ontvangstzaal met tropische accenten. Ideaal voor feestelijke Afro bruiloften met XXL dansvloer.",
-        "options": ["100m² dansvloer", "Bar op maat", "Bose geluidssysteem", "Uitgeruste cateringkeuken"]
+        "options": [
+          "100m² dansvloer",
+          "Bar op maat",
+          "Bose geluidssysteem",
+          "Uitgeruste cateringkeuken"
+        ]
       },
       {
         "name": "Le Mas de Liège",
@@ -150,7 +170,12 @@
         "capacity": "50 — 200 gasten",
         "style": "Provençaalse mas",
         "desc": "Authentieke stenen mas met binnenplaats en eeuwenoude olijfbomen. Een mediterrane bubbel voor intieme bruiloften.",
-        "options": ["300m² binnenplaats", "Toegankelijk zwembad", "10 slaapkamers", "Chef ter plaatse"]
+        "options": [
+          "300m² binnenplaats",
+          "Toegankelijk zwembad",
+          "10 slaapkamers",
+          "Chef ter plaatse"
+        ]
       },
       {
         "name": "Salle des Cultures",
@@ -158,7 +183,12 @@
         "capacity": "200 — 500 gasten",
         "style": "Multiculturele zaal",
         "desc": "Grote zaal ontworpen voor multiculturele vieringen. Neutrale en modulaire ruimte om jullie decor volledig te personaliseren.",
-        "options": ["500 zittende gasten", "Professionele scène", "Geluid- en lichtregie", "Aparte ceremoneruimte"]
+        "options": [
+          "500 zittende gasten",
+          "Professionele scène",
+          "Geluid- en lichtregie",
+          "Aparte ceremoneruimte"
+        ]
       }
     ]
   },
@@ -402,7 +432,8 @@
       "success_title": "Kandidatuur ontvangen",
       "success_desc": "Wij bekijken uw profiel en nemen binnen 5 werkdagen contact op.",
       "new_request": "Nog een kandidatuur indienen"
-    }
+    },
+    "add_to_project": "Toevoegen aan mijn project"
   },
   "realisations": {
     "subtitle": "Ontdek onze mooiste liefdesverhalen via een selectie van onvergetelijke momenten.",
@@ -416,7 +447,12 @@
     "img5_alt": "Portret van de bruid",
     "img6_alt": "Koppel in de natuur",
     "img7_alt": "Trouwringen en ceremoniedetails",
-    "img8_alt": "Romantisch avondmoment"
+    "img8_alt": "Romantisch avondmoment",
+    "badge": "Koppelsverhalen",
+    "cta_title": "Uw verhaal begint hier",
+    "cta_subtitle": "Vertrouw uw afro- of gemengd huwelijk in België aan ons toe en creëer een onvergetelijke herinnering.",
+    "cta_btn": "Neem contact op",
+    "title": "Onze Realisaties"
   },
   "about": {
     "title": "Ons Verhaal",

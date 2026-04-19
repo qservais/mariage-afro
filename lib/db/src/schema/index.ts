@@ -154,6 +154,94 @@ export const jourJEventsTable = pgTable("jour_j_events", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  category: text("category").notNull(),
+  city: text("city").notNull(),
+  tagline: text("tagline").notNull().default(""),
+  description: text("description").notNull().default(""),
+  services: jsonb("services").$type<string[]>().notNull().default([]),
+  images: jsonb("images").$type<string[]>().notNull().default([]),
+  coverImage: text("cover_image"),
+  verified: boolean("verified").notNull().default(false),
+  active: boolean("active").notNull().default(true),
+  rating: integer("rating").notNull().default(5),
+  website: text("website"),
+  phone: text("phone"),
+  email: text("email"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const marketplaceVenuesTable = pgTable("marketplace_venues", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  city: text("city").notNull(),
+  capacity: text("capacity").notNull().default(""),
+  style: text("style").notNull().default(""),
+  description: text("description").notNull().default(""),
+  options: jsonb("options").$type<string[]>().notNull().default([]),
+  images: jsonb("images").$type<string[]>().notNull().default([]),
+  coverImage: text("cover_image"),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const realisationsTable = pgTable("realisations", {
+  id: serial("id").primaryKey(),
+  brideName: text("bride_name").notNull(),
+  groomName: text("groom_name").notNull(),
+  weddingType: text("wedding_type").notNull().default(""),
+  venueName: text("venue_name").notNull().default(""),
+  city: text("city").notNull().default(""),
+  weddingDate: text("wedding_date"),
+  description: text("description").notNull().default(""),
+  coverImage: text("cover_image"),
+  gallery: jsonb("gallery").$type<string[]>().notNull().default([]),
+  active: boolean("active").notNull().default(true),
+  featured: boolean("featured").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const messagesTable = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  authorRole: text("author_role").notNull().default("couple"),
+  content: text("content").notNull(),
+  readAt: timestamp("read_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const weddingWebsitesTable = pgTable("wedding_websites", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  slug: text("slug").notNull(),
+  title: text("title").notNull().default("Notre Mariage"),
+  welcomeMessage: text("welcome_message").notNull().default(""),
+  weddingDate: text("wedding_date"),
+  venue: text("venue"),
+  city: text("city"),
+  programme: jsonb("programme").$type<{time: string; event: string}[]>().notNull().default([]),
+  coverImage: text("cover_image"),
+  active: boolean("active").notNull().default(false),
+  rsvpEnabled: boolean("rsvp_enabled").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  coupleIdIdx: uniqueIndex("wedding_websites_couple_id_idx").on(t.coupleId),
+  slugIdx: uniqueIndex("wedding_websites_slug_idx").on(t.slug),
+}));
+
+export const weddingRsvpsTable = pgTable("wedding_rsvps", {
+  id: serial("id").primaryKey(),
+  weddingWebsiteId: integer("wedding_website_id").notNull(),
+  name: text("name").notNull(),
+  email: text("email"),
+  attending: boolean("attending").notNull().default(true),
+  guestCount: integer("guest_count").notNull().default(1),
+  message: text("message"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const insertLeadSchema = createInsertSchema(leadsTable).omit({
   id: true, createdAt: true, status: true, internalNote: true,
 });
@@ -185,3 +273,9 @@ export type PlanningTask = typeof planningTasksTable.$inferSelect;
 export type ClientVendor = typeof clientVendorsTable.$inferSelect;
 export type ClientDocument = typeof clientDocumentsTable.$inferSelect;
 export type JourJEvent = typeof jourJEventsTable.$inferSelect;
+export type MarketplaceVendor = typeof marketplaceVendorsTable.$inferSelect;
+export type MarketplaceVenue = typeof marketplaceVenuesTable.$inferSelect;
+export type Realisation = typeof realisationsTable.$inferSelect;
+export type Message = typeof messagesTable.$inferSelect;
+export type WeddingWebsite = typeof weddingWebsitesTable.$inferSelect;
+export type WeddingRsvp = typeof weddingRsvpsTable.$inferSelect;
