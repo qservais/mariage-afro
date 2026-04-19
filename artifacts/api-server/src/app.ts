@@ -35,16 +35,33 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "")
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);
-const replitDomain = process.env.REPLIT_DEV_DOMAIN;
-if (replitDomain) allowedOrigins.push(`https://${replitDomain}`);
-const deployDomain = process.env.REPLIT_DEPLOYMENT_DOMAIN;
-if (deployDomain) allowedOrigins.push(`https://${deployDomain}`);
+
+function isAllowedOrigin(origin: string): boolean {
+  if (allowedOrigins.includes(origin)) return true;
+  try {
+    const { hostname } = new URL(origin);
+    // Allow all Replit domains (dev previews and production deployments)
+    if (hostname.endsWith(".replit.dev")) return true;
+    if (hostname.endsWith(".replit.app")) return true;
+    if (hostname.endsWith(".kirk.replit.dev")) return true;
+    if (hostname === "localhost") return true;
+    // Allow REPLIT_DEV_DOMAIN and REPLIT_DEPLOYMENT_DOMAIN if set
+    const devDomain = process.env.REPLIT_DEV_DOMAIN;
+    const deployDomain = process.env.REPLIT_DEPLOYMENT_DOMAIN;
+    if (devDomain && hostname === devDomain) return true;
+    if (deployDomain && hostname === deployDomain) return true;
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 app.use(
   cors({
     credentials: true,
     origin: (origin, cb) => {
       if (!origin) return cb(null, true);
-      if (allowedOrigins.includes(origin)) return cb(null, true);
+      if (isAllowedOrigin(origin)) return cb(null, true);
       return cb(new Error("Not allowed by CORS"));
     },
   }),
