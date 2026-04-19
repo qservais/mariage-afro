@@ -307,6 +307,94 @@
       "Vervoer & Limousines"
     ]
   },
+  "partners": {
+    "services_offered": "Aangeboden diensten",
+    "empty": "Nog geen leverancier in deze categorie.",
+    "success_title": "Aanvraag verzonden",
+    "success_desc": "Ons team en de leverancier nemen binnen 24 tot 48 werkuren contact met u op.",
+    "success_close": "Sluiten",
+    "actions": {
+      "quote": {
+        "button": "Offerte",
+        "modal_title": "Offerte aanvragen",
+        "modal_subtitle": "Ontvang een persoonlijk voorstel van {{vendor}} op maat van uw bruiloft.",
+        "message_label": "Details van uw aanvraag",
+        "message_placeholder": "Geplande datum, aantal gasten, gewenste diensten, context...",
+        "submit": "Offerteaanvraag verzenden"
+      },
+      "availability": {
+        "button": "Beschikbaarheid",
+        "modal_title": "Beschikbaarheid checken",
+        "modal_subtitle": "Controleer of {{vendor}} beschikbaar is op uw trouwdatum.",
+        "message_label": "Details over uw datum",
+        "message_placeholder": "Hoofddatum, alternatieve data, locatie, verwachte duur...",
+        "submit": "Beschikbaarheid checken"
+      },
+      "booking": {
+        "button": "Reserveren",
+        "modal_title": "Deze leverancier reserveren",
+        "modal_subtitle": "Bevestig uw intentie om {{vendor}} te boeken voor uw bruiloft.",
+        "message_label": "Reserveringsdetails",
+        "message_placeholder": "Gekozen formule, diensten, opties, gewenste planning...",
+        "submit": "Mijn reservering bevestigen"
+      },
+      "zoom": {
+        "button": "Zoom-gesprek",
+        "modal_title": "Een Zoom-gesprek boeken",
+        "modal_subtitle": "Spreek {{vendor}} via video om uw project in detail te bespreken.",
+        "message_label": "Uw beschikbaarheid",
+        "message_placeholder": "Geef 2 of 3 momenten op die u schikken (dag & uur, tijdzone Brussel)...",
+        "submit": "Een Zoom-moment aanvragen"
+      },
+      "rdv": {
+        "button": "Afspraak",
+        "modal_title": "Een afspraak maken",
+        "modal_subtitle": "Ontmoet {{vendor}} in persoon of online om uw bruiloft te bespreken.",
+        "message_label": "Uw voorkeuren",
+        "message_placeholder": "Voorkeur (in persoon of video), mogelijke momenten, onderwerpen...",
+        "submit": "Een afspraak aanvragen"
+      }
+    },
+    "service_request": {
+      "label": "Gegroepeerde aanvraag",
+      "title": "Eén aanvraag voor al uw leveranciers",
+      "subtitle": "Vink de diensten aan die u nodig heeft. Wij stellen de beste profielen voor uit ons geverifieerd netwerk, perfect afgestemd op uw visie.",
+      "services_label": "Welke leveranciers heeft u nodig?",
+      "services": {
+        "dj": "DJ",
+        "catering": "Catering",
+        "photo": "Fotograaf",
+        "decoration": "Decoratie",
+        "flowers": "Bloemen",
+        "transport": "Vervoer",
+        "venue": "Zaal / Locatie",
+        "beauty": "Kapper & Make-up",
+        "video": "Videograaf",
+        "animation": "Animatie"
+      },
+      "budget_placeholder": "bv. € 15.000 — € 25.000",
+      "message_label": "Vertel ons over uw bruiloft",
+      "message_placeholder": "Stijl, aantal gasten, sfeer, te eren tradities...",
+      "submit": "Mijn gegroepeerde aanvraag verzenden",
+      "new_request": "Een nieuwe aanvraag indienen"
+    },
+    "become": {
+      "label": "Bent u leverancier?",
+      "title": "Word Mariage Afro-partner",
+      "subtitle": "Sluit u aan bij het toonaangevende netwerk van leveranciers gespecialiseerd in Afro en gemengde bruiloften in België. Solliciteer in enkele minuten.",
+      "business_name": "Bedrijfsnaam",
+      "category": "Activiteitssector",
+      "category_placeholder": "bv. Fotograaf, Cateraar, DJ...",
+      "contact_name": "Contactpersoon",
+      "website": "Website of portfolio (URL)",
+      "description": "Beschrijving van uw diensten",
+      "description_placeholder": "Stel uw bedrijf voor, uw specialiteiten, uw ervaring met Afro of gemengde bruiloften...",
+      "submit": "Mijn kandidatuur verzenden",
+      "success_title": "Kandidatuur ontvangen",
+      "success_desc": "Wij bekijken uw profiel en nemen binnen 5 werkdagen contact op.",
+      "new_request": "Nog een kandidatuur indienen"
+    }
+  },
   "realisations": {
     "subtitle": "Ontdek onze mooiste liefdesverhalen via een selectie van onvergetelijke momenten.",
     "filter_all": "Alle",

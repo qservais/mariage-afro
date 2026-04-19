@@ -307,6 +307,94 @@
       "Transport & Limousines"
     ]
   },
+  "partners": {
+    "services_offered": "Services proposés",
+    "empty": "Aucun prestataire dans cette catégorie pour le moment.",
+    "success_title": "Demande envoyée",
+    "success_desc": "Notre équipe et le prestataire reviennent vers vous sous 24 à 48 heures ouvrables.",
+    "success_close": "Fermer",
+    "actions": {
+      "quote": {
+        "button": "Devis",
+        "modal_title": "Demander un devis",
+        "modal_subtitle": "Recevez une proposition personnalisée de {{vendor}} adaptée à votre mariage.",
+        "message_label": "Détails de votre demande",
+        "message_placeholder": "Date envisagée, nombre d'invités, prestations souhaitées, contexte...",
+        "submit": "Envoyer la demande de devis"
+      },
+      "availability": {
+        "button": "Disponibilité",
+        "modal_title": "Vérifier la disponibilité",
+        "modal_subtitle": "Vérifiez si {{vendor}} est disponible pour votre date de mariage.",
+        "message_label": "Précisions sur votre date",
+        "message_placeholder": "Date principale, dates alternatives, lieu, durée prévue...",
+        "submit": "Vérifier la disponibilité"
+      },
+      "booking": {
+        "button": "Réserver",
+        "modal_title": "Réserver ce prestataire",
+        "modal_subtitle": "Confirmez votre intention de réserver {{vendor}} pour votre mariage.",
+        "message_label": "Détails de votre réservation",
+        "message_placeholder": "Formule choisie, prestations, options, planning souhaité...",
+        "submit": "Confirmer ma réservation"
+      },
+      "zoom": {
+        "button": "Appel Zoom",
+        "modal_title": "Réserver un appel Zoom",
+        "modal_subtitle": "Échangez en visio avec {{vendor}} pour discuter de votre projet en détail.",
+        "message_label": "Vos disponibilités",
+        "message_placeholder": "Indiquez 2 ou 3 créneaux qui vous arrangent (jour & heure, fuseau Bruxelles)...",
+        "submit": "Demander un créneau Zoom"
+      },
+      "rdv": {
+        "button": "Rendez-vous",
+        "modal_title": "Prendre rendez-vous",
+        "modal_subtitle": "Rencontrez {{vendor}} en personne ou en visio pour avancer sur votre mariage.",
+        "message_label": "Vos préférences",
+        "message_placeholder": "Préférence (présentiel ou visio), créneaux possibles, sujets à aborder...",
+        "submit": "Demander un rendez-vous"
+      }
+    },
+    "service_request": {
+      "label": "Demande groupée",
+      "title": "Une seule demande pour tous vos prestataires",
+      "subtitle": "Cochez les prestations dont vous avez besoin. Nous vous proposons les meilleurs profils de notre réseau, vérifiés et adaptés à votre vision.",
+      "services_label": "De quels prestataires avez-vous besoin ?",
+      "services": {
+        "dj": "DJ",
+        "catering": "Traiteur",
+        "photo": "Photographe",
+        "decoration": "Décoration",
+        "flowers": "Fleurs",
+        "transport": "Transport",
+        "venue": "Salle / Lieu",
+        "beauty": "Coiffure & Maquillage",
+        "video": "Vidéaste",
+        "animation": "Animation"
+      },
+      "budget_placeholder": "ex. 15 000 € — 25 000 €",
+      "message_label": "Parlez-nous de votre mariage",
+      "message_placeholder": "Style, nombre d'invités, ambiance, traditions à honorer...",
+      "submit": "Envoyer ma demande groupée",
+      "new_request": "Faire une nouvelle demande"
+    },
+    "become": {
+      "label": "Vous êtes prestataire ?",
+      "title": "Devenir partenaire Mariage Afro",
+      "subtitle": "Rejoignez le premier réseau de prestataires spécialisés dans les mariages afro et mixtes en Belgique. Candidatez en quelques minutes.",
+      "business_name": "Nom de l'entreprise",
+      "category": "Secteur d'activité",
+      "category_placeholder": "ex. Photographe, Traiteur, DJ...",
+      "contact_name": "Nom du contact",
+      "website": "Site web ou portfolio (URL)",
+      "description": "Description de vos services",
+      "description_placeholder": "Présentez votre entreprise, vos spécialités, votre expérience avec des mariages afro ou mixtes...",
+      "submit": "Envoyer ma candidature",
+      "success_title": "Candidature reçue",
+      "success_desc": "Nous étudions votre profil et revenons vers vous dans les 5 jours ouvrables.",
+      "new_request": "Soumettre une autre candidature"
+    }
+  },
   "realisations": {
     "subtitle": "Découvrez nos plus belles histoires d'amour à travers une sélection de moments inoubliables.",
     "filter_all": "Tous",

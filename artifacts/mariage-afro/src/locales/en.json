@@ -307,6 +307,94 @@
       "Transport & Limousines"
     ]
   },
+  "partners": {
+    "services_offered": "Services offered",
+    "empty": "No vendor in this category yet.",
+    "success_title": "Request sent",
+    "success_desc": "Our team and the vendor will get back to you within 24–48 business hours.",
+    "success_close": "Close",
+    "actions": {
+      "quote": {
+        "button": "Quote",
+        "modal_title": "Request a quote",
+        "modal_subtitle": "Get a personalized proposal from {{vendor}} tailored to your wedding.",
+        "message_label": "Details of your request",
+        "message_placeholder": "Wedding date, guest count, services needed, context...",
+        "submit": "Send quote request"
+      },
+      "availability": {
+        "button": "Availability",
+        "modal_title": "Check availability",
+        "modal_subtitle": "See if {{vendor}} is available on your wedding date.",
+        "message_label": "Date details",
+        "message_placeholder": "Main date, alternative dates, venue, expected duration...",
+        "submit": "Check availability"
+      },
+      "booking": {
+        "button": "Book",
+        "modal_title": "Book this vendor",
+        "modal_subtitle": "Confirm your intent to book {{vendor}} for your wedding.",
+        "message_label": "Booking details",
+        "message_placeholder": "Chosen package, services, options, schedule...",
+        "submit": "Confirm my booking"
+      },
+      "zoom": {
+        "button": "Zoom call",
+        "modal_title": "Book a Zoom call",
+        "modal_subtitle": "Meet {{vendor}} on video to discuss your project in detail.",
+        "message_label": "Your availability",
+        "message_placeholder": "List 2 or 3 time slots that work for you (day & time, Brussels timezone)...",
+        "submit": "Request a Zoom slot"
+      },
+      "rdv": {
+        "button": "Appointment",
+        "modal_title": "Book an appointment",
+        "modal_subtitle": "Meet {{vendor}} in person or online to move forward with your wedding.",
+        "message_label": "Your preferences",
+        "message_placeholder": "Preference (in person or online), possible slots, topics to cover...",
+        "submit": "Request an appointment"
+      }
+    },
+    "service_request": {
+      "label": "Bundled request",
+      "title": "One request for all your vendors",
+      "subtitle": "Check the services you need. We'll suggest the best profiles from our verified network, perfectly matched to your vision.",
+      "services_label": "Which vendors do you need?",
+      "services": {
+        "dj": "DJ",
+        "catering": "Catering",
+        "photo": "Photographer",
+        "decoration": "Decoration",
+        "flowers": "Flowers",
+        "transport": "Transport",
+        "venue": "Venue",
+        "beauty": "Hair & Makeup",
+        "video": "Videographer",
+        "animation": "Entertainment"
+      },
+      "budget_placeholder": "e.g. €15,000 — €25,000",
+      "message_label": "Tell us about your wedding",
+      "message_placeholder": "Style, guest count, atmosphere, traditions to honor...",
+      "submit": "Send my bundled request",
+      "new_request": "Submit a new request"
+    },
+    "become": {
+      "label": "Are you a vendor?",
+      "title": "Become a Mariage Afro partner",
+      "subtitle": "Join the leading network of vendors specialized in Afro and mixed weddings in Belgium. Apply in just a few minutes.",
+      "business_name": "Business name",
+      "category": "Business category",
+      "category_placeholder": "e.g. Photographer, Caterer, DJ...",
+      "contact_name": "Contact name",
+      "website": "Website or portfolio (URL)",
+      "description": "Description of your services",
+      "description_placeholder": "Introduce your business, specialties, experience with Afro or mixed weddings...",
+      "submit": "Submit my application",
+      "success_title": "Application received",
+      "success_desc": "We'll review your profile and get back to you within 5 business days.",
+      "new_request": "Submit another application"
+    }
+  },
   "realisations": {
     "subtitle": "Discover our most beautiful love stories through a selection of unforgettable moments.",
     "filter_all": "All",
