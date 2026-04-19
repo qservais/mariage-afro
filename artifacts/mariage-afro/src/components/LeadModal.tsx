@@ -117,14 +117,12 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
     onSuccess: () => {
       setSubmitted(true);
       toast({
-        title: t("contact.success_title"),
-        description: t("contact.success_desc"),
+        title: t("contact.form.success"),
       });
     },
     onError: () => {
       toast({
-        title: t("contact.error_title"),
-        description: t("contact.error_desc"),
+        title: t("contact.form.error"),
         variant: "destructive",
       });
     },
@@ -160,6 +158,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                   {t("contact.form_title")}
                 </h2>
               </div>
+              {/* labels use contact.form.* */}
               <button
                 type="button"
                 onClick={onClose}
@@ -173,14 +172,11 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
             <div className="p-6 md:p-8">
               {submitted ? (
                 <div className="text-center py-8">
-                  <h3 className="text-2xl font-bold text-primary mb-3">
-                    {t("contact.success_title")}
-                  </h3>
-                  <p className="text-charcoal/70 mb-6">
-                    {t("contact.success_desc")}
+                  <p className="text-lg text-charcoal mb-6">
+                    {t("contact.form.success")}
                   </p>
                   <Button onClick={onClose} className="bg-primary text-cream rounded-none">
-                    {t("contact.close") ?? "Fermer"}
+                    Fermer
                   </Button>
                 </div>
               ) : (
@@ -195,7 +191,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("contact.name")} *</FormLabel>
+                            <FormLabel>{t("contact.form.name")} *</FormLabel>
                             <FormControl>
                               <Input {...field} className="rounded-none" />
                             </FormControl>
@@ -208,7 +204,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("contact.email")} *</FormLabel>
+                            <FormLabel>{t("contact.form.email")} *</FormLabel>
                             <FormControl>
                               <Input type="email" {...field} className="rounded-none" />
                             </FormControl>
@@ -224,7 +220,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("contact.phone")}</FormLabel>
+                            <FormLabel>{t("contact.form.phone")}</FormLabel>
                             <FormControl>
                               <Input {...field} className="rounded-none" />
                             </FormControl>
@@ -236,7 +232,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                         name="date"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("contact.date")}</FormLabel>
+                            <FormLabel>{t("contact.form.date")}</FormLabel>
                             <FormControl>
                               <Input type="date" {...field} className="rounded-none" />
                             </FormControl>
@@ -251,7 +247,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                         name="guestCount"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("contact.guest_count")}</FormLabel>
+                            <FormLabel>{t("contact.form.guest_count")}</FormLabel>
                             <FormControl>
                               <Input type="number" min="0" {...field} className="rounded-none" />
                             </FormControl>
@@ -263,7 +259,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                         name="budget"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("contact.budget")}</FormLabel>
+                            <FormLabel>{t("contact.form.budget")}</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger className="rounded-none">
@@ -271,11 +267,11 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="<10k">&lt; 10k €</SelectItem>
-                                <SelectItem value="10-20k">10–20k €</SelectItem>
-                                <SelectItem value="20-40k">20–40k €</SelectItem>
-                                <SelectItem value="40-60k">40–60k €</SelectItem>
-                                <SelectItem value="60k+">60k €+</SelectItem>
+                                <SelectItem value="under_10k">{t("contact.form.budget_options.under_10k")}</SelectItem>
+                                <SelectItem value="10k_25k">{t("contact.form.budget_options.10k_25k")}</SelectItem>
+                                <SelectItem value="25k_50k">{t("contact.form.budget_options.25k_50k")}</SelectItem>
+                                <SelectItem value="over_50k">{t("contact.form.budget_options.over_50k")}</SelectItem>
+                                <SelectItem value="undecided">{t("contact.form.budget_options.undecided")}</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormItem>
@@ -286,7 +282,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                         name="weddingType"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("contact.wedding_type")} *</FormLabel>
+                            <FormLabel>{t("contact.form.wedding_type")} *</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger className="rounded-none">
@@ -294,11 +290,11 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="afro">{t("contact.wt_afro")}</SelectItem>
-                                <SelectItem value="mixed">{t("contact.wt_mixed")}</SelectItem>
-                                <SelectItem value="traditional">{t("contact.wt_traditional")}</SelectItem>
-                                <SelectItem value="civil">{t("contact.wt_civil")}</SelectItem>
-                                <SelectItem value="religious">{t("contact.wt_religious")}</SelectItem>
+                                <SelectItem value="afro">{t("contact.form.wedding_type_options.afro")}</SelectItem>
+                                <SelectItem value="mixte">{t("contact.form.wedding_type_options.mixte")}</SelectItem>
+                                <SelectItem value="traditional">{t("contact.form.wedding_type_options.traditional")}</SelectItem>
+                                <SelectItem value="religious">{t("contact.form.wedding_type_options.religious")}</SelectItem>
+                                <SelectItem value="other">{t("contact.form.wedding_type_options.other")}</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -312,7 +308,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                       name="services"
                       render={() => (
                         <FormItem>
-                          <FormLabel>{t("contact.services")}</FormLabel>
+                          <FormLabel>{t("contact.form.services")}</FormLabel>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 pt-2">
                             {SERVICE_OPTIONS.map((s) => (
                               <FormField
@@ -333,7 +329,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                                       />
                                     </FormControl>
                                     <FormLabel className="text-xs font-normal cursor-pointer">
-                                      {t(`contact.svc_${s}`)}
+                                      {t(`contact.form.services_options.${s}`)}
                                     </FormLabel>
                                   </FormItem>
                                 )}
@@ -349,7 +345,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("contact.message")} *</FormLabel>
+                          <FormLabel>{t("contact.form.message")} *</FormLabel>
                           <FormControl>
                             <Textarea {...field} rows={4} className="rounded-none" />
                           </FormControl>
@@ -366,7 +362,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
                       {submit.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        t("contact.submit")
+                        t("contact.form.submit")
                       )}
                     </Button>
                   </form>

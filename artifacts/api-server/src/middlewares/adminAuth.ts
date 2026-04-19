@@ -17,7 +17,7 @@ export function adminAuth(req: Request, res: Response, next: NextFunction): void
     return;
   }
   if (!isAuthed(req)) {
-    res.redirect("/api/admin/login");
+    res.redirect("/admin/login");
     return;
   }
   next();
