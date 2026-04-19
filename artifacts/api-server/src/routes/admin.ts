@@ -113,21 +113,21 @@ const css = `
 function layout(title: string, body: string, showNav = true): string {
   const nav = showNav ? `
     <div class="topbar">
-      <h1><a href="/api/admin" style="color:inherit;">Mariage Afro · Admin</a></h1>
-      <form method="POST" action="/api/admin/logout" style="margin:0;">
+      <h1><a href="/admin" style="color:inherit;">Mariage Afro · Admin</a></h1>
+      <form method="POST" action="/admin/logout" style="margin:0;">
         <button type="submit">Déconnexion</button>
       </form>
     </div>` : "";
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} — Mariage Afro Admin</title><style>${css}</style></head><body>${nav}${body}</body></html>`;
 }
 
-router.get("/admin/login", (req, res) => {
+router.get("/login", (req, res) => {
   if (!process.env.ADMIN_PASSWORD) {
     res.status(503).type("html").send(layout("Configuration", `<div class="login-page"><div class="login-card"><h1>Admin non configuré</h1><p>La variable <code>ADMIN_PASSWORD</code> doit être définie côté serveur.</p></div></div>`, false));
     return;
   }
   if (isAuthed(req)) {
-    res.redirect("/api/admin");
+    res.redirect("/admin");
     return;
   }
   const err = req.query.err === "1" ? `<div class="err">Mot de passe incorrect.</div>` : "";
@@ -135,7 +135,7 @@ router.get("/admin/login", (req, res) => {
     <div class="login-page"><div class="login-card">
       <h1>Connexion Admin</h1>
       ${err}
-      <form method="POST" action="/api/admin/login">
+      <form method="POST" action="/admin/login">
         <input type="password" name="password" placeholder="Mot de passe" required autofocus />
         <button type="submit" class="btn primary">Se connecter</button>
       </form>
@@ -143,24 +143,24 @@ router.get("/admin/login", (req, res) => {
   `, false));
 });
 
-router.post("/admin/login", (req, res) => {
+router.post("/login", (req, res) => {
   const expected = process.env.ADMIN_PASSWORD;
   if (!expected) {
-    res.redirect("/api/admin/login");
+    res.redirect("/admin/login");
     return;
   }
   const provided = String(req.body?.password ?? "");
   if (provided === expected) {
     res.cookie(ADMIN_COOKIE, "ok", COOKIE_OPTS);
-    res.redirect("/api/admin");
+    res.redirect("/admin");
     return;
   }
-  res.redirect("/api/admin/login?err=1");
+  res.redirect("/admin/login?err=1");
 });
 
-router.post("/admin/logout", (_req, res) => {
+router.post("/logout", (_req, res) => {
   res.clearCookie(ADMIN_COOKIE, { path: "/" });
-  res.redirect("/api/admin/login");
+  res.redirect("/admin/login");
 });
 
 async function loadAll(filterType?: LeadType, filterStatus?: Status) {
@@ -196,7 +196,7 @@ async function loadAll(filterType?: LeadType, filterStatus?: Status) {
   return { rows: filtered, totals: { lead: leads.length, vendor: vendors.length, venue: venues.length, partner: partners.length } };
 }
 
-router.get("/admin", adminAuth, async (req, res) => {
+router.get("/", adminAuth, async (req, res) => {
   const filterType = TYPES.includes(req.query.type as LeadType) ? (req.query.type as LeadType) : undefined;
   const filterStatus = STATUSES.includes(req.query.status as Status) ? (req.query.status as Status) : undefined;
   const page = Math.max(1, Number(req.query.page) || 1);
@@ -218,10 +218,10 @@ router.get("/admin", adminAuth, async (req, res) => {
   const statusOpts = ["", ...STATUSES].map(s => `<option value="${s}"${s === (filterStatus ?? "") ? " selected" : ""}>${s ? STATUS_LABEL[s as Status] : "Tous"}</option>`).join("");
 
   const filters = `
-    <form method="GET" action="/api/admin" class="filters">
+    <form method="GET" action="/admin" class="filters">
       <div><label>Type</label><select name="type" onchange="this.form.submit()">${typeOpts}</select></div>
       <div><label>Statut</label><select name="status" onchange="this.form.submit()">${statusOpts}</select></div>
-      ${filterType || filterStatus ? `<a href="/api/admin" class="reset">Réinitialiser</a>` : ""}
+      ${filterType || filterStatus ? `<a href="/admin" class="reset">Réinitialiser</a>` : ""}
     </form>`;
 
   const tableBody = pageRows.length === 0
@@ -230,7 +230,7 @@ router.get("/admin", adminAuth, async (req, res) => {
         <tr>
           <td>${escapeHtml(r.createdAt.toISOString().slice(0, 10))}</td>
           <td><span class="badge type-${r.type}">${TYPE_LABEL[r.type]}</span></td>
-          <td><a href="/api/admin/leads/${r.type}/${r.id}">${escapeHtml(r.name)}</a></td>
+          <td><a href="/admin/leads/${r.type}/${r.id}">${escapeHtml(r.name)}</a></td>
           <td>${escapeHtml(r.email)}</td>
           <td>${escapeHtml(r.phone ?? "")}</td>
           <td>${escapeHtml(r.subject)}</td>
@@ -245,7 +245,7 @@ router.get("/admin", adminAuth, async (req, res) => {
         if (filterType) qs.set("type", filterType);
         if (filterStatus) qs.set("status", filterStatus);
         qs.set("page", String(p));
-        return p === page ? `<span class="current">${p}</span>` : `<a href="/api/admin?${qs}">${p}</a>`;
+        return p === page ? `<span class="current">${p}</span>` : `<a href="/admin?${qs}">${p}</a>`;
       }).join("")}
     </div>` : "";
 
@@ -262,7 +262,7 @@ router.get("/admin", adminAuth, async (req, res) => {
   `));
 });
 
-router.get("/admin/leads/:type/:id", adminAuth, async (req, res) => {
+router.get("/leads/:type/:id", adminAuth, async (req, res) => {
   const type = req.params.type as LeadType;
   if (!TYPES.includes(type)) { res.status(404).send("Not found"); return; }
   const id = Number(req.params.id);
@@ -313,14 +313,14 @@ router.get("/admin/leads/:type/:id", adminAuth, async (req, res) => {
     .join("");
 
   const statusButtons = STATUSES.map(s => `
-    <form method="POST" action="/api/admin/leads/${type}/${id}/status" style="display:inline;margin:0;">
+    <form method="POST" action="/admin/leads/${type}/${id}/status" style="display:inline;margin:0;">
       <input type="hidden" name="status" value="${s}" />
       <button class="btn ${s === r.status ? "primary" : ""}" type="submit">${STATUS_LABEL[s]}</button>
     </form>`).join("");
 
   res.type("html").send(layout(`Demande #${id}`, `
     <div class="container">
-      <p style="margin-bottom:16px;"><a href="/api/admin">← Retour</a></p>
+      <p style="margin-bottom:16px;"><a href="/admin">← Retour</a></p>
       <div class="detail-card">
         <h2>Demande #${id} <span class="badge status-${r.status}" style="vertical-align:middle;margin-left:8px;">${STATUS_LABEL[r.status as Status] ?? r.status}</span></h2>
         ${fieldsHtml}
@@ -328,7 +328,7 @@ router.get("/admin/leads/:type/:id", adminAuth, async (req, res) => {
       </div>
       <div class="detail-card">
         <h2 style="font-size:16px;">Note interne</h2>
-        <form method="POST" action="/api/admin/leads/${type}/${id}/note">
+        <form method="POST" action="/admin/leads/${type}/${id}/note">
           <textarea name="internalNote" placeholder="Note privée…">${escapeHtml(r.internalNote)}</textarea>
           <div class="actions"><button type="submit" class="btn primary">Enregistrer la note</button></div>
         </form>
@@ -337,7 +337,7 @@ router.get("/admin/leads/:type/:id", adminAuth, async (req, res) => {
   `));
 });
 
-router.post("/admin/leads/:type/:id/status", adminAuth, async (req, res) => {
+router.post("/leads/:type/:id/status", adminAuth, async (req, res) => {
   const type = req.params.type as LeadType;
   if (!TYPES.includes(type)) { res.status(404).send("Not found"); return; }
   const id = Number(req.params.id);
@@ -345,17 +345,17 @@ router.post("/admin/leads/:type/:id/status", adminAuth, async (req, res) => {
   if (!STATUSES.includes(status as Status)) { res.status(400).send("Invalid status"); return; }
   const table = tableFor(type);
   await db.update(table).set({ status }).where(eq(table.id, id));
-  res.redirect(`/api/admin/leads/${type}/${id}`);
+  res.redirect(`/admin/leads/${type}/${id}`);
 });
 
-router.post("/admin/leads/:type/:id/note", adminAuth, async (req, res) => {
+router.post("/leads/:type/:id/note", adminAuth, async (req, res) => {
   const type = req.params.type as LeadType;
   if (!TYPES.includes(type)) { res.status(404).send("Not found"); return; }
   const id = Number(req.params.id);
   const internalNote = String(req.body?.internalNote ?? "");
   const table = tableFor(type);
   await db.update(table).set({ internalNote }).where(eq(table.id, id));
-  res.redirect(`/api/admin/leads/${type}/${id}`);
+  res.redirect(`/admin/leads/${type}/${id}`);
 });
 
 export default router;
