@@ -13,6 +13,7 @@ import {
   jourJEventsTable,
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
+import { consumeUploadIntent } from "../lib/uploadIntents";
 
 const router = Router();
 const storageService = new ObjectStorageService();
@@ -269,7 +270,13 @@ router.post("/client/documents", async (req, res) => {
   const parsed = documentSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
   let { url } = parsed.data;
-  if (url.startsWith("/objects/") || url.includes("/.private/")) {
+  if (url.startsWith("/objects/")) {
+    if (!consumeUploadIntent(url, r.userId)) {
+      res.status(403).json({
+        error: "Upload intent not found, expired, or not owned by you",
+      });
+      return;
+    }
     try {
       url = await storageService.trySetObjectEntityAclPolicy(url, {
         owner: r.userId,
@@ -280,6 +287,9 @@ router.post("/client/documents", async (req, res) => {
       res.status(400).json({ error: "Invalid uploaded object path" });
       return;
     }
+  } else if (url.includes("/.private/")) {
+    res.status(400).json({ error: "Invalid url" });
+    return;
   }
   const [row] = await db.insert(clientDocumentsTable).values({ coupleId: r.coupleId, ...parsed.data, url }).returning();
   res.json(row);

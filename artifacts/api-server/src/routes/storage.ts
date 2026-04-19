@@ -7,6 +7,7 @@ import {
 } from "@workspace/api-zod";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
 import { ObjectPermission } from "../lib/objectAcl";
+import { recordUploadIntent } from "../lib/uploadIntents";
 
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
@@ -36,9 +37,11 @@ router.post("/storage/uploads/request-url", requireAuth, async (req: Request, re
 
   try {
     const { name, size, contentType } = parsed.data;
+    const userId = getAuth(req)?.userId as string;
 
     const uploadURL = await objectStorageService.getObjectEntityUploadURL();
     const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+    recordUploadIntent(objectPath, userId);
 
     res.json(
       RequestUploadUrlResponse.parse({
