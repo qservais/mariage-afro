@@ -9,8 +9,8 @@ export default function SignInPage() {
       <div className="w-full max-w-md">
         <SignIn
           routing="path"
-          path={`${basePath}/sign-in`}
-          signUpUrl={`${basePath}/sign-up`}
+          path={`${basePath}/espace-client/login`}
+          signUpUrl={`${basePath}/espace-client/register`}
           fallbackRedirectUrl="/espace-client"
         />
       </div>
