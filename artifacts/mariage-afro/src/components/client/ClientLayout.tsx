@@ -4,7 +4,7 @@ import { useUser, useClerk } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
 import {
   LayoutDashboard, Wallet, Users, ListChecks, Briefcase, FileText, Sparkles,
-  LogOut, Menu, X, Heart,
+  LogOut, Menu, X, Heart, UserCircle,
 } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 
@@ -23,6 +23,7 @@ const NAV = [
   { to: "/espace-client/prestataires", label: "Prestataires", icon: Briefcase },
   { to: "/espace-client/documents", label: "Documents", icon: FileText },
   { to: "/espace-client/jour-j", label: "Jour J", icon: Sparkles },
+  { to: "/espace-client/profil", label: "Profil", icon: UserCircle },
 ];
 
 function daysUntil(dateStr: string | null | undefined): number | null {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles } from "lucide-react";
+import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ const TILES = [
   { to: "/espace-client/prestataires", label: "Prestataires", icon: Briefcase, color: "bg-blue-50" },
   { to: "/espace-client/documents", label: "Documents", icon: FileText, color: "bg-purple-50" },
   { to: "/espace-client/jour-j", label: "Jour J", icon: Sparkles, color: "bg-orange-50" },
+  { to: "/espace-client/profil", label: "Profil", icon: UserCircle, color: "bg-teal-50" },
 ];
 
 interface Task { id: number; title: string; done: boolean; dueDate: string | null }

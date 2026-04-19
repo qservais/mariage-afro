@@ -4,6 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { ClientVendor, ClientVendorCreate, ClientVendorPatch } from "@/lib/clientTypes";
 
 interface V { id: number; category: string; name: string; contactName: string | null; contactEmail: string | null; contactPhone: string | null; amount: number; status: string }
 
@@ -19,11 +20,11 @@ export default function VendorsPage() {
   const [form, setForm] = useState({ category: "", name: "", contactName: "", contactEmail: "", contactPhone: "", amount: "" });
 
   const create = useMutation({
-    mutationFn: (b: any) => clientApi.post("/api/client/vendors", b),
+    mutationFn: (b: ClientVendorCreate) => clientApi.post<ClientVendor>("/api/client/vendors", b),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["client", "vendors"] }); setForm({ category: "", name: "", contactName: "", contactEmail: "", contactPhone: "", amount: "" }); },
   });
   const update = useMutation({
-    mutationFn: ({ id, body }: { id: number; body: any }) => clientApi.patch(`/api/client/vendors/${id}`, body),
+    mutationFn: ({ id, body }: { id: number; body: ClientVendorPatch }) => clientApi.patch<ClientVendor>(`/api/client/vendors/${id}`, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "vendors"] }),
   });
   const del = useMutation({

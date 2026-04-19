@@ -104,7 +104,7 @@ export default function Header() {
             </button>
           </div>
 
-          <Link to="/espace-client" className="flex-shrink-0" aria-label={t("nav.client_area")}>
+          <Link to="/espace-client/login" className="flex-shrink-0" aria-label={t("nav.client_area")}>
             <Button
               variant="outline"
               className="border-primary text-primary hover:bg-primary hover:text-white rounded-none uppercase tracking-wider text-[10px] 2xl:text-[11px] px-3 2xl:px-4 py-3.5 h-auto whitespace-nowrap gap-1.5"
@@ -185,7 +185,7 @@ export default function Header() {
                 </Link>
               ))}
               <Link
-                to="/espace-client"
+                to="/espace-client/login"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-2 text-xl font-bold tracking-wide transition-colors ${
                   isActive("/espace-client") ? "text-primary" : "text-foreground"

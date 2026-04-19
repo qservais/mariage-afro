@@ -238,7 +238,10 @@ router.delete("/client/vendors/:id", async (req, res) => {
 // ---------- Documents (URL-based — file upload via object storage is a follow-up) ----------
 const documentSchema = z.object({
   name: z.string().min(1),
-  url: z.string().url(),
+  url: z.string().min(1).refine(
+    (v) => v.startsWith("/objects/") || /^https?:\/\//i.test(v),
+    "url must be an http(s) URL or an internal /objects/* path"
+  ),
   fileType: z.string().optional().nullable(),
   size: z.coerce.number().int().nonnegative().optional().default(0),
   category: z.string().optional().default("misc"),

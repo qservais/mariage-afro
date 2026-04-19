@@ -5,8 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-interface Item { id: number; category: string; vendor: string | null; planned: number; actual: number; paid: boolean }
+import type { BudgetItem as Item, BudgetItemCreate, BudgetItemPatch } from "@/lib/clientTypes";
 
 const COLORS = ["#68191e", "#a04144", "#c97679", "#e0a3a6", "#f1c5c8", "#8b3a3e", "#5a1518"];
 const fmt = (cents: number) => `${(cents / 100).toLocaleString("fr-BE")} €`;
@@ -20,11 +19,11 @@ export default function BudgetPage() {
   const [form, setForm] = useState({ category: "", vendor: "", planned: "", actual: "" });
 
   const create = useMutation({
-    mutationFn: (b: any) => clientApi.post("/api/client/budget", b),
+    mutationFn: (b: BudgetItemCreate) => clientApi.post<Item>("/api/client/budget", b),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["client", "budget"] }); setForm({ category: "", vendor: "", planned: "", actual: "" }); },
   });
   const update = useMutation({
-    mutationFn: ({ id, body }: { id: number; body: any }) => clientApi.patch(`/api/client/budget/${id}`, body),
+    mutationFn: ({ id, body }: { id: number; body: BudgetItemPatch }) => clientApi.patch<Item>(`/api/client/budget/${id}`, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "budget"] }),
   });
   const del = useMutation({
@@ -73,7 +72,7 @@ export default function BudgetPage() {
                 <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={90} label={(e) => e.name}>
                   {chartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
-                <Tooltip formatter={(v: any) => fmt(Number(v))} />
+                <Tooltip formatter={(v: number | string) => fmt(Number(v))} />
               </PieChart>
             </ResponsiveContainer>
           </div>

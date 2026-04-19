@@ -4,6 +4,7 @@ import { Plus, Trash2, Check } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { JourJEvent, JourJEventCreate, JourJEventPatch, ClientVendor } from "@/lib/clientTypes";
 
 interface Ev { id: number; time: string; title: string; responsible: string | null; done: boolean; notes: string | null }
 
@@ -15,16 +16,16 @@ export default function JourJPage() {
   });
   const { data: vendors = [] } = useQuery<{ id: number; name: string; category: string; contactPhone: string | null }[]>({
     queryKey: ["client", "vendors"],
-    queryFn: () => clientApi.get<any[]>("/api/client/vendors"),
+    queryFn: () => clientApi.get<ClientVendor[]>("/api/client/vendors"),
   });
   const [form, setForm] = useState({ time: "10:00", title: "", responsible: "" });
 
   const create = useMutation({
-    mutationFn: (b: any) => clientApi.post("/api/client/jour-j", b),
+    mutationFn: (b: JourJEventCreate) => clientApi.post<JourJEvent>("/api/client/jour-j", b),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["client", "jour-j"] }); setForm({ time: "10:00", title: "", responsible: "" }); },
   });
   const update = useMutation({
-    mutationFn: ({ id, body }: { id: number; body: any }) => clientApi.patch(`/api/client/jour-j/${id}`, body),
+    mutationFn: ({ id, body }: { id: number; body: JourJEventPatch }) => clientApi.patch<JourJEvent>(`/api/client/jour-j/${id}`, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "jour-j"] }),
   });
   const del = useMutation({

@@ -23,6 +23,7 @@ import PlanningPage from "@/pages/client/planning";
 import VendorsPage from "@/pages/client/prestataires";
 import DocumentsPage from "@/pages/client/documents";
 import JourJPage from "@/pages/client/jour-j";
+import ProfilPage from "@/pages/client/profil";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/layout/FloatingCTA";
@@ -36,7 +37,7 @@ function ProtectedClient({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Show when="signed-in">{children}</Show>
-      <Show when="signed-out"><Navigate to="/sign-in" replace /></Show>
+      <Show when="signed-out"><Navigate to="/espace-client/login" replace /></Show>
     </>
   );
 }
@@ -61,14 +62,18 @@ function AppRoutes() {
       <Routes>
         <Route path="/sign-in/*" element={<SignInPage />} />
         <Route path="/sign-up/*" element={<SignUpPage />} />
+        <Route path="/espace-client/login/*" element={<SignInPage />} />
+        <Route path="/espace-client/register/*" element={<SignUpPage />} />
         <Route path="/espace-client" element={<ProtectedClient><ClientLayout /></ProtectedClient>}>
-          <Route index element={<ClientDashboard />} />
+          <Route index element={<Navigate to="/espace-client/dashboard" replace />} />
+          <Route path="dashboard" element={<ClientDashboard />} />
           <Route path="budget" element={<BudgetPage />} />
           <Route path="invites" element={<GuestsPage />} />
           <Route path="planning" element={<PlanningPage />} />
           <Route path="prestataires" element={<VendorsPage />} />
           <Route path="documents" element={<DocumentsPage />} />
           <Route path="jour-j" element={<JourJPage />} />
+          <Route path="profil" element={<ProfilPage />} />
         </Route>
       </Routes>
     );

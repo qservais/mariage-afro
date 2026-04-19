@@ -4,8 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-interface Guest { id: number; firstName: string; lastName: string; side: string; table: string | null; rsvp: string }
+import type { Guest, GuestCreate, GuestPatch } from "@/lib/clientTypes";
 
 const RSVP_LABELS: Record<string, string> = { pending: "En attente", confirmed: "Confirmé", declined: "Décliné" };
 const RSVP_COLORS: Record<string, string> = { pending: "bg-amber-100 text-amber-800", confirmed: "bg-emerald-100 text-emerald-800", declined: "bg-rose-100 text-rose-800" };
@@ -20,11 +19,11 @@ export default function GuestsPage() {
   const [form, setForm] = useState({ firstName: "", lastName: "", side: "partner1", table: "" });
 
   const create = useMutation({
-    mutationFn: (b: any) => clientApi.post("/api/client/guests", b),
+    mutationFn: (b: GuestCreate) => clientApi.post<Guest>("/api/client/guests", b),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["client", "guests"] }); setForm({ firstName: "", lastName: "", side: "partner1", table: "" }); },
   });
   const update = useMutation({
-    mutationFn: ({ id, body }: { id: number; body: any }) => clientApi.patch(`/api/client/guests/${id}`, body),
+    mutationFn: ({ id, body }: { id: number; body: GuestPatch }) => clientApi.patch<Guest>(`/api/client/guests/${id}`, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
   });
   const del = useMutation({
@@ -33,7 +32,7 @@ export default function GuestsPage() {
   });
 
   const importCsv = useMutation({
-    mutationFn: (rows: any[]) => clientApi.post("/api/client/guests", rows),
+    mutationFn: (rows: GuestCreate[]) => clientApi.post<Guest[]>("/api/client/guests", rows),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
   });
 
