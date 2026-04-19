@@ -12,8 +12,10 @@ import {
   clientDocumentsTable,
   jourJEventsTable,
 } from "@workspace/db";
+import { ObjectStorageService } from "../lib/objectStorage";
 
 const router = Router();
+const storageService = new ObjectStorageService();
 
 interface AuthedRequest extends Request {
   userId: string;
@@ -258,7 +260,20 @@ router.post("/client/documents", async (req, res) => {
   const r = req as unknown as AuthedRequest;
   const parsed = documentSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
-  const [row] = await db.insert(clientDocumentsTable).values({ coupleId: r.coupleId, ...parsed.data }).returning();
+  let { url } = parsed.data;
+  if (url.startsWith("/objects/") || url.includes("/.private/")) {
+    try {
+      url = await storageService.trySetObjectEntityAclPolicy(url, {
+        owner: r.userId,
+        visibility: "private",
+      });
+    } catch (err) {
+      req.log?.error?.({ err }, "Failed to set object ACL policy");
+      res.status(400).json({ error: "Invalid uploaded object path" });
+      return;
+    }
+  }
+  const [row] = await db.insert(clientDocumentsTable).values({ coupleId: r.coupleId, ...parsed.data, url }).returning();
   res.json(row);
 });
 router.delete("/client/documents/:id", async (req, res) => {

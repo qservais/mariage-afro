@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, ExternalLink, FileText, UploadCloud } from "lucide-react";
 import { ObjectUploader } from "@workspace/object-storage-web";
@@ -31,6 +31,7 @@ export default function DocumentsPage() {
     queryFn: () => clientApi.get<Doc[]>("/api/client/documents"),
   });
   const [form, setForm] = useState({ name: "", url: "", category: "contrat" });
+  const objectPathsRef = useRef<Map<string, string>>(new Map());
 
   const create = useMutation({
     mutationFn: (b: DocCreate) => clientApi.post<Doc>("/api/client/documents", b),
@@ -67,6 +68,7 @@ export default function DocumentsPage() {
                 "/api/storage/uploads/request-url",
                 { name: file.name, size: file.size, contentType: file.type },
               );
+              if (file.id) objectPathsRef.current.set(file.id, res.objectPath);
               return {
                 method: "PUT" as const,
                 url: res.uploadURL,
@@ -76,8 +78,7 @@ export default function DocumentsPage() {
             onComplete={async (result) => {
               for (const f of result.successful ?? []) {
                 const meta = (f.meta ?? {}) as { name?: string; type?: string; size?: number };
-                const objectPath =
-                  (f.response as { body?: { objectPath?: string } } | undefined)?.body?.objectPath;
+                const objectPath = f.id ? objectPathsRef.current.get(f.id) : undefined;
                 if (!objectPath) continue;
                 await create.mutateAsync({
                   name: meta.name ?? f.name ?? "Document",
@@ -86,6 +87,7 @@ export default function DocumentsPage() {
                   fileType: meta.type ?? null,
                   size: meta.size ?? 0,
                 });
+                if (f.id) objectPathsRef.current.delete(f.id);
               }
             }}
           >
