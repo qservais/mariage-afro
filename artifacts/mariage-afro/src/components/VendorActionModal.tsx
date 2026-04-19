@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -22,14 +22,13 @@ import { useToast } from "@/hooks/use-toast";
 
 export type VendorAction = "quote" | "availability" | "booking" | "zoom" | "rdv";
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Nom requis" }),
-  email: z.string().email({ message: "Email invalide" }),
-  phone: z.string().optional(),
-  weddingDate: z.string().optional(),
-  message: z.string().min(10, { message: "Message requis (min 10 caractères)" }),
-});
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = {
+  name: string;
+  email: string;
+  phone?: string;
+  weddingDate?: string;
+  message: string;
+};
 
 interface Props {
   open: boolean;
@@ -42,6 +41,18 @@ export default function VendorActionModal({ open, onClose, vendor, action }: Pro
   const { t } = useTranslation();
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
+
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(2, { message: t("partners.validation.name") }),
+        email: z.string().email({ message: t("partners.validation.email") }),
+        phone: z.string().optional(),
+        weddingDate: z.string().optional(),
+        message: z.string().min(10, { message: t("partners.validation.message") }),
+      }),
+    [t],
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -112,7 +123,7 @@ export default function VendorActionModal({ open, onClose, vendor, action }: Pro
               <button
                 type="button"
                 onClick={onClose}
-                aria-label="Close"
+                aria-label={t("partners.success_close")}
                 className="p-1 hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />

@@ -308,6 +308,15 @@
     ]
   },
   "partners": {
+    "validation": {
+      "name": "Nom requis",
+      "email": "Email invalide",
+      "message": "Message requis (min 10 caractères)",
+      "services": "Sélectionnez au moins un service",
+      "business_name": "Nom d'entreprise requis",
+      "category": "Secteur requis",
+      "description": "Décrivez vos services (min 20 caractères)"
+    },
     "services_offered": "Services proposés",
     "empty": "Aucun prestataire dans cette catégorie pour le moment.",
     "success_title": "Demande envoyée",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -188,24 +188,39 @@ const SERVICE_REQUEST_OPTIONS = [
   "animation",
 ] as const;
 
-const serviceRequestSchema = z.object({
-  name: z.string().min(2, { message: "Nom requis" }),
-  email: z.string().email({ message: "Email invalide" }),
-  phone: z.string().optional(),
-  weddingDate: z.string().optional(),
-  budget: z.string().optional(),
-  services: z.array(z.string()).min(1, { message: "Sélectionnez au moins un service" }),
-  message: z.string().optional(),
-});
-type ServiceRequestValues = z.infer<typeof serviceRequestSchema>;
+type ServiceRequestValues = {
+  name: string;
+  email: string;
+  phone?: string;
+  weddingDate?: string;
+  budget?: string;
+  services: string[];
+  message?: string;
+};
 
 function ServiceRequestSection() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
 
+  const schema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(2, { message: t("partners.validation.name") }),
+        email: z.string().email({ message: t("partners.validation.email") }),
+        phone: z.string().optional(),
+        weddingDate: z.string().optional(),
+        budget: z.string().optional(),
+        services: z.array(z.string()).min(1, {
+          message: t("partners.validation.services"),
+        }),
+        message: z.string().optional(),
+      }),
+    [t],
+  );
+
   const form = useForm<ServiceRequestValues>({
-    resolver: zodResolver(serviceRequestSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       email: "",
@@ -439,24 +454,37 @@ function ServiceRequestSection() {
   );
 }
 
-const becomePartnerSchema = z.object({
-  businessName: z.string().min(2, { message: "Nom d'entreprise requis" }),
-  category: z.string().min(2, { message: "Secteur requis" }),
-  contactName: z.string().min(2, { message: "Nom requis" }),
-  email: z.string().email({ message: "Email invalide" }),
-  phone: z.string().optional(),
-  website: z.string().optional(),
-  description: z.string().min(20, { message: "Décrivez vos services (min 20 caractères)" }),
-});
-type BecomePartnerValues = z.infer<typeof becomePartnerSchema>;
+type BecomePartnerValues = {
+  businessName: string;
+  category: string;
+  contactName: string;
+  email: string;
+  phone?: string;
+  website?: string;
+  description: string;
+};
 
 function BecomePartnerSection() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
 
+  const schema = useMemo(
+    () =>
+      z.object({
+        businessName: z.string().min(2, { message: t("partners.validation.business_name") }),
+        category: z.string().min(2, { message: t("partners.validation.category") }),
+        contactName: z.string().min(2, { message: t("partners.validation.name") }),
+        email: z.string().email({ message: t("partners.validation.email") }),
+        phone: z.string().optional(),
+        website: z.string().optional(),
+        description: z.string().min(20, { message: t("partners.validation.description") }),
+      }),
+    [t],
+  );
+
   const form = useForm<BecomePartnerValues>({
-    resolver: zodResolver(becomePartnerSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       businessName: "",
       category: "",

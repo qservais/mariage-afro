@@ -308,6 +308,15 @@
     ]
   },
   "partners": {
+    "validation": {
+      "name": "Name required",
+      "email": "Invalid email",
+      "message": "Message required (min 10 characters)",
+      "services": "Select at least one service",
+      "business_name": "Business name required",
+      "category": "Category required",
+      "description": "Please describe your services (min 20 characters)"
+    },
     "services_offered": "Services offered",
     "empty": "No vendor in this category yet.",
     "success_title": "Request sent",

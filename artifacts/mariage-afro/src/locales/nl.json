@@ -308,6 +308,15 @@
     ]
   },
   "partners": {
+    "validation": {
+      "name": "Naam vereist",
+      "email": "Ongeldige e-mail",
+      "message": "Bericht vereist (min. 10 tekens)",
+      "services": "Selecteer minstens één dienst",
+      "business_name": "Bedrijfsnaam vereist",
+      "category": "Sector vereist",
+      "description": "Beschrijf uw diensten (min. 20 tekens)"
+    },
     "services_offered": "Aangeboden diensten",
     "empty": "Nog geen leverancier in deze categorie.",
     "success_title": "Aanvraag verzonden",
