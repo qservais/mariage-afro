@@ -74,6 +74,7 @@ function AppRoutes() {
           <Route path="documents" element={<DocumentsPage />} />
           <Route path="jour-j" element={<JourJPage />} />
           <Route path="profil" element={<ProfilPage />} />
+          <Route path="*" element={<Navigate to="/espace-client/dashboard" replace />} />
         </Route>
       </Routes>
     );
