@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 
-import servicesBg from "@assets/pexels-darina-belonogova-7193204_1776285262172.jpg";
+import servicesBg from "@assets/GM-00756.jpg_1776614313614.jpeg";
 
 export default function Services() {
   const { t } = useTranslation();

@@ -15,7 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-import heroImg from "@assets/pexels-pavel-danilyuk-8815279_1776285262172.jpg";
+import heroImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 
 const ICONS = [LayoutDashboard, Wallet, Users, CalendarClock, FolderOpen, Handshake, Sparkles];
 

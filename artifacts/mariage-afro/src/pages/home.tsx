@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote } from "lucide-react";
 
-import heroImage from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
-import aboutImage from "@assets/pexels-pavel-danilyuk-8815279_1776285262172.jpg";
-import servicesImg from "@assets/pexels-darina-belonogova-7193167_1776285262172.jpg";
-import videoSrc from "@assets/8247047-hd_1920_1080_25fps_1776285295920.mp4";
+import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
+import aboutImage from "@assets/New-Project-42.jpg_1776614313615.jpeg";
+import servicesImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
+import videoSrc from "@assets/Trailer-de-dingue_1776614330311.mp4";
 
 export default function Home() {
   const { t } = useTranslation();

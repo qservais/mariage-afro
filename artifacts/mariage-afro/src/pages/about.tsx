@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import bannerImg from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
+import bannerImg from "@assets/MielmagMS-48of267.jpg_1776614313615.jpeg";
 
 export default function About() {
   const { t } = useTranslation();

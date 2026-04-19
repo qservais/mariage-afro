@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MapPin, Users, Sparkles, CheckCircle2 } from "lucide-react";
 
-import img1 from "@assets/pexels-innocent-kapesa-760824113-18751317_1776285262172.jpg";
-import img2 from "@assets/pexels-darina-belonogova-7193204_1776285262172.jpg";
-import img3 from "@assets/pexels-pavel-danilyuk-8815279_1776285262172.jpg";
-import img4 from "@assets/pexels-darina-belonogova-7193167_1776285262172.jpg";
-import img5 from "@assets/pexels-is0-shot-2150184196-31518214_1776285262172.jpg";
-import img6 from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
-import bannerImg from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
+import img1 from "@assets/GM-00756.jpg_1776614313614.jpeg";
+import img2 from "@assets/GM-00679.jpg_1776614313614.jpeg";
+import img3 from "@assets/DSC05396.jpg_1776614313613.jpeg";
+import img4 from "@assets/GM-00719.jpg_1776614313614.jpeg";
+import img5 from "@assets/MielMagGM-156of162.jpg_1776614313614.jpeg";
+import img6 from "@assets/New-Project-12_1776614330308.png";
+import bannerImg from "@assets/Screenshot-2025-12-09-at-15.23.02_1776614330310.png";
 
 const VENUE_IMAGES = [img1, img2, img3, img4, img5, img6];
 

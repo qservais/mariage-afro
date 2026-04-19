@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
-import contactImg from "@assets/pexels-innocent-kapesa-760824113-18751317_1776285262172.jpg";
+import contactImg from "@assets/MielMagGM-156of162.jpg_1776614313614.jpeg";
 
 const SERVICE_OPTIONS = [
   "wedding_planning",

@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Mail, Sparkles, Layout, BookOpen, Globe, ArrowRight } from "lucide-react";
 
-import img1 from "@assets/pexels-darina-belonogova-7193167_1776285262172.jpg";
-import img2 from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
-import img3 from "@assets/pexels-darina-belonogova-7193204_1776285262172.jpg";
-import img4 from "@assets/pexels-pavel-danilyuk-8815279_1776285262172.jpg";
-import img5 from "@assets/pexels-nudethephotographer-34543838_1776285262172.jpg";
+import img1 from "@assets/New-Project-12_1776614330308.png";
+import img2 from "@assets/GM-00719.jpg_1776614313614.jpeg";
+import img3 from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
+import img4 from "@assets/New-Project-42.jpg_1776614313615.jpeg";
+import img5 from "@assets/DSC05396.jpg_1776614313613.jpeg";
 
 const CATEGORIES = [
   { icon: Mail, image: img1 },
