@@ -15,7 +15,10 @@ const leadSchema = z.object({
   email: z.string().email(),
   phone: z.string().optional().nullable(),
   weddingDate: z.string().optional().nullable(),
-  guestCount: z.coerce.number().int().nonnegative().optional().nullable(),
+  guestCount: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? null : v),
+    z.coerce.number().int().nonnegative().nullable(),
+  ),
   budget: z.string().optional().nullable(),
   weddingType: z.string().optional().nullable(),
   services: z.array(z.string()).optional().default([]),
@@ -49,7 +52,10 @@ const venueRequestSchema = z.object({
   email: z.string().email(),
   phone: z.string().optional().nullable(),
   weddingDate: z.string().optional().nullable(),
-  guestCount: z.coerce.number().int().nonnegative().optional().nullable(),
+  guestCount: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? null : v),
+    z.coerce.number().int().nonnegative().nullable(),
+  ),
   message: z.string().optional().nullable(),
 });
 
