@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +38,10 @@ type FormValues = z.infer<typeof formSchema>;
 export default function Contact() {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const prefillName = searchParams.get("name") ?? "";
+  const prefillVenue = searchParams.get("venue") ?? "";
+  const prefillDate = searchParams.get("date") ?? "";
 
   useEffect(() => {
     document.title = `${t("contact.title")} — Mariage Afro`;
@@ -73,12 +78,12 @@ export default function Contact() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      name: prefillName,
       email: "",
       phone: "",
-      date: "",
+      date: prefillDate,
       type: "",
-      message: ""
+      message: prefillVenue ? `Lieu envisagé : ${prefillVenue}` : ""
     }
   });
 

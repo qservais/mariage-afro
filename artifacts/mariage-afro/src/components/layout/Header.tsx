@@ -111,7 +111,7 @@ export default function Header() {
               data-testid="button-nav-client-area"
             >
               <User className="w-3.5 h-3.5" />
-              <span className="hidden 2xl:inline">{t("nav.client_area")}</span>
+              <span>{t("nav.client_area")}</span>
             </Button>
           </Link>
 
