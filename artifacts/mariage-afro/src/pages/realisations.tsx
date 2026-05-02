@@ -186,7 +186,7 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
                   onClick={() => openGallery(i)}
                   className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={img} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

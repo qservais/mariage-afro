@@ -1185,7 +1185,7 @@ export default function Prestations() {
 
       <section className="py-32 md:py-40 relative flex items-center justify-center text-center">
         <div className="absolute inset-0 z-0">
-          <img src={bannerImg} alt="Wedding" className="w-full h-full object-cover" />
+          <img src={bannerImg} alt="Wedding" loading="lazy" decoding="async" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-wine-deep/80" />
         </div>
         <div className="relative z-10 container mx-auto px-6 max-w-3xl">

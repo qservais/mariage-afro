@@ -336,7 +336,7 @@ export default function Lieux() {
 
       {/* Banner */}
       <section className="h-[300px] md:h-[400px] relative overflow-hidden">
-        <img src={bannerImg} alt="Wedding" className="w-full h-full object-cover" />
+        <img src={bannerImg} alt="Wedding" loading="lazy" decoding="async" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/30"></div>
       </section>
     </div>

@@ -45,7 +45,7 @@ function QrPreview({ value }: { value: string }) {
   useEffect(() => {
     QRCode.toDataURL(value, { margin: 1, width: 160 }).then(setSrc).catch(() => setSrc(""));
   }, [value]);
-  return src ? <img src={src} alt="QR" className="w-32 h-32 border border-neutral-200" /> : null;
+  return src ? <img src={src} alt="QR" loading="lazy" decoding="async" className="w-32 h-32 border border-neutral-200" /> : null;
 }
 
 export default function CagnottePage() {
@@ -127,7 +127,7 @@ export default function CagnottePage() {
         <div className="space-y-2">
           <Label>{t("cagnotte.field_photo")}</Label>
           <div className="flex items-center gap-3">
-            {form.photo && <img src={objectUrl(form.photo)} alt="" className="w-16 h-16 object-cover" />}
+            {form.photo && <img src={objectUrl(form.photo)} alt="" loading="lazy" decoding="async" className="w-16 h-16 object-cover" />}
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && upload.mutate(e.target.files[0])} />
             <Button type="button" variant="outline" className="rounded-none" onClick={() => fileRef.current?.click()} disabled={upload.isPending}>
               {upload.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ImagePlus className="w-4 h-4 mr-2" />}
@@ -157,7 +157,7 @@ export default function CagnottePage() {
         )}
         {cagnottes.map((c) => (
           <div key={c.id} className="bg-white border border-neutral-200 p-5 flex flex-col sm:flex-row gap-5">
-            {c.photo && <img src={objectUrl(c.photo)} alt={c.title} className="w-full sm:w-32 h-32 object-cover" />}
+            {c.photo && <img src={objectUrl(c.photo)} alt={c.title} loading="lazy" decoding="async" className="w-full sm:w-32 h-32 object-cover" />}
             <div className="flex-1 space-y-2">
               <div className="flex items-start justify-between">
                 <div>

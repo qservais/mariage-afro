@@ -89,7 +89,7 @@ export default function Shop() {
               >
                 {/* Image */}
                 <div className="relative h-80 md:h-[480px] overflow-hidden">
-                  <img src={cat.image} alt={cat.title} className="w-full h-full object-cover" />
+                  <img src={cat.image} alt={cat.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-wine-deep/30" />
                   <div className="absolute top-6 left-6 w-14 h-14 border border-gold bg-cream/95 text-wine-deep flex items-center justify-center">
                     <Icon className="w-5 h-5" />
