@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
-import { getAuth } from "@clerk/express";
+import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod";
 import { and, eq, asc } from "drizzle-orm";
 import {
@@ -17,6 +17,7 @@ import {
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
+import { notifyConversationMessage } from "../lib/email";
 
 const router = Router();
 const storageService = new ObjectStorageService();
@@ -24,6 +25,27 @@ const storageService = new ObjectStorageService();
 interface AuthedRequest extends Request {
   userId: string;
   coupleId: number;
+}
+
+function pickClerkLocale(raw: string | undefined | null): "fr" | "nl" | "en" {
+  const s = (raw || "").toLowerCase();
+  if (s.startsWith("nl")) return "nl";
+  if (s.startsWith("en")) return "en";
+  return "fr";
+}
+
+async function fetchClerkContact(userId: string, log: Request["log"]): Promise<{ email: string | null; locale: "fr" | "nl" | "en" }> {
+  try {
+    const u = await clerkClient.users.getUser(userId);
+    const primaryId = u.primaryEmailAddressId;
+    const primary = u.emailAddresses?.find((e) => e.id === primaryId) ?? u.emailAddresses?.[0];
+    const email = primary?.emailAddress ?? null;
+    const localeRaw = (u.publicMetadata as Record<string, unknown>)?.locale as string | undefined;
+    return { email, locale: pickClerkLocale(localeRaw) };
+  } catch (err) {
+    log.warn({ err, userId }, "Failed to fetch Clerk user for couple sync");
+    return { email: null, locale: "fr" };
+  }
 }
 
 async function requireCouple(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -35,7 +57,22 @@ async function requireCouple(req: Request, res: Response, next: NextFunction): P
   }
   let [couple] = await db.select().from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
   if (!couple) {
-    [couple] = await db.insert(couplesTable).values({ userId }).returning();
+    const contact = await fetchClerkContact(userId, req.log);
+    [couple] = await db.insert(couplesTable).values({
+      userId,
+      email: contact.email,
+      locale: contact.locale,
+    }).returning();
+  } else if (!couple.email) {
+    // Backfill email/locale once for existing couples (Clerk is the source of truth)
+    const contact = await fetchClerkContact(userId, req.log);
+    if (contact.email) {
+      const [updated] = await db.update(couplesTable)
+        .set({ email: contact.email, locale: couple.locale || contact.locale, updatedAt: new Date() })
+        .where(eq(couplesTable.id, couple.id))
+        .returning();
+      if (updated) couple = updated;
+    }
   }
   (req as unknown as AuthedRequest).userId = userId;
   (req as unknown as AuthedRequest).coupleId = couple.id;
@@ -369,6 +406,24 @@ router.post("/client/messages", async (req, res) => {
     authorRole: "couple",
     content: parsed.data.content,
   }).returning();
+
+  // Notify admin (throttled per conversation)
+  (async () => {
+    const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+    const adminTo = process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL;
+    if (adminTo) {
+      const senderLabel = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || `Couple #${r.coupleId}`;
+      await notifyConversationMessage({
+        to: adminTo,
+        locale: "fr",
+        senderLabel,
+        preview: parsed.data.content,
+        conversationKey: `couple-admin:${r.coupleId}`,
+        ctaUrl: `${process.env.PUBLIC_APP_URL || ""}/admin/content/messages/${r.coupleId}`,
+      }, req.log);
+    }
+  })().catch((err) => req.log.error({ err }, "Failed to notify admin of couple message"));
+
   res.status(201).json(row);
 });
 

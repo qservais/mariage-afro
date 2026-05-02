@@ -1,60 +1,50 @@
 import { Resend } from "resend";
 import { logger } from "./logger";
+import { dict, normalizeLocale, pick, type Locale } from "./email/i18n";
+import { escapeHtml as esc, plainText, row, wrap } from "./email/templates";
 
-const FROM = "Mariage Afro <noreply@mariage-afro.com>";
-const ADMIN_TO = process.env.ADMIN_NOTIFY_EMAIL || "info@mariage-afro.com";
+export { escapeHtml } from "./email/templates";
+export type { Locale } from "./email/i18n";
 
-export function escapeHtml(str: string | null | undefined): string {
-  if (str == null) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+const FROM = process.env.EMAIL_FROM || "Mariage Afro <noreply@mariage-afro.com>";
+const ADMIN_TO = process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL || "info@mariage-afro.com";
 
-function row(label: string, value: string | number | null | undefined): string {
-  if (value == null || value === "") return "";
-  return `<tr><td style="padding:8px 16px;border-bottom:1px solid #eee;font-weight:600;color:#68191e;width:180px;">${escapeHtml(label)}</td><td style="padding:8px 16px;border-bottom:1px solid #eee;">${escapeHtml(String(value))}</td></tr>`;
-}
-
-function wrap(title: string, bodyRows: string, intro?: string): string {
-  return `<!doctype html><html><body style="font-family:Helvetica,Arial,sans-serif;background:#fff4e4;padding:24px;margin:0;">
-<div style="max-width:640px;margin:0 auto;background:#fff;border:1px solid #e8d9bf;">
-  <div style="background:#68191e;color:#fff4e4;padding:24px 32px;">
-    <div style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;opacity:0.85;">Mariage Afro</div>
-    <h1 style="margin:8px 0 0;font-size:22px;font-weight:700;">${escapeHtml(title)}</h1>
-  </div>
-  <div style="padding:24px 32px;color:#141414;">
-    ${intro ? `<p style="margin:0 0 16px;line-height:1.6;">${escapeHtml(intro)}</p>` : ""}
-    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee;">${bodyRows}</table>
-  </div>
-  <div style="padding:16px 32px;background:#fff4e4;color:#666;font-size:12px;text-align:center;">
-    Mariage Afro — Plateforme premium pour mariages afro et mixtes en Belgique
-  </div>
-</div></body></html>`;
+function appUrl(): string {
+  const explicit = process.env.PUBLIC_APP_URL;
+  if (explicit) return explicit.replace(/\/$/, "");
+  const dom = process.env.REPLIT_DEPLOYMENT_DOMAIN || process.env.REPLIT_DEV_DOMAIN;
+  if (dom) return `https://${dom}`;
+  return "https://mariage-afro.be";
 }
 
 interface SendArgs {
   to: string;
   subject: string;
   html: string;
+  text?: string;
 }
 
-async function sendOne({ to, subject, html }: SendArgs, log = logger): Promise<void> {
+async function sendOne({ to, subject, html, text }: SendArgs, log = logger): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     log.warn({ to, subject }, "RESEND_API_KEY is not configured — email skipped");
     return;
   }
+  if (!to || !/^.+@.+\..+$/.test(to)) {
+    log.warn({ to, subject }, "Skipping email — invalid recipient");
+    return;
+  }
   const resend = new Resend(apiKey);
-  const { error } = await resend.emails.send({ from: FROM, to, subject, html });
+  const { error } = await resend.emails.send({ from: FROM, to, subject, html, text });
   if (error) {
     log.error({ error, to, subject }, "Failed to send email via Resend");
     throw new Error("Failed to send email");
   }
 }
+
+// =====================================================================
+// LEGACY/EXISTING — kept for backward compatibility with current routes
+// =====================================================================
 
 export interface LeadEmailPayload {
   category: "general" | "service-request";
@@ -67,33 +57,45 @@ export interface LeadEmailPayload {
   weddingType?: string | null;
   services?: string[] | null;
   message?: string | null;
+  locale?: string | null;
 }
 
 export async function sendLeadEmails(payload: LeadEmailPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(payload.locale);
   const services = (payload.services ?? []).join(", ");
   const isService = payload.category === "service-request";
-  const adminTitle = isService ? "Nouvelle demande de services" : "Nouveau lead reçu";
+  const T = dict.adminNewLead;
+  const adminTitle = isService
+    ? { fr: "Nouvelle demande de services", nl: "Nieuwe dienstaanvraag", en: "New service request" }[locale]
+    : pick(T.title, locale);
   const rows =
-    row("Nom", payload.name) +
-    row("Email", payload.email) +
-    row("Téléphone", payload.phone) +
-    row("Date du mariage", payload.weddingDate) +
-    row("Nombre d'invités", payload.guestCount ?? undefined) +
-    row("Budget estimé", payload.budget) +
-    row("Type de mariage", payload.weddingType) +
-    row("Services souhaités", services) +
-    row("Message", payload.message);
+    row(pick(T.rowName, locale), payload.name) +
+    row(pick(T.rowEmail, locale), payload.email) +
+    row(pick(T.rowPhone, locale), payload.phone) +
+    row(pick(T.rowDate, locale), payload.weddingDate) +
+    row(pick(T.rowGuests, locale), payload.guestCount ?? undefined) +
+    row(pick(T.rowBudget, locale), payload.budget) +
+    row(pick(T.rowType, locale), payload.weddingType) +
+    row(pick(T.rowServices, locale), services) +
+    row(pick(T.rowMessage, locale), payload.message);
+
+  const adminSubject = pick(T.subject(payload.name), "fr");
 
   await sendOne({
     to: ADMIN_TO,
     subject: `[Mariage Afro] ${adminTitle} — ${payload.name}`,
-    html: wrap(adminTitle, rows, `Une nouvelle demande vient d'arriver via le formulaire ${isService ? "services" : "contact"}.`),
+    html: wrap({ title: adminTitle, intro: pick(T.intro, "fr"), rows, locale: "fr" }),
+    text: plainText({ title: adminSubject, intro: pick(T.intro, "fr"), lines: [`${payload.email}`, payload.phone ?? ""] }),
   }, log);
 
+  const greeting = pick(dict.greeting(payload.name), locale);
+  const confirmTitle = { fr: "Merci pour votre message", nl: "Bedankt voor uw bericht", en: "Thank you for your message" }[locale];
+  const confirmIntro = { fr: "Nous avons bien reçu votre demande et reviendrons vers vous très vite.", nl: "Wij hebben uw aanvraag goed ontvangen en nemen snel contact op.", en: "We have received your request and will get back to you shortly." }[locale];
   await sendOne({
     to: payload.email,
-    subject: "Votre demande a bien été reçue — Mariage Afro",
-    html: wrap("Merci pour votre message", rows, `Bonjour ${payload.name}, nous avons bien reçu votre demande et reviendrons vers vous dans les plus brefs délais.`),
+    subject: { fr: "Votre demande a bien été reçue — Mariage Afro", nl: "Uw aanvraag is goed ontvangen — Mariage Afro", en: "Your request has been received — Mariage Afro" }[locale],
+    html: wrap({ title: confirmTitle, bodyHtml: `<p>${esc(greeting)}</p><p>${esc(confirmIntro)}</p>`, rows, locale }),
+    text: plainText({ title: confirmTitle, intro: `${greeting}\n${confirmIntro}` }),
   }, log);
 }
 
@@ -105,36 +107,47 @@ export interface VendorRequestEmailPayload {
   phone?: string | null;
   weddingDate?: string | null;
   message?: string | null;
+  locale?: string | null;
 }
 
 export async function sendVendorRequestEmails(p: VendorRequestEmailPayload, log = logger): Promise<void> {
-  const labels: Record<string, string> = {
-    quote: "Demande de devis",
-    availability: "Demande de disponibilité",
-    booking: "Demande de réservation",
-    zoom: "Demande de Zoom call",
-    rdv: "Demande de RDV",
+  const locale = normalizeLocale(p.locale);
+  const labels: Record<string, Record<Locale, string>> = {
+    quote: { fr: "Demande de devis", nl: "Offerte aanvraag", en: "Quote request" },
+    availability: { fr: "Demande de disponibilité", nl: "Beschikbaarheid aanvraag", en: "Availability request" },
+    booking: { fr: "Demande de réservation", nl: "Reserveringsaanvraag", en: "Booking request" },
+    zoom: { fr: "Demande de Zoom call", nl: "Zoom call aanvraag", en: "Zoom call request" },
+    rdv: { fr: "Demande de RDV", nl: "Afspraakaanvraag", en: "Meeting request" },
   };
-  const reqLabel = labels[p.requestType] ?? p.requestType;
+  const reqLabel = labels[p.requestType]?.[locale] ?? p.requestType;
+  const reqLabelFR = labels[p.requestType]?.fr ?? p.requestType;
+  const T = dict.adminNewLead;
   const rows =
-    row("Prestataire", p.vendorName) +
-    row("Type de demande", reqLabel) +
-    row("Nom", p.name) +
-    row("Email", p.email) +
-    row("Téléphone", p.phone) +
-    row("Date du mariage", p.weddingDate) +
-    row("Message", p.message);
+    row(pick(T.rowVendor, "fr"), p.vendorName) +
+    row("Type", reqLabelFR) +
+    row(pick(T.rowName, "fr"), p.name) +
+    row(pick(T.rowEmail, "fr"), p.email) +
+    row(pick(T.rowPhone, "fr"), p.phone) +
+    row(pick(T.rowDate, "fr"), p.weddingDate) +
+    row(pick(T.rowMessage, "fr"), p.message);
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] ${reqLabel} pour ${p.vendorName} — ${p.name}`,
-    html: wrap(`${reqLabel} pour ${p.vendorName}`, rows),
+    subject: `[Mariage Afro] ${reqLabelFR} pour ${p.vendorName} — ${p.name}`,
+    html: wrap({ title: `${reqLabelFR} — ${p.vendorName}`, rows, locale: "fr" }),
   }, log);
 
+  const greeting = pick(dict.greeting(p.name), locale);
+  const confirmTitle = { fr: "Merci pour votre demande", nl: "Bedankt voor uw aanvraag", en: "Thank you for your request" }[locale];
   await sendOne({
     to: p.email,
-    subject: `Votre ${reqLabel.toLowerCase()} a bien été reçue — Mariage Afro`,
-    html: wrap("Merci pour votre demande", rows, `Bonjour ${p.name}, nous avons bien reçu votre demande concernant ${p.vendorName}. Notre équipe vous répondra rapidement.`),
+    subject: `${reqLabel} — Mariage Afro`,
+    html: wrap({
+      title: confirmTitle,
+      bodyHtml: `<p>${esc(greeting)}</p><p>${esc({ fr: `Nous avons bien reçu votre demande concernant ${p.vendorName}. Notre équipe vous répondra rapidement.`, nl: `Wij hebben uw aanvraag voor ${p.vendorName} goed ontvangen. Ons team neemt snel contact op.`, en: `We received your request regarding ${p.vendorName}. Our team will reply shortly.` }[locale])}</p>`,
+      rows: row(pick(T.rowVendor, locale), p.vendorName) + row("Type", reqLabel),
+      locale,
+    }),
   }, log);
 }
 
@@ -165,15 +178,260 @@ export async function sendVenueRequestEmails(p: VenueRequestEmailPayload, log = 
   await sendOne({
     to: ADMIN_TO,
     subject: `[Mariage Afro] ${reqLabel} pour ${p.venueName} — ${p.name}`,
-    html: wrap(`${reqLabel} pour ${p.venueName}`, rows),
+    html: wrap({ title: `${reqLabel} — ${p.venueName}`, rows, locale: "fr" }),
   }, log);
 
   await sendOne({
     to: p.email,
     subject: `Votre ${reqLabel.toLowerCase()} a bien été reçue — Mariage Afro`,
-    html: wrap("Merci pour votre demande", rows, `Bonjour ${p.name}, nous avons bien reçu votre demande concernant ${p.venueName}.`),
+    html: wrap({
+      title: "Merci pour votre demande",
+      bodyHtml: `<p>Bonjour ${esc(p.name)},</p><p>Nous avons bien reçu votre demande concernant ${esc(p.venueName)}.</p>`,
+      rows,
+      locale: "fr",
+    }),
   }, log);
 }
+
+// =====================================================================
+// NEW NOTIFY* FUNCTIONS — i18n, throttled, fire-and-forget friendly
+// =====================================================================
+
+// ---- 1. Admin new lead (alias of sendLeadEmails admin part, standalone) ----
+export interface NotifyAdminLeadPayload {
+  source: "general" | "service-request" | "vendor-request" | "venue-request";
+  name: string;
+  email: string;
+  phone?: string | null;
+  weddingDate?: string | null;
+  guestCount?: number | null;
+  budget?: string | null;
+  weddingType?: string | null;
+  services?: string[] | null;
+  message?: string | null;
+  vendorName?: string | null;
+  venueName?: string | null;
+}
+
+export async function notifyAdminNewLead(p: NotifyAdminLeadPayload, log = logger): Promise<void> {
+  const T = dict.adminNewLead;
+  const sourceLabel: Record<NotifyAdminLeadPayload["source"], string> = {
+    "general": "Lead général",
+    "service-request": "Demande services",
+    "vendor-request": `Demande prestataire (${p.vendorName ?? "?"})`,
+    "venue-request": `Demande lieu (${p.venueName ?? "?"})`,
+  };
+  const services = (p.services ?? []).join(", ");
+  const rows =
+    row("Source", sourceLabel[p.source]) +
+    row(pick(T.rowVendor, "fr"), p.vendorName) +
+    row("Lieu", p.venueName) +
+    row(pick(T.rowName, "fr"), p.name) +
+    row(pick(T.rowEmail, "fr"), p.email) +
+    row(pick(T.rowPhone, "fr"), p.phone) +
+    row(pick(T.rowDate, "fr"), p.weddingDate) +
+    row(pick(T.rowGuests, "fr"), p.guestCount ?? undefined) +
+    row(pick(T.rowBudget, "fr"), p.budget) +
+    row(pick(T.rowType, "fr"), p.weddingType) +
+    row(pick(T.rowServices, "fr"), services) +
+    row(pick(T.rowMessage, "fr"), p.message);
+
+  await sendOne({
+    to: ADMIN_TO,
+    subject: `[Mariage Afro] ${sourceLabel[p.source]} — ${p.name}`,
+    html: wrap({
+      title: pick(T.title, "fr"),
+      intro: pick(T.intro, "fr"),
+      rows,
+      ctaLabel: "Voir dans l'admin",
+      ctaUrl: `${appUrl()}/admin`,
+      locale: "fr",
+    }),
+  }, log);
+}
+
+// ---- 2. Vendor new lead ----
+export interface NotifyVendorLeadPayload {
+  to: string;
+  locale?: string | null;
+  vendorName: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone?: string | null;
+  requestType?: string | null;
+  weddingDate?: string | null;
+  message?: string | null;
+}
+
+export async function notifyVendorNewLead(p: NotifyVendorLeadPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = dict.vendorNewLead;
+  const adminT = dict.adminNewLead;
+  const rows =
+    row(pick(adminT.rowName, locale), p.contactName) +
+    row(pick(adminT.rowEmail, locale), p.contactEmail) +
+    row(pick(adminT.rowPhone, locale), p.contactPhone) +
+    row(pick(adminT.rowDate, locale), p.weddingDate) +
+    row("Type", p.requestType) +
+    row(pick(adminT.rowMessage, locale), p.message);
+
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject(p.vendorName), locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.vendorName), locale),
+      rows,
+      ctaLabel: pick(T.cta, locale),
+      ctaUrl: `${appUrl()}/espace-pro/dashboard`,
+      locale,
+    }),
+  }, log);
+}
+
+// ---- 3. Conversation message (with 15min throttle) ----
+const CONVERSATION_THROTTLE_MS = 15 * 60 * 1000;
+const conversationCache = new Map<string, number>();
+
+function shouldThrottle(key: string): boolean {
+  const last = conversationCache.get(key);
+  const now = Date.now();
+  if (last && now - last < CONVERSATION_THROTTLE_MS) return true;
+  conversationCache.set(key, now);
+  // light cleanup
+  if (conversationCache.size > 500) {
+    for (const [k, ts] of conversationCache) {
+      if (now - ts > CONVERSATION_THROTTLE_MS) conversationCache.delete(k);
+    }
+  }
+  return false;
+}
+
+export interface NotifyConversationPayload {
+  to: string;
+  locale?: string | null;
+  senderLabel: string;
+  preview?: string | null;
+  conversationKey: string;
+  ctaUrl?: string | null;
+}
+
+export async function notifyConversationMessage(p: NotifyConversationPayload, log = logger): Promise<void> {
+  const throttleKey = `${p.conversationKey}:${p.to.toLowerCase()}`;
+  if (shouldThrottle(throttleKey)) {
+    log.info({ to: p.to, key: throttleKey }, "Conversation email throttled");
+    return;
+  }
+  const locale = normalizeLocale(p.locale);
+  const T = dict.conversation;
+  const previewHtml = p.preview
+    ? `<blockquote style="margin:16px 0;padding:12px 16px;background:#fff4e4;border-left:3px solid #c9a96e;color:#1f1416;font-style:italic;">${esc(p.preview.slice(0, 280))}${p.preview.length > 280 ? "…" : ""}</blockquote>`
+    : "";
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject(p.senderLabel), locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.senderLabel), locale),
+      bodyHtml: previewHtml,
+      ctaLabel: pick(T.cta, locale),
+      ctaUrl: p.ctaUrl ?? `${appUrl()}/`,
+      locale,
+    }),
+  }, log);
+}
+
+export function _resetConversationThrottleForTests(): void {
+  conversationCache.clear();
+}
+
+// ---- 4. New RSVP for couple ----
+export interface NotifyRsvpPayload {
+  to: string;
+  locale?: string | null;
+  guestName: string;
+  guestEmail?: string | null;
+  attending: boolean;
+  guestCount: number;
+  message?: string | null;
+  weddingSlug?: string | null;
+}
+
+export async function notifyCoupleNewRsvp(p: NotifyRsvpPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = dict.rsvp;
+  const rows =
+    row(pick(T.rowName, locale), p.guestName) +
+    row(pick(T.rowEmail, locale), p.guestEmail) +
+    row(pick(T.rowAttending, locale), p.attending ? pick(T.yes, locale) : pick(T.no, locale)) +
+    row(pick(T.rowGuests, locale), p.attending ? p.guestCount : undefined) +
+    row(pick(T.rowMessage, locale), p.message);
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject(p.guestName), locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.guestName, p.attending, p.guestCount), locale),
+      rows,
+      ctaLabel: { fr: "Voir mes invités", nl: "Mijn gasten bekijken", en: "View my guests" }[locale],
+      ctaUrl: `${appUrl()}/espace-client/site`,
+      locale,
+    }),
+  }, log);
+}
+
+// ---- 5. Vendor approved ----
+export interface NotifyVendorApprovedPayload {
+  to: string;
+  locale?: string | null;
+  businessName: string;
+}
+
+export async function notifyVendorApproved(p: NotifyVendorApprovedPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = dict.vendorApproved;
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject, locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.businessName), locale),
+      bodyHtml: `<p>${esc(pick(T.body, locale))}</p>`,
+      ctaLabel: pick(T.cta, locale),
+      ctaUrl: `${appUrl()}/espace-pro/login`,
+      locale,
+    }),
+  }, log);
+}
+
+// ---- 6. Partner application received (couple/candidate) ----
+export interface NotifyPartnerApplicationPayload {
+  to: string;
+  locale?: string | null;
+  contactName: string;
+  businessName: string;
+  category?: string | null;
+}
+
+export async function notifyPartnerApplicationReceived(p: NotifyPartnerApplicationPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = dict.partnerReceived;
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject, locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.contactName), locale),
+      bodyHtml: `<p>${esc(pick(T.body, locale))}</p>`,
+      rows: row("Business", p.businessName) + row({ fr: "Catégorie", nl: "Categorie", en: "Category" }[locale], p.category ?? undefined),
+      locale,
+    }),
+  }, log);
+}
+
+// =====================================================================
+// LEGACY partner / contact emails (kept)
+// =====================================================================
 
 export interface PartnerApplicationEmailPayload {
   businessName: string;
@@ -198,12 +456,39 @@ export async function sendPartnerApplicationEmails(p: PartnerApplicationEmailPay
   await sendOne({
     to: ADMIN_TO,
     subject: `[Mariage Afro] Candidature partenaire — ${p.businessName}`,
-    html: wrap("Nouvelle candidature partenaire", rows),
+    html: wrap({ title: "Nouvelle candidature partenaire", rows, locale: "fr" }),
   }, log);
 
-  await sendOne({
+  // Confirmation to applicant via the i18n notify function (defaults to FR)
+  await notifyPartnerApplicationReceived({
     to: p.email,
-    subject: "Votre candidature partenaire a bien été reçue — Mariage Afro",
-    html: wrap("Merci pour votre candidature", rows, `Bonjour ${p.contactName}, merci de votre intérêt pour rejoindre le réseau Mariage Afro. Nous étudions votre dossier et reviendrons vers vous prochainement.`),
+    contactName: p.contactName,
+    businessName: p.businessName,
+    category: p.category,
+  }, log);
+}
+
+// ---- Generic contact form (used by routes/contact.ts) ----
+export interface ContactFormPayload {
+  name: string;
+  email: string;
+  phone?: string | null;
+  date?: string | null;
+  type?: string | null;
+  message: string;
+}
+
+export async function sendContactFormEmail(p: ContactFormPayload, log = logger): Promise<void> {
+  const rows =
+    row("Nom", p.name) +
+    row("Email", p.email) +
+    row("Téléphone", p.phone) +
+    row("Date envisagée", p.date) +
+    row("Type de mariage", p.type) +
+    row("Message", p.message);
+  await sendOne({
+    to: ADMIN_TO,
+    subject: `[Mariage Afro] Nouvelle demande de RDV — ${p.name}`,
+    html: wrap({ title: "Nouvelle demande de rendez-vous", rows, locale: "fr" }),
   }, log);
 }

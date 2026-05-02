@@ -1,11 +1,13 @@
 import { Router } from "express";
 import { z } from "zod";
-import { db, leadsTable, vendorRequestsTable, venueRequestsTable, partnerApplicationsTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
+import { db, leadsTable, vendorRequestsTable, venueRequestsTable, partnerApplicationsTable, vendorAccountsTable } from "@workspace/db";
 import {
   sendLeadEmails,
   sendVendorRequestEmails,
   sendVenueRequestEmails,
   sendPartnerApplicationEmails,
+  notifyVendorNewLead,
 } from "../lib/email";
 
 const router = Router();
@@ -89,7 +91,7 @@ router.post("/lead", async (req, res) => {
       services: data.services ?? [],
       message: data.message ?? null,
     }).returning();
-    await sendLeadEmails({ category: "general", ...data }, req.log).catch((err) => {
+    void sendLeadEmails({ category: "general", ...data }, req.log).catch((err) => {
       req.log.error({ err }, "Lead saved but email failed");
     });
     res.json({ success: true, id: row.id });
@@ -116,7 +118,7 @@ router.post("/service-request", async (req, res) => {
       services: data.services,
       message: data.message ?? null,
     }).returning();
-    await sendLeadEmails({ category: "service-request", ...data }, req.log).catch((err) => {
+    void sendLeadEmails({ category: "service-request", ...data }, req.log).catch((err) => {
       req.log.error({ err }, "Service request saved but email failed");
     });
     res.json({ success: true, id: row.id });
@@ -144,9 +146,37 @@ router.post("/vendor-request", async (req, res) => {
       weddingDate: data.weddingDate ?? null,
       message: data.message ?? null,
     }).returning();
-    await sendVendorRequestEmails(data, req.log).catch((err) => {
+    void sendVendorRequestEmails(data, req.log).catch((err) => {
       req.log.error({ err }, "Vendor request saved but email failed");
     });
+    // Notify the vendor directly if they have a vendor_account linked to this marketplace vendor
+    if (data.vendorId) {
+      const vendorIdNum = Number(data.vendorId);
+      if (Number.isFinite(vendorIdNum)) {
+        (async () => {
+          const [account] = await db
+            .select({ email: vendorAccountsTable.email, locale: vendorAccountsTable.locale })
+            .from(vendorAccountsTable)
+            .where(eq(vendorAccountsTable.vendorId, vendorIdNum))
+            .limit(1);
+          if (account?.email) {
+            await notifyVendorNewLead({
+              to: account.email,
+              locale: account.locale,
+              vendorName: data.vendorName,
+              contactName: data.name,
+              contactEmail: data.email,
+              contactPhone: data.phone,
+              requestType: data.requestType,
+              weddingDate: data.weddingDate,
+              message: data.message,
+            }, req.log);
+          }
+        })().catch((err) => {
+          req.log.error({ err }, "Failed to notify vendor of new lead");
+        });
+      }
+    }
     res.json({ success: true, id: row.id });
   } catch (err) {
     req.log.error({ err }, "Failed to insert vendor request");
@@ -172,7 +202,7 @@ router.post("/venue-request", async (req, res) => {
       guestCount: data.guestCount ?? null,
       message: data.message ?? null,
     }).returning();
-    await sendVenueRequestEmails(data, req.log).catch((err) => {
+    void sendVenueRequestEmails(data, req.log).catch((err) => {
       req.log.error({ err }, "Venue request saved but email failed");
     });
     res.json({ success: true, id: row.id });
@@ -199,7 +229,7 @@ router.post("/become-partner", async (req, res) => {
       website: data.website ?? null,
       description: data.description ?? null,
     }).returning();
-    await sendPartnerApplicationEmails(data, req.log).catch((err) => {
+    void sendPartnerApplicationEmails(data, req.log).catch((err) => {
       req.log.error({ err }, "Partner application saved but email failed");
     });
     res.json({ success: true, id: row.id });

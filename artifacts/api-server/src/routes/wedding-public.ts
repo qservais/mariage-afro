@@ -7,6 +7,7 @@ import {
   couplesTable,
 } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
+import { notifyCoupleNewRsvp } from "../lib/email";
 
 const router = Router();
 
@@ -59,6 +60,30 @@ router.post("/api/wedding/:slug/rsvp", async (req: Request, res: Response) => {
     guestCount: parsed.data.guestCount,
     message: parsed.data.message || null,
   }).returning();
+
+  // Notify couple (fire-and-forget)
+  (async () => {
+    const [couple] = await db
+      .select({ email: couplesTable.email, locale: couplesTable.locale })
+      .from(couplesTable)
+      .where(eq(couplesTable.id, site.coupleId))
+      .limit(1);
+    if (couple?.email) {
+      await notifyCoupleNewRsvp({
+        to: couple.email,
+        locale: couple.locale,
+        guestName: parsed.data.name,
+        guestEmail: parsed.data.email || null,
+        attending: parsed.data.attending,
+        guestCount: parsed.data.guestCount,
+        message: parsed.data.message || null,
+        weddingSlug: slug,
+      }, req.log);
+    }
+  })().catch((err) => {
+    req.log.error({ err }, "Failed to notify couple of new RSVP");
+  });
+
   res.status(201).json(row);
 });
 

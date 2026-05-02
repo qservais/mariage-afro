@@ -32,6 +32,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Purpose**: Premium platform for Afro & mixed weddings in Belgium
 - **Stack**: React, Vite, Tailwind CSS, Framer Motion, react-i18next, react-hook-form, Zod, @tanstack/react-query, Clerk
 - **Auth**: Clerk (`@clerk/react`) — couples sign in at `/espace-client/login`, vendors sign in at `/espace-pro/login` (both areas use Clerk; vendors get a separate `vendor_accounts` row auto-created on first request)
+- **Emails (Resend)**: `lib/email.ts` exposes 6 i18n notify* fns (FR/NL/EN): `notifyAdminNewLead`, `notifyVendorNewLead`, `notifyConversationMessage` (15min throttle), `notifyCoupleNewRsvp`, `notifyVendorApproved`, `notifyPartnerApplicationReceived`. Templates in `lib/email/templates.ts` + i18n dict in `lib/email/i18n.ts`. Wired into leads/contact/client/wedding-public/admin-content routes. All sends are fire-and-forget; gracefully no-op when `RESEND_API_KEY` missing. Admin smoke-test UI at `/admin/test-email`. Env: `RESEND_API_KEY`, `EMAIL_FROM`, `ADMIN_EMAIL`, optional `PUBLIC_APP_URL`.
 - **Languages**: FR (default), NL, EN — via react-i18next, translation files in `src/locales/`
 - **Images**: Wedding photos from `attached_assets/` via `@assets` Vite alias
 - **Branding**: Montserrat font, bordeaux (#68191e), crème (#fff4e4), dark (#141414)

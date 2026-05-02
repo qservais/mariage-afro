@@ -11,6 +11,7 @@ import {
 } from "@workspace/db";
 import { eq, desc, asc, sql } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
+import { notifyVendorApproved, notifyConversationMessage } from "../lib/email";
 
 const router = Router();
 router.use(adminAuth);
@@ -516,6 +517,22 @@ router.post("/content/messages/:coupleId", async (req: Request, res: Response) =
   const { content } = req.body as { content: string };
   if (!content?.trim()) { res.redirect(`/admin/content/messages/${coupleId}`); return; }
   await db.insert(messagesTable).values({ coupleId, authorRole: "admin", content: content.trim() });
+
+  // Notify couple (throttled)
+  (async () => {
+    const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, coupleId)).limit(1);
+    if (couple?.email) {
+      await notifyConversationMessage({
+        to: couple.email,
+        locale: couple.locale,
+        senderLabel: "Mariage Afro",
+        preview: content.trim(),
+        conversationKey: `couple-admin:${coupleId}`,
+        ctaUrl: `${process.env.PUBLIC_APP_URL || ""}/espace-client/communication`,
+      }, req.log);
+    }
+  })().catch((err) => req.log.error({ err }, "Failed to notify couple of admin message"));
+
   res.redirect(`/admin/content/messages/${coupleId}`);
 });
 
@@ -621,6 +638,7 @@ router.post("/content/vendor-accounts/:id/approve", async (req: Request, res: Re
   const id = Number(req.params.id);
   const [a] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, id));
   if (!a) { res.redirect("/admin/content/vendor-accounts"); return; }
+  const wasAlreadyApproved = a.status === "approved";
   if (a.vendorId) {
     await db.update(marketplaceVendorsTable)
       .set({ verified: true, active: true })
@@ -629,6 +647,16 @@ router.post("/content/vendor-accounts/:id/approve", async (req: Request, res: Re
   await db.update(vendorAccountsTable)
     .set({ status: "approved", updatedAt: new Date() })
     .where(eq(vendorAccountsTable.id, id));
+
+  // Send welcome email only on first approval
+  if (!wasAlreadyApproved && a.email) {
+    notifyVendorApproved({
+      to: a.email,
+      locale: a.locale,
+      businessName: a.businessName || "Mariage Afro",
+    }, req.log).catch((err) => req.log.error({ err }, "Failed to send vendor approval email"));
+  }
+
   res.redirect("/admin/content/vendor-accounts");
 });
 
@@ -645,6 +673,127 @@ router.post("/content/vendor-accounts/:id/reject", async (req: Request, res: Res
     .set({ status: "rejected", updatedAt: new Date() })
     .where(eq(vendorAccountsTable.id, id));
   res.redirect("/admin/content/vendor-accounts");
+});
+
+// ============ TEST EMAIL (dev only) ============
+
+router.get("/test-email", (_req: Request, res: Response) => {
+  const apiKeyOk = !!process.env.RESEND_API_KEY;
+  const fromOk = !!process.env.EMAIL_FROM;
+  const adminOk = !!(process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL);
+  const status = `<div class="card">
+    <h2>Configuration</h2>
+    <table>
+      <tr><th>RESEND_API_KEY</th><td>${apiKeyOk ? '<span class="badge active">configuré</span>' : '<span class="badge inactive">manquant</span>'}</td></tr>
+      <tr><th>EMAIL_FROM</th><td>${fromOk ? '<span class="badge active">configuré</span>' : '<span class="badge inactive">défaut: noreply@mariage-afro.com</span>'}</td></tr>
+      <tr><th>ADMIN_EMAIL</th><td>${adminOk ? '<span class="badge active">configuré</span>' : '<span class="badge inactive">défaut: info@mariage-afro.com</span>'}</td></tr>
+    </table>
+  </div>`;
+  const form = `<div class="card">
+    <h2>Envoyer un email de test</h2>
+    <form method="post">
+      <label>Adresse de destination
+        <input type="email" name="to" required placeholder="vous@example.com">
+      </label>
+      <label>Type d'email
+        <select name="type">
+          <option value="admin-lead">1. Admin — nouveau lead</option>
+          <option value="vendor-lead">2. Vendor — nouveau lead</option>
+          <option value="conversation">3. Conversation — nouveau message</option>
+          <option value="rsvp">4. Couple — nouveau RSVP</option>
+          <option value="vendor-approved">5. Vendor — candidature approuvée</option>
+          <option value="partner-received">6. Partenaire — candidature reçue</option>
+        </select>
+      </label>
+      <label>Langue
+        <select name="locale">
+          <option value="fr">Français</option>
+          <option value="nl">Nederlands</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+      <button type="submit" class="btn primary">Envoyer le test</button>
+    </form>
+  </div>`;
+  res.type("html").send(contentLayout("Test emails", `<h1>Test des notifications email</h1>${status}${form}`));
+});
+
+router.post("/test-email", async (req: Request, res: Response) => {
+  const { to, type, locale } = req.body as Record<string, string>;
+  if (!to || !type) {
+    res.redirect("/admin/test-email");
+    return;
+  }
+  const loc = (locale || "fr") as "fr" | "nl" | "en";
+  const log = req.log;
+  const email = await import("../lib/email");
+
+  try {
+    if (type === "admin-lead") {
+      await email.notifyAdminNewLead({
+        source: "general",
+        name: "Test Couple",
+        email: to,
+        phone: "+32 470 00 00 00",
+        weddingDate: "2026-08-15",
+        guestCount: 120,
+        budget: "20 000 €",
+        weddingType: "Afro-européen",
+        services: ["Photographie", "Traiteur"],
+        message: "Ceci est un message de test.",
+      }, log);
+    } else if (type === "vendor-lead") {
+      email._resetConversationThrottleForTests();
+      await email.notifyVendorNewLead({
+        to,
+        locale: loc,
+        vendorName: "Studio Lumière",
+        contactName: "Aïssa & Marc",
+        contactEmail: "couple@example.com",
+        contactPhone: "+32 470 11 22 33",
+        requestType: "quote",
+        weddingDate: "2026-08-15",
+        message: "Bonjour, nous adorons votre travail !",
+      }, log);
+    } else if (type === "conversation") {
+      email._resetConversationThrottleForTests();
+      await email.notifyConversationMessage({
+        to,
+        locale: loc,
+        senderLabel: "Mariage Afro",
+        preview: "Bonjour, votre devis est prêt — rendez-vous dans votre espace pour le consulter.",
+        conversationKey: `test:${Date.now()}`,
+      }, log);
+    } else if (type === "rsvp") {
+      await email.notifyCoupleNewRsvp({
+        to,
+        locale: loc,
+        guestName: "Jean-Baptiste Dupont",
+        guestEmail: "jb@example.com",
+        attending: true,
+        guestCount: 2,
+        message: "Avec joie, à très vite !",
+      }, log);
+    } else if (type === "vendor-approved") {
+      await email.notifyVendorApproved({
+        to,
+        locale: loc,
+        businessName: "Studio Lumière",
+      }, log);
+    } else if (type === "partner-received") {
+      await email.notifyPartnerApplicationReceived({
+        to,
+        locale: loc,
+        contactName: "Sarah",
+        businessName: "Studio Lumière",
+        category: "Photographie",
+      }, log);
+    }
+    res.type("html").send(contentLayout("Test envoyé", `<div class="container"><div class="ok">Email \"${type}\" envoyé à ${to} (${loc})${process.env.RESEND_API_KEY ? "" : " — RESEND_API_KEY manquant, l'envoi a été ignoré (voir logs)"}</div><a class="btn secondary" href="/admin/test-email">← Retour</a></div>`));
+  } catch (err) {
+    log.error({ err, type, to }, "Test email failed");
+    res.type("html").send(contentLayout("Erreur", `<div class="container"><div class="err">Échec de l'envoi : ${String((err as Error).message ?? err)}</div><a class="btn secondary" href="/admin/test-email">← Retour</a></div>`));
+  }
 });
 
 export default router;
