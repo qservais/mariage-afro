@@ -277,13 +277,13 @@ function ServiceRequestSection() {
   });
 
   return (
-    <section id="service-request" className="py-20 md:py-28 bg-secondary/30 border-t border-border">
+    <section id="service-request" className="py-24 md:py-32 bg-cream border-t border-wine-deep/10">
       <div className="container mx-auto px-6 md:px-12 max-w-4xl">
         <div className="text-center mb-12">
-          <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">
+          <span className="section-eyebrow section-eyebrow-left mb-4">
             {t("partners.service_request.label")}
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold font-serif text-foreground mb-4">
+          <h2 className="font-display uppercase text-3xl md:text-5xl tracking-tight text-wine-deep mt-3 mb-6 leading-[1]">
             {t("partners.service_request.title")}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -292,32 +292,32 @@ function ServiceRequestSection() {
         </div>
 
         {submitted ? (
-          <div className="bg-white border border-border p-10 text-center">
-            <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-bold font-serif text-foreground mb-2">
+          <div className="card-editorial p-12 text-center">
+            <CheckCircle2 className="w-12 h-12 text-gold mx-auto mb-6" />
+            <h3 className="font-display uppercase text-2xl tracking-tight text-wine-deep mb-3">
               {t("partners.success_title")}
             </h3>
-            <p className="text-muted-foreground mb-6">{t("partners.success_desc")}</p>
-            <Button
+            <p className="text-wine-deep/70 mb-8 font-light">{t("partners.success_desc")}</p>
+            <button
+              type="button"
               onClick={() => setSubmitted(false)}
-              variant="outline"
-              className="rounded-none border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-wider h-11 px-8"
+              className="btn-editorial-compact"
             >
               {t("partners.service_request.new_request")}
-            </Button>
+            </button>
           </div>
         ) : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit((v) => mutation.mutate(v))}
-              className="bg-white border border-border p-6 md:p-10 space-y-6"
+              className="card-editorial p-6 md:p-10 space-y-6"
             >
               <FormField
                 control={form.control}
                 name="services"
                 render={() => (
                   <FormItem>
-                    <FormLabel className="text-base font-bold">
+                    <FormLabel className="text-xs uppercase tracking-[0.2em] text-wine-deep font-medium">
                       {t("partners.service_request.services_label")}
                     </FormLabel>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
@@ -339,7 +339,7 @@ function ServiceRequestSection() {
                                         : (field.value ?? []).filter((v) => v !== opt);
                                       field.onChange(next);
                                     }}
-                                    className="mt-0.5 rounded-none data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                    className="mt-0.5 rounded-none border-wine-deep/30 data-[state=checked]:bg-wine-deep data-[state=checked]:border-wine-deep"
                                   />
                                 </FormControl>
                                 <FormLabel className="text-sm font-normal cursor-pointer leading-snug">
@@ -451,7 +451,7 @@ function ServiceRequestSection() {
               <Button
                 type="submit"
                 disabled={mutation.isPending}
-                className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12"
+                className="btn-editorial-solid w-full justify-center !h-14"
               >
                 {mutation.isPending ? (
                   <>
@@ -531,13 +531,13 @@ function BecomePartnerSection() {
   });
 
   return (
-    <section id="become-partner" className="py-20 md:py-28 bg-white border-t border-border">
+    <section id="become-partner" className="py-24 md:py-32 bg-cream border-t border-wine-deep/10">
       <div className="container mx-auto px-6 md:px-12 max-w-4xl">
         <div className="text-center mb-12">
-          <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">
+          <span className="section-eyebrow section-eyebrow-left mb-4">
             {t("partners.become.label")}
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold font-serif text-foreground mb-4">
+          <h2 className="font-display uppercase text-3xl md:text-5xl tracking-tight text-wine-deep mt-3 mb-6 leading-[1]">
             {t("partners.become.title")}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -546,25 +546,25 @@ function BecomePartnerSection() {
         </div>
 
         {submitted ? (
-          <div className="bg-secondary/30 border border-border p-10 text-center">
-            <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-bold font-serif text-foreground mb-2">
+          <div className="card-editorial p-12 text-center">
+            <CheckCircle2 className="w-12 h-12 text-gold mx-auto mb-6" />
+            <h3 className="font-display uppercase text-2xl tracking-tight text-wine-deep mb-3">
               {t("partners.become.success_title")}
             </h3>
-            <p className="text-muted-foreground mb-6">{t("partners.become.success_desc")}</p>
-            <Button
+            <p className="text-wine-deep/70 mb-8 font-light">{t("partners.become.success_desc")}</p>
+            <button
+              type="button"
               onClick={() => setSubmitted(false)}
-              variant="outline"
-              className="rounded-none border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-wider h-11 px-8"
+              className="btn-editorial-compact"
             >
               {t("partners.become.new_request")}
-            </Button>
+            </button>
           </div>
         ) : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit((v) => mutation.mutate(v))}
-              className="bg-secondary/30 border border-border p-6 md:p-10 space-y-5"
+              className="card-editorial p-6 md:p-10 space-y-5"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
@@ -677,7 +677,7 @@ function BecomePartnerSection() {
               <Button
                 type="submit"
                 disabled={mutation.isPending}
-                className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12"
+                className="btn-editorial-solid w-full justify-center !h-14"
               >
                 {mutation.isPending ? (
                   <>
@@ -816,17 +816,15 @@ export default function Prestations() {
         </div>
       </section>
 
-      <section className="bg-white border-y border-border py-6 sticky top-[62px] lg:top-[72px] z-30">
+      <section className="bg-cream border-b border-wine-deep/10 py-2 sticky top-[62px] lg:top-[72px] z-30">
         <div className="container mx-auto px-4 md:px-12">
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide snap-x">
             {filters.map((filter) => (
               <button
                 key={String(filter.value)}
                 onClick={() => setActiveFilter(filter.value)}
-                className={`flex-shrink-0 snap-start px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${
-                  activeFilter === filter.value
-                    ? "bg-primary text-white border-primary"
-                    : "bg-white text-foreground border-border hover:border-primary hover:text-primary"
+                className={`tab-editorial snap-start ${
+                  activeFilter === filter.value ? "tab-editorial-active" : ""
                 }`}
               >
                 {filter.label}
@@ -853,7 +851,7 @@ export default function Prestations() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.06 }}
-                  className="bg-white border border-border overflow-hidden flex flex-col shadow-sm hover:shadow-lg transition-shadow duration-300"
+                  className="card-editorial overflow-hidden flex flex-col"
                 >
                   <div className="relative h-64 md:h-72 overflow-hidden">
                     <img
@@ -861,22 +859,22 @@ export default function Prestations() {
                       alt={vendor.name}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <span className="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1">
+                    <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/85 via-wine-deep/30 to-transparent" />
+                    <span className="badge-editorial-dark absolute top-4 left-4">
                       {vendor.category}
                     </span>
                     {vendor.verified && (
-                      <span className="absolute top-4 right-4 bg-white/95 text-primary text-[10px] font-bold uppercase tracking-wider px-2 py-1 flex items-center gap-1">
+                      <span className="badge-editorial absolute top-4 right-4 bg-cream/95 backdrop-blur-sm">
                         <CheckCircle2 className="w-3 h-3" />
                         {t("prestations.verified_badge")}
                       </span>
                     )}
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <h3 className="text-xl md:text-2xl font-bold font-serif leading-tight mb-1">
+                    <div className="absolute bottom-5 left-5 right-5 text-cream">
+                      <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight leading-[1] mb-2">
                         {vendor.name}
                       </h3>
-                      <div className="flex items-center gap-3 text-xs">
-                        <span className="flex items-center gap-1.5 uppercase tracking-wider">
+                      <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.2em]">
+                        <span className="flex items-center gap-1.5 text-cream/80">
                           <MapPin className="w-3 h-3" />
                           {vendor.city}
                         </span>
@@ -885,7 +883,7 @@ export default function Prestations() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1 p-1 bg-secondary/30">
+                  <div className="grid grid-cols-3 gap-1 p-1 bg-wine-deep/5">
                     {vendor.gallery.slice(0, 3).map((g, idx) => (
                       <div key={idx} className="relative aspect-[4/3] overflow-hidden">
                         <img
@@ -898,33 +896,33 @@ export default function Prestations() {
                     ))}
                   </div>
 
-                  <div className="p-6 md:p-7 flex flex-col flex-grow">
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-5">
+                  <div className="p-7 md:p-8 flex flex-col flex-grow">
+                    <p className="text-wine-deep/70 text-sm leading-relaxed mb-7 font-light italic">
                       {vendor.tagline}
                     </p>
 
-                    <div className="mb-6">
-                      <p className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold mb-2">
+                    <div className="mb-8">
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-3">
                         {t("partners.services_offered")}
                       </p>
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
                         {vendor.services.map((s) => (
                           <li
                             key={s}
-                            className="flex items-start gap-1.5 text-sm text-foreground/80"
+                            className="flex items-start gap-2 text-sm text-wine-deep/85 font-light"
                           >
-                            <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
+                            <span className="block w-3 h-px bg-gold flex-shrink-0 mt-2.5" />
                             <span>{s}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
 
-                    <div className="mt-auto grid grid-cols-2 lg:grid-cols-3 gap-2">
+                    <div className="mt-auto space-y-2">
                       <button
                         onClick={() => handleAddToProject(vendor)}
                         disabled={addingId === vendor.id}
-                        className="col-span-2 lg:col-span-3 flex items-center justify-center gap-2 bg-primary text-white hover:bg-primary/90 text-[11px] font-bold uppercase tracking-wider py-2.5 px-2 transition-colors disabled:opacity-60"
+                        className="btn-editorial-compact-solid w-full"
                       >
                         {addingId === vendor.id ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -933,23 +931,25 @@ export default function Prestations() {
                         )}
                         {t("partners.add_to_project")}
                       </button>
-                      {ACTIONS.map(({ key, icon: Icon }) => (
-                        <button
-                          key={key}
-                          onClick={() =>
-                            setActiveModal({
-                              vendor: { id: vendor.id, name: vendor.name },
-                              action: key,
-                            })
-                          }
-                          className="flex items-center justify-center gap-1.5 border border-primary/40 text-primary hover:bg-primary hover:text-white text-[11px] font-bold uppercase tracking-wider py-2.5 px-2 transition-colors"
-                        >
-                          <Icon className="w-3.5 h-3.5 flex-shrink-0" />
-                          <span className="truncate">
-                            {t(`partners.actions.${key}.button`)}
-                          </span>
-                        </button>
-                      ))}
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                        {ACTIONS.map(({ key, icon: Icon }) => (
+                          <button
+                            key={key}
+                            onClick={() =>
+                              setActiveModal({
+                                vendor: { id: vendor.id, name: vendor.name },
+                                action: key,
+                              })
+                            }
+                            className="btn-editorial-compact"
+                          >
+                            <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                            <span className="truncate">
+                              {t(`partners.actions.${key}.button`)}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </motion.article>
@@ -968,10 +968,10 @@ export default function Prestations() {
       <ServiceRequestSection />
       <BecomePartnerSection />
 
-      <section className="py-32 relative flex items-center justify-center text-center">
+      <section className="py-32 md:py-40 relative flex items-center justify-center text-center">
         <div className="absolute inset-0 z-0">
           <img src={bannerImg} alt="Wedding" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/65" />
+          <div className="absolute inset-0 bg-wine-deep/80" />
         </div>
         <div className="relative z-10 container mx-auto px-6 max-w-3xl">
           <motion.div
@@ -979,16 +979,15 @@ export default function Prestations() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-5xl font-bold font-serif text-white mb-6">
+            <span className="section-eyebrow mb-8">{t("nav.partners")}</span>
+            <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mb-8 leading-[0.95] tracking-tight">
               {t("prestations.banner_title")}
             </h2>
-            <p className="text-white/75 text-lg leading-relaxed mb-10 max-w-xl mx-auto">
+            <p className="text-cream/75 text-base md:text-lg leading-relaxed mb-12 max-w-xl mx-auto font-light">
               {t("prestations.banner_desc")}
             </p>
-            <a href="#service-request">
-              <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14 px-10 text-sm">
-                {t("prestations.banner_cta")}
-              </Button>
+            <a href="#service-request" className="btn-editorial">
+              {t("prestations.banner_cta")}
             </a>
           </motion.div>
         </div>

@@ -104,11 +104,11 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6 }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white border border-border overflow-hidden"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-0 card-editorial overflow-hidden"
       >
         {/* Image side */}
         <div
-          className={`relative h-72 lg:h-auto min-h-[360px] overflow-hidden cursor-pointer group ${isReversed ? "lg:order-2" : ""}`}
+          className={`relative h-80 lg:h-auto min-h-[420px] overflow-hidden cursor-pointer group ${isReversed ? "lg:order-2" : ""}`}
           onClick={() => galleryImages.length > 0 && openGallery(0)}
         >
           <img
@@ -116,40 +116,40 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
             alt={r.coupleName}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/60 via-wine-deep/10 to-transparent" />
 
           {/* Featured badge */}
           {r.featured && (
-            <span className="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1">
+            <span className="badge-editorial-dark absolute top-4 left-4">
               À la une
             </span>
           )}
 
           {/* Gallery count */}
           {galleryImages.length > 1 && (
-            <div className="absolute bottom-4 right-4 flex items-center gap-1.5 bg-black/50 text-white/80 text-xs px-2.5 py-1.5 backdrop-blur-sm">
-              <Images className="w-3.5 h-3.5" />
+            <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-wine-deep/70 text-cream text-[10px] uppercase tracking-[0.25em] px-3 py-2 backdrop-blur-sm font-medium">
+              <Images className="w-3 h-3" />
               {galleryImages.length} photos
             </div>
           )}
         </div>
 
         {/* Story side */}
-        <div className={`flex flex-col p-8 md:p-10 ${isReversed ? "lg:order-1" : ""}`}>
+        <div className={`flex flex-col p-10 md:p-14 bg-cream ${isReversed ? "lg:order-1" : ""}`}>
           {/* Meta */}
-          <div className="flex flex-wrap items-center gap-3 mb-5">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-8">
             {r.type && (
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary border border-primary/40 px-2.5 py-1">
+              <span className="badge-editorial">
                 {r.type}
               </span>
             )}
             {formattedDate && (
-              <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-wine-deep/55 font-medium">
                 {formattedDate}
               </span>
             )}
             {r.location && (
-              <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+              <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-wine-deep/55 font-medium">
                 <MapPin className="w-3 h-3" />
                 {r.location}
               </span>
@@ -157,32 +157,34 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
           </div>
 
           {/* Names */}
-          <div className="flex items-center gap-3 mb-6">
-            <Heart className="w-4 h-4 text-primary flex-shrink-0" />
-            <h3 className="text-2xl md:text-3xl font-bold font-serif text-foreground leading-tight">
-              {r.coupleName}
-            </h3>
+          <h3 className="font-display uppercase text-3xl md:text-5xl tracking-tight leading-[0.95] text-wine-deep mb-3">
+            {r.coupleName}
+          </h3>
+          <div className="flex items-center gap-2 mb-8">
+            <span className="block w-8 h-px bg-gold"></span>
+            <Heart className="w-3 h-3 text-gold flex-shrink-0" />
+            <span className="block w-8 h-px bg-gold"></span>
           </div>
 
           {/* Story */}
           {r.story ? (
-            <p className="text-muted-foreground leading-relaxed text-sm md:text-base flex-grow">
-              {r.story}
+            <p className="text-wine-deep/70 leading-relaxed text-sm md:text-base flex-grow font-light italic">
+              "{r.story}"
             </p>
           ) : (
-            <p className="text-muted-foreground/60 italic text-sm flex-grow">
-              Une histoire d'amour unique, célébrée avec élégance.
+            <p className="text-wine-deep/55 italic text-sm flex-grow font-light">
+              "Une histoire d'amour unique, célébrée avec élégance."
             </p>
           )}
 
           {/* Thumbnails */}
           {galleryImages.length > 1 && (
-            <div className="mt-8 grid grid-cols-4 gap-2">
+            <div className="mt-10 grid grid-cols-4 gap-1.5">
               {galleryImages.slice(0, 4).map((img, i) => (
                 <button
                   key={i}
                   onClick={() => openGallery(i)}
-                  className="aspect-square overflow-hidden bg-muted hover:opacity-80 transition-opacity"
+                  className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
@@ -196,7 +198,7 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
               href={r.videoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 text-primary text-sm font-medium hover:underline"
+              className="mt-6 btn-editorial-ghost text-wine-deep self-start"
             >
               ▶ Voir le film de mariage
             </a>
@@ -282,8 +284,8 @@ export default function Realisations() {
       </section>
 
       {/* Stories */}
-      <section className="py-16 md:py-20 bg-[#faf9f7]">
-        <div className="container mx-auto px-6 md:px-12 max-w-6xl space-y-8 md:space-y-12">
+      <section className="py-20 md:py-32 bg-cream">
+        <div className="container mx-auto px-6 md:px-12 max-w-6xl space-y-10 md:space-y-16">
           {realisations.map((r, i) => (
             <RealisationCard key={r.id} r={r} index={i} />
           ))}
@@ -291,21 +293,18 @@ export default function Realisations() {
       </section>
 
       {/* CTA — wine deep editorial */}
-      <section className="py-24 md:py-32 bg-wine-deep text-center text-cream">
-        <div className="container mx-auto px-6 max-w-2xl">
-          <Heart className="w-8 h-8 text-gold mx-auto mb-8" />
-          <h2 className="font-display uppercase font-medium text-3xl md:text-5xl mb-6 leading-[1.05] tracking-tight">
+      <section className="py-32 md:py-44 bg-wine-deep text-center text-cream relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="relative z-10 container mx-auto px-6 max-w-3xl">
+          <Heart className="w-6 h-6 text-gold mx-auto mb-8" />
+          <h2 className="font-display uppercase font-medium text-cream text-4xl md:text-6xl lg:text-7xl mb-8 leading-[0.95] tracking-tight">
             {t("realisations.cta_title")}
           </h2>
-          <p className="text-cream/70 mb-10 font-light leading-relaxed">{t("realisations.cta_subtitle")}</p>
-          <a
-            href="/contact"
-            className="group inline-flex items-center gap-3 border border-gold/60 hover:border-gold hover:bg-gold/10 px-7 py-4 transition-all"
-          >
-            <span className="text-[11px] uppercase tracking-[0.25em] text-gold font-medium">
-              {t("realisations.cta_btn")}
-            </span>
-            <span className="block w-8 h-px bg-gold transition-all group-hover:w-12"></span>
+          <p className="text-cream/75 mb-12 font-light leading-relaxed text-base md:text-lg">{t("realisations.cta_subtitle")}</p>
+          <a href="/contact" className="btn-editorial">
+            {t("realisations.cta_btn")}
           </a>
         </div>
       </section>

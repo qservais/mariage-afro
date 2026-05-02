@@ -68,21 +68,21 @@ export default function Contact() {
 
   const rdvModes = [
     {
-      icon: <Phone className="w-6 h-6 text-primary" />,
+      icon: <Phone className="w-6 h-6 text-gold" />,
       title: t("contact.rdv_phone_title"),
       desc: t("contact.rdv_phone_desc"),
       action: t("contact.rdv_phone_cta"),
       href: `tel:${t("footer.phone")}`
     },
     {
-      icon: <Mail className="w-6 h-6 text-primary" />,
+      icon: <Mail className="w-6 h-6 text-gold" />,
       title: t("contact.rdv_email_title"),
       desc: t("contact.rdv_email_desc"),
       action: t("contact.rdv_email_cta"),
       href: `mailto:${t("footer.email")}`
     },
     {
-      icon: <MapPin className="w-6 h-6 text-primary" />,
+      icon: <MapPin className="w-6 h-6 text-gold" />,
       title: t("contact.rdv_inperson_title"),
       desc: t("contact.rdv_inperson_desc"),
       action: t("contact.rdv_inperson_cta"),
@@ -147,21 +147,28 @@ export default function Contact() {
   }
 
   return (
-    <div className="w-full pt-28">
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-6 md:px-12 text-center">
+    <div className="w-full">
+      {/* Hero éditorial */}
+      <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="relative z-10 container mx-auto px-6 md:px-12 max-w-5xl text-center">
+          <motion.span
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="section-eyebrow mb-8"
+          >
+            Parlons de votre mariage
+          </motion.span>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold font-serif mb-6 text-foreground"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] mt-6 mb-8 text-cream text-5xl md:text-7xl lg:text-[6.5rem]"
           >
             {t("contact.title")}
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl text-muted-foreground max-w-2xl mx-auto"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+            className="text-base md:text-lg text-cream/70 font-light max-w-2xl mx-auto leading-relaxed"
           >
             {t("contact.subtitle")}
           </motion.p>
@@ -169,21 +176,21 @@ export default function Contact() {
       </section>
 
       {/* 3 RDV Modes */}
-      <section className="py-20 bg-white border-b border-border">
+      <section className="py-24 md:py-32 bg-cream">
         <div className="container mx-auto px-6 md:px-12 max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-14"
+            className="text-center mb-20"
           >
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("contact.rdv_label")}</span>
-            <h2 className="text-3xl md:text-4xl font-bold font-serif text-foreground">
+            <span className="section-eyebrow mb-6">{t("contact.rdv_label")}</span>
+            <h2 className="section-title-editorial text-3xl md:text-5xl mt-4">
               {t("contact.rdv_title")}
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10">
             {rdvModes.map((mode, i) => (
               <motion.div
                 key={mode.title}
@@ -191,18 +198,15 @@ export default function Contact() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12 }}
-                className="flex flex-col items-start bg-background border border-border p-8 hover:border-primary transition-colors group"
+                className="flex flex-col items-start bg-cream p-10 hover:bg-white transition-colors group"
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                <div className="w-14 h-14 border border-gold/40 flex items-center justify-center mb-8 text-gold group-hover:bg-gold group-hover:text-cream group-hover:border-gold transition-colors [&>svg]:!text-current">
                   {mode.icon}
                 </div>
-                <h3 className="text-lg font-bold font-serif text-foreground mb-3">{mode.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed flex-grow mb-6">{mode.desc}</p>
-                <a
-                  href={mode.href}
-                  className="inline-block text-xs uppercase tracking-widest font-bold text-primary border-b border-primary pb-0.5 hover:border-transparent transition-all"
-                >
-                  {mode.action}
+                <h3 className="font-display uppercase text-xl tracking-tight text-wine-deep mb-3">{mode.title}</h3>
+                <p className="text-wine-deep/65 text-sm leading-relaxed flex-grow mb-8 font-light">{mode.desc}</p>
+                <a href={mode.href} className="btn-editorial-ghost text-wine-deep">
+                  {mode.action} →
                 </a>
               </motion.div>
             ))}
@@ -211,15 +215,16 @@ export default function Contact() {
       </section>
 
       {/* Contact Form */}
-      <section id="contact-form" className="py-20 bg-white">
+      <section id="contact-form" className="py-24 md:py-32 bg-white border-t border-wine-deep/10">
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-card p-10 border border-border shadow-sm"
+              className="card-editorial p-10 md:p-12"
             >
-              <h3 className="text-2xl font-serif font-bold mb-8 text-foreground">{t("contact.form_title")}</h3>
+              <span className="section-eyebrow section-eyebrow-left mb-4">Formulaire détaillé</span>
+              <h3 className="font-display uppercase text-3xl md:text-4xl tracking-tight text-wine-deep mt-3 mb-10 leading-[1]">{t("contact.form_title")}</h3>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -230,7 +235,7 @@ export default function Contact() {
                         <FormItem>
                           <FormLabel>{t("contact.form.name")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} className="bg-white border-border rounded-none focus-visible:ring-primary" data-testid="input-contact-name" />
+                            <Input placeholder="John Doe" {...field} className="bg-cream border-wine-deep/15 rounded-none focus-visible:ring-gold" data-testid="input-contact-name" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -243,7 +248,7 @@ export default function Contact() {
                         <FormItem>
                           <FormLabel>{t("contact.form.email")}</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="john@example.com" {...field} className="bg-white border-border rounded-none focus-visible:ring-primary" data-testid="input-contact-email" />
+                            <Input type="email" placeholder="john@example.com" {...field} className="bg-cream border-wine-deep/15 rounded-none focus-visible:ring-gold" data-testid="input-contact-email" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -259,7 +264,7 @@ export default function Contact() {
                         <FormItem>
                           <FormLabel>{t("contact.form.phone")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="+32 4XX XX XX XX" {...field} className="bg-white border-border rounded-none focus-visible:ring-primary" />
+                            <Input placeholder="+32 4XX XX XX XX" {...field} className="bg-cream border-wine-deep/15 rounded-none focus-visible:ring-gold" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -272,7 +277,7 @@ export default function Contact() {
                         <FormItem>
                           <FormLabel>{t("contact.form.date")}</FormLabel>
                           <FormControl>
-                            <Input type="date" {...field} className="bg-white border-border rounded-none focus-visible:ring-primary" />
+                            <Input type="date" {...field} className="bg-cream border-wine-deep/15 rounded-none focus-visible:ring-gold" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -288,7 +293,7 @@ export default function Contact() {
                         <FormItem>
                           <FormLabel>{t("contact.form.guest_count")}</FormLabel>
                           <FormControl>
-                            <Input type="number" min={0} placeholder="120" {...field} className="bg-white border-border rounded-none focus-visible:ring-primary" data-testid="input-guest-count" />
+                            <Input type="number" min={0} placeholder="120" {...field} className="bg-cream border-wine-deep/15 rounded-none focus-visible:ring-gold" data-testid="input-guest-count" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -302,7 +307,7 @@ export default function Contact() {
                           <FormLabel>{t("contact.form.budget")}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger className="bg-white border-border rounded-none focus-visible:ring-primary" data-testid="select-budget">
+                              <SelectTrigger className="bg-cream border-wine-deep/15 rounded-none focus-visible:ring-gold" data-testid="select-budget">
                                 <SelectValue placeholder={t("contact.form.budget_placeholder")} />
                               </SelectTrigger>
                             </FormControl>
@@ -328,7 +333,7 @@ export default function Contact() {
                         <FormLabel>{t("contact.form.wedding_type")}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-white border-border rounded-none focus-visible:ring-primary" data-testid="select-wedding-type">
+                            <SelectTrigger className="bg-cream border-wine-deep/15 rounded-none focus-visible:ring-gold" data-testid="select-wedding-type">
                               <SelectValue placeholder={t("contact.form.wedding_type_placeholder")} />
                             </SelectTrigger>
                           </FormControl>
@@ -368,7 +373,7 @@ export default function Contact() {
                                           ? field.onChange([...current, opt])
                                           : field.onChange(current.filter((v) => v !== opt));
                                       }}
-                                      className="rounded-none border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                      className="rounded-none border-wine-deep/30 data-[state=checked]:bg-wine-deep data-[state=checked]:border-wine-deep"
                                       data-testid={`checkbox-service-${opt}`}
                                     />
                                   </FormControl>
@@ -394,7 +399,7 @@ export default function Contact() {
                         <FormControl>
                           <Textarea
                             placeholder="..."
-                            className="min-h-[150px] bg-white border-border rounded-none focus-visible:ring-primary resize-none"
+                            className="min-h-[150px] bg-cream border-wine-deep/15 rounded-none focus-visible:ring-gold resize-none"
                             {...field}
                             data-testid="textarea-contact-message"
                           />
@@ -404,24 +409,26 @@ export default function Contact() {
                     )}
                   />
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14"
-                    disabled={mutation.isPending}
-                    data-testid="button-contact-submit"
-                  >
-                    {mutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        {t("contact.form.submitting")}
-                      </>
-                    ) : (
-                      t("contact.form.submit")
-                    )}
-                  </Button>
+                  <div className="pt-4">
+                    <Button
+                      type="submit"
+                      className="btn-editorial-solid w-full justify-center !h-14"
+                      disabled={mutation.isPending}
+                      data-testid="button-contact-submit"
+                    >
+                      {mutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          {t("contact.form.submitting")}
+                        </>
+                      ) : (
+                        t("contact.form.submit")
+                      )}
+                    </Button>
+                  </div>
 
                   {mutation.isSuccess && (
-                    <div className="p-4 bg-green-50 text-green-800 border border-green-200 mt-4 text-center font-medium">
+                    <div className="p-5 bg-cream border border-gold/40 mt-4 text-center text-wine-deep text-sm uppercase tracking-[0.2em] font-medium">
                       {t("contact.form.success")}
                     </div>
                   )}
@@ -434,35 +441,40 @@ export default function Contact() {
               animate={{ opacity: 1, x: 0 }}
               className="flex flex-col justify-between"
             >
-              <div className="mb-10">
+              <div className="mb-10 relative">
                 <img
                   src={contactImg}
                   alt="Wedding Rings"
-                  className="w-full h-[400px] object-cover rounded-sm shadow-md"
+                  className="w-full h-[480px] object-cover"
                 />
+                <div className="absolute -bottom-4 -right-4 hidden md:flex w-24 h-24 border border-gold items-center justify-center bg-cream">
+                  <span className="font-display text-3xl text-gold leading-none italic">M.A</span>
+                </div>
               </div>
-              <div className="bg-background p-10 border border-border">
-                <h3 className="text-2xl font-serif font-bold mb-6 text-foreground">{t("contact.practical_title")}</h3>
-                <div className="space-y-5 text-muted-foreground">
+              <div className="card-editorial p-10 md:p-12 bg-wine-deep text-cream border-wine-deep">
+                <span className="section-eyebrow section-eyebrow-left mb-4">Coordonnées</span>
+                <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-cream mt-3 mb-8 leading-[1]">{t("contact.practical_title")}</h3>
+                <div className="space-y-5">
                   <div className="flex items-center gap-4">
-                    <Mail className="w-5 h-5 text-primary flex-shrink-0" />
-                    <a href={`mailto:${t("footer.email")}`} className="hover:text-primary transition-colors">
+                    <Mail className="w-4 h-4 text-gold flex-shrink-0" />
+                    <a href={`mailto:${t("footer.email")}`} className="text-cream/85 hover:text-gold transition-colors text-sm font-light">
                       {t("footer.email")}
                     </a>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Phone className="w-5 h-5 text-primary flex-shrink-0" />
-                    <a href={`tel:${t("footer.phone")}`} className="hover:text-primary transition-colors">
+                    <Phone className="w-4 h-4 text-gold flex-shrink-0" />
+                    <a href={`tel:${t("footer.phone")}`} className="text-cream/85 hover:text-gold transition-colors text-sm font-light">
                       {t("footer.phone")}
                     </a>
                   </div>
                   <div className="flex items-start gap-4">
-                    <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span>{t("footer.address")} — {t("contact.address_suffix")}</span>
+                    <MapPin className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" />
+                    <span className="text-cream/85 text-sm font-light">{t("footer.address")} — {t("contact.address_suffix")}</span>
                   </div>
                 </div>
-                <div className="mt-8 pt-8 border-t border-border">
-                  <p className="text-sm text-muted-foreground">
+                <div className="mt-8 pt-8 border-t border-cream/15">
+                  <p className="text-xs uppercase tracking-[0.25em] text-gold mb-2 font-medium">Horaires</p>
+                  <p className="text-sm text-cream/70 font-light leading-relaxed">
                     {t("contact.practical_hours")}
                   </p>
                 </div>

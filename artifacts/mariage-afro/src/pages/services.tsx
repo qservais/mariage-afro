@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 
 import servicesBg from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
@@ -26,22 +25,28 @@ export default function Services() {
   };
 
   return (
-    <div className="w-full pt-28">
-      {/* Header */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-6 md:px-12 text-center">
+    <div className="w-full">
+      {/* Hero éditorial */}
+      <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="relative z-10 container mx-auto px-6 md:px-12 max-w-5xl text-center">
+          <motion.span
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="section-eyebrow mb-8"
+          >
+            {t("services.label") !== "services.label" ? t("services.label") : "Notre offre"}
+          </motion.span>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold font-serif mb-6 text-foreground"
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] mt-6 mb-8 text-cream text-5xl md:text-7xl lg:text-[6rem]"
           >
             {t("services.title")}
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl text-muted-foreground max-w-2xl mx-auto"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+            className="text-base md:text-lg text-cream/70 font-light max-w-2xl mx-auto leading-relaxed"
           >
             {t("services.subtitle")}
           </motion.p>
@@ -49,25 +54,24 @@ export default function Services() {
       </section>
 
       {/* Services List — 3 main services */}
-      <section className="py-20 bg-white">
+      <section className="py-24 md:py-32 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10">
             {[1, 2, 3].map((i) => (
               <motion.div
                 key={i}
                 {...fadeIn}
                 transition={{ delay: i * 0.1 }}
-                className="bg-background border border-border p-10 flex flex-col items-start shadow-sm hover:shadow-md transition-shadow"
+                className="bg-cream p-10 md:p-12 flex flex-col items-start"
               >
-                <h3 className="text-2xl font-bold mb-4 font-serif">{t(`services.item${i}_title`)}</h3>
-                <div className="w-12 h-1 bg-primary mb-6"></div>
-                <p className="text-muted-foreground leading-relaxed mb-8 flex-grow">
+                <span className="font-display text-6xl text-gold mb-6 leading-none">0{i}</span>
+                <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{t(`services.item${i}_title`)}</h3>
+                <div className="w-8 h-px bg-gold mb-6"></div>
+                <p className="text-wine-deep/70 leading-relaxed mb-10 flex-grow font-light text-sm md:text-base">
                   {t(`services.item${i}_desc`)}
                 </p>
-                <Link to="/contact">
-                  <Button variant="outline" className="rounded-none border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-wider w-full">
-                    {t(`services.item${i}_cta`)}
-                  </Button>
+                <Link to="/contact" className="btn-editorial-compact w-full justify-center">
+                  {t(`services.item${i}_cta`)}
                 </Link>
               </motion.div>
             ))}
@@ -76,32 +80,30 @@ export default function Services() {
       </section>
 
       {/* Destination Wedding — Featured 4th Service */}
-      <section className="py-24 bg-foreground text-white">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <section className="py-28 md:py-40 bg-wine-deep text-cream relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="container relative z-10 mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <div className="flex items-center gap-3 mb-6">
-                <MapPin className="w-5 h-5 text-primary" />
-                <span className="text-xs uppercase tracking-[0.3em] text-primary font-bold">
-                  Service exclusif
-                </span>
-              </div>
-              <h2 className="text-3xl md:text-5xl font-bold font-serif leading-tight mb-6">
+              <span className="section-eyebrow section-eyebrow-left mb-6 inline-flex items-center gap-2">
+                <MapPin className="w-3 h-3" />
+                Service exclusif
+              </span>
+              <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-8 leading-[0.95] tracking-tight">
                 {t("services.item4_title")}
               </h2>
-              <div className="w-14 h-1 bg-primary mb-8"></div>
-              <p className="text-lg text-white/70 leading-relaxed mb-10">
+              <p className="text-lg text-cream/70 leading-relaxed mb-12 font-light">
                 {t("services.item4_desc")}
               </p>
-              <Link to="/contact">
-                <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-8">
-                  {t("services.item4_cta")}
-                </Button>
+              <Link to="/contact" className="btn-editorial">
+                {t("services.item4_cta")}
               </Link>
             </motion.div>
 
@@ -110,14 +112,15 @@ export default function Services() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="grid grid-cols-2 gap-4"
+              className="grid grid-cols-2 gap-px bg-cream/10 border border-cream/10"
             >
-              {["Maroc", "Sénégal", "Côte d'Ivoire", "Portugal"].map((dest, i) => (
+              {["Maroc", "Sénégal", "Côte d'Ivoire", "Portugal"].map((dest) => (
                 <div
                   key={dest}
-                  className="border border-white/15 p-8 flex items-center justify-center text-center bg-white/5 hover:bg-white/10 transition-colors"
+                  className="bg-wine-deep p-12 flex flex-col items-center justify-center text-center hover:bg-wine-mid transition-colors min-h-[180px]"
                 >
-                  <span className="font-semibold text-white/80 text-sm tracking-wide">{dest}</span>
+                  <MapPin className="w-4 h-4 text-gold mb-4" />
+                  <span className="font-display uppercase text-xl tracking-tight text-cream">{dest}</span>
                 </div>
               ))}
             </motion.div>
@@ -132,7 +135,7 @@ export default function Services() {
           alt="Details"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-wine-deep/30"></div>
       </section>
     </div>
   );

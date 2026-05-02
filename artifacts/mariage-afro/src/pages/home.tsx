@@ -68,14 +68,14 @@ export default function Home() {
   ];
 
   const prestationsItems = [
-    { icon: <Camera className="w-7 h-7 text-primary" />, label: t("prestations.items.0") },
-    { icon: <Video className="w-7 h-7 text-primary" />, label: t("prestations.items.1") },
-    { icon: <Music className="w-7 h-7 text-primary" />, label: t("prestations.items.2") },
-    { icon: <Flower2 className="w-7 h-7 text-primary" />, label: t("prestations.items.3") },
-    { icon: <Utensils className="w-7 h-7 text-primary" />, label: t("prestations.items.4") },
-    { icon: <Scissors className="w-7 h-7 text-primary" />, label: t("prestations.items.5") },
-    { icon: <MapPin className="w-7 h-7 text-primary" />, label: t("prestations.items.6") },
-    { icon: <Car className="w-7 h-7 text-primary" />, label: t("prestations.items.7") }
+    { icon: <Camera className="w-7 h-7 text-gold" />, label: t("prestations.items.0") },
+    { icon: <Video className="w-7 h-7 text-gold" />, label: t("prestations.items.1") },
+    { icon: <Music className="w-7 h-7 text-gold" />, label: t("prestations.items.2") },
+    { icon: <Flower2 className="w-7 h-7 text-gold" />, label: t("prestations.items.3") },
+    { icon: <Utensils className="w-7 h-7 text-gold" />, label: t("prestations.items.4") },
+    { icon: <Scissors className="w-7 h-7 text-gold" />, label: t("prestations.items.5") },
+    { icon: <MapPin className="w-7 h-7 text-gold" />, label: t("prestations.items.6") },
+    { icon: <Car className="w-7 h-7 text-gold" />, label: t("prestations.items.7") }
   ];
 
   const platformPoints = [
@@ -213,22 +213,19 @@ export default function Home() {
       </section>
 
       {/* How it works — 3 steps */}
-      <section className="py-24 md:py-32 bg-white">
+      <section className="py-24 md:py-36 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
-          <motion.div {...fadeIn} className="text-center mb-16 md:mb-20 max-w-3xl mx-auto">
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">
-              {t("home.how_label")}
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground mb-6 leading-tight">
+          <motion.div {...fadeIn} className="text-center mb-20 max-w-3xl mx-auto">
+            <span className="section-eyebrow mb-6">{t("home.how_label")}</span>
+            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl mt-4 mb-8">
               {t("home.how_title")}
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-wine-deep/65 leading-relaxed font-light">
               {t("home.how_subtitle")}
             </p>
-            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 mb-12 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10 mb-16">
             {howSteps.map((step, i) => (
               <motion.div
                 key={i}
@@ -236,18 +233,18 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.15 }}
-                className="relative bg-background border border-border p-8 md:p-10 flex flex-col"
+                className="relative bg-cream p-10 md:p-12 flex flex-col"
               >
-                <div className="flex items-baseline gap-4 mb-6">
-                  <span className="text-5xl md:text-6xl font-bold text-primary/15 font-serif leading-none">
+                <div className="flex items-baseline gap-4 mb-8">
+                  <span className="font-display text-6xl md:text-7xl text-gold leading-none">
                     {step.num}
                   </span>
-                  <div className="h-px flex-grow bg-primary/30"></div>
+                  <div className="h-px flex-grow bg-gold/40"></div>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold font-serif text-foreground mb-4 leading-tight">
+                <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">
                   {step.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
+                <p className="text-wine-deep/70 leading-relaxed text-sm md:text-base font-light">
                   {step.desc}
                 </p>
               </motion.div>
@@ -255,42 +252,39 @@ export default function Home() {
           </div>
 
           <div className="text-center">
-            <Link to="/plateforme">
-              <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-10">
-                {t("home.how_cta")}
-              </Button>
+            <Link to="/plateforme" className="btn-editorial-solid">
+              {t("home.how_cta")}
             </Link>
           </div>
         </div>
       </section>
 
       {/* Platform Differentiator Section */}
-      <section className="py-24 md:py-36 bg-foreground text-white">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <section className="py-28 md:py-40 bg-wine-deep text-cream relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="container relative z-10 mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-6">
-                {t("platform.label")}
-              </span>
-              <h2 className="text-3xl md:text-5xl font-bold font-serif leading-tight mb-8">
+              <span className="section-eyebrow section-eyebrow-left mb-6">{t("platform.label")}</span>
+              <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-8 leading-[0.95] tracking-tight">
                 {t("platform.title")}
               </h2>
-              <p className="text-lg text-white/70 leading-relaxed mb-10">
+              <p className="text-lg text-cream/70 leading-relaxed mb-12 font-light">
                 {t("platform.desc")}
               </p>
-              <Link to="/contact">
-                <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-8">
-                  {t("platform.cta")}
-                </Button>
+              <Link to="/contact" className="btn-editorial">
+                {t("platform.cta")}
               </Link>
             </motion.div>
 
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-px bg-cream/10 border border-cream/10">
               {platformPoints.map((point, i) => (
                 <motion.div
                   key={i}
@@ -298,14 +292,14 @@ export default function Home() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.15 }}
-                  className="flex gap-6 items-start border border-white/10 p-8 bg-white/5 hover:bg-white/10 transition-colors"
+                  className="flex gap-6 items-start p-8 bg-wine-deep hover:bg-wine-mid transition-colors"
                 >
-                  <div className="flex-shrink-0 w-16 h-16 border border-primary flex items-center justify-center">
-                    <span className="text-2xl font-bold text-primary font-serif">{point.num}</span>
+                  <div className="flex-shrink-0">
+                    <span className="font-display text-5xl text-gold leading-none">{point.num}</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold mb-2">{point.title}</h3>
-                    <p className="text-white/60 leading-relaxed text-sm">{point.desc}</p>
+                    <h3 className="font-display uppercase text-xl tracking-tight text-cream mb-2">{point.title}</h3>
+                    <p className="text-cream/65 leading-relaxed text-sm font-light">{point.desc}</p>
                   </div>
                 </motion.div>
               ))}
@@ -315,16 +309,16 @@ export default function Home() {
       </section>
 
       {/* Value Props Section */}
-      <section className="py-24 md:py-32 bg-background">
+      <section className="py-24 md:py-32 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
-          <motion.div {...fadeIn} className="text-center mb-16 md:mb-24">
-            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
+          <motion.div {...fadeIn} className="text-center mb-20">
+            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl">
               {t("value_props.title")}
             </h2>
-            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
+            <div className="w-12 h-px bg-gold mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
             {[1, 2, 3, 4].map((i, index) => (
               <motion.div
                 key={i}
@@ -334,11 +328,10 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="w-16 h-16 mx-auto bg-card rounded-full flex items-center justify-center mb-6 shadow-sm border border-border">
-                  <span className="text-primary font-bold text-xl">0{i}</span>
-                </div>
-                <h3 className="text-xl font-bold mb-4">{t(`value_props.item${i}_title`)}</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <div className="font-display text-5xl text-gold mb-4 leading-none">0{i}</div>
+                <div className="w-8 h-px bg-gold/40 mx-auto mb-6"></div>
+                <h3 className="font-display uppercase text-xl tracking-tight text-wine-deep mb-4">{t(`value_props.item${i}_title`)}</h3>
+                <p className="text-wine-deep/65 leading-relaxed text-sm font-light">
                   {t(`value_props.item${i}_desc`)}
                 </p>
               </motion.div>
@@ -348,17 +341,16 @@ export default function Home() {
       </section>
 
       {/* Services Preview */}
-      <section className="py-24 md:py-32 bg-white">
+      <section className="py-24 md:py-32 bg-white border-t border-wine-deep/10">
         <div className="container mx-auto px-6 md:px-12">
-          <motion.div {...fadeIn} className="text-center mb-16">
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("home.services_label")}</span>
-            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
+          <motion.div {...fadeIn} className="text-center mb-20">
+            <span className="section-eyebrow mb-6">{t("home.services_label")}</span>
+            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl mt-4">
               {t("home.services_title")}
             </h2>
-            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10">
             {serviceCards.map((card, index) => (
               <motion.div
                 key={card.num}
@@ -366,34 +358,30 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.12 }}
-                className="bg-background border border-border p-10 flex flex-col group hover:shadow-lg transition-shadow"
+                className="bg-white p-10 md:p-12 flex flex-col group"
               >
-                <span className="text-4xl font-bold text-primary/20 font-serif mb-4">{card.num}</span>
-                <h3 className="text-xl font-bold font-serif mb-4 text-foreground">{card.title}</h3>
-                <div className="w-10 h-0.5 bg-primary mb-6"></div>
-                <p className="text-muted-foreground leading-relaxed flex-grow mb-8">{card.desc}</p>
-                <Link to={card.href}>
-                  <Button variant="outline" className="rounded-none border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-wider w-full text-sm">
-                    {t("home.services_learn_more")}
-                  </Button>
+                <span className="font-display text-6xl text-gold mb-6 leading-none">{card.num}</span>
+                <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{card.title}</h3>
+                <div className="w-8 h-px bg-gold mb-6"></div>
+                <p className="text-wine-deep/70 leading-relaxed flex-grow mb-10 font-light text-sm md:text-base">{card.desc}</p>
+                <Link to={card.href} className="btn-editorial-ghost self-start group-hover:text-gold">
+                  {t("home.services_learn_more")} →
                 </Link>
               </motion.div>
             ))}
           </div>
 
-          <div className="text-center mt-12">
-            <Link to="/services">
-              <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-10">
-                {t("home.services_cta")}
-              </Button>
+          <div className="text-center mt-16">
+            <Link to="/services" className="btn-editorial-solid">
+              {t("home.services_cta")}
             </Link>
           </div>
         </div>
       </section>
 
       {/* Film de Miel — Sub-brand Section */}
-      <section className="relative py-32 bg-black text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-35">
+      <section className="relative py-32 md:py-44 bg-wine-deep text-cream overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-30">
           <video
             src={videoSrc}
             autoPlay
@@ -403,62 +391,45 @@ export default function Home() {
             className="w-full h-full object-cover"
           />
         </div>
+        <div className="absolute inset-0 bg-wine-deep/40" />
         <div className="container relative z-10 mx-auto px-6 md:px-12 flex justify-center text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl bg-black/65 backdrop-blur-sm p-12 md:p-16 border border-white/10"
+            className="max-w-3xl"
           >
-            <div className="mb-8">
-              <span className="inline-block text-xs uppercase tracking-[0.4em] text-white/50 font-medium mb-3 block">
-                {t("film_de_miel.label")}
-              </span>
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="w-10 h-px bg-primary"></div>
-                <span
-                  className="text-3xl md:text-4xl font-bold font-serif tracking-wide"
-                  style={{ color: "#c9a96e" }}
-                >
-                  Film de Miel
-                </span>
-                <div className="w-10 h-px bg-primary"></div>
-              </div>
-              <span className="text-xs uppercase tracking-[0.25em] text-white/40 font-medium">
+            <div className="mb-10">
+              <span className="section-eyebrow mb-8">{t("film_de_miel.label")}</span>
+              <h3 className="font-display text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[0.9] mt-6 mb-3 text-gold italic">
+                Film de Miel
+              </h3>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-cream/50 font-medium">
                 by Mariage Afro
               </span>
             </div>
-            <p className="text-lg text-white/80 leading-relaxed mb-10">
+            <p className="text-lg md:text-xl text-cream/80 leading-relaxed mb-12 font-light max-w-2xl mx-auto">
               {t("film_de_miel.desc")}
             </p>
-            <Link to="/realisations">
-              <Button
-                variant="outline"
-                className="rounded-none uppercase tracking-wider h-12 px-8 bg-transparent"
-                style={{ borderColor: "#c9a96e", color: "#c9a96e" }}
-              >
-                {t("film_de_miel.cta")}
-              </Button>
+            <Link to="/realisations" className="btn-editorial">
+              {t("film_de_miel.cta")}
             </Link>
           </motion.div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 md:py-36 bg-background">
+      <section className="py-24 md:py-36 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
-          <motion.div {...fadeIn} className="text-center mb-16 md:mb-20">
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">
-              {t("testimonials.label")}
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
+          <motion.div {...fadeIn} className="text-center mb-20">
+            <span className="section-eyebrow mb-6">{t("testimonials.label")}</span>
+            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl mt-4">
               {t("testimonials.title")}
             </h2>
-            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10">
             {testimonials.map((item, i) => (
               <motion.div
                 key={i}
@@ -466,15 +437,15 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.15 }}
-                className="bg-white border border-border p-10 flex flex-col relative"
+                className="bg-cream p-10 md:p-12 flex flex-col relative"
               >
-                <Quote className="w-8 h-8 text-primary/25 mb-6 flex-shrink-0" />
-                <p className="text-muted-foreground leading-relaxed italic flex-grow mb-8 text-base">
+                <Quote className="w-10 h-10 text-gold/40 mb-6 flex-shrink-0" />
+                <p className="font-display text-xl md:text-2xl text-wine-deep leading-relaxed italic flex-grow mb-10">
                   "{item.quote}"
                 </p>
-                <div className="border-t border-border pt-6">
-                  <p className="font-bold text-foreground text-sm tracking-wide">{item.name}</p>
-                  <p className="text-xs text-primary mt-1 uppercase tracking-wider">{item.origin}</p>
+                <div className="border-t border-wine-deep/10 pt-6">
+                  <p className="font-display uppercase text-base tracking-tight text-wine-deep">{item.name}</p>
+                  <p className="text-[10px] text-gold mt-1 uppercase tracking-[0.3em] font-medium">{item.origin}</p>
                 </div>
               </motion.div>
             ))}
@@ -483,17 +454,16 @@ export default function Home() {
       </section>
 
       {/* Prestations Grid Preview */}
-      <section className="py-24 md:py-32 bg-white">
+      <section className="py-24 md:py-32 bg-white border-t border-wine-deep/10">
         <div className="container mx-auto px-6 md:px-12">
-          <motion.div {...fadeIn} className="text-center mb-16">
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("home.prestations_label")}</span>
-            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
+          <motion.div {...fadeIn} className="text-center mb-20">
+            <span className="section-eyebrow mb-6">{t("home.prestations_label")}</span>
+            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl mt-4">
               {t("home.prestations_title")}
             </h2>
-            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
           </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-wine-deep/10 border border-wine-deep/10">
             {prestationsItems.map((item, i) => (
               <motion.div
                 key={i}
@@ -501,39 +471,41 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="group border border-border bg-background p-8 flex flex-col items-center justify-center text-center hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
+                className="group bg-white p-10 flex flex-col items-center justify-center text-center hover:bg-cream transition-colors cursor-pointer"
               >
-                <div className="mb-4">{item.icon}</div>
-                <h3 className="font-semibold text-sm text-foreground">{item.label}</h3>
+                <div className="mb-5 text-gold group-hover:scale-110 transition-transform">{item.icon}</div>
+                <h3 className="font-display uppercase text-base tracking-tight text-wine-deep">{item.label}</h3>
               </motion.div>
             ))}
           </div>
 
-          <div className="text-center mt-12">
-            <Link to="/partenaires">
-              <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-10">
-                {t("home.prestations_cta")}
-              </Button>
+          <div className="text-center mt-16">
+            <Link to="/partenaires" className="btn-editorial-solid">
+              {t("home.prestations_cta")}
             </Link>
           </div>
         </div>
       </section>
 
       {/* About Preview */}
-      <section className="py-24 md:py-32 bg-background">
+      <section className="py-24 md:py-36 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
+              className="relative"
             >
               <img
                 src={aboutImage}
                 alt="Mixed Wedding Ceremony"
-                className="w-full h-[400px] md:h-[600px] object-cover rounded-sm shadow-xl"
+                className="w-full h-[500px] md:h-[680px] object-cover"
               />
+              <div className="absolute -bottom-6 -right-6 hidden md:flex w-32 h-32 border border-gold items-center justify-center bg-cream">
+                <span className="font-display text-5xl text-gold leading-none italic">M.A</span>
+              </div>
             </motion.div>
 
             <motion.div
@@ -543,20 +515,18 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="lg:pl-10"
             >
-              <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-6">{t("home.about_label")}</span>
-              <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground mb-8">
+              <span className="section-eyebrow section-eyebrow-left mb-6">{t("home.about_label")}</span>
+              <h2 className="font-display uppercase text-wine-deep text-4xl md:text-6xl lg:text-7xl mt-4 mb-10 leading-[0.95] tracking-tight">
                 {t("home.about_title")}
               </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+              <p className="text-lg text-wine-deep/75 leading-relaxed mb-6 font-light">
                 {t("home.about_text1")}
               </p>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-10">
+              <p className="text-lg text-wine-deep/75 leading-relaxed mb-12 font-light">
                 {t("home.about_text2")}
               </p>
-              <Link to="/a-propos">
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 px-8">
-                  {t("home.about_cta")}
-                </Button>
+              <Link to="/a-propos" className="btn-editorial-solid">
+                {t("home.about_cta")}
               </Link>
             </motion.div>
           </div>
@@ -564,26 +534,25 @@ export default function Home() {
       </section>
 
       {/* CTA Banner */}
-      <section className="py-28 bg-primary text-white">
-        <div className="container mx-auto px-6 md:px-12 text-center max-w-3xl">
+      <section className="py-32 md:py-40 bg-wine-deep text-cream relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="container relative z-10 mx-auto px-6 md:px-12 text-center max-w-4xl">
           <motion.div {...fadeIn}>
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-white/60 font-bold mb-6">{t("home.cta_label")}</span>
-            <h2 className="text-3xl md:text-5xl font-bold font-serif mb-8 leading-tight">
+            <span className="section-eyebrow mb-8">{t("home.cta_label")}</span>
+            <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-8xl mt-4 mb-10 leading-[0.9] tracking-tight">
               {t("home.cta_title")}
             </h2>
-            <p className="text-lg text-white/80 leading-relaxed mb-10">
+            <p className="text-lg md:text-xl text-cream/75 leading-relaxed mb-14 font-light max-w-2xl mx-auto">
               {t("home.cta_desc")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/contact">
-                <Button className="bg-white text-primary hover:bg-white/90 rounded-none uppercase tracking-wider h-14 px-10 font-bold w-full sm:w-auto">
-                  {t("home.cta_primary")}
-                </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/contact" className="btn-editorial w-full sm:w-auto justify-center">
+                {t("home.cta_primary")}
               </Link>
-              <Link to="/services">
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-primary rounded-none uppercase tracking-wider h-14 px-10 bg-transparent w-full sm:w-auto">
-                  {t("home.cta_secondary")}
-                </Button>
+              <Link to="/services" className="btn-editorial-ghost text-cream/80 hover:text-gold">
+                {t("home.cta_secondary")} →
               </Link>
             </div>
           </motion.div>

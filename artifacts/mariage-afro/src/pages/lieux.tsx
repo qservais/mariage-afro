@@ -109,9 +109,9 @@ export default function Lieux() {
       </section>
 
       {/* Venue cards */}
-      <section className="py-16 md:py-20 bg-white">
+      <section className="py-20 md:py-28 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
             {venues.map((venue, i) => (
               <motion.div
                 key={i}
@@ -119,56 +119,56 @@ export default function Lieux() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.55, delay: (i % 2) * 0.1 }}
-                className="bg-background border border-border overflow-hidden flex flex-col group hover:shadow-xl transition-shadow"
+                className="card-editorial overflow-hidden flex flex-col group"
               >
                 {/* Image */}
-                <div className="relative h-72 overflow-hidden flex-shrink-0">
+                <div className="relative h-80 overflow-hidden flex-shrink-0">
                   <img
                     src={(venue as { image?: string }).image || VENUE_IMAGES[i % VENUE_IMAGES.length]}
                     alt={venue.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  <div className="absolute bottom-5 left-5 right-5 text-white">
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest bg-primary px-2.5 py-1 mb-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/85 via-wine-deep/20 to-transparent" />
+                  <div className="absolute bottom-6 left-6 right-6 text-cream">
+                    <span className="badge-editorial-dark mb-3">
                       <MapPin className="w-3 h-3" />
                       {venue.city}
                     </span>
-                    <h3 className="text-2xl md:text-3xl font-bold font-serif leading-tight">
+                    <h3 className="font-display uppercase text-3xl md:text-4xl tracking-tight leading-[0.95] mt-3">
                       {venue.name}
                     </h3>
                   </div>
                 </div>
 
                 {/* Body */}
-                <div className="p-8 flex flex-col flex-grow">
-                  <div className="flex flex-wrap gap-x-6 gap-y-3 mb-5 text-xs">
+                <div className="p-8 md:p-10 flex flex-col flex-grow">
+                  <div className="flex flex-wrap gap-x-10 gap-y-4 mb-7 pb-7 border-b border-wine-deep/10">
                     <div>
-                      <span className="block uppercase tracking-widest text-primary font-bold mb-1 flex items-center gap-1.5">
+                      <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-1.5">
                         <Users className="w-3 h-3" /> {t("venues.capacity_label")}
                       </span>
-                      <span className="text-foreground font-medium text-sm">{venue.capacity}</span>
+                      <span className="text-wine-deep font-display text-lg">{venue.capacity}</span>
                     </div>
                     <div>
-                      <span className="block uppercase tracking-widest text-primary font-bold mb-1 flex items-center gap-1.5">
+                      <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-1.5">
                         <Sparkles className="w-3 h-3" /> {t("venues.style_label")}
                       </span>
-                      <span className="text-foreground font-medium text-sm">{venue.style}</span>
+                      <span className="text-wine-deep font-display text-lg">{venue.style}</span>
                     </div>
                   </div>
 
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                  <p className="text-wine-deep/70 text-sm leading-relaxed mb-7 font-light italic">
                     {venue.desc}
                   </p>
 
-                  <div className="border-t border-border pt-5 mb-6">
-                    <span className="block text-[10px] uppercase tracking-widest text-primary font-bold mb-3">
+                  <div className="mb-8">
+                    <span className="block text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-3">
                       {t("venues.options_label")}
                     </span>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
                       {venue.options.map((opt, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-xs text-foreground/80">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
+                        <li key={idx} className="flex items-start gap-2 text-sm text-wine-deep/85 font-light">
+                          <span className="block w-3 h-px bg-gold flex-shrink-0 mt-2.5" />
                           <span>{opt}</span>
                         </li>
                       ))}
@@ -176,18 +176,11 @@ export default function Lieux() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                    <Link to="/contact" className="flex-1">
-                      <Button
-                        variant="outline"
-                        className="w-full rounded-none border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-wider text-xs h-11"
-                      >
-                        {t("venues.cta_visit")}
-                      </Button>
+                    <Link to="/contact" className="btn-editorial-compact flex-1">
+                      {t("venues.cta_visit")}
                     </Link>
-                    <Link to="/contact" className="flex-1">
-                      <Button className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider text-xs h-11">
-                        {t("venues.cta_quote")}
-                      </Button>
+                    <Link to="/contact" className="btn-editorial-compact-solid flex-1">
+                      {t("venues.cta_quote")}
                     </Link>
                   </div>
                 </div>
@@ -198,18 +191,22 @@ export default function Lieux() {
       </section>
 
       {/* Form */}
-      <section className="py-20 bg-background border-t border-border">
-        <div className="container mx-auto px-6 md:px-12 max-w-2xl">
+      <section className="py-24 md:py-32 bg-wine-deep text-cream relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="relative z-10 container mx-auto px-6 md:px-12 max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-10"
+            className="text-center mb-12"
           >
-            <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground mb-4">
+            <span className="section-eyebrow mb-6">{t("venues.form_eyebrow") !== "venues.form_eyebrow" ? t("venues.form_eyebrow") : "Demande personnalisée"}</span>
+            <h2 className="font-display uppercase text-cream text-3xl md:text-5xl mt-4 mb-6 leading-[0.95] tracking-tight">
               {t("venues.form_title")}
             </h2>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-cream/70 leading-relaxed font-light">
               {t("venues.form_desc")}
             </p>
           </motion.div>
@@ -220,11 +217,11 @@ export default function Lieux() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
             onSubmit={handleSubmit}
-            className="bg-white border border-border p-8 md:p-10 space-y-5"
+            className="space-y-6"
             data-testid="form-venues"
           >
             <div>
-              <label htmlFor="venues-name" className="block text-xs uppercase tracking-widest font-bold text-foreground mb-2">
+              <label htmlFor="venues-name" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
                 {t("venues.form_name")}
               </label>
               <input
@@ -233,12 +230,12 @@ export default function Lieux() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
                 data-testid="input-venues-name"
               />
             </div>
             <div>
-              <label htmlFor="venues-venue" className="block text-xs uppercase tracking-widest font-bold text-foreground mb-2">
+              <label htmlFor="venues-venue" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
                 {t("venues.form_venue")}
               </label>
               <input
@@ -248,12 +245,12 @@ export default function Lieux() {
                 placeholder={t("venues.form_venue_placeholder")}
                 value={formData.venue}
                 onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-                className="w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
                 data-testid="input-venues-venue"
               />
             </div>
             <div>
-              <label htmlFor="venues-date" className="block text-xs uppercase tracking-widest font-bold text-foreground mb-2">
+              <label htmlFor="venues-date" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
                 {t("venues.form_date")}
               </label>
               <input
@@ -261,17 +258,19 @@ export default function Lieux() {
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
                 data-testid="input-venues-date"
               />
             </div>
-            <Button
-              type="submit"
-              className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-12 mt-2"
-              data-testid="button-venues-submit"
-            >
-              {t("venues.form_submit")}
-            </Button>
+            <div className="pt-6">
+              <button
+                type="submit"
+                className="btn-editorial w-full justify-center"
+                data-testid="button-venues-submit"
+              >
+                {t("venues.form_submit")}
+              </button>
+            </div>
           </motion.form>
         </div>
       </section>

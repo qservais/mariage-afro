@@ -38,7 +38,7 @@ export default function Header() {
 
   // Détecter si on est sur une page avec hero sombre (style éditorial wine-deep)
   // pour adapter automatiquement les couleurs du header + sidebar
-  const DARK_HERO_ROUTES = ["/", "/realisations", "/lieux", "/partenaires"];
+  const DARK_HERO_ROUTES = ["/", "/realisations", "/lieux", "/partenaires", "/services", "/plateforme", "/contact", "/shop"];
   const isOverDarkRoute = DARK_HERO_ROUTES.includes(location);
   const isOverDark = isOverDarkRoute && !isScrolled;
 
@@ -143,7 +143,7 @@ export default function Header() {
               className={`hidden md:flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-medium transition-colors ${
                 isOverDark || isScrolled || mobileMenuOpen
                   ? "text-cream/90 hover:text-gold"
-                  : "text-wine-deep hover:text-primary"
+                  : "text-wine-deep hover:text-gold"
               }`}
               aria-label={t("nav.client_area")}
             >
