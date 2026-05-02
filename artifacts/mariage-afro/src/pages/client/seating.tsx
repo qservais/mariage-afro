@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   DndContext,
@@ -17,19 +18,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Guest, GuestTable, GuestTableCreate, GuestTablePatch } from "@/lib/clientTypes";
 
-const SHAPE_LABEL: Record<GuestTable["shape"], string> = {
-  round: "Ronde",
-  rect: "Rectangulaire",
-  square: "Carrée",
-};
-
 interface DraggableGuestProps {
   guest: Guest;
   inTable?: boolean;
   onRemove?: () => void;
+  removeLabel?: string;
 }
 
-function DraggableGuest({ guest, inTable, onRemove }: DraggableGuestProps) {
+function DraggableGuest({ guest, inTable, onRemove, removeLabel }: DraggableGuestProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `guest-${guest.id}`,
     data: { guestId: guest.id },
@@ -55,7 +51,7 @@ function DraggableGuest({ guest, inTable, onRemove }: DraggableGuestProps) {
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
           className="text-neutral-400 hover:text-primary"
-          aria-label="Retirer"
+          aria-label={removeLabel ?? "Remove"}
         >
           <X className="w-3 h-3" />
         </button>
@@ -72,9 +68,20 @@ interface DroppableTableProps {
   onShape: (shape: GuestTable["shape"]) => void;
   onDelete: () => void;
   onRemoveGuest: (guestId: number) => void;
+  shapeLabels: Record<GuestTable["shape"], string>;
+  labels: {
+    full: string;
+    free: (n: number) => string;
+    deleteTable: string;
+    capacity: string;
+    dropHere: string;
+    chairFree: string;
+    chairsAria: (s: number, c: number) => string;
+    remove: string;
+  };
 }
 
-function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete, onRemoveGuest }: DroppableTableProps) {
+function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete, onRemoveGuest, shapeLabels, labels }: DroppableTableProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: `table-${table.id}`,
     data: { tableId: table.id },
@@ -111,10 +118,10 @@ function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete
             </button>
           )}
           <p className="text-xs text-neutral-500 mt-0.5">
-            {SHAPE_LABEL[table.shape]} · {seated.length}/{table.capacity} {full ? "(pleine)" : `(${free} libre${free > 1 ? "s" : ""})`}
+            {shapeLabels[table.shape]} · {seated.length}/{table.capacity} {full ? labels.full : labels.free(free)}
           </p>
         </div>
-        <button onClick={onDelete} className="text-neutral-400 hover:text-primary" aria-label="Supprimer table">
+        <button onClick={onDelete} className="text-neutral-400 hover:text-primary" aria-label={labels.deleteTable}>
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
@@ -125,9 +132,9 @@ function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete
           onChange={(e) => onShape(e.target.value as GuestTable["shape"])}
           className="border border-neutral-300 px-2 py-1 text-xs"
         >
-          <option value="round">Ronde</option>
-          <option value="rect">Rectangulaire</option>
-          <option value="square">Carrée</option>
+          <option value="round">{shapeLabels.round}</option>
+          <option value="rect">{shapeLabels.rect}</option>
+          <option value="square">{shapeLabels.square}</option>
         </select>
         <input
           type="number"
@@ -139,7 +146,7 @@ function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete
             if (v !== table.capacity) onCapacity(v);
           }}
           className="border border-neutral-300 px-2 py-1 text-xs w-20"
-          aria-label="Capacité"
+          aria-label={labels.capacity}
         />
       </div>
 
@@ -147,16 +154,16 @@ function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete
         className={`min-h-[140px] p-3 ${shapeClass} bg-background/40 border border-dashed border-neutral-300 flex flex-col gap-1.5`}
       >
         {seated.map((g) => (
-          <DraggableGuest key={g.id} guest={g} inTable onRemove={() => onRemoveGuest(g.id)} />
+          <DraggableGuest key={g.id} guest={g} inTable onRemove={() => onRemoveGuest(g.id)} removeLabel={labels.remove} />
         ))}
         {seated.length === 0 && (
-          <p className="text-xs text-neutral-400 text-center my-auto">Glissez des invités ici</p>
+          <p className="text-xs text-neutral-400 text-center my-auto">{labels.dropHere}</p>
         )}
       </div>
 
       <div
         className="mt-3 flex flex-wrap gap-1.5 justify-center"
-        aria-label={`${seated.length} chaises occupées sur ${table.capacity}`}
+        aria-label={labels.chairsAria(seated.length, table.capacity)}
         data-testid={`chairs-${table.id}`}
       >
         {Array.from({ length: table.capacity }).map((_, i) => {
@@ -164,7 +171,7 @@ function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete
           return (
             <span
               key={i}
-              title={occupied ? seated[i] && `${seated[i].firstName} ${seated[i].lastName}` : "Chaise libre"}
+              title={occupied ? seated[i] && `${seated[i].firstName} ${seated[i].lastName}` : labels.chairFree}
               className={`w-3 h-3 rounded-full border ${occupied ? "bg-primary border-primary" : "bg-white border-neutral-300"}`}
             />
           );
@@ -187,6 +194,22 @@ function UnassignedDropZone({ children }: { children: React.ReactNode }) {
 }
 
 export default function SeatingPage() {
+  const { t } = useTranslation();
+  const SHAPE_LABEL: Record<GuestTable["shape"], string> = {
+    round: t("seating.shape_round"),
+    rect: t("seating.shape_rect"),
+    square: t("seating.shape_square"),
+  };
+  const tableLabels = {
+    full: t("seating.full"),
+    free: (n: number) => t("seating.free", { count: n, defaultValue: `(${n} free)` }),
+    deleteTable: t("seating.delete_table"),
+    capacity: t("seating.capacity"),
+    dropHere: t("seating.drop_here"),
+    chairFree: t("seating.chair_free"),
+    chairsAria: (s: number, c: number) => t("seating.chairs_aria", { seated: s, capacity: c }),
+    remove: t("seating.remove"),
+  };
   const qc = useQueryClient();
   const { data: tables = [] } = useQuery<GuestTable[]>({
     queryKey: ["client", "tables"],
@@ -229,7 +252,7 @@ export default function SeatingPage() {
     mutationFn: ({ guestId, tableId }: { guestId: number; tableId: number | null }) =>
       clientApi.patch<Guest>(`/api/client/guests/${guestId}`, { tableId }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
-    onError: (e: Error) => setError(e.message.includes("409") ? "Cette table est pleine." : e.message),
+    onError: (e: Error) => setError(e.message.includes("409") ? t("seating.table_full_error") : e.message),
   });
 
   const confirmedGuests = useMemo(() => guests.filter((g) => g.rsvp === "confirmed"), [guests]);
@@ -310,9 +333,9 @@ export default function SeatingPage() {
     <div className="space-y-6 max-w-7xl">
       <div className="flex justify-between items-end flex-wrap gap-3">
         <div>
-          <h2 className="font-bold text-2xl">Plan de table</h2>
+          <h2 className="font-bold text-2xl">{t("seating.title")}</h2>
           <p className="text-sm text-neutral-600">
-            Créez vos tables et glissez-déposez vos invités RSVP confirmés.
+            {t("seating.subtitle")}
           </p>
         </div>
         <div className="flex gap-2">
@@ -339,19 +362,19 @@ export default function SeatingPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white p-4 border border-neutral-200">
-          <p className="text-xs uppercase text-neutral-500 tracking-widest">Tables</p>
+          <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("seating.tables")}</p>
           <p className="text-2xl font-bold">{tables.length}</p>
         </div>
         <div className="bg-white p-4 border border-neutral-200">
-          <p className="text-xs uppercase text-neutral-500 tracking-widest">Capacité totale</p>
+          <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("seating.total_capacity")}</p>
           <p className="text-2xl font-bold">{totalCapacity}</p>
         </div>
         <div className="bg-white p-4 border border-neutral-200">
-          <p className="text-xs uppercase text-neutral-500 tracking-widest">Invités placés</p>
+          <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("seating.seated")}</p>
           <p className="text-2xl font-bold text-emerald-700">{seatedCount}</p>
         </div>
         <div className="bg-white p-4 border border-neutral-200">
-          <p className="text-xs uppercase text-neutral-500 tracking-widest">À placer</p>
+          <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("seating.to_place")}</p>
           <p className="text-2xl font-bold text-amber-700">
             {confirmedGuests.length - seatedCount}
           </p>
@@ -363,7 +386,7 @@ export default function SeatingPage() {
         className="bg-white p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
       >
         <Input
-          placeholder="Nom de la table (ex : Famille mariée)"
+          placeholder={t("seating.name_placeholder")}
           value={newTable.name}
           onChange={(e) => setNewTable({ ...newTable, name: e.target.value })}
           required
@@ -374,15 +397,15 @@ export default function SeatingPage() {
           value={newTable.shape}
           onChange={(e) => setNewTable({ ...newTable, shape: e.target.value as GuestTable["shape"] })}
         >
-          <option value="round">Ronde</option>
-          <option value="rect">Rectangulaire</option>
-          <option value="square">Carrée</option>
+          <option value="round">{SHAPE_LABEL.round}</option>
+          <option value="rect">{SHAPE_LABEL.rect}</option>
+          <option value="square">{SHAPE_LABEL.square}</option>
         </select>
         <Input
           type="number"
           min={1}
           max={40}
-          placeholder="Capacité"
+          placeholder={t("seating.capacity")}
           value={newTable.capacity}
           onChange={(e) => setNewTable({ ...newTable, capacity: Number(e.target.value) || 1 })}
         />
@@ -391,7 +414,7 @@ export default function SeatingPage() {
           className="rounded-none uppercase tracking-wider text-xs gap-2 col-span-2 lg:col-span-2"
           data-testid="button-add-table"
         >
-          <Plus className="w-3 h-3" /> Ajouter table
+          <Plus className="w-3 h-3" /> {t("seating.add_table")}
         </Button>
       </form>
 
@@ -407,9 +430,9 @@ export default function SeatingPage() {
       {/* Mobile fallback: vertical list with selects */}
       <div className="lg:hidden space-y-4">
         <div className="bg-white p-4 border border-neutral-200">
-          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Invités à placer</p>
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">{t("seating.to_place")}</p>
           {unassigned.length === 0 ? (
-            <p className="text-sm text-neutral-400">Tous les invités confirmés sont placés.</p>
+            <p className="text-sm text-neutral-400">{t("seating.all_seated")}</p>
           ) : (
             <div className="space-y-2">
               {unassigned.map((g) => (
@@ -424,12 +447,12 @@ export default function SeatingPage() {
                     }}
                     data-testid={`select-assign-${g.id}`}
                   >
-                    <option value="">— Assigner —</option>
-                    {tables.map((t) => {
-                      const seated = guestsByTable.get(t.id)?.length ?? 0;
+                    <option value="">{t("seating.assign_placeholder")}</option>
+                    {tables.map((tb) => {
+                      const seated = guestsByTable.get(tb.id)?.length ?? 0;
                       return (
-                        <option key={t.id} value={t.id} disabled={seated >= t.capacity}>
-                          {t.name} ({seated}/{t.capacity})
+                        <option key={tb.id} value={tb.id} disabled={seated >= tb.capacity}>
+                          {tb.name} ({seated}/{tb.capacity})
                         </option>
                       );
                     })}
@@ -439,23 +462,23 @@ export default function SeatingPage() {
             </div>
           )}
         </div>
-        {tables.map((t) => {
-          const seated = guestsByTable.get(t.id) ?? [];
+        {tables.map((tb) => {
+          const seated = guestsByTable.get(tb.id) ?? [];
           return (
-            <div key={t.id} className="bg-white p-4 border border-neutral-200">
+            <div key={tb.id} className="bg-white p-4 border border-neutral-200">
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <p className="font-semibold">{t.name}</p>
+                  <p className="font-semibold">{tb.name}</p>
                   <p className="text-xs text-neutral-500">
-                    {SHAPE_LABEL[t.shape]} · {seated.length}/{t.capacity}
+                    {SHAPE_LABEL[tb.shape]} · {seated.length}/{tb.capacity}
                   </p>
                 </div>
-                <button onClick={() => deleteTable.mutate(t.id)} className="text-neutral-400">
+                <button onClick={() => deleteTable.mutate(tb.id)} className="text-neutral-400">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
               {seated.length === 0 ? (
-                <p className="text-xs text-neutral-400">Aucun invité assigné.</p>
+                <p className="text-xs text-neutral-400">{t("seating.no_assigned")}</p>
               ) : (
                 <ul className="space-y-1 text-sm">
                   {seated.map((g) => (
@@ -464,7 +487,7 @@ export default function SeatingPage() {
                       <button
                         onClick={() => assignGuest.mutate({ guestId: g.id, tableId: null })}
                         className="text-neutral-400"
-                        aria-label="Retirer"
+                        aria-label={t("seating.remove")}
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -487,7 +510,7 @@ export default function SeatingPage() {
                 <div className="flex items-center gap-2 mb-3">
                   <Search className="w-4 h-4 text-neutral-400" />
                   <input
-                    placeholder="Rechercher…"
+                    placeholder={t("seating.search")}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="text-sm outline-none flex-1"
@@ -495,14 +518,14 @@ export default function SeatingPage() {
                   />
                 </div>
                 <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
-                  À placer ({unassigned.length})
+                  {t("seating.to_place_count", { count: unassigned.length })}
                 </p>
                 <UnassignedDropZone>
                   {unassigned.length === 0 ? (
                     <p className="text-xs text-neutral-400 text-center py-4">
                       {confirmedGuests.length === 0
-                        ? "Aucun invité RSVP confirmé."
-                        : "Tous les invités sont placés."}
+                        ? t("seating.none_confirmed")
+                        : t("seating.all_placed")}
                     </p>
                   ) : (
                     <div className="space-y-1.5">
@@ -519,24 +542,26 @@ export default function SeatingPage() {
             <div ref={canvasRef} className="bg-background/30 p-4 border border-neutral-200">
               {tables.length === 0 ? (
                 <p className="text-center text-neutral-400 py-12">
-                  Créez votre première table avec le formulaire ci-dessus.
+                  {t("seating.create_first")}
                 </p>
               ) : (
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
-                  {tables.map((t) => (
+                  {tables.map((tb) => (
                     <DroppableTable
-                      key={t.id}
-                      table={t}
-                      seated={guestsByTable.get(t.id) ?? []}
-                      onRename={(name) => updateTable.mutate({ id: t.id, body: { name } })}
-                      onCapacity={(capacity) => updateTable.mutate({ id: t.id, body: { capacity } })}
-                      onShape={(shape) => updateTable.mutate({ id: t.id, body: { shape } })}
+                      key={tb.id}
+                      table={tb}
+                      seated={guestsByTable.get(tb.id) ?? []}
+                      onRename={(name) => updateTable.mutate({ id: tb.id, body: { name } })}
+                      onCapacity={(capacity) => updateTable.mutate({ id: tb.id, body: { capacity } })}
+                      onShape={(shape) => updateTable.mutate({ id: tb.id, body: { shape } })}
                       onDelete={() => {
-                        if (confirm(`Supprimer la table "${t.name}" ? Les invités seront libérés.`)) {
-                          deleteTable.mutate(t.id);
+                        if (confirm(t("seating.confirm_delete", { name: tb.name }))) {
+                          deleteTable.mutate(tb.id);
                         }
                       }}
                       onRemoveGuest={(guestId) => assignGuest.mutate({ guestId, tableId: null })}
+                      shapeLabels={SHAPE_LABEL}
+                      labels={tableLabels}
                     />
                   ))}
                 </div>

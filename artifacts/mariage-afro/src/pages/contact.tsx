@@ -223,7 +223,7 @@ export default function Contact() {
               animate={{ opacity: 1, x: 0 }}
               className="card-editorial p-10 md:p-12"
             >
-              <span className="section-eyebrow section-eyebrow-left mb-4">Formulaire détaillé</span>
+              <span className="section-eyebrow section-eyebrow-left mb-4">{t("contact.eyebrow_form")}</span>
               <h3 className="font-display uppercase text-3xl md:text-4xl tracking-tight text-wine-deep mt-3 mb-10 leading-[1]">{t("contact.form_title")}</h3>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -452,7 +452,7 @@ export default function Contact() {
                 </div>
               </div>
               <div className="card-editorial p-10 md:p-12 bg-wine-deep text-cream border-wine-deep">
-                <span className="section-eyebrow section-eyebrow-left mb-4">Coordonnées</span>
+                <span className="section-eyebrow section-eyebrow-left mb-4">{t("contact.eyebrow_contact")}</span>
                 <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-cream mt-3 mb-8 leading-[1]">{t("contact.practical_title")}</h3>
                 <div className="space-y-5">
                   <div className="flex items-center gap-4">

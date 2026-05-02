@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, ExternalLink, FileText, UploadCloud } from "lucide-react";
 import { ObjectUploader } from "@workspace/object-storage-web";
@@ -24,7 +25,13 @@ interface DocCreate {
   size?: number;
 }
 
+const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
+
 export default function DocumentsPage() {
+  const { t, i18n } = useTranslation();
+  const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
+  const locale = LOCALE_MAP[lang] || "fr-BE";
+
   const qc = useQueryClient();
   const { data: docs = [] } = useQuery<Doc[]>({
     queryKey: ["client", "documents"],
@@ -51,10 +58,8 @@ export default function DocumentsPage() {
   return (
     <div className="space-y-6 max-w-6xl">
       <div>
-        <h2 className="font-bold text-2xl">Documents</h2>
-        <p className="text-sm text-neutral-600">
-          Téléversez vos contrats, devis et inspirations directement, ou ajoutez un lien externe.
-        </p>
+        <h2 className="font-bold text-2xl">{t("documents.title")}</h2>
+        <p className="text-sm text-neutral-600">{t("documents.subtitle")}</p>
       </div>
 
       <div className="bg-white p-4 border border-neutral-200 space-y-4">
@@ -91,25 +96,25 @@ export default function DocumentsPage() {
               }
             }}
           >
-            <UploadCloud className="w-4 h-4" /> Téléverser un fichier
+            <UploadCloud className="w-4 h-4" /> {t("documents.upload")}
           </ObjectUploader>
           <select
             className="border border-neutral-300 px-3 text-sm h-10"
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
-            aria-label="Catégorie"
+            aria-label={t("documents.category")}
           >
-            <option value="contrat">Contrat</option>
-            <option value="devis">Devis</option>
-            <option value="inspiration">Inspiration</option>
-            <option value="administratif">Administratif</option>
-            <option value="misc">Autre</option>
+            <option value="contrat">{t("documents.cat_contract")}</option>
+            <option value="devis">{t("documents.cat_quote")}</option>
+            <option value="inspiration">{t("documents.cat_inspiration")}</option>
+            <option value="administratif">{t("documents.cat_admin")}</option>
+            <option value="misc">{t("documents.cat_other")}</option>
           </select>
-          <span className="text-xs text-neutral-500">Catégorie appliquée aux téléversements</span>
+          <span className="text-xs text-neutral-500">{t("documents.cat_applies")}</span>
         </div>
 
         <div className="border-t pt-4">
-          <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Ou ajouter un lien externe</p>
+          <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">{t("documents.or_external")}</p>
           <form
             className="grid grid-cols-1 lg:grid-cols-3 gap-3"
             onSubmit={(e) => {
@@ -119,7 +124,7 @@ export default function DocumentsPage() {
             }}
           >
             <Input
-              placeholder="Nom du document"
+              placeholder={t("documents.name")}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               data-testid="input-doc-name"
@@ -131,7 +136,7 @@ export default function DocumentsPage() {
               onChange={(e) => setForm({ ...form, url: e.target.value })}
             />
             <Button type="submit" className="rounded-none uppercase tracking-wider text-xs">
-              Ajouter le lien
+              {t("documents.add_link")}
             </Button>
           </form>
         </div>
@@ -145,7 +150,7 @@ export default function DocumentsPage() {
               <p className="text-sm font-medium truncate">{d.name}</p>
               <p className="text-xs text-neutral-500">
                 {d.category}
-                {d.size ? ` · ${(d.size / 1024).toFixed(0)} Ko` : ""} · {new Date(d.createdAt).toLocaleDateString("fr-BE")}
+                {d.size ? ` · ${(d.size / 1024).toFixed(0)} ${t("documents.ko")}` : ""} · {new Date(d.createdAt).toLocaleDateString(locale)}
               </p>
             </div>
             <a
@@ -154,19 +159,19 @@ export default function DocumentsPage() {
               rel="noopener noreferrer"
               className="text-primary hover:underline text-xs uppercase tracking-wider flex items-center gap-1"
             >
-              {isStoredObject(d.url) ? "Télécharger" : "Ouvrir"} <ExternalLink className="w-3 h-3" />
+              {isStoredObject(d.url) ? t("documents.download") : t("documents.open")} <ExternalLink className="w-3 h-3" />
             </a>
             <button
               onClick={() => del.mutate(d.id)}
               className="text-neutral-400 hover:text-primary"
-              aria-label="Supprimer"
+              aria-label={t("documents.delete")}
             >
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
         ))}
         {docs.length === 0 && (
-          <p className="px-4 py-8 text-center text-neutral-400 text-sm">Aucun document</p>
+          <p className="px-4 py-8 text-center text-neutral-400 text-sm">{t("documents.empty")}</p>
         )}
       </div>
     </div>

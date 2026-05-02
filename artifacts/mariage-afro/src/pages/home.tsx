@@ -14,10 +14,10 @@ export default function Home() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    document.title = "Mariage Afro — Mariages Afro & Mixtes en Belgique";
+    document.title = t("home.meta_title");
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", t("hero.subtitle"));
+      meta.setAttribute("content", t("meta.home_description"));
     }
   }, [t]);
 
@@ -207,7 +207,7 @@ export default function Home() {
             transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
             className="flex flex-col items-center gap-2 text-cream/40"
           >
-            <span className="text-[9px] uppercase tracking-[0.4em]">Découvrir</span>
+            <span className="text-[9px] uppercase tracking-[0.4em]">{t("home.discover")}</span>
             <ChevronDown className="w-4 h-4" />
           </motion.div>
         </motion.div>
@@ -296,7 +296,7 @@ export default function Home() {
               className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-wine-deep/60 hover:text-gold font-medium transition-colors"
               data-testid="link-audience-existing-client"
             >
-              <span>Déjà client&nbsp;? Accédez à votre espace</span>
+              <span dangerouslySetInnerHTML={{ __html: t("home.already_client") }} />
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </motion.div>

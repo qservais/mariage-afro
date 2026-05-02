@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
@@ -8,7 +9,7 @@ import type { PlanningTask, PlanningTaskCreate, PlanningTaskPatch } from "@/lib/
 
 type ViewMode = "list" | "week" | "month";
 
-const FR_DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
 
 function startOfWeek(d: Date): Date {
   const x = new Date(d);
@@ -30,6 +31,11 @@ function ymd(d: Date): string {
 }
 
 export default function PlanningPage() {
+  const { t, i18n } = useTranslation();
+  const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
+  const locale = LOCALE_MAP[lang] || "fr-BE";
+  const days = (t("planning.days", { returnObjects: true }) as unknown as string[]) || ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
   const qc = useQueryClient();
   const { data: tasks = [] } = useQuery<PlanningTask[]>({
     queryKey: ["client", "planning"],
@@ -54,11 +60,11 @@ export default function PlanningPage() {
 
   const tasksByDate = useMemo(() => {
     const m = new Map<string, PlanningTask[]>();
-    for (const t of tasks) {
-      if (!t.dueDate) continue;
-      const key = t.dueDate.slice(0, 10);
+    for (const tk of tasks) {
+      if (!tk.dueDate) continue;
+      const key = tk.dueDate.slice(0, 10);
       const list = m.get(key) ?? [];
-      list.push(t);
+      list.push(tk);
       m.set(key, list);
     }
     return m;
@@ -85,8 +91,8 @@ export default function PlanningPage() {
     <div className="space-y-6 max-w-6xl">
       <div className="flex items-end justify-between flex-wrap gap-3">
         <div>
-          <h2 className="font-bold text-2xl">Planning</h2>
-          <p className="text-sm text-neutral-600">Vos tâches de préparation avec dates cibles et responsables.</p>
+          <h2 className="font-bold text-2xl">{t("planning.title")}</h2>
+          <p className="text-sm text-neutral-600">{t("planning.subtitle")}</p>
         </div>
         <div className="inline-flex border border-neutral-300 text-xs uppercase tracking-wider" role="tablist">
           {(["list", "week", "month"] as ViewMode[]).map((v) => (
@@ -98,7 +104,7 @@ export default function PlanningPage() {
               className={`px-3 py-2 ${view === v ? "bg-primary text-white" : "bg-white"}`}
               data-testid={`tab-view-${v}`}
             >
-              {v === "list" ? "Liste" : v === "week" ? "Semaine" : "Mois"}
+              {v === "list" ? t("planning.view_list") : v === "week" ? t("planning.view_week") : t("planning.view_month")}
             </button>
           ))}
         </div>
@@ -119,46 +125,46 @@ export default function PlanningPage() {
           });
         }}
       >
-        <Input placeholder="Tâche" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required data-testid="input-task-title" />
+        <Input placeholder={t("planning.task")} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required data-testid="input-task-title" />
         <Input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
-        <Input placeholder="Responsable" value={form.assignee} onChange={(e) => setForm({ ...form, assignee: e.target.value })} />
-        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" /> Ajouter</Button>
+        <Input placeholder={t("planning.assignee")} value={form.assignee} onChange={(e) => setForm({ ...form, assignee: e.target.value })} />
+        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" /> {t("planning.add")}</Button>
       </form>
 
       {view !== "list" && (
         <div className="flex items-center justify-between bg-white border border-neutral-200 px-4 py-2">
-          <button onClick={() => shift(-1)} className="p-1 hover:text-primary" aria-label="Précédent"><ChevronLeft className="w-4 h-4" /></button>
+          <button onClick={() => shift(-1)} className="p-1 hover:text-primary" aria-label={t("planning.previous")}><ChevronLeft className="w-4 h-4" /></button>
           <p className="text-sm font-bold uppercase tracking-widest">
             {view === "week"
-              ? `Semaine du ${weekStart.toLocaleDateString("fr-BE", { day: "numeric", month: "long" })}`
-              : cursor.toLocaleDateString("fr-BE", { month: "long", year: "numeric" })}
+              ? t("planning.week_of", { date: weekStart.toLocaleDateString(locale, { day: "numeric", month: "long" }) })
+              : cursor.toLocaleDateString(locale, { month: "long", year: "numeric" })}
           </p>
-          <button onClick={() => shift(1)} className="p-1 hover:text-primary" aria-label="Suivant"><ChevronRight className="w-4 h-4" /></button>
+          <button onClick={() => shift(1)} className="p-1 hover:text-primary" aria-label={t("planning.next")}><ChevronRight className="w-4 h-4" /></button>
         </div>
       )}
 
       {view === "list" && (
         <div className="bg-white border border-neutral-200">
-          {sorted.map((t) => (
-            <div key={t.id} className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0">
+          {sorted.map((tk) => (
+            <div key={tk.id} className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0">
               <button
-                onClick={() => update.mutate({ id: t.id, body: { done: !t.done } })}
-                className={`w-6 h-6 flex items-center justify-center border flex-shrink-0 ${t.done ? "bg-primary border-primary text-white" : "border-neutral-300"}`}
-                aria-label="Toggle done"
+                onClick={() => update.mutate({ id: tk.id, body: { done: !tk.done } })}
+                className={`w-6 h-6 flex items-center justify-center border flex-shrink-0 ${tk.done ? "bg-primary border-primary text-white" : "border-neutral-300"}`}
+                aria-label={t("planning.toggle_done")}
               >
-                {t.done && <Check className="w-3 h-3" />}
+                {tk.done && <Check className="w-3 h-3" />}
               </button>
               <div className="flex-1 min-w-0">
-                <p className={`text-sm ${t.done ? "line-through text-neutral-400" : ""}`}>{t.title}</p>
+                <p className={`text-sm ${tk.done ? "line-through text-neutral-400" : ""}`}>{tk.title}</p>
                 <p className="text-xs text-neutral-500">
-                  {t.dueDate && <>échéance {new Date(t.dueDate).toLocaleDateString("fr-BE")}</>}
-                  {t.assignee && <> · {t.assignee}</>}
+                  {tk.dueDate && <>{t("planning.due", { date: new Date(tk.dueDate).toLocaleDateString(locale) })}</>}
+                  {tk.assignee && <> · {tk.assignee}</>}
                 </p>
               </div>
-              <button onClick={() => del.mutate(t.id)} className="text-neutral-400 hover:text-primary" aria-label="Supprimer"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={() => del.mutate(tk.id)} className="text-neutral-400 hover:text-primary" aria-label={t("planning.delete")}><Trash2 className="w-4 h-4" /></button>
             </div>
           ))}
-          {sorted.length === 0 && <p className="px-4 py-8 text-center text-neutral-400 text-sm">Aucune tâche</p>}
+          {sorted.length === 0 && <p className="px-4 py-8 text-center text-neutral-400 text-sm">{t("planning.empty")}</p>}
         </div>
       )}
 
@@ -168,11 +174,11 @@ export default function PlanningPage() {
             const list = tasksByDate.get(ymd(d)) ?? [];
             return (
               <div key={i} className="bg-white border border-neutral-200 min-h-32 p-2">
-                <p className="text-xs uppercase tracking-widest text-neutral-500">{FR_DAYS[i]} {d.getDate()}</p>
+                <p className="text-xs uppercase tracking-widest text-neutral-500">{days[i]} {d.getDate()}</p>
                 <div className="mt-2 space-y-1">
-                  {list.map((t) => (
-                    <div key={t.id} className={`text-xs px-2 py-1 ${t.done ? "bg-emerald-50 line-through text-neutral-400" : "bg-rose-50"}`}>
-                      {t.title}
+                  {list.map((tk) => (
+                    <div key={tk.id} className={`text-xs px-2 py-1 ${tk.done ? "bg-emerald-50 line-through text-neutral-400" : "bg-rose-50"}`}>
+                      {tk.title}
                     </div>
                   ))}
                   {list.length === 0 && <p className="text-xs text-neutral-300">—</p>}
@@ -186,7 +192,7 @@ export default function PlanningPage() {
       {view === "month" && (
         <div>
           <div className="grid grid-cols-7 gap-px bg-neutral-200 border border-neutral-200">
-            {FR_DAYS.map((d) => (
+            {days.map((d) => (
               <div key={d} className="bg-background/40 px-2 py-1 text-xs uppercase tracking-widest text-neutral-600">{d}</div>
             ))}
             {monthDays.map((d, i) => {
@@ -196,8 +202,8 @@ export default function PlanningPage() {
                 <div key={i} className={`bg-white min-h-24 p-1 ${inMonth ? "" : "opacity-40"}`}>
                   <p className="text-xs text-neutral-500">{d.getDate()}</p>
                   <div className="mt-1 space-y-0.5">
-                    {list.slice(0, 3).map((t) => (
-                      <div key={t.id} className={`text-[10px] truncate px-1 ${t.done ? "bg-emerald-50 text-neutral-400 line-through" : "bg-rose-50"}`}>{t.title}</div>
+                    {list.slice(0, 3).map((tk) => (
+                      <div key={tk.id} className={`text-[10px] truncate px-1 ${tk.done ? "bg-emerald-50 text-neutral-400 line-through" : "bg-rose-50"}`}>{tk.title}</div>
                     ))}
                     {list.length > 3 && <p className="text-[10px] text-neutral-500">+{list.length - 3}</p>}
                   </div>

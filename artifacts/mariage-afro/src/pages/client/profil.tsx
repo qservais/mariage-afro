@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/react";
 import { clientApi } from "@/lib/clientApi";
@@ -17,6 +18,7 @@ interface CouplePatch {
 }
 
 export default function ProfilPage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const { data: couple } = useCouple();
   const qc = useQueryClient();
@@ -54,17 +56,17 @@ export default function ProfilPage() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h2 className="font-bold text-2xl">Profil</h2>
-        <p className="text-sm text-neutral-600">Informations sur le couple et le mariage.</p>
+        <h2 className="font-bold text-2xl">{t("profil.title")}</h2>
+        <p className="text-sm text-neutral-600">{t("profil.subtitle")}</p>
       </div>
 
       <section className="bg-white p-6 border border-neutral-200">
-        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3">Compte</p>
+        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3">{t("profil.account")}</p>
         <p className="text-sm">
-          Email : <span className="font-medium">{user?.primaryEmailAddress?.emailAddress || "—"}</span>
+          {t("profil.email_label")} <span className="font-medium">{user?.primaryEmailAddress?.emailAddress || "—"}</span>
         </p>
         {user?.firstName && (
-          <p className="text-sm mt-1">Nom : <span className="font-medium">{user.firstName} {user.lastName || ""}</span></p>
+          <p className="text-sm mt-1">{t("profil.name_label")} <span className="font-medium">{user.firstName} {user.lastName || ""}</span></p>
         )}
       </section>
 
@@ -85,40 +87,40 @@ export default function ProfilPage() {
       >
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">Partenaire 1</label>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.partner1")}</label>
             <Input value={partner1Name} onChange={(e) => setP1(e.target.value)} data-testid="input-partner1" />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">Partenaire 2</label>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.partner2")}</label>
             <Input value={partner2Name} onChange={(e) => setP2(e.target.value)} data-testid="input-partner2" />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">Date du mariage</label>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.wedding_date")}</label>
             <Input type="date" value={weddingDate} onChange={(e) => setDate(e.target.value)} data-testid="input-wedding-date" />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">Ville</label>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.city")}</label>
             <Input value={ceremonyCity} onChange={(e) => setCity(e.target.value)} placeholder="Bruxelles" />
           </div>
           <div className="sm:col-span-2">
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">Lieu de cérémonie</label>
-            <Input value={ceremonyVenue} onChange={(e) => setVenue(e.target.value)} placeholder="Domaine, château, salle…" />
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.venue")}</label>
+            <Input value={ceremonyVenue} onChange={(e) => setVenue(e.target.value)} placeholder={t("profil.venue_placeholder")} />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">Nombre d'invités estimé</label>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.guest_estimate")}</label>
             <Input type="number" min="0" value={guestEstimate} onChange={(e) => setGuests(e.target.value)} />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">Budget global (€)</label>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.budget")}</label>
             <Input type="number" min="0" value={budget} onChange={(e) => setBudget(e.target.value)} />
           </div>
         </div>
 
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit" className="rounded-none uppercase tracking-wider text-xs" disabled={update.isPending} data-testid="button-save-profile">
-            {update.isPending ? "Enregistrement…" : "Enregistrer"}
+            {update.isPending ? t("profil.saving") : t("profil.save")}
           </Button>
-          {saved && <p className="text-sm text-emerald-700">Modifications enregistrées</p>}
+          {saved && <p className="text-sm text-emerald-700">{t("profil.saved")}</p>}
         </div>
       </form>
     </div>

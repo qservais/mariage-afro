@@ -10,12 +10,12 @@ export default function Services() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    document.title = "Services — Mariage Afro";
+    document.title = t("meta.services");
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", "Découvrez nos services de wedding planning complet, coordination jour-J et sélection de prestataires pour votre mariage afro ou mixte en Belgique.");
+      meta.setAttribute("content", t("meta.services_description"));
     }
-  }, []);
+  }, [t]);
 
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -36,7 +36,7 @@ export default function Services() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="section-eyebrow mb-8"
           >
-            {t("services.label") !== "services.label" ? t("services.label") : "Notre offre"}
+            {t("services.label")}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Star, MessageSquarePlus, CheckCircle2 } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
@@ -37,16 +38,26 @@ interface MyReview {
   createdAt: string;
 }
 
-const STATUS_LABELS: Record<string, string> = { contacted: "Contacté", negotiating: "En discussion", booked: "Réservé", paid: "Payé" };
 const STATUS_COLORS: Record<string, string> = { contacted: "bg-neutral-100", negotiating: "bg-amber-100 text-amber-800", booked: "bg-blue-100 text-blue-800", paid: "bg-emerald-100 text-emerald-800" };
-
-const REVIEW_STATUS_LABEL: Record<string, string> = {
-  pending: "En attente de modération",
-  published: "Publié",
-  rejected: "Refusé",
-};
+const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
 
 export default function VendorsPage() {
+  const { t, i18n } = useTranslation();
+  const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
+  const locale = LOCALE_MAP[lang] || "fr-BE";
+
+  const STATUS_LABELS = useMemo<Record<string, string>>(() => ({
+    contacted: t("vendors_page.s_contacted"),
+    negotiating: t("vendors_page.s_negotiating"),
+    booked: t("vendors_page.s_booked"),
+    paid: t("vendors_page.s_paid"),
+  }), [t]);
+  const REVIEW_STATUS_LABEL = useMemo<Record<string, string>>(() => ({
+    pending: t("vendors_page.review_pending"),
+    published: t("vendors_page.review_published"),
+    rejected: t("vendors_page.review_rejected"),
+  }), [t]);
+
   const qc = useQueryClient();
   const { toast } = useToast();
   const { data: couple, refetch: refetchCouple } = useCouple();
@@ -91,11 +102,10 @@ export default function VendorsPage() {
     onSuccess: () => {
       refetchCouple();
       qc.invalidateQueries({ queryKey: ["client", "me"] });
-      toast({ title: "Statut mis à jour" });
+      toast({ title: t("vendors_page.status_updated") });
     },
   });
 
-  // Aide à matcher un prestataire client à un vendor marketplace par le nom
   const matchVendorByName = (name: string): MarketplaceVendor | null =>
     marketplaceVendors.find((mv) => mv.name.trim().toLowerCase() === name.trim().toLowerCase()) ?? null;
 
@@ -104,21 +114,20 @@ export default function VendorsPage() {
   return (
     <div className="space-y-6 max-w-6xl">
       <div>
-        <h2 className="font-bold text-2xl">Prestataires</h2>
-        <p className="text-sm text-neutral-600">Vos prestataires sélectionnés et le statut de leur contrat.</p>
+        <h2 className="font-bold text-2xl">{t("vendors_page.title")}</h2>
+        <p className="text-sm text-neutral-600">{t("vendors_page.subtitle")}</p>
       </div>
 
-      {/* Statut du mariage : déclenche la possibilité de laisser des avis */}
       <section className="bg-white p-4 border border-neutral-200 flex flex-wrap items-center gap-4">
         <div className="flex-1 min-w-[200px]">
-          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">Statut de votre mariage</p>
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">{t("vendors_page.status_label")}</p>
           <p className="text-sm">
             {isCompleted ? (
               <span className="inline-flex items-center gap-2 text-emerald-700 font-medium">
-                <CheckCircle2 className="w-4 h-4" /> Terminé — vous pouvez désormais laisser des avis sur vos prestataires.
+                <CheckCircle2 className="w-4 h-4" /> {t("vendors_page.completed_msg")}
               </span>
             ) : (
-              <span className="text-neutral-700">En préparation. Marquez-le terminé après votre mariage pour pouvoir noter vos prestataires.</span>
+              <span className="text-neutral-700">{t("vendors_page.planning_msg")}</span>
             )}
           </p>
         </div>
@@ -130,7 +139,7 @@ export default function VendorsPage() {
           variant={isCompleted ? "outline" : "default"}
           data-testid="couple-status-toggle"
         >
-          {isCompleted ? "Repasser en préparation" : "Marquer le mariage comme terminé"}
+          {isCompleted ? t("vendors_page.back_to_planning") : t("vendors_page.mark_completed")}
         </Button>
       </section>
 
@@ -138,11 +147,11 @@ export default function VendorsPage() {
         className="bg-white p-4 border border-neutral-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.category || !form.name) return; create.mutate({ category: form.category, name: form.name, contactName: form.contactName || null, contactEmail: form.contactEmail || null, contactPhone: form.contactPhone || null, amount: Math.round(Number(form.amount || 0) * 100) }); }}
       >
-        <Input placeholder="Catégorie" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required data-testid="input-vendor-category" />
-        <Input placeholder="Nom" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required data-testid="input-vendor-name" />
-        <Input placeholder="Contact" value={form.contactName} onChange={(e) => setForm({ ...form, contactName: e.target.value })} />
-        <Input placeholder="Email" value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} />
-        <Input placeholder="Téléphone" value={form.contactPhone} onChange={(e) => setForm({ ...form, contactPhone: e.target.value })} />
+        <Input placeholder={t("vendors_page.category")} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required data-testid="input-vendor-category" />
+        <Input placeholder={t("vendors_page.name")} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required data-testid="input-vendor-name" />
+        <Input placeholder={t("vendors_page.contact")} value={form.contactName} onChange={(e) => setForm({ ...form, contactName: e.target.value })} />
+        <Input placeholder={t("vendors_page.email")} value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} />
+        <Input placeholder={t("vendors_page.phone")} value={form.contactPhone} onChange={(e) => setForm({ ...form, contactPhone: e.target.value })} />
         <div className="flex gap-2">
           <Input placeholder="€" type="number" min="0" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
           <Button type="submit" className="rounded-none px-3"><Plus className="w-4 h-4" /></Button>
@@ -153,12 +162,12 @@ export default function VendorsPage() {
         <table className="w-full text-sm">
           <thead className="bg-background/40">
             <tr className="text-left text-xs uppercase tracking-widest text-neutral-600">
-              <th className="px-4 py-3">Catégorie</th>
-              <th className="px-4 py-3">Prestataire</th>
-              <th className="px-4 py-3">Contact</th>
-              <th className="px-4 py-3 text-right">Montant</th>
-              <th className="px-4 py-3">Statut</th>
-              <th className="px-4 py-3">Avis</th>
+              <th className="px-4 py-3">{t("vendors_page.category")}</th>
+              <th className="px-4 py-3">{t("vendors_page.name")}</th>
+              <th className="px-4 py-3">{t("vendors_page.contact")}</th>
+              <th className="px-4 py-3 text-right">{t("vendors_page.th_amount")}</th>
+              <th className="px-4 py-3">{t("vendors_page.th_status")}</th>
+              <th className="px-4 py-3">{t("vendors_page.th_review")}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -175,7 +184,7 @@ export default function VendorsPage() {
                     {v.contactEmail && <div>{v.contactEmail}</div>}
                     {v.contactPhone && <div>{v.contactPhone}</div>}
                   </td>
-                  <td className="px-4 py-3 text-right">{(v.amount / 100).toLocaleString("fr-BE")} €</td>
+                  <td className="px-4 py-3 text-right">{(v.amount / 100).toLocaleString(locale)} €</td>
                   <td className="px-4 py-3">
                     <select
                       value={v.status}
@@ -203,11 +212,11 @@ export default function VendorsPage() {
                         data-testid={`review-vendor-${matched.id}`}
                       >
                         <MessageSquarePlus className="w-3.5 h-3.5" />
-                        Laisser un avis
+                        {t("vendors_page.leave_review")}
                       </button>
                     ) : (
                       <span className="text-neutral-400 inline-flex items-center gap-1">
-                        <Star className="w-3 h-3" /> Après le mariage
+                        <Star className="w-3 h-3" /> {t("vendors_page.after_wedding")}
                       </span>
                     )}
                   </td>
@@ -217,14 +226,14 @@ export default function VendorsPage() {
                 </tr>
               );
             })}
-            {vendors.length === 0 && <tr><td colSpan={7} className="px-4 py-8 text-center text-neutral-400">Aucun prestataire</td></tr>}
+            {vendors.length === 0 && <tr><td colSpan={7} className="px-4 py-8 text-center text-neutral-400">{t("vendors_page.empty")}</td></tr>}
           </tbody>
         </table>
       </div>
 
       {myReviews.length > 0 && (
         <section className="bg-white p-4 border border-neutral-200">
-          <h3 className="font-medium mb-3">Mes avis publiés</h3>
+          <h3 className="font-medium mb-3">{t("vendors_page.my_reviews")}</h3>
           <ul className="space-y-3">
             {myReviews.map((r) => (
               <li key={r.id} className="border-b border-neutral-100 pb-3 last:border-0">
