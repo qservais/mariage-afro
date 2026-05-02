@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown, ArrowRight } from "lucide-react";
+import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
 import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
@@ -116,6 +117,19 @@ export default function Home() {
 
   return (
     <div className="w-full">
+      {/* Intro Scroll-Expand — vidéo qui s'agrandit au scroll avant le hero */}
+      <div className="bg-wine-deep">
+        <ScrollExpandMedia
+          mediaType="video"
+          mediaSrc={videoSrc}
+          posterSrc={heroImage}
+          bgImageSrc={heroImage}
+          title="Mariage Afro"
+          date="Belgique · 2026"
+          scrollToExpand="Faites défiler pour découvrir"
+        />
+      </div>
+
       {/* Hero Section — Style lamangue : fond wine, titre serif éditorial, vidéo offset droite */}
       <section className="relative min-h-screen bg-wine-deep text-cream overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:pl-16">
         {/* Texture grain subtile (effet papier ancien) */}
