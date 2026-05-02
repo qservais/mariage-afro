@@ -61,6 +61,7 @@ import img6 from "@assets/pexels-innocent-kapesa-760824113-18751317_177628526217
 import img7 from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
 import img8 from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
 import bannerImg from "@assets/New-Project-12_1776614330308.png";
+import { Picture } from "@/components/Picture";
 
 const VENDORS = [
   {
@@ -1185,7 +1186,13 @@ export default function Prestations() {
 
       <section className="py-32 md:py-40 relative flex items-center justify-center text-center">
         <div className="absolute inset-0 z-0">
-          <img src={bannerImg} alt="Wedding" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+          <Picture
+            src={bannerImg}
+            alt="Mariage afro inspirant"
+            width={1920}
+            height={1080}
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-wine-deep/80" />
         </div>
         <div className="relative z-10 container mx-auto px-6 max-w-3xl">

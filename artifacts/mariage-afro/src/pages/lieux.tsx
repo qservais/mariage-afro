@@ -15,6 +15,7 @@ import img4 from "@assets/GM-00719.jpg_1776614313614.jpeg";
 import img5 from "@assets/pexels-is0-shot-2150184196-31518214_1776285262172.jpg";
 import img6 from "@assets/New-Project-12_1776614330308.png";
 import bannerImg from "@assets/Screenshot-2025-12-09-at-15.23.02_1776614330310.png";
+import { Picture } from "@/components/Picture";
 
 const VENUE_IMAGES = [img1, img2, img3, img4, img5, img6];
 
@@ -336,7 +337,13 @@ export default function Lieux() {
 
       {/* Banner */}
       <section className="h-[300px] md:h-[400px] relative overflow-hidden">
-        <img src={bannerImg} alt="Wedding" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+        <Picture
+          src={bannerImg}
+          alt="Lieu de réception de mariage"
+          width={1920}
+          height={1080}
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-black/30"></div>
       </section>
     </div>

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown, ArrowRight, Heart, Briefcase } from "lucide-react";
+import { Picture } from "@/components/Picture";
 
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
 import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
@@ -589,10 +590,13 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <img
+              <Picture
                 src={aboutImage}
-                alt="Mixed Wedding Ceremony"
+                alt="Cérémonie de mariage mixte"
+                width={1200}
+                height={1600}
                 className="w-full h-[500px] md:h-[680px] object-cover"
+                style={{ aspectRatio: "auto" }}
               />
               <div className="absolute -bottom-6 -right-6 hidden md:flex w-32 h-32 border border-gold items-center justify-center bg-cream">
                 <span className="font-display text-5xl text-gold leading-none italic">M.A</span>
@@ -652,10 +656,13 @@ export default function Home() {
 
       {/* Services image accent */}
       <section className="h-[200px] md:h-[400px] relative overflow-hidden">
-        <img
+        <Picture
           src={servicesImg}
-          alt="Wedding Details"
+          alt="Détails d'un mariage afro"
+          width={2048}
+          height={1365}
           className="w-full h-full object-cover"
+          style={{ aspectRatio: "auto" }}
         />
         <div className="absolute inset-0 bg-black/20"></div>
       </section>

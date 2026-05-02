@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import heroImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
+import { Picture } from "@/components/Picture";
 
 const ICONS = [LayoutDashboard, Wallet, Users, CalendarClock, FolderOpen, Handshake, Sparkles];
 
@@ -40,7 +41,14 @@ export default function Plateforme() {
       {/* Hero — wine-deep editorial */}
       <section className="relative pt-40 pb-28 md:pt-48 md:pb-36 overflow-hidden bg-wine-deep text-cream">
         <div className="absolute inset-0 z-0">
-          <img src={heroImg} alt="Platform" className="w-full h-full object-cover opacity-25" />
+          <Picture
+            src={heroImg}
+            alt="Couple afro célébrant son mariage"
+            width={2048}
+            height={1365}
+            loading="eager"
+            className="w-full h-full object-cover opacity-25"
+          />
           <div className="absolute inset-0 bg-wine-deep/60" />
         </div>
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"

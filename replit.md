@@ -108,6 +108,15 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - API routes: `POST /api/leads/{budget-calculator,quiz,magnet,multi-devis}` (zod-validated, fire-and-forget emails)
 - Optional env: `LEAD_MAGNET_PDF_URL` (fallback `${appUrl()}/guide-mariage-afro.pdf`)
 
+### LOT 10 — Performance & accessibility
+- **Code splitting**: All routes except `/` (Home) are lazy-loaded via `React.lazy` + `<Suspense>` in `src/App.tsx`. The public bundle no longer includes Espace Client / Espace Pro / `/mariage/:slug` / `/mood-board/shared` / auth code paths.
+- **Image pipeline**: `scripts/optimize-images.mjs` (uses `sharp`) generates AVIF + WebP siblings of every JPG/JPEG/PNG in `attached_assets/`. Run with `pnpm --filter @workspace/mariage-afro run optimize-images`. Idempotent (skips up-to-date files). Typical savings: PNG → AVIF ≈ 95%, JPEG → AVIF ≈ 55%.
+- **`<Picture>` component** (`src/components/Picture.tsx`): renders `<picture>` with AVIF → WebP → original fallback. Requires explicit `width`/`height` props for CLS prevention (sets `aspect-ratio` CSS). `loading="eager"` adds `fetchPriority="high"` for above-the-fold heroes; defaults to lazy + async for below-fold.
+- **Hero images**: Above-the-fold heroes (`plateforme.tsx`) use `<Picture loading="eager" />`. Below-fold banners (lieux/prestations bottom banners, home about/services accent) use default lazy `<Picture>`.
+- **Fonts**: Trimmed Google Fonts URL in `index.html` to only the weights actually used (Montserrat 400/500/600/700, Cormorant Garamond 400/500/600/700; Playfair Display removed). Loaded via non-blocking pattern (`media="print"` + `onload="this.media='all'"`) with `<noscript>` fallback. `display=swap` avoids FOIT.
+- **A11y baseline** (`src/index.css`): global `*:focus-visible` ring (gold, 2px) for WCAG 2.4.7; `@media (prefers-reduced-motion: reduce)` disables animations. Skip-link "Aller au contenu principal" in `PublicLayout` jumps to `<main id="main-content">`. Suspense fallback uses `role="status"` + `aria-live="polite"`.
+- **Deferred to follow-ups (#52, #53)**: Mass migration of remaining `<img>` in card grids to `<Picture>`, full axe-core audit per page, contrast/aria fine-tuning, before/after Lighthouse capture.
+
 ## Environment Variables
 
 - `RESEND_API_KEY` — Required for contact form emails
