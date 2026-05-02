@@ -5,11 +5,12 @@ import {
   marketplaceVenuesTable,
   realisationsTable,
   messagesTable,
+  conversationsTable,
   weddingWebsitesTable,
   couplesTable,
   vendorAccountsTable,
 } from "@workspace/db";
-import { eq, desc, asc, sql } from "drizzle-orm";
+import { eq, desc, asc, sql, and, isNull, isNotNull } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
 import { notifyVendorApproved, notifyConversationMessage } from "../lib/email";
 
@@ -85,6 +86,8 @@ tr:last-child td{border-bottom:none}
   <a href="/admin/content/realisations">Réalisations</a>
   <span class="sep">|</span>
   <a href="/admin/content/messages">Messages</a>
+  <span class="sep">|</span>
+  <a href="/admin/content/conversations">Conv. Pro</a>
   <span class="sep">|</span>
   <a href="/admin/content/wedding-websites">Sites mariages</a>
   <span class="sep">|</span>
@@ -448,30 +451,62 @@ router.post("/content/realisations/:id/delete", async (req: Request, res: Respon
 
 // ============ MESSAGES ============
 
+async function ensureAdminConversation(coupleId: number): Promise<number> {
+  const [existing] = await db.select().from(conversationsTable)
+    .where(and(eq(conversationsTable.coupleId, coupleId), isNull(conversationsTable.vendorId)))
+    .limit(1);
+  if (existing) {
+    await db.update(messagesTable)
+      .set({ conversationId: existing.id })
+      .where(and(eq(messagesTable.coupleId, coupleId), isNull(messagesTable.conversationId)));
+    return existing.id;
+  }
+  const [created] = await db.insert(conversationsTable)
+    .values({ coupleId, vendorId: null, lastMessageAt: new Date() })
+    .returning();
+  await db.update(messagesTable)
+    .set({ conversationId: created.id })
+    .where(and(eq(messagesTable.coupleId, coupleId), isNull(messagesTable.conversationId)));
+  return created.id;
+}
+
 router.get("/content/messages", async (_req: Request, res: Response) => {
+  // Admin↔couple threads only
   const couples = await db
     .select({
       id: couplesTable.id,
       partner1Name: couplesTable.partner1Name,
       partner2Name: couplesTable.partner2Name,
-      unread: sql<number>`count(case when ${messagesTable.authorRole} = 'couple' and ${messagesTable.readAt} is null then 1 end)`.as("unread"),
     })
     .from(couplesTable)
-    .leftJoin(messagesTable, eq(messagesTable.coupleId, couplesTable.id))
-    .groupBy(couplesTable.id, couplesTable.partner1Name, couplesTable.partner2Name)
     .orderBy(desc(couplesTable.updatedAt));
+
+  const unreadRows = await db
+    .select({
+      coupleId: conversationsTable.coupleId,
+      unread: sql<number>`count(case when ${messagesTable.authorRole} = 'couple' and ${messagesTable.readAt} is null then 1 end)`.as("unread"),
+    })
+    .from(conversationsTable)
+    .leftJoin(messagesTable, eq(messagesTable.conversationId, conversationsTable.id))
+    .where(isNull(conversationsTable.vendorId))
+    .groupBy(conversationsTable.coupleId);
+  const unreadMap = new Map(unreadRows.map((r) => [r.coupleId, Number(r.unread) || 0]));
 
   const listHtml = couples.length === 0
     ? `<p style="color:#888">Aucun couple inscrit.</p>`
     : `<table><thead><tr><th>Couple</th><th>Messages non lus</th><th></th></tr></thead><tbody>
-      ${couples.map(c => `<tr>
-        <td>${escHtml(c.partner1Name || "—")} & ${escHtml(c.partner2Name || "—")}</td>
-        <td>${c.unread > 0 ? `<span class="badge active">${c.unread} nouveaux</span>` : "—"}</td>
-        <td><a class="btn sm secondary" href="/admin/content/messages/${c.id}">Voir la conversation</a></td>
-      </tr>`).join("")}
-      </tbody></table>`;
+      ${couples.map(c => {
+        const unread = unreadMap.get(c.id) ?? 0;
+        return `<tr>
+          <td>${escHtml(c.partner1Name || "—")} & ${escHtml(c.partner2Name || "—")}</td>
+          <td>${unread > 0 ? `<span class="badge active">${unread} nouveaux</span>` : "—"}</td>
+          <td><a class="btn sm secondary" href="/admin/content/messages/${c.id}">Voir la conversation</a></td>
+        </tr>`;
+      }).join("")}
+      </tbody></table>
+      <div style="margin-top:32px"><a class="btn secondary sm" href="/admin/content/conversations">→ Conversations Couple ↔ Prestataire (modération)</a></div>`;
 
-  res.type("html").send(contentLayout("Messages", `<h1>Messages couples</h1>${listHtml}`));
+  res.type("html").send(contentLayout("Messages", `<h1>Messages couples (admin)</h1>${listHtml}`));
 });
 
 router.get("/content/messages/:coupleId", async (req: Request, res: Response) => {
@@ -479,13 +514,15 @@ router.get("/content/messages/:coupleId", async (req: Request, res: Response) =>
   const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, coupleId));
   if (!couple) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
 
+  const convId = await ensureAdminConversation(coupleId);
+
   const messages = await db.select().from(messagesTable)
-    .where(eq(messagesTable.coupleId, coupleId))
+    .where(eq(messagesTable.conversationId, convId))
     .orderBy(asc(messagesTable.createdAt));
 
   await db.update(messagesTable)
     .set({ readAt: new Date() })
-    .where(eq(messagesTable.coupleId, coupleId));
+    .where(and(eq(messagesTable.conversationId, convId), isNull(messagesTable.readAt)));
 
   const threadHtml = messages.length === 0
     ? `<p style="color:#888">Aucun message.</p>`
@@ -516,7 +553,15 @@ router.post("/content/messages/:coupleId", async (req: Request, res: Response) =
   const coupleId = Number(req.params.coupleId);
   const { content } = req.body as { content: string };
   if (!content?.trim()) { res.redirect(`/admin/content/messages/${coupleId}`); return; }
-  await db.insert(messagesTable).values({ coupleId, authorRole: "admin", content: content.trim() });
+  const convId = await ensureAdminConversation(coupleId);
+  const now = new Date();
+  await db.insert(messagesTable).values({
+    coupleId,
+    conversationId: convId,
+    authorRole: "admin",
+    content: content.trim(),
+  });
+  await db.update(conversationsTable).set({ lastMessageAt: now }).where(eq(conversationsTable.id, convId));
 
   // Notify couple (throttled)
   (async () => {
@@ -534,6 +579,86 @@ router.post("/content/messages/:coupleId", async (req: Request, res: Response) =
   })().catch((err) => req.log.error({ err }, "Failed to notify couple of admin message"));
 
   res.redirect(`/admin/content/messages/${coupleId}`);
+});
+
+// ============ CONVERSATIONS COUPLE ↔ VENDOR (modération lecture seule) ============
+
+router.get("/content/conversations", async (_req: Request, res: Response) => {
+  const rows = await db
+    .select({
+      id: conversationsTable.id,
+      coupleId: conversationsTable.coupleId,
+      vendorId: conversationsTable.vendorId,
+      lastMessageAt: conversationsTable.lastMessageAt,
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+      vendorName: marketplaceVendorsTable.name,
+      vendorCategory: marketplaceVendorsTable.category,
+    })
+    .from(conversationsTable)
+    .leftJoin(couplesTable, eq(couplesTable.id, conversationsTable.coupleId))
+    .leftJoin(marketplaceVendorsTable, eq(marketplaceVendorsTable.id, conversationsTable.vendorId))
+    .where(isNotNull(conversationsTable.vendorId))
+    .orderBy(desc(conversationsTable.lastMessageAt));
+
+  const listHtml = rows.length === 0
+    ? `<p style="color:#888">Aucune conversation couple ↔ prestataire.</p>`
+    : `<table><thead><tr><th>Couple</th><th>Prestataire</th><th>Dernier message</th><th></th></tr></thead><tbody>
+      ${rows.map(r => `<tr>
+        <td>${escHtml(r.partner1Name || "—")} & ${escHtml(r.partner2Name || "—")}</td>
+        <td>${escHtml(r.vendorName || "—")} <span style="color:#888;font-size:11px">${escHtml(r.vendorCategory || "")}</span></td>
+        <td style="font-size:12px;color:#666">${new Date(r.lastMessageAt).toLocaleString("fr-BE")}</td>
+        <td><a class="btn sm secondary" href="/admin/content/conversations/${r.id}">Voir (lecture seule)</a></td>
+      </tr>`).join("")}
+      </tbody></table>`;
+
+  const body = `
+    <h1>Conversations Couple ↔ Prestataire</h1>
+    <p style="font-size:13px;color:#555;margin-bottom:16px">Vue de modération en lecture seule. Pour répondre à un couple en tant qu'équipe Mariage Afro, utilisez <a href="/admin/content/messages">Messages</a>.</p>
+    ${listHtml}`;
+  res.type("html").send(contentLayout("Conversations Couple ↔ Pro", body));
+});
+
+router.get("/content/conversations/:id", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const [conv] = await db
+    .select({
+      id: conversationsTable.id,
+      coupleId: conversationsTable.coupleId,
+      vendorId: conversationsTable.vendorId,
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+      vendorName: marketplaceVendorsTable.name,
+    })
+    .from(conversationsTable)
+    .leftJoin(couplesTable, eq(couplesTable.id, conversationsTable.coupleId))
+    .leftJoin(marketplaceVendorsTable, eq(marketplaceVendorsTable.id, conversationsTable.vendorId))
+    .where(eq(conversationsTable.id, id))
+    .limit(1);
+  if (!conv) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
+
+  const messages = await db.select().from(messagesTable)
+    .where(eq(messagesTable.conversationId, id))
+    .orderBy(asc(messagesTable.createdAt));
+
+  const threadHtml = messages.length === 0
+    ? `<p style="color:#888">Aucun message.</p>`
+    : `<div class="thread">${messages.map(m => {
+        const cls = m.authorRole === "couple" ? "couple" : "admin";
+        const who = m.authorRole === "couple" ? "Couple" : (m.authorRole === "vendor" ? "Prestataire" : "Admin");
+        return `<div class="msg ${cls}">
+          <div>${escHtml(m.content)}</div>
+          <div class="meta">${escHtml(who)} · ${new Date(m.createdAt).toLocaleString("fr-BE")}</div>
+        </div>`;
+      }).join("")}</div>`;
+
+  res.type("html").send(contentLayout(
+    `Conversation ${conv.partner1Name} ↔ ${conv.vendorName}`,
+    `<h1>${escHtml(conv.partner1Name || "—")} & ${escHtml(conv.partner2Name || "—")} ↔ ${escHtml(conv.vendorName || "—")}</h1>
+     <a class="btn secondary sm" href="/admin/content/conversations" style="margin-bottom:20px;display:inline-block">← Retour</a>
+     <p style="font-size:12px;color:#888;margin-bottom:16px">Lecture seule — vous ne pouvez pas répondre dans cette conversation.</p>
+     ${threadHtml}`
+  ));
 });
 
 // ============ WEDDING WEBSITES ============

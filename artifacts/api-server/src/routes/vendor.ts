@@ -1,13 +1,16 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { getAuth } from "@clerk/express";
 import { z } from "zod";
-import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNull, ne, or, sql } from "drizzle-orm";
 import {
   db,
   vendorAccountsTable,
   marketplaceVendorsTable,
   vendorAvailabilityTable,
   vendorLeadsTable,
+  conversationsTable,
+  messagesTable,
+  couplesTable,
 } from "@workspace/db";
 import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
@@ -495,6 +498,124 @@ router.patch("/vendor/leads/:id", async (req, res) => {
     .where(eq(vendorLeadsTable.id, id))
     .returning();
   res.json(updated);
+});
+
+// ---------- Conversations (vendor side) ----------
+const messageSchema = z.object({ content: z.string().min(1).max(5000) });
+
+async function getMyVendorId(accountId: number): Promise<number | null> {
+  const [account] = await db.select().from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, accountId)).limit(1);
+  return account?.vendorId ?? null;
+}
+
+router.get("/vendor/conversations", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const vendorId = await getMyVendorId(r.vendorAccountId);
+  if (!vendorId) { res.json([]); return; }
+
+  const convs = await db
+    .select({
+      id: conversationsTable.id,
+      coupleId: conversationsTable.coupleId,
+      lastMessageAt: conversationsTable.lastMessageAt,
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+    })
+    .from(conversationsTable)
+    .leftJoin(couplesTable, eq(couplesTable.id, conversationsTable.coupleId))
+    .where(eq(conversationsTable.vendorId, vendorId))
+    .orderBy(desc(conversationsTable.lastMessageAt));
+
+  const ids = convs.map((c) => c.id);
+  const stats = new Map<number, { unread: number; lastContent: string | null; lastAuthor: string | null }>();
+  if (ids.length > 0) {
+    const unreadRows = await db
+      .select({
+        conversationId: messagesTable.conversationId,
+        unread: sql<number>`count(case when ${messagesTable.authorRole} = 'couple' and ${messagesTable.readAt} is null then 1 end)`.as("unread"),
+      })
+      .from(messagesTable)
+      .where(sql`${messagesTable.conversationId} = ANY(${ids})`)
+      .groupBy(messagesTable.conversationId);
+    for (const u of unreadRows) {
+      if (u.conversationId != null) stats.set(u.conversationId, { unread: Number(u.unread) || 0, lastContent: null, lastAuthor: null });
+    }
+    for (const id of ids) {
+      const [last] = await db.select().from(messagesTable)
+        .where(eq(messagesTable.conversationId, id))
+        .orderBy(desc(messagesTable.createdAt))
+        .limit(1);
+      const cur = stats.get(id) ?? { unread: 0, lastContent: null, lastAuthor: null };
+      if (last) {
+        cur.lastContent = last.content;
+        cur.lastAuthor = last.authorRole;
+      }
+      stats.set(id, cur);
+    }
+  }
+
+  const out = convs.map((c) => {
+    const s = stats.get(c.id) ?? { unread: 0, lastContent: null, lastAuthor: null };
+    return {
+      id: c.id,
+      coupleId: c.coupleId,
+      couple: { partner1Name: c.partner1Name, partner2Name: c.partner2Name },
+      lastMessageAt: c.lastMessageAt,
+      lastMessage: s.lastContent,
+      lastMessageAuthor: s.lastAuthor,
+      unread: s.unread,
+    };
+  });
+  res.json(out);
+});
+
+async function loadVendorConversation(accountId: number, conversationId: number) {
+  const vendorId = await getMyVendorId(accountId);
+  if (!vendorId) return null;
+  const [conv] = await db.select().from(conversationsTable)
+    .where(and(eq(conversationsTable.id, conversationId), eq(conversationsTable.vendorId, vendorId)))
+    .limit(1);
+  return conv ?? null;
+}
+
+router.get("/vendor/conversations/:id/messages", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const conv = await loadVendorConversation(r.vendorAccountId, id);
+  if (!conv) { res.status(404).json({ error: "Not found" }); return; }
+  const rows = await db.select().from(messagesTable)
+    .where(eq(messagesTable.conversationId, id))
+    .orderBy(asc(messagesTable.createdAt));
+  await db.update(messagesTable)
+    .set({ readAt: new Date() })
+    .where(and(
+      eq(messagesTable.conversationId, id),
+      eq(messagesTable.authorRole, "couple"),
+      isNull(messagesTable.readAt),
+    ));
+  res.json(rows);
+});
+
+router.post("/vendor/conversations/:id/messages", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const parsed = messageSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid" }); return; }
+  const conv = await loadVendorConversation(r.vendorAccountId, id);
+  if (!conv) { res.status(404).json({ error: "Not found" }); return; }
+  const now = new Date();
+  const [row] = await db.insert(messagesTable).values({
+    coupleId: conv.coupleId,
+    conversationId: id,
+    authorRole: "vendor",
+    vendorAuthorId: r.vendorAccountId,
+    content: parsed.data.content,
+  }).returning();
+  await db.update(conversationsTable).set({ lastMessageAt: now }).where(eq(conversationsTable.id, id));
+  res.status(201).json(row);
 });
 
 export default router;

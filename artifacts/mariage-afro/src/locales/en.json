@@ -722,6 +722,46 @@
         "zoom": "Zoom call",
         "rdv": "Meeting"
       }
+    },
+    "messages": {
+      "nav": "Messages",
+      "title": "Messages",
+      "subtitle": "Reply to couples who have contacted you.",
+      "list_title": "Conversations",
+      "empty_list": "No conversations yet. When a couple contacts you, their message will show up here.",
+      "select_conversation": "Select a conversation to view messages.",
+      "no_messages": "No messages yet — start the conversation.",
+      "couple": "Couple",
+      "you": "You",
+      "send": "Send",
+      "placeholder": "Write your reply… (Ctrl+Enter to send)",
+      "loading": "Loading…",
+      "unread": "unread",
+      "secure": "Moderated conversation"
+    }
+  },
+  "client": {
+    "conversations": {
+      "title": "Messages",
+      "subtitle": "Chat with the Mariage Afro team and your vendors.",
+      "tab_admin": "Mariage Afro",
+      "tab_vendors": "Vendors",
+      "vendors_empty": "No conversation with a vendor yet.",
+      "start_conversation": "Start a conversation",
+      "pick_vendor": "Pick a vendor",
+      "pick_vendor_placeholder": "Select a vendor…",
+      "pick_vendor_help": "You can start a conversation with any vendor in the marketplace.",
+      "start": "Start",
+      "select_conversation": "Select a conversation to view messages.",
+      "no_messages": "No messages yet — write the first message to the vendor.",
+      "you": "You",
+      "vendor": "Vendor",
+      "team": "Mariage Afro team",
+      "send": "Send",
+      "placeholder": "Write your message… (Ctrl+Enter to send)",
+      "secure": "Secure conversation",
+      "loading": "Loading…",
+      "unread": "new"
     }
   }
 }

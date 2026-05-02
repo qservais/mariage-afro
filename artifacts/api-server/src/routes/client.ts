@@ -1,7 +1,7 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod";
-import { and, eq, asc } from "drizzle-orm";
+import { and, eq, asc, desc, sql, isNull, ne } from "drizzle-orm";
 import {
   db,
   couplesTable,
@@ -13,6 +13,8 @@ import {
   clientDocumentsTable,
   jourJEventsTable,
   messagesTable,
+  conversationsTable,
+  marketplaceVendorsTable,
   weddingWebsitesTable,
   weddingRsvpsTable,
 } from "@workspace/db";
@@ -61,7 +63,7 @@ async function requireCouple(req: Request, res: Response, next: NextFunction): P
     const contact = await fetchClerkContact(userId, req.log);
     [couple] = await db.insert(couplesTable).values({
       userId,
-      email: contact.email,
+      email: contact.email ?? "",
       locale: contact.locale,
     }).returning();
   } else if (!couple.email) {
@@ -507,17 +509,54 @@ router.delete("/client/jour-j/:id", async (req, res) => {
   res.json({ success: true });
 });
 
-// ---------- Messages ----------
+// ---------- Conversations ----------
 const messageSchema = z.object({ content: z.string().min(1).max(5000) });
 
+async function getOrCreateAdminConversation(coupleId: number): Promise<number> {
+  const [existing] = await db.select().from(conversationsTable)
+    .where(and(eq(conversationsTable.coupleId, coupleId), isNull(conversationsTable.vendorId)))
+    .limit(1);
+  if (existing) {
+    // Backfill any orphan messages on first access
+    await db.update(messagesTable)
+      .set({ conversationId: existing.id })
+      .where(and(eq(messagesTable.coupleId, coupleId), isNull(messagesTable.conversationId)));
+    return existing.id;
+  }
+  const [created] = await db.insert(conversationsTable)
+    .values({ coupleId, vendorId: null, lastMessageAt: new Date() })
+    .returning();
+  await db.update(messagesTable)
+    .set({ conversationId: created.id })
+    .where(and(eq(messagesTable.coupleId, coupleId), isNull(messagesTable.conversationId)));
+  return created.id;
+}
+
+async function getOrCreateVendorConversation(coupleId: number, vendorId: number): Promise<number> {
+  const [existing] = await db.select().from(conversationsTable)
+    .where(and(eq(conversationsTable.coupleId, coupleId), eq(conversationsTable.vendorId, vendorId)))
+    .limit(1);
+  if (existing) return existing.id;
+  const [created] = await db.insert(conversationsTable)
+    .values({ coupleId, vendorId, lastMessageAt: new Date() })
+    .returning();
+  return created.id;
+}
+
+// Legacy admin-thread endpoints (kept for backwards compat with existing UI calls)
 router.get("/client/messages", async (req, res) => {
   const r = req as unknown as AuthedRequest;
+  const convId = await getOrCreateAdminConversation(r.coupleId);
   const rows = await db.select().from(messagesTable)
-    .where(eq(messagesTable.coupleId, r.coupleId))
+    .where(eq(messagesTable.conversationId, convId))
     .orderBy(asc(messagesTable.createdAt));
   await db.update(messagesTable)
     .set({ readAt: new Date() })
-    .where(and(eq(messagesTable.coupleId, r.coupleId), eq(messagesTable.authorRole, "admin")));
+    .where(and(
+      eq(messagesTable.conversationId, convId),
+      ne(messagesTable.authorRole, "couple"),
+      isNull(messagesTable.readAt),
+    ));
   res.json(rows);
 });
 
@@ -525,11 +564,15 @@ router.post("/client/messages", async (req, res) => {
   const r = req as unknown as AuthedRequest;
   const parsed = messageSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid" }); return; }
+  const convId = await getOrCreateAdminConversation(r.coupleId);
+  const now = new Date();
   const [row] = await db.insert(messagesTable).values({
     coupleId: r.coupleId,
+    conversationId: convId,
     authorRole: "couple",
     content: parsed.data.content,
   }).returning();
+  await db.update(conversationsTable).set({ lastMessageAt: now }).where(eq(conversationsTable.id, convId));
 
   // Notify admin (throttled per conversation)
   (async () => {
@@ -547,6 +590,166 @@ router.post("/client/messages", async (req, res) => {
       }, req.log);
     }
   })().catch((err) => req.log.error({ err }, "Failed to notify admin of couple message"));
+
+  res.status(201).json(row);
+});
+
+// ---------- Conversations API ----------
+router.get("/client/conversations", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  // Make sure admin thread exists
+  await getOrCreateAdminConversation(r.coupleId);
+
+  const convs = await db
+    .select({
+      id: conversationsTable.id,
+      vendorId: conversationsTable.vendorId,
+      lastMessageAt: conversationsTable.lastMessageAt,
+      createdAt: conversationsTable.createdAt,
+      vendorName: marketplaceVendorsTable.name,
+      vendorCategory: marketplaceVendorsTable.category,
+      vendorCity: marketplaceVendorsTable.city,
+      vendorCoverImage: marketplaceVendorsTable.coverImage,
+    })
+    .from(conversationsTable)
+    .leftJoin(marketplaceVendorsTable, eq(marketplaceVendorsTable.id, conversationsTable.vendorId))
+    .where(eq(conversationsTable.coupleId, r.coupleId))
+    .orderBy(desc(conversationsTable.lastMessageAt));
+
+  // unread + last message snippet
+  const ids = convs.map((c) => c.id);
+  const unreadMap = new Map<number, { unread: number; lastContent: string | null; lastAt: Date | null; lastAuthor: string | null }>();
+  if (ids.length > 0) {
+    const stats = await db
+      .select({
+        conversationId: messagesTable.conversationId,
+        unread: sql<number>`count(case when ${messagesTable.authorRole} <> 'couple' and ${messagesTable.readAt} is null then 1 end)`.as("unread"),
+      })
+      .from(messagesTable)
+      .where(sql`${messagesTable.conversationId} = ANY(${ids})`)
+      .groupBy(messagesTable.conversationId);
+    for (const s of stats) {
+      if (s.conversationId != null) {
+        unreadMap.set(s.conversationId, { unread: Number(s.unread) || 0, lastContent: null, lastAt: null, lastAuthor: null });
+      }
+    }
+    // last message per conversation
+    for (const id of ids) {
+      const [last] = await db.select().from(messagesTable)
+        .where(eq(messagesTable.conversationId, id))
+        .orderBy(desc(messagesTable.createdAt))
+        .limit(1);
+      const cur = unreadMap.get(id) ?? { unread: 0, lastContent: null, lastAt: null, lastAuthor: null };
+      if (last) {
+        cur.lastContent = last.content;
+        cur.lastAt = last.createdAt;
+        cur.lastAuthor = last.authorRole;
+      }
+      unreadMap.set(id, cur);
+    }
+  }
+
+  const out = convs.map((c) => {
+    const stats = unreadMap.get(c.id) ?? { unread: 0, lastContent: null, lastAt: null, lastAuthor: null };
+    return {
+      id: c.id,
+      vendorId: c.vendorId,
+      kind: c.vendorId == null ? "admin" : "vendor",
+      vendor: c.vendorId == null ? null : {
+        id: c.vendorId,
+        name: c.vendorName,
+        category: c.vendorCategory,
+        city: c.vendorCity,
+        coverImage: c.vendorCoverImage,
+      },
+      lastMessageAt: c.lastMessageAt,
+      lastMessage: stats.lastContent,
+      lastMessageAuthor: stats.lastAuthor,
+      unread: stats.unread,
+    };
+  });
+  res.json(out);
+});
+
+const startConversationSchema = z.object({ vendorId: z.coerce.number().int().positive() });
+
+router.post("/client/conversations", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = startConversationSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const [vendor] = await db.select().from(marketplaceVendorsTable)
+    .where(eq(marketplaceVendorsTable.id, parsed.data.vendorId))
+    .limit(1);
+  if (!vendor) { res.status(404).json({ error: "Vendor not found" }); return; }
+  const convId = await getOrCreateVendorConversation(r.coupleId, parsed.data.vendorId);
+  const [conv] = await db.select().from(conversationsTable).where(eq(conversationsTable.id, convId)).limit(1);
+  res.status(201).json({
+    id: conv.id,
+    vendorId: conv.vendorId,
+    kind: "vendor",
+    vendor: { id: vendor.id, name: vendor.name, category: vendor.category, city: vendor.city, coverImage: vendor.coverImage },
+    lastMessageAt: conv.lastMessageAt,
+  });
+});
+
+router.get("/client/conversations/:id/messages", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const [conv] = await db.select().from(conversationsTable)
+    .where(and(eq(conversationsTable.id, id), eq(conversationsTable.coupleId, r.coupleId)))
+    .limit(1);
+  if (!conv) { res.status(404).json({ error: "Not found" }); return; }
+  const rows = await db.select().from(messagesTable)
+    .where(eq(messagesTable.conversationId, id))
+    .orderBy(asc(messagesTable.createdAt));
+  await db.update(messagesTable)
+    .set({ readAt: new Date() })
+    .where(and(
+      eq(messagesTable.conversationId, id),
+      ne(messagesTable.authorRole, "couple"),
+      isNull(messagesTable.readAt),
+    ));
+  res.json(rows);
+});
+
+router.post("/client/conversations/:id/messages", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const parsed = messageSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid" }); return; }
+  const [conv] = await db.select().from(conversationsTable)
+    .where(and(eq(conversationsTable.id, id), eq(conversationsTable.coupleId, r.coupleId)))
+    .limit(1);
+  if (!conv) { res.status(404).json({ error: "Not found" }); return; }
+  const now = new Date();
+  const [row] = await db.insert(messagesTable).values({
+    coupleId: r.coupleId,
+    conversationId: id,
+    authorRole: "couple",
+    content: parsed.data.content,
+  }).returning();
+  await db.update(conversationsTable).set({ lastMessageAt: now }).where(eq(conversationsTable.id, id));
+
+  // Notify admin (throttled per conversation) for the legacy admin thread
+  if (conv.vendorId == null) {
+    (async () => {
+      const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+      const adminTo = process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL;
+      if (adminTo) {
+        const senderLabel = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || `Couple #${r.coupleId}`;
+        await notifyConversationMessage({
+          to: adminTo,
+          locale: "fr",
+          senderLabel,
+          preview: parsed.data.content,
+          conversationKey: `couple-admin:${r.coupleId}`,
+          ctaUrl: `${process.env.PUBLIC_APP_URL || ""}/admin/content/messages/${r.coupleId}`,
+        }, req.log);
+      }
+    })().catch((err) => req.log.error({ err }, "Failed to notify admin of couple message"));
+  }
 
   res.status(201).json(row);
 });

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, Briefcase, Image as ImageIcon, ListChecks,
   Settings, LogOut, Menu, X, Heart, AlertCircle, CheckCircle2,
-  CalendarDays, Inbox,
+  CalendarDays, Inbox, MessageCircle,
 } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import VendorOnboardingGate from "@/components/vendor/VendorOnboardingGate";
@@ -70,6 +70,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
   const NAV = [
     { to: "/espace-pro", label: t("vendor.nav.dashboard"), icon: LayoutDashboard, exact: true, badge: 0 },
     { to: "/espace-pro/leads", label: t("vendor.nav.leads"), icon: Inbox, badge: unseenCount },
+    { to: "/espace-pro/messages", label: t("vendor.messages.nav"), icon: MessageCircle, badge: 0 },
     { to: "/espace-pro/profile", label: t("vendor.nav.profile"), icon: Briefcase, badge: 0 },
     { to: "/espace-pro/gallery", label: t("vendor.nav.gallery"), icon: ImageIcon, badge: 0 },
     { to: "/espace-pro/services", label: t("vendor.nav.services"), icon: ListChecks, badge: 0 },

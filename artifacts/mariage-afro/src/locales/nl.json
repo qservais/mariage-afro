@@ -722,6 +722,46 @@
         "zoom": "Zoom-gesprek",
         "rdv": "Afspraak"
       }
+    },
+    "messages": {
+      "nav": "Berichten",
+      "title": "Berichten",
+      "subtitle": "Beantwoord de koppels die u hebben gecontacteerd.",
+      "list_title": "Gesprekken",
+      "empty_list": "Nog geen gesprekken. Wanneer een koppel u contacteert, verschijnt het bericht hier.",
+      "select_conversation": "Selecteer een gesprek om berichten te bekijken.",
+      "no_messages": "Nog geen berichten — start het gesprek.",
+      "couple": "Koppel",
+      "you": "U",
+      "send": "Verzenden",
+      "placeholder": "Schrijf uw antwoord… (Ctrl+Enter om te verzenden)",
+      "loading": "Laden…",
+      "unread": "ongelezen",
+      "secure": "Gemodereerd gesprek"
+    }
+  },
+  "client": {
+    "conversations": {
+      "title": "Berichten",
+      "subtitle": "Chat met het Mariage Afro-team en uw leveranciers.",
+      "tab_admin": "Mariage Afro",
+      "tab_vendors": "Leveranciers",
+      "vendors_empty": "Nog geen gesprek met een leverancier.",
+      "start_conversation": "Een gesprek starten",
+      "pick_vendor": "Kies een leverancier",
+      "pick_vendor_placeholder": "Selecteer een leverancier…",
+      "pick_vendor_help": "U kunt een gesprek starten met elke leverancier in de marketplace.",
+      "start": "Starten",
+      "select_conversation": "Selecteer een gesprek om berichten te bekijken.",
+      "no_messages": "Nog geen berichten — schrijf het eerste bericht naar de leverancier.",
+      "you": "U",
+      "vendor": "Leverancier",
+      "team": "Mariage Afro-team",
+      "send": "Verzenden",
+      "placeholder": "Schrijf uw bericht… (Ctrl+Enter om te verzenden)",
+      "secure": "Beveiligd gesprek",
+      "loading": "Laden…",
+      "unread": "nieuw"
     }
   }
 }

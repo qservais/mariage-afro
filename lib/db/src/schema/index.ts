@@ -68,6 +68,8 @@ export const couplesTable = pgTable("couples", {
   userId: text("user_id").notNull(),
   partner1Name: text("partner1_name").notNull().default(""),
   partner2Name: text("partner2_name").notNull().default(""),
+  email: text("email").notNull().default(""),
+  locale: text("locale").notNull().default("fr"),
   weddingDate: text("wedding_date"),
   ceremonyCity: text("ceremony_city"),
   ceremonyVenue: text("ceremony_venue"),
@@ -215,10 +217,22 @@ export const realisationsTable = pgTable("realisations", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const conversationsTable = pgTable("conversations", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  vendorId: integer("vendor_id"),
+  lastMessageAt: timestamp("last_message_at", { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  coupleVendorIdx: uniqueIndex("conversations_couple_vendor_idx").on(t.coupleId, t.vendorId),
+}));
+
 export const messagesTable = pgTable("messages", {
   id: serial("id").primaryKey(),
   coupleId: integer("couple_id").notNull(),
+  conversationId: integer("conversation_id"),
   authorRole: text("author_role").notNull().default("couple"),
+  vendorAuthorId: integer("vendor_author_id"),
   content: text("content").notNull(),
   readAt: timestamp("read_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -339,6 +353,7 @@ export type MarketplaceVendor = typeof marketplaceVendorsTable.$inferSelect;
 export type MarketplaceVenue = typeof marketplaceVenuesTable.$inferSelect;
 export type Realisation = typeof realisationsTable.$inferSelect;
 export type Message = typeof messagesTable.$inferSelect;
+export type Conversation = typeof conversationsTable.$inferSelect;
 export type WeddingWebsite = typeof weddingWebsitesTable.$inferSelect;
 export type WeddingRsvp = typeof weddingRsvpsTable.$inferSelect;
 export type VendorAccount = typeof vendorAccountsTable.$inferSelect;

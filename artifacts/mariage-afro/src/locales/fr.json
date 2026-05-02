@@ -722,6 +722,46 @@
         "zoom": "Appel Zoom",
         "rdv": "Rendez-vous"
       }
+    },
+    "messages": {
+      "nav": "Messagerie",
+      "title": "Messagerie",
+      "subtitle": "Échangez avec les couples qui vous ont contacté.",
+      "list_title": "Conversations",
+      "empty_list": "Aucune conversation pour le moment. Lorsqu'un couple vous contactera, son message apparaîtra ici.",
+      "select_conversation": "Sélectionnez une conversation pour afficher les messages.",
+      "no_messages": "Aucun message — démarrez la conversation.",
+      "couple": "Couple",
+      "you": "Vous",
+      "send": "Envoyer",
+      "placeholder": "Écrivez votre réponse… (Ctrl+Entrée pour envoyer)",
+      "loading": "Chargement…",
+      "unread": "non lu",
+      "secure": "Conversation modérée"
+    }
+  },
+  "client": {
+    "conversations": {
+      "title": "Messagerie",
+      "subtitle": "Discutez avec l'équipe Mariage Afro et vos prestataires.",
+      "tab_admin": "Mariage Afro",
+      "tab_vendors": "Prestataires",
+      "vendors_empty": "Aucune conversation avec un prestataire pour le moment.",
+      "start_conversation": "Démarrer une conversation",
+      "pick_vendor": "Choisir un prestataire",
+      "pick_vendor_placeholder": "Sélectionnez un prestataire…",
+      "pick_vendor_help": "Vous pouvez démarrer une conversation avec n'importe quel prestataire de la marketplace.",
+      "start": "Démarrer",
+      "select_conversation": "Sélectionnez une conversation pour afficher les messages.",
+      "no_messages": "Aucun message — écrivez le premier message au prestataire.",
+      "you": "Vous",
+      "vendor": "Prestataire",
+      "team": "Équipe Mariage Afro",
+      "send": "Envoyer",
+      "placeholder": "Écrivez votre message… (Ctrl+Entrée pour envoyer)",
+      "secure": "Conversation sécurisée",
+      "loading": "Chargement…",
+      "unread": "nouveau"
     }
   }
 }
