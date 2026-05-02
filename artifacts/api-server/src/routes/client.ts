@@ -5,6 +5,7 @@ import { and, eq, asc, desc, sql, isNull, ne } from "drizzle-orm";
 import {
   db,
   couplesTable,
+  vendorAccountsTable,
   budgetItemsTable,
   guestsTable,
   guestTablesTable,
@@ -732,8 +733,9 @@ router.post("/client/conversations/:id/messages", async (req, res) => {
   }).returning();
   await db.update(conversationsTable).set({ lastMessageAt: now }).where(eq(conversationsTable.id, id));
 
-  // Notify admin (throttled per conversation) for the legacy admin thread
+  // Notify the other party of the conversation (throttled per conversation)
   if (conv.vendorId == null) {
+    // Couple → admin
     (async () => {
       const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
       const adminTo = process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL;
@@ -749,6 +751,27 @@ router.post("/client/conversations/:id/messages", async (req, res) => {
         }, req.log);
       }
     })().catch((err) => req.log.error({ err }, "Failed to notify admin of couple message"));
+  } else {
+    // Couple → vendor : notify the vendor account that owns this marketplace vendor
+    const vendorIdLocal = conv.vendorId;
+    (async () => {
+      const [account] = await db
+        .select({ email: vendorAccountsTable.email, locale: vendorAccountsTable.locale })
+        .from(vendorAccountsTable)
+        .where(eq(vendorAccountsTable.vendorId, vendorIdLocal))
+        .limit(1);
+      if (!account?.email) return;
+      const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+      const senderLabel = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || `Couple #${r.coupleId}`;
+      await notifyConversationMessage({
+        to: account.email,
+        locale: account.locale,
+        senderLabel,
+        preview: parsed.data.content,
+        conversationKey: `couple-vendor:${r.coupleId}:${vendorIdLocal}`,
+        ctaUrl: `${process.env.PUBLIC_APP_URL || ""}/espace-pro/messages`,
+      }, req.log);
+    })().catch((err) => req.log.error({ err }, "Failed to notify vendor of couple message"));
   }
 
   res.status(201).json(row);

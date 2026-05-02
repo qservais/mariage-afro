@@ -15,6 +15,7 @@ import {
 import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
+import { notifyConversationMessage } from "../lib/email";
 
 const router = Router();
 const storageService = new ObjectStorageService();
@@ -615,6 +616,33 @@ router.post("/vendor/conversations/:id/messages", async (req, res) => {
     content: parsed.data.content,
   }).returning();
   await db.update(conversationsTable).set({ lastMessageAt: now }).where(eq(conversationsTable.id, id));
+
+  // Vendor → couple : notify the couple (throttled per conversation)
+  const vendorIdLocal = conv.vendorId;
+  (async () => {
+    const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, conv.coupleId)).limit(1);
+    if (!couple?.email) return;
+    const [account] = await db.select({ businessName: vendorAccountsTable.businessName })
+      .from(vendorAccountsTable)
+      .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+      .limit(1);
+    const [vendor] = vendorIdLocal != null
+      ? await db.select({ name: marketplaceVendorsTable.name })
+          .from(marketplaceVendorsTable)
+          .where(eq(marketplaceVendorsTable.id, vendorIdLocal))
+          .limit(1)
+      : [];
+    const senderLabel = account?.businessName || vendor?.name || "Mariage Afro";
+    await notifyConversationMessage({
+      to: couple.email,
+      locale: (couple.locale as "fr" | "nl" | "en") || "fr",
+      senderLabel,
+      preview: parsed.data.content,
+      conversationKey: `couple-vendor:${conv.coupleId}:${vendorIdLocal ?? "null"}`,
+      ctaUrl: `${process.env.PUBLIC_APP_URL || ""}/espace-client/communication`,
+    }, req.log);
+  })().catch((err) => req.log.error({ err }, "Failed to notify couple of vendor message"));
+
   res.status(201).json(row);
 });
 

@@ -14,6 +14,7 @@ import {
   vendorAccountsTable,
 } from "@workspace/db";
 import { eq, and, asc, gte, lte } from "drizzle-orm";
+import { notifyAdminNewLead, notifyVendorNewLead } from "../lib/email";
 
 const router = Router();
 
@@ -183,6 +184,31 @@ router.post("/marketplace/vendors/:id/lead", async (req: Request, res: Response)
 
       return { vendorLead, vendorRequest };
     });
+
+    // Fire-and-forget notifications (admin always; vendor if account exists)
+    void notifyAdminNewLead({
+      source: "vendor-request",
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      weddingDate: data.weddingDate,
+      message: data.message ? `[${data.requestType}] ${data.message}` : `[${data.requestType}]`,
+      vendorName: vendor.name,
+    }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to notify admin of vendor lead"));
+
+    if (vendorAccount?.email) {
+      void notifyVendorNewLead({
+        to: vendorAccount.email,
+        locale: vendorAccount.locale,
+        vendorName: vendor.name,
+        contactName: data.name,
+        contactEmail: data.email,
+        contactPhone: data.phone,
+        requestType: data.requestType,
+        weddingDate: data.weddingDate,
+        message: data.message,
+      }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to notify vendor of new lead"));
+    }
 
     res.status(201).json({
       success: true,
