@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/react";
+import { useTranslation } from "react-i18next";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export default function OnboardingGate({ couple, children }: Props) {
+  const { t } = useTranslation();
   const { user } = useUser();
   const qc = useQueryClient();
 
@@ -67,39 +69,39 @@ export default function OnboardingGate({ couple, children }: Props) {
           Mariage Afro
         </div>
         <div>
-          <h2 className="font-bold text-2xl">Bienvenue 👋</h2>
+          <h2 className="font-bold text-2xl">{t("onboarding.title")}</h2>
           <p className="text-sm text-neutral-600 mt-1">
-            Quelques infos rapides pour personnaliser votre espace.
+            {t("onboarding.subtitle")}
           </p>
         </div>
 
         <div className="space-y-4">
           <div>
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
-              Votre prénom <span className="text-primary">*</span>
+              {t("onboarding.your_name")} <span className="text-primary">*</span>
             </label>
             <Input
               value={partner1Name}
               onChange={(e) => setP1(e.target.value)}
-              placeholder="Prénom"
+              placeholder={t("onboarding.name_placeholder")}
               required
               data-testid="input-onboarding-partner1"
             />
           </div>
           <div>
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
-              Prénom de votre partenaire
+              {t("onboarding.partner_name")}
             </label>
             <Input
               value={partner2Name}
               onChange={(e) => setP2(e.target.value)}
-              placeholder="Prénom"
+              placeholder={t("onboarding.name_placeholder")}
               data-testid="input-onboarding-partner2"
             />
           </div>
           <div>
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
-              Date de mariage estimée <span className="text-primary">*</span>
+              {t("onboarding.wedding_date")} <span className="text-primary">*</span>
             </label>
             <Input
               type="date"
@@ -109,7 +111,7 @@ export default function OnboardingGate({ couple, children }: Props) {
               data-testid="input-onboarding-date"
             />
             <p className="text-xs text-neutral-500 mt-1">
-              Vous pourrez l'ajuster à tout moment depuis votre profil.
+              {t("onboarding.date_help")}
             </p>
           </div>
         </div>
@@ -120,7 +122,7 @@ export default function OnboardingGate({ couple, children }: Props) {
           disabled={save.isPending}
           data-testid="button-onboarding-submit"
         >
-          {save.isPending ? "Enregistrement…" : "Commencer"}
+          {save.isPending ? t("onboarding.saving") : t("onboarding.submit")}
         </Button>
       </form>
     </div>

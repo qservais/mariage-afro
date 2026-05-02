@@ -3,6 +3,7 @@ import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { Loader2, X, Check, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -31,34 +32,38 @@ interface Vendor {
 
 const PRICE_LABEL = ["—", "€", "€€", "€€€", "€€€€"];
 
-const leadSchema = z.object({
-  name: z.string().min(2, "Au moins 2 caractères"),
-  email: z.string().email("Email invalide"),
-  phone: z.string().optional(),
-  weddingDate: z.string().optional(),
-  message: z.string().min(10, "Au moins 10 caractères").max(4000),
-  requestType: z.literal("quote").default("quote"),
-});
-type LeadForm = z.infer<typeof leadSchema>;
-
 export default function Comparateur() {
+  const { t } = useTranslation();
   const [sp, setSp] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const leadSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(2, t("comparateur.err_min2")),
+        email: z.string().email(t("comparateur.err_email")),
+        phone: z.string().optional(),
+        weddingDate: z.string().optional(),
+        message: z.string().min(10, t("comparateur.err_min10")).max(4000),
+        requestType: z.literal("quote").default("quote"),
+      }),
+    [t],
+  );
+  type LeadForm = z.infer<typeof leadSchema>;
 
   const ids = useMemo(() => {
     const raw = sp.get("ids") || "";
     const fromUrl = raw.split(",").map((s) => Number(s.trim())).filter((n) => Number.isFinite(n) && n > 0);
     const source = fromUrl.length > 0 ? fromUrl : comparator.get("vendor");
-    // Déduplique et clamp à MAX_COMPARE pour rester aligné avec la limite produit + backend.
     return Array.from(new Set(source)).slice(0, 3);
   }, [sp]);
 
   useEffect(() => {
-    document.title = "Comparateur de prestataires — Mariage Afro";
+    document.title = t("comparateur.meta_title");
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Comparez côte-à-côte jusqu'à 3 prestataires mariage afro/mixte en Belgique.");
-  }, []);
+    if (meta) meta.setAttribute("content", t("comparateur.meta_desc"));
+  }, [t]);
 
   const { data: vendors = [], isLoading } = useQuery<Vendor[]>({
     queryKey: ["comparator-vendors", ids.join(",")],
@@ -111,15 +116,15 @@ export default function Comparateur() {
         const failCount = (json.failed || []).length;
         setSent({ ok: okCount, failed: failCount });
         toast({
-          title: `${okCount} prestataire${okCount > 1 ? "s contactés" : " contacté"}`,
-          description: failCount > 0 ? `${failCount} échec${failCount > 1 ? "s" : ""}.` : "Vous recevrez leurs réponses par email.",
+          title: t("comparateur.toast_success", { count: okCount }),
+          description: failCount > 0 ? t("comparateur.toast_desc_fail", { count: failCount }) : t("comparateur.toast_desc_ok"),
         });
         form.reset();
       } else {
-        toast({ title: "Erreur", description: json.error || "Erreur réseau", variant: "destructive" });
+        toast({ title: t("comparateur.err_network"), description: json.error || t("comparateur.err_network"), variant: "destructive" });
       }
     } catch (err) {
-      toast({ title: "Erreur réseau", description: String(err), variant: "destructive" });
+      toast({ title: t("comparateur.err_network"), description: String(err), variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
@@ -128,10 +133,10 @@ export default function Comparateur() {
   if (ids.length === 0) {
     return (
       <div className="min-h-[60vh] container mx-auto px-6 py-32 text-center">
-        <h1 className="font-display uppercase text-4xl text-wine-deep mb-4">Comparateur vide</h1>
-        <p className="text-wine-deep/70 mb-8">Sélectionnez jusqu'à 3 prestataires depuis la marketplace pour les comparer.</p>
+        <h1 className="font-display uppercase text-4xl text-wine-deep mb-4">{t("comparateur.empty_title")}</h1>
+        <p className="text-wine-deep/70 mb-8">{t("comparateur.empty_desc")}</p>
         <Link to="/partenaires" className="btn-editorial-compact-solid inline-flex">
-          <ArrowLeft className="w-3.5 h-3.5" /> Retour à la marketplace
+          <ArrowLeft className="w-3.5 h-3.5" /> {t("comparateur.back")}
         </Link>
       </div>
     );
@@ -142,17 +147,17 @@ export default function Comparateur() {
       <section className="bg-wine-deep text-cream py-20 md:py-28">
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
           <Link to="/partenaires" className="text-xs uppercase tracking-[0.3em] text-gold hover:text-cream inline-flex items-center gap-2 mb-6">
-            <ArrowLeft className="w-3 h-3" /> Retour aux prestataires
+            <ArrowLeft className="w-3 h-3" /> {t("comparateur.back_short")}
           </Link>
-          <h1 className="font-display uppercase text-4xl md:text-6xl mb-4 leading-[0.95]">Comparateur</h1>
-          <p className="text-cream/70 max-w-2xl">Comparez côte-à-côte jusqu'à 3 prestataires et envoyez-leur une demande de devis groupée en un seul formulaire.</p>
+          <h1 className="font-display uppercase text-4xl md:text-6xl mb-4 leading-[0.95]">{t("comparateur.title")}</h1>
+          <p className="text-cream/70 max-w-2xl">{t("comparateur.subtitle")}</p>
         </div>
       </section>
 
       <section className="py-12">
         <div className="container mx-auto px-4 md:px-12 overflow-x-auto">
           {isLoading ? (
-            <div className="py-24 text-center text-wine-deep/60">Chargement…</div>
+            <div className="py-24 text-center text-wine-deep/60">{t("comparateur.loading")}</div>
           ) : (
             <div className="grid gap-4" style={{ gridTemplateColumns: `200px repeat(${vendors.length}, minmax(260px, 1fr))` }}>
               <div></div>
@@ -161,7 +166,7 @@ export default function Comparateur() {
                   <button
                     type="button"
                     onClick={() => removeId(v.id)}
-                    aria-label={`Retirer ${v.name}`}
+                    aria-label={t("comparateur.remove_aria", { name: v.name })}
                     className="absolute top-2 right-2 p-1 text-wine-deep/50 hover:text-wine-deep bg-cream/80 z-10"
                   >
                     <X className="w-4 h-4" />
@@ -177,7 +182,7 @@ export default function Comparateur() {
                 </div>
               ))}
 
-              <RowLabel label="Note moyenne" />
+              <RowLabel label={t("comparateur.row_rating")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
                   {v.averageRating && v.averageRating > 0 ? (
@@ -188,52 +193,52 @@ export default function Comparateur() {
                       </span>
                     </div>
                   ) : (
-                    <span className="text-wine-deep/40 text-sm">Pas encore d'avis</span>
+                    <span className="text-wine-deep/40 text-sm">{t("comparateur.no_rating")}</span>
                   )}
                 </Cell>
               ))}
 
-              <RowLabel label="Budget" />
+              <RowLabel label={t("comparateur.row_budget")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
                   <span className="font-display text-lg text-wine-deep">{v.priceTier ? PRICE_LABEL[v.priceTier] : "—"}</span>
                 </Cell>
               ))}
 
-              <RowLabel label="Région" />
+              <RowLabel label={t("comparateur.row_region")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>{v.region ? v.region.charAt(0).toUpperCase() + v.region.slice(1) : v.city}</Cell>
               ))}
 
-              <RowLabel label="Vérifié" />
+              <RowLabel label={t("comparateur.row_verified")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
                   {v.verified ? <Check className="w-4 h-4 text-emerald-700" /> : <X className="w-4 h-4 text-wine-deep/30" />}
                 </Cell>
               ))}
 
-              <RowLabel label="Style culturel" />
+              <RowLabel label={t("comparateur.row_cultural")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
                   {v.culturalStyles?.length > 0 ? v.culturalStyles.join(", ") : "—"}
                 </Cell>
               ))}
 
-              <RowLabel label="Langues" />
+              <RowLabel label={t("comparateur.row_languages")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
                   {v.spokenLanguages?.length > 0 ? v.spokenLanguages.map((l) => l.toUpperCase()).join(" · ") : "—"}
                 </Cell>
               ))}
 
-              <RowLabel label="Description" />
+              <RowLabel label={t("comparateur.row_description")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
                   <p className="text-sm text-wine-deep/80 italic line-clamp-6">{v.tagline}</p>
                 </Cell>
               ))}
 
-              <RowLabel label="Services" />
+              <RowLabel label={t("comparateur.row_services")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
                   <ul className="space-y-1">
@@ -254,23 +259,23 @@ export default function Comparateur() {
       <section id="bulk-quote" className="bg-wine-deep text-cream py-16 md:py-24">
         <div className="container mx-auto px-6 md:px-12 max-w-3xl">
           <div className="text-center mb-10">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-3">Demande groupée</p>
-            <h2 className="font-display uppercase text-3xl md:text-5xl mb-4">Demander un devis aux {vendors.length} prestataires</h2>
-            <p className="text-cream/70">Une seule demande, envoyée simultanément à tous les prestataires sélectionnés.</p>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-3">{t("comparateur.bulk_eyebrow")}</p>
+            <h2 className="font-display uppercase text-3xl md:text-5xl mb-4">{t("comparateur.bulk_title", { count: vendors.length })}</h2>
+            <p className="text-cream/70">{t("comparateur.bulk_subtitle")}</p>
           </div>
 
           {sent ? (
             <div className="bg-cream/5 border border-cream/20 p-8 text-center">
-              <p className="text-2xl font-display mb-3">Merci !</p>
-              <p className="text-cream/80 mb-6">Votre demande a été envoyée à {sent.ok} prestataire{sent.ok > 1 ? "s" : ""}. Ils vous répondront par email dans les 48h.</p>
+              <p className="text-2xl font-display mb-3">{t("comparateur.sent_thanks")}</p>
+              <p className="text-cream/80 mb-6">{t("comparateur.sent_desc", { count: sent.ok })}</p>
               <button onClick={() => navigate("/partenaires")} className="btn-editorial">
-                Retour aux prestataires
+                {t("comparateur.back_short")}
               </button>
             </div>
           ) : (
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <div className="grid sm:grid-cols-2 gap-5">
-                <Field label="Nom *" error={form.formState.errors.name?.message}>
+                <Field label={t("comparateur.field_name")} error={form.formState.errors.name?.message}>
                   <input
                     {...form.register("name")}
                     type="text"
@@ -278,7 +283,7 @@ export default function Comparateur() {
                     data-testid="bulk-name"
                   />
                 </Field>
-                <Field label="Email *" error={form.formState.errors.email?.message}>
+                <Field label={t("comparateur.field_email")} error={form.formState.errors.email?.message}>
                   <input
                     {...form.register("email")}
                     type="email"
@@ -286,14 +291,14 @@ export default function Comparateur() {
                     data-testid="bulk-email"
                   />
                 </Field>
-                <Field label="Téléphone">
+                <Field label={t("comparateur.field_phone")}>
                   <input
                     {...form.register("phone")}
                     type="tel"
                     className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-cream focus:outline-none focus:border-gold"
                   />
                 </Field>
-                <Field label="Date du mariage">
+                <Field label={t("comparateur.field_date")}>
                   <input
                     {...form.register("weddingDate")}
                     type="date"
@@ -301,11 +306,11 @@ export default function Comparateur() {
                   />
                 </Field>
               </div>
-              <Field label="Votre projet *" error={form.formState.errors.message?.message}>
+              <Field label={t("comparateur.field_message")} error={form.formState.errors.message?.message}>
                 <textarea
                   {...form.register("message")}
                   rows={5}
-                  placeholder="Date envisagée, lieu, nombre d'invités, attentes…"
+                  placeholder={t("comparateur.message_placeholder")}
                   className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-cream focus:outline-none focus:border-gold resize-none"
                   data-testid="bulk-message"
                 />
@@ -318,7 +323,7 @@ export default function Comparateur() {
                   data-testid="bulk-submit"
                 >
                   {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Envoyer aux {vendors.length} prestataires
+                  {t("comparateur.submit", { count: vendors.length })}
                 </button>
               </div>
             </form>

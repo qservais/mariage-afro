@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useTranslation } from "react-i18next";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -43,6 +44,7 @@ function FitBounds({ points }: { points: Array<[number, number]> }) {
 }
 
 export default function MarketplaceMap({ points, height = 560 }: { points: MapPoint[]; height?: number }) {
+  const { t } = useTranslation();
   const valid = points
     .map((p) => {
       const lat = p.latitude ? Number(p.latitude) : NaN;
@@ -82,12 +84,12 @@ export default function MarketplaceMap({ points, height = 560 }: { points: MapPo
                 {p.city && <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>{p.city}</div>}
                 {typeof p.averageRating === "number" && p.averageRating > 0 && (
                   <div style={{ fontSize: 12, color: "#c9a96e", marginBottom: 4 }}>
-                    ★ {p.averageRating.toFixed(1)} ({p.reviewCount ?? 0} avis)
+                    ★ {p.averageRating.toFixed(1)} ({t("marketplace.map.reviews_short", { count: p.reviewCount ?? 0 })})
                   </div>
                 )}
                 {p.href && (
                   <a href={p.href} style={{ display: "inline-block", marginTop: 4, padding: "6px 12px", background: "#68191e", color: "#fff4e4", textDecoration: "none", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em" }}>
-                    Voir la fiche
+                    {t("marketplace.map.view_card")}
                   </a>
                 )}
               </div>
@@ -98,7 +100,7 @@ export default function MarketplaceMap({ points, height = 560 }: { points: MapPo
       {valid.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="bg-cream/95 px-6 py-4 border border-wine-deep/20 text-center max-w-sm">
-            <p className="text-sm text-wine-deep/70">Aucun prestataire géolocalisé pour ces filtres. Essayez de réinitialiser ou d'élargir votre recherche.</p>
+            <p className="text-sm text-wine-deep/70">{t("marketplace.map.empty")}</p>
           </div>
         </div>
       )}

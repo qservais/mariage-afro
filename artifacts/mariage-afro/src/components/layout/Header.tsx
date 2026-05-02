@@ -46,7 +46,7 @@ export default function Header() {
   // Hiérarchie pensée pour qu'un visiteur comprenne immédiatement où aller.
   const menuColumns = [
     {
-      eyebrow: "Pour les mariés",
+      eyebrow: t("header.eyebrow_couples"),
       audience: "b2c" as const,
       links: [
         { to: "/plateforme", label: t("nav.platform") },
@@ -57,7 +57,7 @@ export default function Header() {
       ],
     },
     {
-      eyebrow: "Inspiration",
+      eyebrow: t("header.eyebrow_inspiration"),
       audience: "discover" as const,
       links: [
         { to: "/partenaires", label: t("nav.partners") },
@@ -66,7 +66,7 @@ export default function Header() {
       ],
     },
     {
-      eyebrow: "La maison",
+      eyebrow: t("header.eyebrow_house"),
       audience: "brand" as const,
       links: [
         { to: "/", label: t("nav.home") },
@@ -76,12 +76,11 @@ export default function Header() {
     },
   ];
 
-  // Liens rapides dans la sidebar verticale (style lamangue)
   const sidebarLinks = [
-    { to: "/contact", label: "Nous écrire" },
-    { to: "/partenaires", label: "Nos partenaires" },
-    { to: "/services", label: "Tarifs" },
-    { to: "/a-propos", label: "À propos" },
+    { to: "/contact", label: t("nav.write_us") },
+    { to: "/partenaires", label: t("nav.partners") },
+    { to: "/services", label: t("nav.pricing") },
+    { to: "/a-propos", label: t("nav.about") },
   ];
 
   const isActive = (to: string) => {
@@ -108,7 +107,7 @@ export default function Header() {
             className={`flex items-center gap-3 group transition-colors ${
               isOverDark || isScrolled || mobileMenuOpen ? "text-cream" : "text-wine-deep"
             }`}
-            aria-label="Toggle menu"
+            aria-label={t("header.toggle_menu")}
             data-testid="button-mobile-menu"
           >
             <div className="flex flex-col items-end gap-1.5">
@@ -116,7 +115,7 @@ export default function Header() {
               <span className="block h-px w-5 bg-current transition-all" />
             </div>
             <span className="text-[11px] uppercase tracking-[0.25em] font-medium hidden sm:inline">
-              {mobileMenuOpen ? "Fermer" : "Menu"}
+              {mobileMenuOpen ? t("header.menu_close") : t("header.menu_open")}
             </span>
           </button>
 
@@ -214,7 +213,7 @@ export default function Header() {
               transition={{ duration: 0.4, delay: 0.1 }}
               className="pt-24 pb-6 md:pb-8 px-6 md:px-16 lg:px-32 border-b border-cream/10"
             >
-              <p className="text-[10px] tracking-[0.3em] uppercase text-gold/70 mb-3">Vous êtes</p>
+              <p className="text-[10px] tracking-[0.3em] uppercase text-gold/70 mb-3">{t("header.you_are")}</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                 <Link
                   to="/services"
@@ -223,7 +222,7 @@ export default function Header() {
                   data-testid="link-menu-b2c"
                 >
                   <span className="font-display uppercase text-xl md:text-2xl tracking-tight">
-                    Un couple à marier
+                    {t("header.b2c_link")}
                   </span>
                   <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </Link>
@@ -236,7 +235,7 @@ export default function Header() {
                 >
                   <Briefcase className="w-4 h-4" />
                   <span className="font-display uppercase text-xl md:text-2xl tracking-tight">
-                    Un prestataire
+                    {t("header.b2b_link")}
                   </span>
                   <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </Link>
@@ -301,7 +300,7 @@ export default function Header() {
                   data-testid="link-mobile-espace-pro"
                 >
                   <Briefcase className="w-3.5 h-3.5" />
-                  Espace Pro
+                  {t("header.pro_space")}
                 </Link>
                 <Link
                   to="/contact"

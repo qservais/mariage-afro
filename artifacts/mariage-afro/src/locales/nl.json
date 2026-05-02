@@ -13,7 +13,9 @@
     "cta": "Maak een afspraak",
     "prestations": "Leveranciers",
     "tool_budget": "Budgetcalculator",
-    "tool_quiz": "Bruiloftsstijl quiz"
+    "tool_quiz": "Bruiloftsstijl quiz",
+    "write_us": "Schrijf ons",
+    "pricing": "Tarieven"
   },
   "tools": {
     "common": {
@@ -579,11 +581,59 @@
     "availability": {
       "title": "Beschikbaarheid (6 maanden)",
       "toggle": "Beschikbaarheid bekijken",
-      "weekdays_short": ["M", "D", "W", "D", "V", "Z", "Z"],
+      "weekdays_short": [
+        "M",
+        "D",
+        "W",
+        "D",
+        "V",
+        "Z",
+        "Z"
+      ],
       "legend_free": "Beschikbaar",
       "legend_unavailable": "Niet beschikbaar",
       "no_blocks": "Geen niet-beschikbare data voor de komende 6 maanden.",
       "warning_unavailable": "Deze datum lijkt niet beschikbaar — u kunt de aanvraag toch versturen, maar de leverancier is mogelijk niet vrij."
+    },
+    "search_placeholder": "Zoek op naam, stad…",
+    "filters_button": "Filters",
+    "reset": "Wissen",
+    "results_one": "{{count}} resultaat",
+    "results_other": "{{count}} resultaten",
+    "category": "Categorie",
+    "all": "Alle",
+    "region": "Regio",
+    "budget": "Budget",
+    "cultural_style": "Culturele stijl",
+    "spoken_language": "Gesproken taal",
+    "capacity_min": "Min. capaciteit (gasten)",
+    "capacity_placeholder": "bijv. 100",
+    "regions": {
+      "bruxelles": "Brussel",
+      "wallonie": "Wallonië",
+      "flandre": "Vlaanderen",
+      "luxembourg": "Luxemburg"
+    },
+    "cultural": {
+      "senegalais": "Senegalees",
+      "congolais": "Congolees",
+      "ivoirien": "Ivoriaans",
+      "ghaneen": "Ghanees",
+      "camerounais": "Kameroens",
+      "haitien": "Haïtiaans",
+      "mixte": "Gemengd / Multicultureel"
+    },
+    "languages": {
+      "fr": "Frans",
+      "nl": "Nederlands",
+      "en": "Engels",
+      "lingala": "Lingala",
+      "wolof": "Wolof"
+    },
+    "map": {
+      "empty": "Geen leveranciers met locatie voor deze filters. Probeer ze te wissen of uit te breiden.",
+      "reviews_short": "{{count}} beoordelingen",
+      "view_card": "Bekijk fiche"
     }
   },
   "realisations": {
@@ -713,12 +763,16 @@
     "legal": "Wettelijke vermeldingen",
     "privacy": "Privacybeleid",
     "made_by": "Site gerealiseerd door Done. — madebydone.be",
-    "rights": "Alle rechten voorbehouden."
+    "rights": "Alle rechten voorbehouden.",
+    "signature_eyebrow": "Mariage Afro",
+    "signature": "Een viering op maat, twee culturen verenigd."
   },
   "not_found": {
     "title": "Pagina niet gevonden",
     "desc": "De pagina die u zoekt bestaat niet of is verplaatst.",
-    "cta": "Terug naar de startpagina"
+    "cta": "Terug naar de startpagina",
+    "code": "404",
+    "back_home": "Terug naar de startpagina"
   },
   "vendor": {
     "nav": {
@@ -735,7 +789,15 @@
       "subtitle": "Klik op een dag om deze te blokkeren of vrij te geven. Dagen 'geboekt' worden automatisch aangemaakt wanneer een huwelijk bevestigd is.",
       "prev_month": "Vorige maand",
       "next_month": "Volgende maand",
-      "weekdays_short": ["M", "D", "W", "D", "V", "Z", "Z"],
+      "weekdays_short": [
+        "M",
+        "D",
+        "W",
+        "D",
+        "V",
+        "Z",
+        "Z"
+      ],
       "legend_free": "Beschikbaar",
       "legend_blocked": "Geblokkeerd",
       "legend_booked": "Geboekt",
@@ -902,6 +964,193 @@
       "secure": "Beveiligd gesprek",
       "loading": "Laden…",
       "unread": "nieuw"
+    }
+  },
+  "header": {
+    "menu_open": "Menu",
+    "toggle_menu": "Menu openen/sluiten",
+    "menu_close": "Sluiten",
+    "you_are": "U bent",
+    "b2c_link": "Een koppel om te trouwen",
+    "b2b_link": "Een leverancier",
+    "eyebrow_couples": "Voor de bruidsparen",
+    "eyebrow_inspiration": "Inspiratie",
+    "eyebrow_house": "Het huis",
+    "pro_space": "Pro-ruimte"
+  },
+  "auth": {
+    "client": {
+      "eyebrow": "Klantruimte",
+      "title": "Mariage Afro"
+    },
+    "vendor": {
+      "eyebrow": "Pro-ruimte",
+      "title": "Mariage Afro",
+      "subtitle": "Maak uw leveranciersaccount aan"
+    }
+  },
+  "client_layout": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "budget": "Budget",
+      "invites": "Gasten",
+      "seating": "Tafelplan",
+      "planning": "Planning",
+      "vendors": "Leveranciers",
+      "documents": "Documenten",
+      "day": "De grote dag",
+      "communication": "Berichten",
+      "site": "Mijn trouwsite",
+      "profile": "Profiel"
+    },
+    "signout": "Afmelden",
+    "hello": "Hallo 👋",
+    "welcome_fallback": "Welkom",
+    "countdown_label": "Aftellen",
+    "menu_aria": "Menu"
+  },
+  "onboarding": {
+    "title": "Welkom 👋",
+    "subtitle": "Een paar snelle vragen om uw ruimte te personaliseren.",
+    "your_name": "Uw voornaam",
+    "partner_name": "Voornaam van uw partner",
+    "wedding_date": "Geschatte trouwdatum",
+    "name_placeholder": "Voornaam",
+    "date_help": "U kunt dit op elk moment aanpassen vanuit uw profiel.",
+    "saving": "Bezig met opslaan…",
+    "submit": "Beginnen"
+  },
+  "comparator_bar": {
+    "label": "Vergelijker ({{count}}/{{max}})",
+    "add": "Toevoegen",
+    "clear": "Wissen",
+    "multi_devis": "Meerdere offertes",
+    "compare": "Vergelijken →",
+    "remove_aria": "{{name}} verwijderen"
+  },
+  "review_modal": {
+    "eyebrow": "Laat een beoordeling achter",
+    "rating": "Score",
+    "title_label": "Titel (optioneel)",
+    "title_placeholder": "bijv. Een uitzonderlijk team",
+    "comment_label": "Uw beoordeling",
+    "comment_placeholder": "Vertel over uw ervaring…",
+    "char_count": "{{current}}/{{max}} — minimum {{min}} tekens",
+    "cancel": "Annuleren",
+    "submit": "Versturen",
+    "close_aria": "Sluiten",
+    "success_title": "Bedankt voor uw beoordeling!",
+    "success_desc": "Deze wordt gepubliceerd na een snelle controle door ons team.",
+    "error_title": "Beoordeling kon niet worden verzonden",
+    "too_short_title": "Beoordeling te kort",
+    "too_short_desc": "Minimaal 10 tekens, alstublieft."
+  },
+  "reviews_list": {
+    "loading": "Beoordelingen laden…",
+    "empty": "Nog geen beoordelingen — wees het eerste koppel dat hun ervaring deelt."
+  },
+  "comparateur": {
+    "meta_title": "Vergelijker — Mariage Afro",
+    "meta_desc": "Vergelijk tot 3 Afro/gemengde trouwleveranciers in België naast elkaar.",
+    "empty_title": "Vergelijker is leeg",
+    "empty_desc": "Selecteer tot 3 leveranciers in de marktplaats om ze te vergelijken.",
+    "back": "Terug naar marktplaats",
+    "back_short": "Terug naar leveranciers",
+    "title": "Vergelijker",
+    "subtitle": "Vergelijk tot 3 leveranciers naast elkaar en stuur ze een gegroepeerde offerteaanvraag in één formulier.",
+    "loading": "Laden…",
+    "row_rating": "Gemiddelde score",
+    "row_budget": "Budget",
+    "row_region": "Regio",
+    "row_verified": "Geverifieerd",
+    "row_cultural": "Culturele stijl",
+    "row_languages": "Talen",
+    "row_description": "Beschrijving",
+    "row_services": "Diensten",
+    "no_rating": "Nog geen beoordelingen",
+    "bulk_eyebrow": "Gegroepeerde aanvraag",
+    "bulk_title": "Vraag een offerte aan {{count}} leveranciers",
+    "bulk_subtitle": "Eén aanvraag, gelijktijdig verzonden naar alle geselecteerde leveranciers.",
+    "sent_thanks": "Bedankt!",
+    "sent_desc": "Uw aanvraag is verzonden naar {{count}} leverancier(s). Ze antwoorden binnen 48 uur per e-mail.",
+    "field_name": "Naam *",
+    "field_email": "E-mail *",
+    "field_phone": "Telefoon",
+    "field_date": "Trouwdatum",
+    "field_message": "Uw project *",
+    "message_placeholder": "Beoogde datum, locatie, aantal gasten, verwachtingen…",
+    "submit": "Verzend aan {{count}} leveranciers",
+    "err_min2": "Minimaal 2 tekens",
+    "err_email": "Ongeldig e-mailadres",
+    "err_min10": "Minimaal 10 tekens",
+    "err_network": "Netwerkfout",
+    "toast_success": "{{count}} leverancier(s) gecontacteerd",
+    "toast_desc_ok": "U ontvangt hun antwoorden per e-mail.",
+    "toast_desc_fail": "{{count}} mislukking(en).",
+    "remove_aria": "{{name}} verwijderen"
+  },
+  "vendor_detail": {
+    "invalid_id": "Ongeldige leverancier-ID.",
+    "loading": "Laden…",
+    "not_found": "Leverancier niet gevonden.",
+    "back": "Terug naar leveranciers",
+    "verified": "Geverifieerd",
+    "review_count": "{{count}} beoordelingen",
+    "about": "Over",
+    "services": "Diensten",
+    "cultural_styles": "Culturele stijlen",
+    "languages": "Talen",
+    "reviews_title": "Geverifieerde beoordelingen",
+    "last_n": "— laatste {{count}}"
+  },
+  "mariage_public": {
+    "not_found_title": "Pagina niet gevonden",
+    "not_found_desc": "Deze trouwsite bestaat niet of is niet langer openbaar.",
+    "back_home": "Terug naar Mariage Afro",
+    "eyebrow": "Bruiloft",
+    "programme_title": "Programma van de dag",
+    "rsvp_title": "Bevestig uw aanwezigheid",
+    "rsvp_subtitle_with_date": "Gelieve te antwoorden vóór {{date}}.",
+    "rsvp_subtitle_no_date": "Gelieve te antwoorden vóór de uiterste datum.",
+    "rsvp_done_title": "Antwoord geregistreerd!",
+    "rsvp_done_desc": "Bedankt voor uw antwoord. Tot snel!",
+    "your_name": "Uw naam *",
+    "name_placeholder": "Voornaam en achternaam",
+    "email_optional": "E-mail (optioneel)",
+    "email_placeholder": "uw@email.com",
+    "presence": "Aanwezigheid",
+    "attending": "✅ Ik zal aanwezig zijn",
+    "not_attending": "❌ Ik zal afwezig zijn",
+    "guest_count": "Aantal personen",
+    "message_optional": "Bericht (optioneel)",
+    "message_placeholder": "Voedselallergie, bericht voor de bruidsparen…",
+    "confirm": "Bevestigen",
+    "footer_made_with": "Gemaakt met",
+    "footer_tagline": "Het premium platform voor Afro en gemengde bruiloften in België"
+  },
+  "client_dashboard": {
+    "your_project": "Uw project",
+    "wedding_planned_on": "Bruiloft gepland op {{date}}",
+    "to_be_defined": "te bepalen",
+    "edit": "Bewerken",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "partner1": "Partner 1",
+    "partner2": "Partner 2",
+    "wedding_date": "Trouwdatum",
+    "name_placeholder": "Voornaam",
+    "progress_title": "Algemene voortgang",
+    "progress_count": "{{pct}}% — {{done}}/{{total}} taken",
+    "next_task": "Volgende taak:",
+    "next_task_due": " — vóór {{date}}",
+    "tile": {
+      "budget": "Budget",
+      "invites": "Gasten",
+      "planning": "Planning",
+      "vendors": "Leveranciers",
+      "documents": "Documenten",
+      "day": "De grote dag",
+      "profile": "Profiel"
     }
   }
 }

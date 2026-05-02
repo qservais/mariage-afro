@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Search, X } from "lucide-react";
 
 export interface FiltersValue {
@@ -12,12 +13,9 @@ export interface FiltersValue {
   capacityMin: number | null;
 }
 
-export const REGIONS = [
-  { value: "bruxelles", label: "Bruxelles" },
-  { value: "wallonie", label: "Wallonie" },
-  { value: "flandre", label: "Flandre" },
-  { value: "luxembourg", label: "Luxembourg" },
-];
+export const REGION_VALUES = ["bruxelles", "wallonie", "flandre", "luxembourg"] as const;
+export const CULTURAL_VALUES = ["senegalais", "congolais", "ivoirien", "ghaneen", "camerounais", "haitien", "mixte"] as const;
+export const LANGUAGE_VALUES = ["fr", "nl", "en", "lingala", "wolof"] as const;
 
 export const PRICE_TIERS = [
   { value: 1, label: "€" },
@@ -26,23 +24,10 @@ export const PRICE_TIERS = [
   { value: 4, label: "€€€€" },
 ];
 
-export const CULTURAL_STYLES = [
-  { value: "senegalais", label: "Sénégalais" },
-  { value: "congolais", label: "Congolais" },
-  { value: "ivoirien", label: "Ivoirien" },
-  { value: "ghaneen", label: "Ghanéen" },
-  { value: "camerounais", label: "Camerounais" },
-  { value: "haitien", label: "Haïtien" },
-  { value: "mixte", label: "Mixte / Métissé" },
-];
-
-export const SPOKEN_LANGUAGES = [
-  { value: "fr", label: "Français" },
-  { value: "nl", label: "Néerlandais" },
-  { value: "en", label: "Anglais" },
-  { value: "lingala", label: "Lingala" },
-  { value: "wolof", label: "Wolof" },
-];
+// Backwards-compat exports (old shape) — translated lazily by the component below
+export const REGIONS = REGION_VALUES.map((value) => ({ value, label: value }));
+export const CULTURAL_STYLES = CULTURAL_VALUES.map((value) => ({ value, label: value }));
+export const SPOKEN_LANGUAGES = LANGUAGE_VALUES.map((value) => ({ value, label: value }));
 
 export function readFiltersFromSearch(sp: URLSearchParams): FiltersValue {
   const list = (k: string) => (sp.get(k) || "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -122,6 +107,7 @@ export default function MarketplaceFilters({
   showCapacity = false,
   totalResults,
 }: Props) {
+  const { t } = useTranslation();
   const [sp, setSp] = useSearchParams();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<FiltersValue>(() => readFiltersFromSearch(sp));
@@ -154,6 +140,10 @@ export default function MarketplaceFilters({
     draft.spokenLanguage.length +
     (draft.capacityMin ? 1 : 0);
 
+  const regionOptions = REGION_VALUES.map((value) => ({ value, label: t(`marketplace.regions.${value}`) }));
+  const culturalOptions = CULTURAL_VALUES.map((value) => ({ value, label: t(`marketplace.cultural.${value}`) }));
+  const languageOptions = LANGUAGE_VALUES.map((value) => ({ value, label: t(`marketplace.languages.${value}`) }));
+
   return (
     <div className="bg-cream border-b border-wine-deep/10">
       <div className="container mx-auto px-4 md:px-12 py-4 flex flex-wrap items-center gap-3">
@@ -161,7 +151,7 @@ export default function MarketplaceFilters({
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-wine-deep/50" />
           <input
             type="search"
-            placeholder="Rechercher par nom, ville…"
+            placeholder={t("marketplace.search_placeholder")}
             value={draft.q}
             onChange={(e) => apply({ ...draft, q: e.target.value })}
             className="w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep transition"
@@ -175,7 +165,7 @@ export default function MarketplaceFilters({
           className="px-4 py-2.5 text-xs uppercase tracking-[0.2em] border border-wine-deep text-wine-deep hover:bg-wine-deep hover:text-cream transition"
           data-testid="filter-toggle"
         >
-          Filtres {activeCount > 0 && <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 text-[10px] bg-wine-deep text-cream">{activeCount}</span>}
+          {t("marketplace.filters_button")} {activeCount > 0 && <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 text-[10px] bg-wine-deep text-cream">{activeCount}</span>}
         </button>
 
         {activeCount > 0 && (
@@ -184,13 +174,13 @@ export default function MarketplaceFilters({
             onClick={clearAll}
             className="text-xs text-wine-deep/70 hover:text-wine-deep underline underline-offset-2 flex items-center gap-1"
           >
-            <X className="w-3 h-3" /> Réinitialiser
+            <X className="w-3 h-3" /> {t("marketplace.reset")}
           </button>
         )}
 
         {typeof totalResults === "number" && (
           <span className="ml-auto text-xs text-wine-deep/60 uppercase tracking-[0.2em]">
-            {totalResults} résultat{totalResults > 1 ? "s" : ""}
+            {t(totalResults > 1 ? "marketplace.results_other" : "marketplace.results_one", { count: totalResults })}
           </span>
         )}
       </div>
@@ -199,7 +189,7 @@ export default function MarketplaceFilters({
         <div className="container mx-auto px-4 md:px-12 pb-6 space-y-5 border-t border-wine-deep/10 pt-5 bg-cream/60">
           {showCategory && categoryOptions.length > 0 && (
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-2">Catégorie</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-2">{t("marketplace.category")}</p>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -208,7 +198,7 @@ export default function MarketplaceFilters({
                     !draft.category ? "bg-wine-deep text-cream border-wine-deep" : "bg-cream text-wine-deep border-wine-deep/20 hover:border-wine-deep/60"
                   }`}
                 >
-                  Toutes
+                  {t("marketplace.all")}
                 </button>
                 {categoryOptions.map((c) => (
                   <button
@@ -226,14 +216,14 @@ export default function MarketplaceFilters({
             </div>
           )}
 
-          <ChipGroup label="Région" options={REGIONS} values={draft.region} onToggle={(v) => toggle("region", v)} />
-          <ChipGroup label="Budget" options={PRICE_TIERS} values={draft.priceTier} onToggle={(v) => toggle("priceTier", v)} />
-          <ChipGroup label="Style culturel" options={CULTURAL_STYLES} values={draft.culturalStyle} onToggle={(v) => toggle("culturalStyle", v)} />
-          <ChipGroup label="Langue parlée" options={SPOKEN_LANGUAGES} values={draft.spokenLanguage} onToggle={(v) => toggle("spokenLanguage", v)} />
+          <ChipGroup label={t("marketplace.region")} options={regionOptions} values={draft.region} onToggle={(v) => toggle("region", v)} />
+          <ChipGroup label={t("marketplace.budget")} options={PRICE_TIERS} values={draft.priceTier} onToggle={(v) => toggle("priceTier", v)} />
+          <ChipGroup label={t("marketplace.cultural_style")} options={culturalOptions} values={draft.culturalStyle} onToggle={(v) => toggle("culturalStyle", v)} />
+          <ChipGroup label={t("marketplace.spoken_language")} options={languageOptions} values={draft.spokenLanguage} onToggle={(v) => toggle("spokenLanguage", v)} />
 
           {showCapacity && (
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-2">Capacité min. (invités)</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-2">{t("marketplace.capacity_min")}</p>
               <input
                 type="number"
                 min={0}
@@ -243,7 +233,7 @@ export default function MarketplaceFilters({
                   const n = Number(e.target.value);
                   apply({ ...draft, capacityMin: Number.isFinite(n) && n > 0 ? n : null });
                 }}
-                placeholder="ex. 100"
+                placeholder={t("marketplace.capacity_placeholder")}
                 className="w-40 px-3 py-2 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
                 data-testid="filter-capacity"
               />

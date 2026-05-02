@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail } from "lucide-react";
 import ReviewsList from "@/components/marketplace/ReviewsList";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
@@ -37,6 +38,7 @@ function escapeJsonLd(s: string) {
 }
 
 export default function PrestataireDetail() {
+  const { t } = useTranslation();
   const { id: idParam } = useParams<{ id: string }>();
   const id = Number(idParam);
 
@@ -50,7 +52,6 @@ export default function PrestataireDetail() {
     },
   });
 
-  // SEO : title + meta description par prestataire
   useEffect(() => {
     if (!vendor) return;
     document.title = `${vendor.name} — ${vendor.category} ${vendor.city} — Mariage Afro`;
@@ -64,7 +65,6 @@ export default function PrestataireDetail() {
     meta.setAttribute("content", desc);
   }, [vendor]);
 
-  // JSON-LD AggregateRating + LocalBusiness sur la fiche détail
   const jsonLdString = useMemo(() => {
     if (!vendor) return "";
     const data: Record<string, unknown> = {
@@ -94,9 +94,9 @@ export default function PrestataireDetail() {
   if (!Number.isFinite(id) || id <= 0) {
     return (
       <section className="container mx-auto px-6 py-32 text-center">
-        <p className="text-wine-deep">Identifiant prestataire invalide.</p>
+        <p className="text-wine-deep">{t("vendor_detail.invalid_id")}</p>
         <Link to="/partenaires" className="text-gold underline mt-4 inline-block">
-          Retour aux prestataires
+          {t("vendor_detail.back")}
         </Link>
       </section>
     );
@@ -105,7 +105,7 @@ export default function PrestataireDetail() {
   if (isLoading) {
     return (
       <section className="container mx-auto px-6 py-32 text-center text-wine-deep/60">
-        Chargement…
+        {t("vendor_detail.loading")}
       </section>
     );
   }
@@ -113,9 +113,9 @@ export default function PrestataireDetail() {
   if (isError || !vendor) {
     return (
       <section className="container mx-auto px-6 py-32 text-center">
-        <p className="text-wine-deep">Prestataire introuvable.</p>
+        <p className="text-wine-deep">{t("vendor_detail.not_found")}</p>
         <Link to="/partenaires" className="text-gold underline mt-4 inline-block">
-          Retour aux prestataires
+          {t("vendor_detail.back")}
         </Link>
       </section>
     );
@@ -133,7 +133,7 @@ export default function PrestataireDetail() {
             to="/partenaires"
             className="inline-flex items-center gap-2 text-gold hover:text-cream text-xs uppercase tracking-[0.3em] mb-6"
           >
-            <ArrowLeft className="w-4 h-4" /> Retour aux prestataires
+            <ArrowLeft className="w-4 h-4" /> {t("vendor_detail.back")}
           </Link>
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-3">{vendor.category}</p>
           <h1 className="font-display uppercase text-4xl md:text-6xl tracking-[-0.01em] mb-4">
@@ -146,14 +146,14 @@ export default function PrestataireDetail() {
             </span>
             {vendor.verified && (
               <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-gold/20 text-gold text-[10px] uppercase tracking-[0.2em]">
-                <CheckCircle2 className="w-3 h-3" /> Vérifié
+                <CheckCircle2 className="w-3 h-3" /> {t("vendor_detail.verified")}
               </span>
             )}
             {(vendor.reviewCount ?? 0) > 0 && (vendor.averageRating ?? 0) > 0 && (
               <span className="inline-flex items-center gap-2">
                 <ReviewStars rating={vendor.averageRating!} size={14} />
                 <span className="text-cream">
-                  {vendor.averageRating!.toFixed(1)} ({vendor.reviewCount} avis)
+                  {vendor.averageRating!.toFixed(1)} ({t("vendor_detail.review_count", { count: vendor.reviewCount! })})
                 </span>
               </span>
             )}
@@ -175,7 +175,7 @@ export default function PrestataireDetail() {
           )}
 
           <div>
-            <h2 className="font-display uppercase text-2xl text-wine-deep mb-3">À propos</h2>
+            <h2 className="font-display uppercase text-2xl text-wine-deep mb-3">{t("vendor_detail.about")}</h2>
             <p className="text-wine-deep/80 leading-relaxed whitespace-pre-wrap">
               {vendor.description || vendor.tagline}
             </p>
@@ -183,7 +183,7 @@ export default function PrestataireDetail() {
 
           {vendor.services?.length > 0 && (
             <div>
-              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold mb-3">Services</h3>
+              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold mb-3">{t("vendor_detail.services")}</h3>
               <ul className="flex flex-wrap gap-2">
                 {vendor.services.map((s) => (
                   <li
@@ -213,10 +213,10 @@ export default function PrestataireDetail() {
 
           <div>
             <h2 className="font-display uppercase text-2xl text-wine-deep mb-5">
-              Avis vérifiés{" "}
+              {t("vendor_detail.reviews_title")}{" "}
               {(vendor.reviewCount ?? 0) > 0 && (
                 <span className="text-sm text-wine-deep/60 normal-case font-sans tracking-normal">
-                  — derniers 3
+                  {t("vendor_detail.last_n", { count: 3 })}
                 </span>
               )}
             </h2>
@@ -262,7 +262,7 @@ export default function PrestataireDetail() {
               {vendor.culturalStyles && vendor.culturalStyles.length > 0 && (
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-2">
-                    Styles culturels
+                    {t("vendor_detail.cultural_styles")}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {vendor.culturalStyles.map((s) => (
@@ -275,7 +275,7 @@ export default function PrestataireDetail() {
               )}
               {vendor.spokenLanguages && vendor.spokenLanguages.length > 0 && (
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-2">Langues</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-2">{t("vendor_detail.languages")}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {vendor.spokenLanguages.map((l) => (
                       <span key={l} className="px-2 py-0.5 bg-wine-deep/5 text-xs uppercase">

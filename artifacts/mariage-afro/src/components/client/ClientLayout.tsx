@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useUser, useClerk } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, Wallet, Users, ListChecks, Briefcase, FileText, Sparkles,
   LogOut, Menu, X, Heart, UserCircle, MessageCircle, Globe, Armchair,
@@ -17,18 +18,25 @@ interface Couple {
   onboardedAt: string | null;
 }
 
-const NAV = [
-  { to: "/espace-client", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-  { to: "/espace-client/budget", label: "Budget", icon: Wallet },
-  { to: "/espace-client/invites", label: "Invités", icon: Users },
-  { to: "/espace-client/plan-de-table", label: "Plan de table", icon: Armchair },
-  { to: "/espace-client/planning", label: "Planning", icon: ListChecks },
-  { to: "/espace-client/prestataires", label: "Prestataires", icon: Briefcase },
-  { to: "/espace-client/documents", label: "Documents", icon: FileText },
-  { to: "/espace-client/jour-j", label: "Jour J", icon: Sparkles },
-  { to: "/espace-client/communication", label: "Communication", icon: MessageCircle },
-  { to: "/espace-client/site", label: "Mon site mariage", icon: Globe },
-  { to: "/espace-client/profil", label: "Profil", icon: UserCircle },
+interface NavItem {
+  to: string;
+  labelKey: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+}
+
+const NAV: NavItem[] = [
+  { to: "/espace-client", labelKey: "client_layout.nav.dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/espace-client/budget", labelKey: "client_layout.nav.budget", icon: Wallet },
+  { to: "/espace-client/invites", labelKey: "client_layout.nav.invites", icon: Users },
+  { to: "/espace-client/plan-de-table", labelKey: "client_layout.nav.seating", icon: Armchair },
+  { to: "/espace-client/planning", labelKey: "client_layout.nav.planning", icon: ListChecks },
+  { to: "/espace-client/prestataires", labelKey: "client_layout.nav.vendors", icon: Briefcase },
+  { to: "/espace-client/documents", labelKey: "client_layout.nav.documents", icon: FileText },
+  { to: "/espace-client/jour-j", labelKey: "client_layout.nav.day", icon: Sparkles },
+  { to: "/espace-client/communication", labelKey: "client_layout.nav.communication", icon: MessageCircle },
+  { to: "/espace-client/site", labelKey: "client_layout.nav.site", icon: Globe },
+  { to: "/espace-client/profil", labelKey: "client_layout.nav.profile", icon: UserCircle },
 ];
 
 function daysUntil(dateStr: string | null | undefined): number | null {
@@ -48,6 +56,7 @@ export function useCouple() {
 }
 
 export default function ClientLayout({ children }: { children?: ReactNode }) {
+  const { t } = useTranslation();
   const { user } = useUser();
   const { signOut } = useClerk();
   const { pathname } = useLocation();
@@ -69,7 +78,6 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background pt-16 lg:pt-0 lg:pl-64">
-      {/* Sidebar — desktop */}
       <aside className="hidden lg:flex fixed top-0 left-0 bottom-0 w-64 bg-white border-r border-neutral-200 flex-col z-30">
         <div className="px-6 py-6 border-b border-neutral-200">
           <Link to="/" className="flex items-center gap-2 text-primary font-bold tracking-widest text-sm uppercase">
@@ -91,7 +99,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
                 data-testid={`link-client-${item.to.split("/").pop()}`}
               >
                 <Icon className="w-4 h-4" />
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}
@@ -102,14 +110,13 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
           data-testid="button-signout"
         >
           <LogOut className="w-4 h-4" />
-          Se déconnecter
+          {t("client_layout.signout")}
         </button>
       </aside>
 
-      {/* Top bar — mobile */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200 h-16 flex items-center justify-between px-4">
         <Link to="/" className="text-primary font-bold tracking-widest text-xs uppercase">Mariage Afro</Link>
-        <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu" className="p-2">
+        <button onClick={() => setMobileOpen(!mobileOpen)} aria-label={t("client_layout.menu_aria")} className="p-2">
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
@@ -127,7 +134,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-3 px-6 py-4 text-base font-medium ${active ? "text-primary bg-background" : "text-neutral-700"}`}
                 >
-                  <Icon className="w-5 h-5" /> {item.label}
+                  <Icon className="w-5 h-5" /> {t(item.labelKey)}
                 </Link>
               );
             })}
@@ -135,24 +142,23 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
               onClick={handleSignOut}
               className="flex items-center gap-3 px-6 py-4 text-base text-neutral-600 w-full text-left border-t mt-2"
             >
-              <LogOut className="w-5 h-5" /> Se déconnecter
+              <LogOut className="w-5 h-5" /> {t("client_layout.signout")}
             </button>
           </nav>
         </div>
       )}
 
-      {/* Header */}
       <header className="bg-white border-b border-neutral-200 px-6 lg:px-10 py-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
-            <p className="text-xs uppercase tracking-widest text-neutral-500">Bonjour 👋</p>
+            <p className="text-xs uppercase tracking-widest text-neutral-500">{t("client_layout.hello")}</p>
             <h1 className="font-bold text-xl lg:text-2xl text-neutral-900">
-              {firstName || "Bienvenue"}{partnerName ? ` & ${partnerName}` : ""}
+              {firstName || t("client_layout.welcome_fallback")}{partnerName ? ` & ${partnerName}` : ""}
             </h1>
           </div>
           {days !== null && (
             <div className="text-right">
-              <p className="text-xs uppercase tracking-widest text-neutral-500">Compte à rebours</p>
+              <p className="text-xs uppercase tracking-widest text-neutral-500">{t("client_layout.countdown_label")}</p>
               <p className="text-2xl lg:text-3xl font-bold text-primary" data-testid="text-countdown">
                 {days >= 0 ? `J-${days}` : `J+${Math.abs(days)}`}
               </p>

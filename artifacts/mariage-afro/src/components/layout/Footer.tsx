@@ -20,10 +20,10 @@ export default function Footer() {
         {/* Top large editorial signature */}
         <div className="border-b border-cream/10 pb-16 mb-16 text-center md:text-left">
           <span className="section-eyebrow section-eyebrow-left mb-6 justify-center md:justify-start">
-            Mariage Afro
+            {t("footer.signature_eyebrow")}
           </span>
           <h3 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl leading-[0.95] tracking-tight max-w-4xl">
-            Une célébration sur mesure, deux cultures réunies.
+            {t("footer.signature")}
           </h3>
         </div>
 

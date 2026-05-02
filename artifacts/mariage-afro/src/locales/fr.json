@@ -13,7 +13,9 @@
     "cta": "Prendre rendez-vous",
     "prestations": "Prestataires",
     "tool_budget": "Calculateur de budget",
-    "tool_quiz": "Quiz style de mariage"
+    "tool_quiz": "Quiz style de mariage",
+    "write_us": "Nous écrire",
+    "pricing": "Tarifs"
   },
   "tools": {
     "common": {
@@ -579,11 +581,59 @@
     "availability": {
       "title": "Disponibilité (6 mois)",
       "toggle": "Voir disponibilités",
-      "weekdays_short": ["L", "M", "M", "J", "V", "S", "D"],
+      "weekdays_short": [
+        "L",
+        "M",
+        "M",
+        "J",
+        "V",
+        "S",
+        "D"
+      ],
       "legend_free": "Libre",
       "legend_unavailable": "Indispo",
       "no_blocks": "Aucune date indispo signalée pour les 6 prochains mois.",
       "warning_unavailable": "Cette date semble réservée — vous pouvez quand même envoyer la demande mais le prestataire risque de ne pas être disponible."
+    },
+    "search_placeholder": "Rechercher par nom, ville…",
+    "filters_button": "Filtres",
+    "reset": "Réinitialiser",
+    "results_one": "{{count}} résultat",
+    "results_other": "{{count}} résultats",
+    "category": "Catégorie",
+    "all": "Toutes",
+    "region": "Région",
+    "budget": "Budget",
+    "cultural_style": "Style culturel",
+    "spoken_language": "Langue parlée",
+    "capacity_min": "Capacité min. (invités)",
+    "capacity_placeholder": "ex. 100",
+    "regions": {
+      "bruxelles": "Bruxelles",
+      "wallonie": "Wallonie",
+      "flandre": "Flandre",
+      "luxembourg": "Luxembourg"
+    },
+    "cultural": {
+      "senegalais": "Sénégalais",
+      "congolais": "Congolais",
+      "ivoirien": "Ivoirien",
+      "ghaneen": "Ghanéen",
+      "camerounais": "Camerounais",
+      "haitien": "Haïtien",
+      "mixte": "Mixte / Métissé"
+    },
+    "languages": {
+      "fr": "Français",
+      "nl": "Néerlandais",
+      "en": "Anglais",
+      "lingala": "Lingala",
+      "wolof": "Wolof"
+    },
+    "map": {
+      "empty": "Aucun prestataire géolocalisé pour ces filtres. Essayez de réinitialiser ou d'élargir votre recherche.",
+      "reviews_short": "{{count}} avis",
+      "view_card": "Voir la fiche"
     }
   },
   "realisations": {
@@ -713,12 +763,16 @@
     "legal": "Mentions légales",
     "privacy": "Politique de confidentialité",
     "made_by": "Site réalisé par Done. — madebydone.be",
-    "rights": "Tous droits réservés."
+    "rights": "Tous droits réservés.",
+    "signature_eyebrow": "Mariage Afro",
+    "signature": "Une célébration sur mesure, deux cultures réunies."
   },
   "not_found": {
     "title": "Page introuvable",
     "desc": "La page que vous recherchez n'existe pas ou a été déplacée.",
-    "cta": "Retourner à l'accueil"
+    "cta": "Retourner à l'accueil",
+    "code": "404",
+    "back_home": "Retourner à l'accueil"
   },
   "vendor": {
     "nav": {
@@ -735,7 +789,15 @@
       "subtitle": "Cliquez sur un jour pour le bloquer ou le libérer. Les jours « réservés » sont créés automatiquement quand un mariage est confirmé.",
       "prev_month": "Mois précédent",
       "next_month": "Mois suivant",
-      "weekdays_short": ["L", "M", "M", "J", "V", "S", "D"],
+      "weekdays_short": [
+        "L",
+        "M",
+        "M",
+        "J",
+        "V",
+        "S",
+        "D"
+      ],
       "legend_free": "Libre",
       "legend_blocked": "Bloqué",
       "legend_booked": "Réservé",
@@ -902,6 +964,193 @@
       "secure": "Conversation sécurisée",
       "loading": "Chargement…",
       "unread": "nouveau"
+    }
+  },
+  "header": {
+    "menu_open": "Menu",
+    "toggle_menu": "Ouvrir/fermer le menu",
+    "menu_close": "Fermer",
+    "you_are": "Vous êtes",
+    "b2c_link": "Un couple à marier",
+    "b2b_link": "Un prestataire",
+    "eyebrow_couples": "Pour les mariés",
+    "eyebrow_inspiration": "Inspiration",
+    "eyebrow_house": "La maison",
+    "pro_space": "Espace Pro"
+  },
+  "auth": {
+    "client": {
+      "eyebrow": "Espace client",
+      "title": "Mariage Afro"
+    },
+    "vendor": {
+      "eyebrow": "Espace Pro",
+      "title": "Mariage Afro",
+      "subtitle": "Créez votre compte prestataire"
+    }
+  },
+  "client_layout": {
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "budget": "Budget",
+      "invites": "Invités",
+      "seating": "Plan de table",
+      "planning": "Planning",
+      "vendors": "Prestataires",
+      "documents": "Documents",
+      "day": "Jour J",
+      "communication": "Communication",
+      "site": "Mon site mariage",
+      "profile": "Profil"
+    },
+    "signout": "Se déconnecter",
+    "hello": "Bonjour 👋",
+    "welcome_fallback": "Bienvenue",
+    "countdown_label": "Compte à rebours",
+    "menu_aria": "Menu"
+  },
+  "onboarding": {
+    "title": "Bienvenue 👋",
+    "subtitle": "Quelques infos rapides pour personnaliser votre espace.",
+    "your_name": "Votre prénom",
+    "partner_name": "Prénom de votre partenaire",
+    "wedding_date": "Date de mariage estimée",
+    "name_placeholder": "Prénom",
+    "date_help": "Vous pourrez l'ajuster à tout moment depuis votre profil.",
+    "saving": "Enregistrement…",
+    "submit": "Commencer"
+  },
+  "comparator_bar": {
+    "label": "Comparateur ({{count}}/{{max}})",
+    "add": "Ajouter",
+    "clear": "Vider",
+    "multi_devis": "Multi-devis",
+    "compare": "Comparer →",
+    "remove_aria": "Retirer {{name}}"
+  },
+  "review_modal": {
+    "eyebrow": "Laisser un avis",
+    "rating": "Note",
+    "title_label": "Titre (optionnel)",
+    "title_placeholder": "ex : Une équipe d'exception",
+    "comment_label": "Votre avis",
+    "comment_placeholder": "Racontez votre expérience…",
+    "char_count": "{{current}}/{{max}} — minimum {{min}} caractères",
+    "cancel": "Annuler",
+    "submit": "Envoyer",
+    "close_aria": "Fermer",
+    "success_title": "Merci pour votre avis !",
+    "success_desc": "Il sera publié après une rapide vérification par notre équipe.",
+    "error_title": "Impossible d'envoyer l'avis",
+    "too_short_title": "Avis trop court",
+    "too_short_desc": "Au moins 10 caractères, merci."
+  },
+  "reviews_list": {
+    "loading": "Chargement des avis…",
+    "empty": "Pas encore d'avis publié — soyez le premier couple à partager votre expérience."
+  },
+  "comparateur": {
+    "meta_title": "Comparateur de prestataires — Mariage Afro",
+    "meta_desc": "Comparez côte-à-côte jusqu'à 3 prestataires mariage afro/mixte en Belgique.",
+    "empty_title": "Comparateur vide",
+    "empty_desc": "Sélectionnez jusqu'à 3 prestataires depuis la marketplace pour les comparer.",
+    "back": "Retour à la marketplace",
+    "back_short": "Retour aux prestataires",
+    "title": "Comparateur",
+    "subtitle": "Comparez côte-à-côte jusqu'à 3 prestataires et envoyez-leur une demande de devis groupée en un seul formulaire.",
+    "loading": "Chargement…",
+    "row_rating": "Note moyenne",
+    "row_budget": "Budget",
+    "row_region": "Région",
+    "row_verified": "Vérifié",
+    "row_cultural": "Style culturel",
+    "row_languages": "Langues",
+    "row_description": "Description",
+    "row_services": "Services",
+    "no_rating": "Pas encore d'avis",
+    "bulk_eyebrow": "Demande groupée",
+    "bulk_title": "Demander un devis aux {{count}} prestataires",
+    "bulk_subtitle": "Une seule demande, envoyée simultanément à tous les prestataires sélectionnés.",
+    "sent_thanks": "Merci !",
+    "sent_desc": "Votre demande a été envoyée à {{count}} prestataire(s). Ils vous répondront par email dans les 48h.",
+    "field_name": "Nom *",
+    "field_email": "Email *",
+    "field_phone": "Téléphone",
+    "field_date": "Date du mariage",
+    "field_message": "Votre projet *",
+    "message_placeholder": "Date envisagée, lieu, nombre d'invités, attentes…",
+    "submit": "Envoyer aux {{count}} prestataires",
+    "err_min2": "Au moins 2 caractères",
+    "err_email": "Email invalide",
+    "err_min10": "Au moins 10 caractères",
+    "err_network": "Erreur réseau",
+    "toast_success": "{{count}} prestataire(s) contacté(s)",
+    "toast_desc_ok": "Vous recevrez leurs réponses par email.",
+    "toast_desc_fail": "{{count}} échec(s).",
+    "remove_aria": "Retirer {{name}}"
+  },
+  "vendor_detail": {
+    "invalid_id": "Identifiant prestataire invalide.",
+    "loading": "Chargement…",
+    "not_found": "Prestataire introuvable.",
+    "back": "Retour aux prestataires",
+    "verified": "Vérifié",
+    "review_count": "{{count}} avis",
+    "about": "À propos",
+    "services": "Services",
+    "cultural_styles": "Styles culturels",
+    "languages": "Langues",
+    "reviews_title": "Avis vérifiés",
+    "last_n": "— derniers {{count}}"
+  },
+  "mariage_public": {
+    "not_found_title": "Page introuvable",
+    "not_found_desc": "Ce site mariage n'existe pas ou n'est plus public.",
+    "back_home": "Retour au site Mariage Afro",
+    "eyebrow": "Mariage",
+    "programme_title": "Programme de la journée",
+    "rsvp_title": "Confirmer votre présence",
+    "rsvp_subtitle_with_date": "Merci de répondre avant le {{date}}.",
+    "rsvp_subtitle_no_date": "Merci de répondre avant la date limite.",
+    "rsvp_done_title": "Réponse enregistrée !",
+    "rsvp_done_desc": "Merci pour votre réponse. À très bientôt !",
+    "your_name": "Votre nom *",
+    "name_placeholder": "Prénom et Nom",
+    "email_optional": "Email (optionnel)",
+    "email_placeholder": "votre@email.com",
+    "presence": "Présence",
+    "attending": "✅ Je serai présent(e)",
+    "not_attending": "❌ Je serai absent(e)",
+    "guest_count": "Nombre de personnes",
+    "message_optional": "Message (optionnel)",
+    "message_placeholder": "Allergie alimentaire, message pour les mariés…",
+    "confirm": "Confirmer",
+    "footer_made_with": "Créé avec",
+    "footer_tagline": "La plateforme premium pour mariages afro et mixtes en Belgique"
+  },
+  "client_dashboard": {
+    "your_project": "Votre projet",
+    "wedding_planned_on": "Mariage prévu le {{date}}",
+    "to_be_defined": "à définir",
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "partner1": "Partenaire 1",
+    "partner2": "Partenaire 2",
+    "wedding_date": "Date du mariage",
+    "name_placeholder": "Prénom",
+    "progress_title": "Progression globale",
+    "progress_count": "{{pct}}% — {{done}}/{{total}} tâches",
+    "next_task": "Prochaine tâche :",
+    "next_task_due": " — d'ici le {{date}}",
+    "tile": {
+      "budget": "Budget",
+      "invites": "Invités",
+      "planning": "Planning",
+      "vendors": "Prestataires",
+      "documents": "Documents",
+      "day": "Jour J",
+      "profile": "Profil"
     }
   }
 }

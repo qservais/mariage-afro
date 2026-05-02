@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { clientApi } from "@/lib/clientApi";
 import { useToast } from "@/hooks/use-toast";
 import { StarPicker } from "./ReviewStars";
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Props) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [rating, setRating] = useState(5);
   const [title, setTitle] = useState("");
@@ -23,8 +25,8 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
       clientApi.post("/api/client/reviews", { vendorId: vendor.id, rating, title, comment }),
     onSuccess: () => {
       toast({
-        title: "Merci pour votre avis !",
-        description: "Il sera publié après une rapide vérification par notre équipe.",
+        title: t("review_modal.success_title"),
+        description: t("review_modal.success_desc"),
       });
       setTitle("");
       setComment("");
@@ -33,8 +35,8 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
       onClose();
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Erreur";
-      toast({ title: "Impossible d'envoyer l'avis", description: msg, variant: "destructive" });
+      const msg = err instanceof Error ? err.message : "Error";
+      toast({ title: t("review_modal.error_title"), description: msg, variant: "destructive" });
     },
   });
 
@@ -50,10 +52,10 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
       >
         <div className="px-6 py-4 border-b border-wine-deep/10 flex items-center justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">Laisser un avis</p>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">{t("review_modal.eyebrow")}</p>
             <h3 id="review-modal-title" className="font-display uppercase text-xl text-wine-deep">{vendor.name}</h3>
           </div>
-          <button type="button" onClick={onClose} aria-label="Fermer" className="p-2 text-wine-deep/60 hover:text-wine-deep">
+          <button type="button" onClick={onClose} aria-label={t("review_modal.close_aria")} className="p-2 text-wine-deep/60 hover:text-wine-deep">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -61,7 +63,7 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
           onSubmit={(e) => {
             e.preventDefault();
             if (comment.trim().length < 10) {
-              toast({ title: "Avis trop court", description: "Au moins 10 caractères, merci.", variant: "destructive" });
+              toast({ title: t("review_modal.too_short_title"), description: t("review_modal.too_short_desc"), variant: "destructive" });
               return;
             }
             submit.mutate();
@@ -69,24 +71,24 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
           className="px-6 py-5 space-y-5"
         >
           <div>
-            <label className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">Note</label>
+            <label className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">{t("review_modal.rating")}</label>
             <StarPicker value={rating} onChange={setRating} />
           </div>
           <div>
-            <label htmlFor="review-title" className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">Titre (optionnel)</label>
+            <label htmlFor="review-title" className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">{t("review_modal.title_label")}</label>
             <input
               id="review-title"
               type="text"
               maxLength={160}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="ex : Une équipe d'exception"
+              placeholder={t("review_modal.title_placeholder")}
               className="w-full px-3 py-2.5 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
               data-testid="review-title"
             />
           </div>
           <div>
-            <label htmlFor="review-comment" className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">Votre avis</label>
+            <label htmlFor="review-comment" className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">{t("review_modal.comment_label")}</label>
             <textarea
               id="review-comment"
               required
@@ -95,15 +97,15 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
               rows={6}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Racontez votre expérience…"
+              placeholder={t("review_modal.comment_placeholder")}
               className="w-full px-3 py-2.5 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
               data-testid="review-comment"
             />
-            <p className="text-[11px] text-wine-deep/50 mt-1">{comment.length}/4000 — minimum 10 caractères</p>
+            <p className="text-[11px] text-wine-deep/50 mt-1">{t("review_modal.char_count", { current: comment.length, max: 4000, min: 10 })}</p>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2.5 text-xs uppercase tracking-[0.2em] border border-wine-deep/20 text-wine-deep/70 hover:border-wine-deep">
-              Annuler
+              {t("review_modal.cancel")}
             </button>
             <button
               type="submit"
@@ -112,7 +114,7 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
               data-testid="review-submit"
             >
               {submit.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              Envoyer
+              {t("review_modal.submit")}
             </button>
           </div>
         </form>

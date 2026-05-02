@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { ReviewStars } from "./ReviewStars";
 
 interface Review {
@@ -10,7 +11,12 @@ interface Review {
   authorName: string;
 }
 
+const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
+
 export default function ReviewsList({ vendorId, limit }: { vendorId: number; limit?: number }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = LOCALE_MAP[(i18n.resolvedLanguage || i18n.language || "fr").split("-")[0]] || "fr-BE";
+
   const { data: reviews = [], isLoading } = useQuery<Review[]>({
     queryKey: ["vendor-reviews", vendorId],
     queryFn: async () => {
@@ -20,11 +26,11 @@ export default function ReviewsList({ vendorId, limit }: { vendorId: number; lim
     },
   });
 
-  if (isLoading) return <p className="text-sm text-wine-deep/60">Chargement des avis…</p>;
+  if (isLoading) return <p className="text-sm text-wine-deep/60">{t("reviews_list.loading")}</p>;
   if (reviews.length === 0)
     return (
       <p className="text-sm text-wine-deep/60 italic">
-        Pas encore d'avis publié — soyez le premier couple à partager votre expérience.
+        {t("reviews_list.empty")}
       </p>
     );
 
@@ -37,7 +43,7 @@ export default function ReviewsList({ vendorId, limit }: { vendorId: number; lim
           <div className="flex items-center gap-3 mb-2">
             <ReviewStars rating={r.rating} />
             <span className="text-xs text-wine-deep/60 uppercase tracking-[0.15em]">
-              {new Date(r.createdAt).toLocaleDateString("fr-BE", { year: "numeric", month: "long" })}
+              {new Date(r.createdAt).toLocaleDateString(dateLocale, { year: "numeric", month: "long" })}
             </span>
           </div>
           {r.title && <p className="font-display text-lg text-wine-deep mb-1">{r.title}</p>}

@@ -13,7 +13,9 @@
     "cta": "Book an appointment",
     "prestations": "Vendors",
     "tool_budget": "Budget calculator",
-    "tool_quiz": "Wedding style quiz"
+    "tool_quiz": "Wedding style quiz",
+    "write_us": "Write to us",
+    "pricing": "Pricing"
   },
   "tools": {
     "common": {
@@ -579,11 +581,59 @@
     "availability": {
       "title": "Availability (6 months)",
       "toggle": "View availability",
-      "weekdays_short": ["M", "T", "W", "T", "F", "S", "S"],
+      "weekdays_short": [
+        "M",
+        "T",
+        "W",
+        "T",
+        "F",
+        "S",
+        "S"
+      ],
       "legend_free": "Available",
       "legend_unavailable": "Unavailable",
       "no_blocks": "No unavailable dates reported for the next 6 months.",
       "warning_unavailable": "This date appears to be unavailable — you can still send the request but the vendor may not be free."
+    },
+    "search_placeholder": "Search by name, city…",
+    "filters_button": "Filters",
+    "reset": "Reset",
+    "results_one": "{{count}} result",
+    "results_other": "{{count}} results",
+    "category": "Category",
+    "all": "All",
+    "region": "Region",
+    "budget": "Budget",
+    "cultural_style": "Cultural style",
+    "spoken_language": "Spoken language",
+    "capacity_min": "Min. capacity (guests)",
+    "capacity_placeholder": "e.g. 100",
+    "regions": {
+      "bruxelles": "Brussels",
+      "wallonie": "Wallonia",
+      "flandre": "Flanders",
+      "luxembourg": "Luxembourg"
+    },
+    "cultural": {
+      "senegalais": "Senegalese",
+      "congolais": "Congolese",
+      "ivoirien": "Ivorian",
+      "ghaneen": "Ghanaian",
+      "camerounais": "Cameroonian",
+      "haitien": "Haitian",
+      "mixte": "Mixed / Multicultural"
+    },
+    "languages": {
+      "fr": "French",
+      "nl": "Dutch",
+      "en": "English",
+      "lingala": "Lingala",
+      "wolof": "Wolof"
+    },
+    "map": {
+      "empty": "No vendors geolocated for these filters. Try resetting or widening your search.",
+      "reviews_short": "{{count}} reviews",
+      "view_card": "View profile"
     }
   },
   "realisations": {
@@ -713,12 +763,16 @@
     "legal": "Legal Notice",
     "privacy": "Privacy Policy",
     "made_by": "Site realized by Done. — madebydone.be",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "signature_eyebrow": "Mariage Afro",
+    "signature": "A bespoke celebration, two cultures united."
   },
   "not_found": {
     "title": "Page not found",
     "desc": "The page you are looking for does not exist or has been moved.",
-    "cta": "Return to homepage"
+    "cta": "Return to homepage",
+    "code": "404",
+    "back_home": "Back to home"
   },
   "vendor": {
     "nav": {
@@ -735,7 +789,15 @@
       "subtitle": "Click a day to block or free it. Days marked as 'booked' are created automatically when a wedding is confirmed.",
       "prev_month": "Previous month",
       "next_month": "Next month",
-      "weekdays_short": ["M", "T", "W", "T", "F", "S", "S"],
+      "weekdays_short": [
+        "M",
+        "T",
+        "W",
+        "T",
+        "F",
+        "S",
+        "S"
+      ],
       "legend_free": "Available",
       "legend_blocked": "Blocked",
       "legend_booked": "Booked",
@@ -902,6 +964,193 @@
       "secure": "Secure conversation",
       "loading": "Loading…",
       "unread": "new"
+    }
+  },
+  "header": {
+    "menu_open": "Menu",
+    "toggle_menu": "Toggle menu",
+    "menu_close": "Close",
+    "you_are": "You are",
+    "b2c_link": "A couple getting married",
+    "b2b_link": "A vendor",
+    "eyebrow_couples": "For couples",
+    "eyebrow_inspiration": "Inspiration",
+    "eyebrow_house": "The house",
+    "pro_space": "Pro Space"
+  },
+  "auth": {
+    "client": {
+      "eyebrow": "Client Area",
+      "title": "Mariage Afro"
+    },
+    "vendor": {
+      "eyebrow": "Pro Space",
+      "title": "Mariage Afro",
+      "subtitle": "Create your vendor account"
+    }
+  },
+  "client_layout": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "budget": "Budget",
+      "invites": "Guests",
+      "seating": "Seating chart",
+      "planning": "Planning",
+      "vendors": "Vendors",
+      "documents": "Documents",
+      "day": "The big day",
+      "communication": "Messages",
+      "site": "My wedding site",
+      "profile": "Profile"
+    },
+    "signout": "Sign out",
+    "hello": "Hello 👋",
+    "welcome_fallback": "Welcome",
+    "countdown_label": "Countdown",
+    "menu_aria": "Menu"
+  },
+  "onboarding": {
+    "title": "Welcome 👋",
+    "subtitle": "A few quick questions to personalize your space.",
+    "your_name": "Your first name",
+    "partner_name": "Your partner's first name",
+    "wedding_date": "Estimated wedding date",
+    "name_placeholder": "First name",
+    "date_help": "You can adjust this anytime from your profile.",
+    "saving": "Saving…",
+    "submit": "Get started"
+  },
+  "comparator_bar": {
+    "label": "Compare ({{count}}/{{max}})",
+    "add": "Add",
+    "clear": "Clear",
+    "multi_devis": "Multi-quote",
+    "compare": "Compare →",
+    "remove_aria": "Remove {{name}}"
+  },
+  "review_modal": {
+    "eyebrow": "Leave a review",
+    "rating": "Rating",
+    "title_label": "Title (optional)",
+    "title_placeholder": "e.g. An exceptional team",
+    "comment_label": "Your review",
+    "comment_placeholder": "Share your experience…",
+    "char_count": "{{current}}/{{max}} — minimum {{min}} characters",
+    "cancel": "Cancel",
+    "submit": "Send",
+    "close_aria": "Close",
+    "success_title": "Thank you for your review!",
+    "success_desc": "It will be published after a quick check by our team.",
+    "error_title": "Could not send review",
+    "too_short_title": "Review too short",
+    "too_short_desc": "At least 10 characters, please."
+  },
+  "reviews_list": {
+    "loading": "Loading reviews…",
+    "empty": "No reviews yet — be the first couple to share your experience."
+  },
+  "comparateur": {
+    "meta_title": "Vendor comparator — Mariage Afro",
+    "meta_desc": "Compare up to 3 Afro/mixed wedding vendors in Belgium side by side.",
+    "empty_title": "Comparator empty",
+    "empty_desc": "Select up to 3 vendors from the marketplace to compare them.",
+    "back": "Back to marketplace",
+    "back_short": "Back to vendors",
+    "title": "Comparator",
+    "subtitle": "Compare up to 3 vendors side by side and send them a grouped quote request in a single form.",
+    "loading": "Loading…",
+    "row_rating": "Average rating",
+    "row_budget": "Budget",
+    "row_region": "Region",
+    "row_verified": "Verified",
+    "row_cultural": "Cultural style",
+    "row_languages": "Languages",
+    "row_description": "Description",
+    "row_services": "Services",
+    "no_rating": "No reviews yet",
+    "bulk_eyebrow": "Grouped request",
+    "bulk_title": "Request a quote from {{count}} vendors",
+    "bulk_subtitle": "A single request, sent simultaneously to all selected vendors.",
+    "sent_thanks": "Thank you!",
+    "sent_desc": "Your request was sent to {{count}} vendor(s). They will reply by email within 48h.",
+    "field_name": "Name *",
+    "field_email": "Email *",
+    "field_phone": "Phone",
+    "field_date": "Wedding date",
+    "field_message": "Your project *",
+    "message_placeholder": "Planned date, venue, number of guests, expectations…",
+    "submit": "Send to {{count}} vendors",
+    "err_min2": "At least 2 characters",
+    "err_email": "Invalid email",
+    "err_min10": "At least 10 characters",
+    "err_network": "Network error",
+    "toast_success": "{{count}} vendor(s) contacted",
+    "toast_desc_ok": "You will receive their replies by email.",
+    "toast_desc_fail": "{{count}} failure(s).",
+    "remove_aria": "Remove {{name}}"
+  },
+  "vendor_detail": {
+    "invalid_id": "Invalid vendor ID.",
+    "loading": "Loading…",
+    "not_found": "Vendor not found.",
+    "back": "Back to vendors",
+    "verified": "Verified",
+    "review_count": "{{count}} reviews",
+    "about": "About",
+    "services": "Services",
+    "cultural_styles": "Cultural styles",
+    "languages": "Languages",
+    "reviews_title": "Verified reviews",
+    "last_n": "— last {{count}}"
+  },
+  "mariage_public": {
+    "not_found_title": "Page not found",
+    "not_found_desc": "This wedding site does not exist or is no longer public.",
+    "back_home": "Back to Mariage Afro",
+    "eyebrow": "Wedding",
+    "programme_title": "Day's programme",
+    "rsvp_title": "Confirm your attendance",
+    "rsvp_subtitle_with_date": "Please reply before {{date}}.",
+    "rsvp_subtitle_no_date": "Please reply before the deadline.",
+    "rsvp_done_title": "Response recorded!",
+    "rsvp_done_desc": "Thank you for your response. See you soon!",
+    "your_name": "Your name *",
+    "name_placeholder": "First and last name",
+    "email_optional": "Email (optional)",
+    "email_placeholder": "your@email.com",
+    "presence": "Attendance",
+    "attending": "✅ I will attend",
+    "not_attending": "❌ I will not attend",
+    "guest_count": "Number of people",
+    "message_optional": "Message (optional)",
+    "message_placeholder": "Food allergy, message for the couple…",
+    "confirm": "Confirm",
+    "footer_made_with": "Made with",
+    "footer_tagline": "The premium platform for Afro and mixed weddings in Belgium"
+  },
+  "client_dashboard": {
+    "your_project": "Your project",
+    "wedding_planned_on": "Wedding planned on {{date}}",
+    "to_be_defined": "to be defined",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "partner1": "Partner 1",
+    "partner2": "Partner 2",
+    "wedding_date": "Wedding date",
+    "name_placeholder": "First name",
+    "progress_title": "Overall progress",
+    "progress_count": "{{pct}}% — {{done}}/{{total}} tasks",
+    "next_task": "Next task:",
+    "next_task_due": " — by {{date}}",
+    "tile": {
+      "budget": "Budget",
+      "invites": "Guests",
+      "planning": "Planning",
+      "vendors": "Vendors",
+      "documents": "Documents",
+      "day": "The big day",
+      "profile": "Profile"
     }
   }
 }
