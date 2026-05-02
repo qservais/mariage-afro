@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Services from "@/pages/services";
 import Plateforme from "@/pages/plateforme";
 import Partenaires from "@/pages/prestations";
+import PartenaireDetail from "@/pages/prestataires-detail";
 import Lieux from "@/pages/lieux";
 import Comparateur from "@/pages/comparateur";
 import Shop from "@/pages/shop";
@@ -144,6 +145,7 @@ function AppRoutes() {
         <Route path="/plateforme" element={<Plateforme />} />
         <Route path="/services" element={<Services />} />
         <Route path="/partenaires" element={<Partenaires />} />
+        <Route path="/partenaires/:id" element={<PartenaireDetail />} />
         <Route path="/prestations" element={<Navigate to="/partenaires" replace />} />
         <Route path="/comparateur" element={<Comparateur />} />
         <Route path="/lieux" element={<Lieux />} />

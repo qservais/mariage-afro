@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@clerk/react";
 import {
   MapPin,
@@ -786,25 +786,23 @@ export default function Prestations() {
     ? displayVendors
     : (filters.category ? displayVendors.filter((v) => v.category === filters.category) : displayVendors);
 
-  // JSON-LD AggregateRating sur les prestataires ayant des avis
+  // JSON-LD ItemList des prestataires affichés (l'AggregateRating est désormais sur la fiche détail)
   const jsonLdString = useMemo(() => {
-    const rated = filtered.filter((v) => (v.reviewCount ?? 0) > 0 && (v.averageRating ?? 0) > 0);
-    if (rated.length === 0) return "";
-    const items = rated.map((v) => ({
+    if (filtered.length === 0) return "";
+    const list = {
       "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      name: v.name,
-      address: { "@type": "PostalAddress", addressLocality: v.city, addressCountry: "BE" },
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: v.averageRating!.toFixed(1),
-        reviewCount: v.reviewCount!,
-        bestRating: "5",
-        worstRating: "1",
-      },
-    }));
-    // Échappe </script> pour empêcher toute évasion JSON-LD via un nom de prestataire malicieux.
-    return JSON.stringify(items.length === 1 ? items[0] : items)
+      "@type": "ItemList",
+      itemListElement: filtered.slice(0, 20).map((v, idx) => ({
+        "@type": "ListItem",
+        position: idx + 1,
+        url:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/partenaires/${v.id}`
+            : `/partenaires/${v.id}`,
+        name: v.name,
+      })),
+    };
+    return JSON.stringify(list)
       .replace(/<\/(script)/gi, "<\\/$1")
       .replace(/<!--/g, "<\\!--")
       .replace(/\u2028|\u2029/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
@@ -976,7 +974,13 @@ export default function Prestations() {
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 text-cream">
                       <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight leading-[1] mb-2">
-                        {vendor.name}
+                        <Link
+                          to={`/partenaires/${vendor.id}`}
+                          className="hover:text-gold transition-colors"
+                          data-testid={`vendor-link-${vendor.id}`}
+                        >
+                          {vendor.name}
+                        </Link>
                       </h3>
                       <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] flex-wrap">
                         <span className="flex items-center gap-1.5 text-cream/80">

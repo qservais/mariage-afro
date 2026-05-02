@@ -10,7 +10,7 @@ interface Review {
   authorName: string;
 }
 
-export default function ReviewsList({ vendorId }: { vendorId: number }) {
+export default function ReviewsList({ vendorId, limit }: { vendorId: number; limit?: number }) {
   const { data: reviews = [], isLoading } = useQuery<Review[]>({
     queryKey: ["vendor-reviews", vendorId],
     queryFn: async () => {
@@ -28,9 +28,11 @@ export default function ReviewsList({ vendorId }: { vendorId: number }) {
       </p>
     );
 
+  const visible = typeof limit === "number" ? reviews.slice(0, limit) : reviews;
+
   return (
     <ul className="space-y-5">
-      {reviews.map((r) => (
+      {visible.map((r) => (
         <li key={r.id} className="border-b border-wine-deep/10 pb-5 last:border-0">
           <div className="flex items-center gap-3 mb-2">
             <ReviewStars rating={r.rating} />
