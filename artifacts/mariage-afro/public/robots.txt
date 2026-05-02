@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /espace-client/
+Disallow: /espace-pro/
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://mariage-afro.com/sitemap.xml

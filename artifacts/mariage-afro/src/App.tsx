@@ -148,6 +148,7 @@ function AppRoutes() {
         <Route path="/realisations" element={<Realisations />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/a-propos" element={<About />} />
+        <Route path="/about" element={<Navigate to="/a-propos" replace />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
