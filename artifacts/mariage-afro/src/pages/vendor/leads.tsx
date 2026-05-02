@@ -25,6 +25,8 @@ interface VendorLead {
   updatedAt: string;
 }
 
+// 5-column Kanban (per spec). "seen" is auto-set when a vendor opens a "new" lead and is not a manual column.
+const KANBAN_STATUSES = ["new", "contacted", "devis_envoye", "won", "lost"] as const;
 const STATUSES = ["new", "seen", "contacted", "devis_envoye", "won", "lost"] as const;
 const TYPES = ["quote", "availability", "booking", "zoom", "rdv"] as const;
 const LEAD_TAGS = ["hot", "vip", "follow_up", "negotiation", "cold"] as const;
@@ -189,10 +191,21 @@ export default function VendorLeadsPage() {
         {viewMode === "kanban" ? (
           <div className="overflow-x-auto" data-testid="kanban-board">
             <div className="grid grid-flow-col auto-cols-[15rem] gap-3">
-              {STATUSES.map((s) => {
-                const col = filtered.filter((l) => l.status === s);
+              {KANBAN_STATUSES.map((s) => {
+                const col = filtered.filter((l) => l.status === s || (s === "new" && l.status === "seen"));
                 return (
-                  <div key={s} className="bg-neutral-50 border border-neutral-200 p-2 min-h-[20rem]" data-testid={`kanban-col-${s}`}>
+                  <div
+                    key={s}
+                    className="bg-neutral-50 border border-neutral-200 p-2 min-h-[20rem]"
+                    data-testid={`kanban-col-${s}`}
+                    onDragOver={(e) => { e.preventDefault(); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const id = Number(e.dataTransfer.getData("text/plain"));
+                      const lead = leads.find((l) => l.id === id);
+                      if (lead && lead.status !== s) updateMutation.mutate({ id, status: s });
+                    }}
+                  >
                     <div className="flex items-center justify-between mb-2 px-1">
                       <span className={`inline-block text-[10px] uppercase tracking-widest border px-2 py-1 ${STATUS_BADGE[s] ?? ""}`}>
                         {t(`vendor.leads.status.${s}`)}
@@ -204,7 +217,9 @@ export default function VendorLeadsPage() {
                         <button
                           key={lead.id}
                           onClick={() => openLead(lead)}
-                          className={`w-full text-left bg-white border p-2.5 hover:border-wine-deep transition-colors ${selectedId === lead.id ? "border-wine-deep" : "border-neutral-200"}`}
+                          draggable
+                          onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(lead.id)); e.dataTransfer.effectAllowed = "move"; }}
+                          className={`w-full text-left bg-white border p-2.5 hover:border-wine-deep transition-colors cursor-grab active:cursor-grabbing ${selectedId === lead.id ? "border-wine-deep" : "border-neutral-200"}`}
                           data-testid={`kanban-card-${lead.id}`}
                         >
                           <p className="text-xs text-neutral-500">{formatDate(lead.createdAt)}</p>
@@ -335,7 +350,7 @@ export default function VendorLeadsPage() {
                 <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
                   {t("vendor.leads.status_label")}
                 </p>
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-3 gap-1">
                   {STATUSES.map((s) => (
                     <button
                       key={s}

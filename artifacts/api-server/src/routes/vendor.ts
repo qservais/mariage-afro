@@ -664,7 +664,8 @@ router.get("/vendor/stats", async (req, res) => {
   if (!account) {
     res.json({
       views7: 0, views30: 0, views90: 0, leads30: 0, leadsByStatus: {}, conversionRate: 0,
-      unreadMessages: 0, ranking: null, series: [], sources: [],
+      responseRate: 0, unreadMessages: 0, ranking: null, series: [], leadsSeries: [],
+      sources: [], topPages: [],
     });
     return;
   }
@@ -768,6 +769,28 @@ router.get("/vendor/stats", async (req, res) => {
     leads30 += row.c;
   }
   const conversionRate = leads30 > 0 ? Math.round((leadsByStatus.won / leads30) * 1000) / 10 : 0;
+  // Response rate = % of leads that have been "seen" (vendor took action) within 30d
+  const respondedCount = leads30 - (leadsByStatus.new ?? 0);
+  const responseRate = leads30 > 0 ? Math.round((respondedCount / leads30) * 1000) / 10 : 0;
+
+  // Leads daily series over 90 days
+  const leadsSeriesRows = await db
+    .select({
+      d: sql<string>`to_char(date_trunc('day', ${vendorLeadsTable.createdAt}), 'YYYY-MM-DD')`,
+      c: sql<number>`count(*)::int`,
+    })
+    .from(vendorLeadsTable)
+    .where(and(accessCond, gte(vendorLeadsTable.createdAt, d90)))
+    .groupBy(sql`date_trunc('day', ${vendorLeadsTable.createdAt})`)
+    .orderBy(sql`date_trunc('day', ${vendorLeadsTable.createdAt})`);
+  const leadsMap = new Map(leadsSeriesRows.map((row) => [row.d, row.c]));
+  const leadsSeries: { date: string; leads: number }[] = [];
+  const dayMs2 = 24 * 60 * 60 * 1000;
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date(now - i * dayMs2);
+    const key = d.toISOString().slice(0, 10);
+    leadsSeries.push({ date: key, leads: leadsMap.get(key) ?? 0 });
+  }
 
   let unreadMessages = 0;
   if (vendorId) {
@@ -784,8 +807,8 @@ router.get("/vendor/stats", async (req, res) => {
   }
 
   res.json({
-    views7, views30, views90, leads30, leadsByStatus, conversionRate,
-    unreadMessages, ranking, series, sources,
+    views7, views30, views90, leads30, leadsByStatus, conversionRate, responseRate,
+    unreadMessages, ranking, series, leadsSeries, sources, topPages: sources,
   });
 });
 

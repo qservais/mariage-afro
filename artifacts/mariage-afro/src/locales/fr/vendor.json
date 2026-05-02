@@ -79,7 +79,9 @@
       "sources_empty": "Aucune vue sur 30 jours.",
       "source_detail": "Fiche détail",
       "source_listing": "Liste prestataires",
-      "source_comparator": "Comparateur"
+      "source_comparator": "Comparateur",
+      "response_rate": "Taux de réponse",
+      "leads_chart_title": "Demandes sur 90 jours"
     },
     "checklist": {
       "title": "Préparez votre fiche",

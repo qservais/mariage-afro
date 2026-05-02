@@ -79,7 +79,9 @@
       "sources_empty": "Geen weergaven over 30 dagen.",
       "source_detail": "Detailfiche",
       "source_listing": "Leveranciersoverzicht",
-      "source_comparator": "Vergelijker"
+      "source_comparator": "Vergelijker",
+      "response_rate": "Antwoordpercentage",
+      "leads_chart_title": "Aanvragen over 90 dagen"
     },
     "checklist": {
       "title": "Bereid uw profiel voor",

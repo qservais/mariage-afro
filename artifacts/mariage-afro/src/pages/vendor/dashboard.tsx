@@ -16,10 +16,13 @@ interface VendorStats {
   leads30: number;
   leadsByStatus: Record<string, number>;
   conversionRate: number;
+  responseRate: number;
   unreadMessages: number;
   ranking: { rank: number; total: number; category: string } | null;
   series: { date: string; views: number }[];
+  leadsSeries: { date: string; leads: number }[];
   sources: { source: string; count: number }[];
+  topPages: { source: string; count: number }[];
 }
 
 interface ChecklistItem { key: string; done: boolean; count?: number }
@@ -124,6 +127,19 @@ export default function VendorDashboard() {
         <StatCard icon={Inbox} label={t("vendor.dashboard.stat_leads")} value={stats?.leads30 ?? 0} sub={t("vendor.dashboard.stat_last_30d")} testid="stat-leads" />
         <StatCard icon={MessageCircle} label={t("vendor.dashboard.stat_messages")} value={stats?.unreadMessages ?? 0} sub={t("vendor.dashboard.stat_unread")} testid="stat-messages" />
         <StatCard icon={Sparkles} label={t("vendor.dashboard.stat_conversion")} value={`${stats?.conversionRate ?? 0}%`} sub={t("vendor.dashboard.stat_last_30d")} testid="stat-conversion" />
+      </section>
+
+      {/* Response rate KPI */}
+      <section className="grid sm:grid-cols-2 gap-3">
+        <div className="bg-white p-4 border border-neutral-200" data-testid="kpi-response-rate">
+          <p className="text-xs uppercase tracking-widest text-neutral-500">{t("vendor.dashboard.response_rate")}</p>
+          <p className="text-2xl font-bold text-wine-deep mt-1">{stats?.responseRate ?? 0}%</p>
+          <p className="text-[11px] text-neutral-500">{t("vendor.dashboard.stat_last_30d")}</p>
+        </div>
+        <div className="bg-white p-4 border border-neutral-200" data-testid="kpi-leads-90d">
+          <p className="text-xs uppercase tracking-widest text-neutral-500">{t("vendor.dashboard.leads_chart_title")}</p>
+          <MiniLeadsBars data={stats?.leadsSeries ?? []} />
+        </div>
       </section>
 
       {/* 90-day chart + ranking */}
@@ -294,6 +310,22 @@ function RankingCard({
       ) : (
         <p className="text-sm text-cream/70 mt-3">{empty}</p>
       )}
+    </div>
+  );
+}
+
+function MiniLeadsBars({ data }: { data: { date: string; leads: number }[] }) {
+  const total = data.reduce((acc, p) => acc + p.leads, 0);
+  const max = Math.max(1, ...data.map((p) => p.leads));
+  return (
+    <div data-testid="leads-mini-chart">
+      <p className="text-2xl font-bold text-wine-deep mt-1">{total}</p>
+      <svg viewBox={`0 0 ${Math.max(1, data.length)} 24`} preserveAspectRatio="none" className="w-full h-12">
+        {data.map((p, i) => {
+          const h = (p.leads / max) * 22;
+          return <rect key={p.date} x={i + 0.1} y={24 - h} width={0.8} height={Math.max(0.5, h)} fill="#68191e" opacity={0.85}><title>{`${p.date}: ${p.leads}`}</title></rect>;
+        })}
+      </svg>
     </div>
   );
 }

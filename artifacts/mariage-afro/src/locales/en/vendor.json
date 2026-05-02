@@ -79,7 +79,9 @@
       "sources_empty": "No views in the last 30 days.",
       "source_detail": "Detail page",
       "source_listing": "Vendor listing",
-      "source_comparator": "Comparator"
+      "source_comparator": "Comparator",
+      "response_rate": "Response rate",
+      "leads_chart_title": "Inquiries over 90 days"
     },
     "checklist": {
       "title": "Set up your listing",

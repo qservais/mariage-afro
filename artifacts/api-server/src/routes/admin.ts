@@ -144,6 +144,7 @@ function layout(title: string, body: string, showNav = true): string {
       <div style="display:flex;gap:8px;align-items:center;">
         <a href="/admin">Demandes</a>
         <a href="/admin/reviews">Avis</a>
+        <a href="/admin/subscriptions">Abonnements</a>
         <form method="POST" action="/admin/logout" style="margin:0;">
           <button type="submit">Déconnexion</button>
         </form>
@@ -639,7 +640,9 @@ router.post("/leads/:type/:id/note", adminAuth, async (req, res) => {
 });
 
 // ---------- LOT 8 — Subscription management (JSON API) ----------
-router.get("/subscriptions", adminAuth, async (_req, res) => {
+router.get("/subscriptions", adminAuth, async (_req, res, next) => {
+  // If browser asks for HTML, defer to the HTML handler below.
+  if (_req.accepts(["json", "html"]) === "html") return next();
   const rows = await db
     .select({
       sub: vendorSubscriptionsTable,
@@ -718,6 +721,125 @@ router.post("/subscriptions/:id/cancel", adminAuth, async (req, res) => {
     }).catch(() => undefined);
   }
   res.json(updated);
+});
+
+// ---------- Admin HTML pages — Subscriptions / vendor tier management ----------
+const TIER_LABEL: Record<string, string> = {
+  basic: "Basic",
+  premium: "Premium",
+  featured: "Featured",
+};
+
+router.get("/subscriptions", adminAuth, async (_req, res, next) => {
+  // Distinguish JSON (XHR) from HTML by Accept header. JSON callers above stay JSON.
+  if (_req.accepts(["html", "json"]) === "json") return next();
+  const rows = await db
+    .select({ sub: vendorSubscriptionsTable, account: vendorAccountsTable })
+    .from(vendorSubscriptionsTable)
+    .leftJoin(vendorAccountsTable, eq(vendorAccountsTable.id, vendorSubscriptionsTable.vendorAccountId))
+    .orderBy(desc(vendorSubscriptionsTable.requestedAt));
+  const tabRows = rows.length === 0
+    ? `<tr><td colspan="6" class="empty">Aucun abonnement.</td></tr>`
+    : rows.map((r) => `
+        <tr>
+          <td>${escapeHtml(new Date(r.sub.requestedAt as Date).toISOString().slice(0,10))}</td>
+          <td><strong>${escapeHtml(r.account?.businessName ?? r.account?.contactName ?? `#${r.sub.vendorAccountId}`)}</strong><div style="color:#888;font-size:11px;">${escapeHtml(r.account?.email ?? "")}</div></td>
+          <td>${escapeHtml(TIER_LABEL[r.sub.tier] ?? r.sub.tier)}</td>
+          <td>${escapeHtml(r.sub.status)}</td>
+          <td>${r.sub.endsAt ? escapeHtml(new Date(r.sub.endsAt as Date).toISOString().slice(0,10)) : "—"}</td>
+          <td><a class="btn" href="/admin/vendors/${r.sub.vendorAccountId}/subscription">Gérer</a></td>
+        </tr>`).join("");
+  res.type("html").send(layout("Abonnements", `
+    <div class="container">
+      <h2>Abonnements vendeurs</h2>
+      <table><thead><tr><th>Demandé</th><th>Vendeur</th><th>Tier</th><th>Statut</th><th>Fin</th><th></th></tr></thead><tbody>${tabRows}</tbody></table>
+    </div>
+  `));
+});
+
+router.get("/vendors/:accountId/subscription", adminAuth, async (req, res) => {
+  const accountId = Number(req.params.accountId);
+  if (!Number.isFinite(accountId)) { res.status(400).type("html").send(layout("Erreur", `<div class="container"><p>ID invalide.</p></div>`)); return; }
+  const [account] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, accountId)).limit(1);
+  if (!account) { res.status(404).type("html").send(layout("Introuvable", `<div class="container"><p>Vendeur introuvable.</p></div>`)); return; }
+  const subs = await db.select().from(vendorSubscriptionsTable).where(eq(vendorSubscriptionsTable.vendorAccountId, accountId)).orderBy(desc(vendorSubscriptionsTable.requestedAt));
+  const current = subs[0];
+  const history = subs.length === 0
+    ? `<tr><td colspan="4" class="empty">Aucun historique.</td></tr>`
+    : subs.map((s) => `<tr><td>${escapeHtml(new Date(s.requestedAt as Date).toISOString().slice(0,10))}</td><td>${escapeHtml(TIER_LABEL[s.tier] ?? s.tier)}</td><td>${escapeHtml(s.status)}</td><td>${s.endsAt ? escapeHtml(new Date(s.endsAt as Date).toISOString().slice(0,10)) : "—"}</td></tr>`).join("");
+  res.type("html").send(layout(`Abonnement — ${account.businessName ?? account.contactName ?? "#"+accountId}`, `
+    <div class="container">
+      <p><a href="/admin/subscriptions">← Abonnements</a></p>
+      <h2>${escapeHtml(account.businessName ?? account.contactName ?? `Vendeur #${accountId}`)}</h2>
+      <p style="color:#666;">${escapeHtml(account.email ?? "")}</p>
+      <h3>Activer / mettre à jour le tier</h3>
+      <form method="POST" action="/admin/vendors/${accountId}/subscription/activate" style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;">
+        <label>Tier
+          <select name="tier" required>
+            <option value="basic" ${current?.tier==="basic"?"selected":""}>Basic</option>
+            <option value="premium" ${current?.tier==="premium"?"selected":""}>Premium</option>
+            <option value="featured" ${current?.tier==="featured"?"selected":""}>Featured</option>
+          </select>
+        </label>
+        <label>Fin (YYYY-MM-DD, optionnel)
+          <input type="date" name="endsAt" value="${current?.endsAt ? new Date(current.endsAt as Date).toISOString().slice(0,10) : ""}"/>
+        </label>
+        <button class="btn primary" type="submit">Activer</button>
+      </form>
+      ${current ? `<form method="POST" action="/admin/subscriptions/${current.id}/cancel-html" style="margin-top:12px;"><button class="btn" type="submit">Annuler l'abonnement actuel</button></form>` : ""}
+      <h3 style="margin-top:24px;">Historique</h3>
+      <table><thead><tr><th>Demandé</th><th>Tier</th><th>Statut</th><th>Fin</th></tr></thead><tbody>${history}</tbody></table>
+    </div>
+  `));
+});
+
+router.post("/vendors/:accountId/subscription/activate", adminAuth, async (req, res) => {
+  const accountId = Number(req.params.accountId);
+  if (!Number.isFinite(accountId)) { res.status(400).send("Invalid id"); return; }
+  const tier = String(req.body?.tier ?? "");
+  if (!["basic","premium","featured"].includes(tier)) { res.status(400).send("Invalid tier"); return; }
+  let endsAt: Date | null = null;
+  if (req.body?.endsAt) {
+    const d = new Date(String(req.body.endsAt));
+    if (!isNaN(d.getTime())) endsAt = d;
+  }
+  const subs = await db.select().from(vendorSubscriptionsTable).where(eq(vendorSubscriptionsTable.vendorAccountId, accountId)).orderBy(desc(vendorSubscriptionsTable.requestedAt)).limit(1);
+  let updated;
+  if (subs[0]) {
+    [updated] = await db.update(vendorSubscriptionsTable).set({ tier, status: "active", startedAt: new Date(), endsAt, updatedAt: new Date() }).where(eq(vendorSubscriptionsTable.id, subs[0].id)).returning();
+  } else {
+    [updated] = await db.insert(vendorSubscriptionsTable).values({ vendorAccountId: accountId, tier, status: "active", startedAt: new Date(), endsAt }).returning();
+  }
+  const [account] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, accountId)).limit(1);
+  if (account?.email && updated) {
+    void notifyVendorSubscriptionActivated({
+      to: account.email,
+      vendorName: account.businessName || account.contactName || "Prestataire",
+      tier: updated.tier as "basic" | "premium" | "featured",
+      status: "active",
+      endsAt: updated.endsAt ? updated.endsAt.toISOString() : null,
+      locale: account.locale,
+    }).catch(() => undefined);
+  }
+  res.redirect(`/admin/vendors/${accountId}/subscription`);
+});
+
+router.post("/subscriptions/:id/cancel-html", adminAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).send("Invalid id"); return; }
+  const [updated] = await db.update(vendorSubscriptionsTable).set({ status: "cancelled", updatedAt: new Date() }).where(eq(vendorSubscriptionsTable.id, id)).returning();
+  if (!updated) { res.status(404).send("Not found"); return; }
+  const [account] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, updated.vendorAccountId)).limit(1);
+  if (account?.email) {
+    void notifyVendorSubscriptionActivated({
+      to: account.email,
+      vendorName: account.businessName || account.contactName || "Prestataire",
+      tier: updated.tier as "basic" | "premium" | "featured",
+      status: "cancelled",
+      locale: account.locale,
+    }).catch(() => undefined);
+  }
+  res.redirect(`/admin/vendors/${updated.vendorAccountId}/subscription`);
 });
 
 export default router;
