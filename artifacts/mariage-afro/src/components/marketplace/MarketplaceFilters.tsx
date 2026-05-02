@@ -138,7 +138,7 @@ export default function MarketplaceFilters({
   const toggle = <K extends keyof FiltersValue>(k: K, v: FiltersValue[K] extends Array<infer U> ? U : never) => {
     const cur = draft[k] as unknown as Array<typeof v>;
     const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v];
-    apply({ ...draft, [k]: next as FiltersValue[K] });
+    apply({ ...draft, [k]: next as unknown as FiltersValue[K] });
   };
 
   const clearAll = () => apply({
