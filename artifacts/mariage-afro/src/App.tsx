@@ -27,6 +27,14 @@ import ProfilPage from "@/pages/client/profil";
 import CommunicationPage from "@/pages/client/communication";
 import SiteMariagePage from "@/pages/client/site-mariage";
 import MariagePublicPage from "@/pages/mariage-public";
+import VendorLayout from "@/components/vendor/VendorLayout";
+import VendorDashboard from "@/pages/vendor/dashboard";
+import VendorProfilePage from "@/pages/vendor/profile";
+import VendorGalleryPage from "@/pages/vendor/gallery";
+import VendorServicesPage from "@/pages/vendor/services";
+import VendorSettingsPage from "@/pages/vendor/settings";
+import VendorSignInPage from "@/pages/vendor/sign-in";
+import VendorSignUpPage from "@/pages/vendor/sign-up";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/layout/FloatingCTA";
@@ -45,6 +53,15 @@ function ProtectedClient({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ProtectedVendor({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Show when="signed-in">{children}</Show>
+      <Show when="signed-out"><Navigate to="/espace-pro/login" replace /></Show>
+    </>
+  );
+}
+
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -59,6 +76,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   const { pathname } = useLocation();
   const isClient = pathname.startsWith("/espace-client") || pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
+  const isVendor = pathname.startsWith("/espace-pro");
   const isWeddingPage = pathname.startsWith("/mariage/");
 
   if (isWeddingPage) {
@@ -66,6 +84,23 @@ function AppRoutes() {
       <Routes>
         <Route path="/mariage/:slug" element={<MariagePublicPage />} />
         <Route path="*" element={<MariagePublicPage />} />
+      </Routes>
+    );
+  }
+
+  if (isVendor) {
+    return (
+      <Routes>
+        <Route path="/espace-pro/login/*" element={<VendorSignInPage />} />
+        <Route path="/espace-pro/register/*" element={<VendorSignUpPage />} />
+        <Route path="/espace-pro" element={<ProtectedVendor><VendorLayout /></ProtectedVendor>}>
+          <Route index element={<VendorDashboard />} />
+          <Route path="profile" element={<VendorProfilePage />} />
+          <Route path="gallery" element={<VendorGalleryPage />} />
+          <Route path="services" element={<VendorServicesPage />} />
+          <Route path="settings" element={<VendorSettingsPage />} />
+          <Route path="*" element={<Navigate to="/espace-pro" replace />} />
+        </Route>
       </Routes>
     );
   }

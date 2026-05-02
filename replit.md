@@ -31,7 +31,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Preview path**: `/`
 - **Purpose**: Premium platform for Afro & mixed weddings in Belgium
 - **Stack**: React, Vite, Tailwind CSS, Framer Motion, react-i18next, react-hook-form, Zod, @tanstack/react-query, Clerk
-- **Auth**: Clerk (`@clerk/react`) — sign-in at `/espace-client/login`, sign-up at `/espace-client/register`
+- **Auth**: Clerk (`@clerk/react`) — couples sign in at `/espace-client/login`, vendors sign in at `/espace-pro/login` (both areas use Clerk; vendors get a separate `vendor_accounts` row auto-created on first request)
 - **Languages**: FR (default), NL, EN — via react-i18next, translation files in `src/locales/`
 - **Images**: Wedding photos from `attached_assets/` via `@assets` Vite alias
 - **Branding**: Montserrat font, bordeaux (#68191e), crème (#fff4e4), dark (#141414)
@@ -60,6 +60,16 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - `/espace-client/site` — Wedding website builder (slug, title, programme, RSVP toggle)
 - `/espace-client/profil` — Profile
 
+#### Espace Pro (protected, requires Clerk auth — vendor area, LOT 1)
+- `/espace-pro/login` & `/espace-pro/register` — Clerk sign-in / sign-up (wine-deep + gold theme)
+- `/espace-pro` — Dashboard with status badge (publié / en attente) + 4 nav tiles
+- `/espace-pro/profile` — Edit marketplace profile (name, category, city, tagline, description, contact)
+- `/espace-pro/gallery` — Upload photos via object storage (public ACL) + cover image
+- `/espace-pro/services` — Manage services list
+- `/espace-pro/settings` — Account info + Clerk profile + sign out
+- Onboarding gate (modal) shown on first login — collects business name, contact, category, city, etc., creates `marketplace_vendors` row with `verified=false active=false`
+- Admin validates submissions at `/admin/content/vendor-accounts` → toggles `marketplace_vendors.verified=true active=true` to publish
+
 ### API Server (`artifacts/api-server`)
 - **Type**: Express 5 API
 - **Preview path**: `/api`
@@ -87,7 +97,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Full CRUD under `/admin/content/` — vendors, venues, réalisations, messages, wedding-websites
 
 ### DB (`lib/db`)
-- **Tables**: couples, budgetItems, guests, planningTasks, clientVendors, clientDocuments, jourJEvents, leads, marketplaceVendors, marketplaceVenues, realisations, messages, weddingWebsites, weddingRsvps
+- **Tables**: couples, budgetItems, guests, planningTasks, clientVendors, clientDocuments, jourJEvents, leads, marketplaceVendors, marketplaceVenues, realisations, messages, weddingWebsites, weddingRsvps, vendorAccounts (LOT 1 — Clerk userId ↔ marketplaceVendor link, status pending/approved/rejected)
 
 ## Environment Variables
 

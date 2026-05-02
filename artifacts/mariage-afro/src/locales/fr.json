@@ -568,5 +568,94 @@
     "title": "Page introuvable",
     "desc": "La page que vous recherchez n'existe pas ou a été déplacée.",
     "cta": "Retourner à l'accueil"
+  },
+  "vendor": {
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "profile": "Mon profil",
+      "gallery": "Galerie",
+      "services": "Services",
+      "settings": "Paramètres"
+    },
+    "layout": {
+      "pro_space": "Espace Pro",
+      "welcome": "Espace prestataire",
+      "signout": "Déconnexion",
+      "status_published": "Publié",
+      "status_pending": "En attente"
+    },
+    "onboarding": {
+      "eyebrow": "Bienvenue",
+      "title": "Créez votre fiche prestataire",
+      "subtitle": "Quelques infos pour préparer votre fiche dans la marketplace.",
+      "business_name": "Nom de l'entreprise",
+      "contact_name": "Nom du contact",
+      "email": "Email professionnel",
+      "phone": "Téléphone",
+      "category": "Catégorie",
+      "city": "Ville",
+      "website": "Site web",
+      "description": "Présentation",
+      "review_notice": "Votre fiche sera examinée par notre équipe avant publication. Vous pouvez compléter votre profil et galerie en attendant.",
+      "submit": "Créer ma fiche",
+      "saving": "Enregistrement…"
+    },
+    "dashboard": {
+      "profile_status": "Statut de votre fiche",
+      "status_published_desc": "Votre fiche est visible publiquement dans la marketplace.",
+      "status_pending_desc": "Votre fiche est en attente de validation par l'équipe Mariage Afro.",
+      "view_public": "Voir la marketplace",
+      "stat_views": "Vues",
+      "stat_leads": "Demandes",
+      "stat_messages": "Messages",
+      "stat_soon": "Bientôt disponible"
+    },
+    "profile": {
+      "title": "Mon profil",
+      "subtitle": "Mettez à jour les informations affichées dans la marketplace.",
+      "name": "Nom de votre marque",
+      "category": "Catégorie",
+      "city": "Ville",
+      "tagline": "Slogan",
+      "tagline_placeholder": "Une phrase qui vous résume",
+      "description": "Description",
+      "email": "Email de contact",
+      "phone": "Téléphone",
+      "website": "Site web",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "saved": "Modifications enregistrées."
+    },
+    "gallery": {
+      "title": "Galerie",
+      "subtitle": "Vos plus belles réalisations. La photo de couverture est mise en avant dans la marketplace.",
+      "upload": "Téléverser des photos",
+      "empty": "Aucune photo pour le moment.",
+      "cover_badge": "Couverture",
+      "set_cover": "Définir comme couverture",
+      "unset_cover": "Retirer comme couverture",
+      "remove": "Supprimer",
+      "saved": "Galerie mise à jour."
+    },
+    "services": {
+      "title": "Mes services",
+      "subtitle": "Listez les prestations que vous proposez.",
+      "add_placeholder": "Ex : Reportage 8 heures, Album photo…",
+      "empty": "Aucun service ajouté.",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "saved": "Services enregistrés."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "subtitle": "Gérez votre compte et vos identifiants.",
+      "account": "Compte",
+      "email": "Email",
+      "name": "Nom",
+      "business": "Entreprise",
+      "status": "Statut",
+      "manage_account": "Gérer mon compte",
+      "signout": "Se déconnecter"
+    }
   }
 }

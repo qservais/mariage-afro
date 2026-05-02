@@ -227,7 +227,7 @@ export default function Header() {
                 </Link>
                 <span className="hidden sm:block text-cream/30">·</span>
                 <Link
-                  to="/partenaires#become-partner"
+                  to="/espace-pro/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="group inline-flex items-center gap-3 text-cream/80 hover:text-gold transition-colors"
                   data-testid="link-menu-b2b"
@@ -293,7 +293,7 @@ export default function Header() {
                   {t("nav.client_area")}
                 </Link>
                 <Link
-                  to="/partenaires#become-partner"
+                  to="/espace-pro/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-2 text-cream/80 hover:text-gold transition-colors text-[11px] uppercase tracking-[0.25em] font-medium"
                   data-testid="link-mobile-espace-pro"

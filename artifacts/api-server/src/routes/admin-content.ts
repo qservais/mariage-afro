@@ -7,6 +7,7 @@ import {
   messagesTable,
   weddingWebsitesTable,
   couplesTable,
+  vendorAccountsTable,
 } from "@workspace/db";
 import { eq, desc, asc, sql } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
@@ -85,6 +86,8 @@ tr:last-child td{border-bottom:none}
   <a href="/admin/content/messages">Messages</a>
   <span class="sep">|</span>
   <a href="/admin/content/wedding-websites">Sites mariages</a>
+  <span class="sep">|</span>
+  <a href="/admin/content/vendor-accounts">Comptes Pro</a>
 </div>
 <div class="container">${body}</div>
 </body></html>`;
@@ -557,6 +560,91 @@ router.post("/content/wedding-websites/:id/toggle", async (req: Request, res: Re
   if (!site) { res.redirect("/admin/content/wedding-websites"); return; }
   await db.update(weddingWebsitesTable).set({ active: !site.active }).where(eq(weddingWebsitesTable.id, site.id));
   res.redirect("/admin/content/wedding-websites");
+});
+
+// ============ VENDOR ACCOUNTS (Espace Pro signup approval) ============
+
+router.get("/content/vendor-accounts", async (_req: Request, res: Response) => {
+  const rows = await db
+    .select({
+      account: vendorAccountsTable,
+      vendor: marketplaceVendorsTable,
+    })
+    .from(vendorAccountsTable)
+    .leftJoin(marketplaceVendorsTable, eq(marketplaceVendorsTable.id, vendorAccountsTable.vendorId))
+    .orderBy(desc(vendorAccountsTable.createdAt));
+
+  const pending = rows.filter(r => r.account.status === "pending");
+  const approved = rows.filter(r => r.account.status === "approved");
+  const rejected = rows.filter(r => r.account.status === "rejected");
+
+  function renderRow(r: typeof rows[number]): string {
+    const a = r.account;
+    const v = r.vendor;
+    return `<div class="item">
+      <h3>${escHtml(a.businessName || "—")} <span class="badge ${a.status === "approved" ? "active" : "inactive"}">${escHtml(a.status)}</span></h3>
+      <p>${escHtml(a.category || "—")} · ${escHtml(a.city || "—")}</p>
+      <p style="font-size:12px;color:#666">${escHtml(a.contactName)} · ${escHtml(a.email)}${a.phone ? ` · ${escHtml(a.phone)}` : ""}</p>
+      ${a.website ? `<p style="font-size:12px"><a href="${escHtml(a.website)}" target="_blank" rel="noopener">${escHtml(a.website)}</a></p>` : ""}
+      ${a.description ? `<p style="font-size:12px;color:#555;margin-top:8px">${escHtml(a.description)}</p>` : ""}
+      <div class="meta" style="margin-top:8px">
+        Inscrit ${new Date(a.createdAt).toLocaleDateString("fr-BE")}
+        ${v ? ` · Fiche marketplace #${v.id} ${v.verified ? "✓" : ""} ${v.active ? "(publié)" : "(masqué)"}` : ""}
+      </div>
+      <div class="actions" style="margin-top:12px">
+        ${a.status !== "approved" ? `<form method="post" action="/admin/content/vendor-accounts/${a.id}/approve" style="display:inline">
+          <button class="btn sm success" type="submit">Approuver &amp; publier</button>
+        </form>` : ""}
+        ${a.status !== "rejected" ? `<form method="post" action="/admin/content/vendor-accounts/${a.id}/reject" style="display:inline" onsubmit="return confirm('Rejeter et masquer la fiche ?')">
+          <button class="btn sm danger" type="submit">Rejeter</button>
+        </form>` : ""}
+        ${v ? `<a class="btn sm secondary" href="/admin/content/vendors/${v.id}/edit">Modifier fiche</a>` : ""}
+      </div>
+    </div>`;
+  }
+
+  function renderSection(title: string, items: typeof rows): string {
+    if (items.length === 0) return `<h2 style="margin-top:24px">${escHtml(title)} (0)</h2><p style="color:#888;font-size:13px">Aucun</p>`;
+    return `<h2 style="margin-top:24px">${escHtml(title)} (${items.length})</h2><div class="grid">${items.map(renderRow).join("")}</div>`;
+  }
+
+  const body = `
+    <h1>Comptes prestataires (Espace Pro)</h1>
+    <p style="font-size:13px;color:#555;margin-bottom:24px">Les prestataires créent un compte via /espace-pro/register puis remplissent l'onboarding. Approuvez pour publier leur fiche dans la marketplace.</p>
+    ${renderSection("En attente de validation", pending)}
+    ${renderSection("Approuvés", approved)}
+    ${renderSection("Rejetés", rejected)}`;
+  res.type("html").send(contentLayout("Comptes Pro", body));
+});
+
+router.post("/content/vendor-accounts/:id/approve", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const [a] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, id));
+  if (!a) { res.redirect("/admin/content/vendor-accounts"); return; }
+  if (a.vendorId) {
+    await db.update(marketplaceVendorsTable)
+      .set({ verified: true, active: true })
+      .where(eq(marketplaceVendorsTable.id, a.vendorId));
+  }
+  await db.update(vendorAccountsTable)
+    .set({ status: "approved", updatedAt: new Date() })
+    .where(eq(vendorAccountsTable.id, id));
+  res.redirect("/admin/content/vendor-accounts");
+});
+
+router.post("/content/vendor-accounts/:id/reject", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const [a] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, id));
+  if (!a) { res.redirect("/admin/content/vendor-accounts"); return; }
+  if (a.vendorId) {
+    await db.update(marketplaceVendorsTable)
+      .set({ verified: false, active: false })
+      .where(eq(marketplaceVendorsTable.id, a.vendorId));
+  }
+  await db.update(vendorAccountsTable)
+    .set({ status: "rejected", updatedAt: new Date() })
+    .where(eq(vendorAccountsTable.id, id));
+  res.redirect("/admin/content/vendor-accounts");
 });
 
 export default router;

@@ -231,6 +231,27 @@ export const weddingWebsitesTable = pgTable("wedding_websites", {
   slugIdx: uniqueIndex("wedding_websites_slug_idx").on(t.slug),
 }));
 
+export const vendorAccountsTable = pgTable("vendor_accounts", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  vendorId: integer("vendor_id"),
+  businessName: text("business_name").notNull().default(""),
+  contactName: text("contact_name").notNull().default(""),
+  email: text("email").notNull().default(""),
+  phone: text("phone"),
+  category: text("category").notNull().default(""),
+  city: text("city").notNull().default(""),
+  website: text("website"),
+  description: text("description").notNull().default(""),
+  locale: text("locale").notNull().default("fr"),
+  status: text("status").notNull().default("pending"),
+  onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  userIdIdx: uniqueIndex("vendor_accounts_user_id_idx").on(t.userId),
+}));
+
 export const weddingRsvpsTable = pgTable("wedding_rsvps", {
   id: serial("id").primaryKey(),
   weddingWebsiteId: integer("wedding_website_id").notNull(),
@@ -279,3 +300,4 @@ export type Realisation = typeof realisationsTable.$inferSelect;
 export type Message = typeof messagesTable.$inferSelect;
 export type WeddingWebsite = typeof weddingWebsitesTable.$inferSelect;
 export type WeddingRsvp = typeof weddingRsvpsTable.$inferSelect;
+export type VendorAccount = typeof vendorAccountsTable.$inferSelect;

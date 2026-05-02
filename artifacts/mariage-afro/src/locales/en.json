@@ -568,5 +568,94 @@
     "title": "Page not found",
     "desc": "The page you are looking for does not exist or has been moved.",
     "cta": "Return to homepage"
+  },
+  "vendor": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "profile": "My profile",
+      "gallery": "Gallery",
+      "services": "Services",
+      "settings": "Settings"
+    },
+    "layout": {
+      "pro_space": "Pro space",
+      "welcome": "Vendor area",
+      "signout": "Sign out",
+      "status_published": "Published",
+      "status_pending": "Pending review"
+    },
+    "onboarding": {
+      "eyebrow": "Welcome",
+      "title": "Create your vendor profile",
+      "subtitle": "A few details to prepare your marketplace profile.",
+      "business_name": "Business name",
+      "contact_name": "Contact name",
+      "email": "Business email",
+      "phone": "Phone",
+      "category": "Category",
+      "city": "City",
+      "website": "Website",
+      "description": "About you",
+      "review_notice": "Your profile will be reviewed by our team before publication. You can complete your profile and gallery while you wait.",
+      "submit": "Create my profile",
+      "saving": "Saving…"
+    },
+    "dashboard": {
+      "profile_status": "Profile status",
+      "status_published_desc": "Your profile is publicly visible in the marketplace.",
+      "status_pending_desc": "Your profile is awaiting review by the Mariage Afro team.",
+      "view_public": "View marketplace",
+      "stat_views": "Views",
+      "stat_leads": "Leads",
+      "stat_messages": "Messages",
+      "stat_soon": "Coming soon"
+    },
+    "profile": {
+      "title": "My profile",
+      "subtitle": "Update the information shown in the marketplace.",
+      "name": "Your brand name",
+      "category": "Category",
+      "city": "City",
+      "tagline": "Tagline",
+      "tagline_placeholder": "One line that sums you up",
+      "description": "Description",
+      "email": "Contact email",
+      "phone": "Phone",
+      "website": "Website",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Changes saved."
+    },
+    "gallery": {
+      "title": "Gallery",
+      "subtitle": "Your best work. The cover photo is featured in the marketplace.",
+      "upload": "Upload photos",
+      "empty": "No photos yet.",
+      "cover_badge": "Cover",
+      "set_cover": "Set as cover",
+      "unset_cover": "Remove cover",
+      "remove": "Remove",
+      "saved": "Gallery updated."
+    },
+    "services": {
+      "title": "My services",
+      "subtitle": "List the services you offer.",
+      "add_placeholder": "E.g. 8-hour coverage, Photo album…",
+      "empty": "No services added.",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Services saved."
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage your account and credentials.",
+      "account": "Account",
+      "email": "Email",
+      "name": "Name",
+      "business": "Business",
+      "status": "Status",
+      "manage_account": "Manage account",
+      "signout": "Sign out"
+    }
   }
 }
