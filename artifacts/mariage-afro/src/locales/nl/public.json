@@ -704,7 +704,9 @@
     "footer_tagline": "Het premium platform voor Afro en gemengde bruiloften in België",
     "email_required": "E-mail",
     "rsvp_cta_desc": "Bevestig uw aanwezigheid in een paar klikken.",
-    "rsvp_cta_button": "Mijn aanwezigheid bevestigen"
+    "rsvp_cta_button": "Mijn aanwezigheid bevestigen",
+    "yes": "Ja",
+    "no": "Nee"
   },
   "multi_devis": {
     "eyebrow": "Groepsaanvraag",

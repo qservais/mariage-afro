@@ -704,7 +704,9 @@
     "footer_tagline": "The premium platform for Afro and mixed weddings in Belgium",
     "email_required": "Email",
     "rsvp_cta_desc": "Confirm your attendance in a few clicks.",
-    "rsvp_cta_button": "Confirm my attendance"
+    "rsvp_cta_button": "Confirm my attendance",
+    "yes": "Yes",
+    "no": "No"
   },
   "multi_devis": {
     "eyebrow": "Bulk request",

@@ -92,6 +92,17 @@ router.post("/api/wedding/:slug/rsvp", async (req: Request, res: Response) => {
   const parsed = rsvpSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Données invalides", issues: parsed.error.issues }); return; }
 
+  // Server-side enforcement of required questions (BEFORE insert)
+  const allQuestions = await db.select().from(rsvpQuestionsTable)
+    .where(eq(rsvpQuestionsTable.weddingWebsiteId, site.id));
+  const validIds = new Set(allQuestions.map((q) => q.id));
+  const answerByQ = new Map(parsed.data.answers.map((a) => [a.questionId, a.answer.trim()]));
+  const missing = allQuestions.filter((q) => q.required && !(answerByQ.get(q.id) || "").length);
+  if (missing.length > 0) {
+    res.status(400).json({ error: "Required questions missing", missing: missing.map((q) => q.id) });
+    return;
+  }
+
   const [row] = await db.insert(weddingRsvpsTable).values({
     weddingWebsiteId: site.id,
     name: parsed.data.name,
@@ -103,9 +114,6 @@ router.post("/api/wedding/:slug/rsvp", async (req: Request, res: Response) => {
 
   // Save custom answers (filter to questions that belong to this site)
   if (parsed.data.answers.length > 0) {
-    const validQs = await db.select({ id: rsvpQuestionsTable.id }).from(rsvpQuestionsTable)
-      .where(eq(rsvpQuestionsTable.weddingWebsiteId, site.id));
-    const validIds = new Set(validQs.map((q) => q.id));
     const toInsert = parsed.data.answers
       .filter((a) => validIds.has(a.questionId) && a.answer !== "")
       .map((a) => ({ rsvpId: row.id, questionId: a.questionId, answer: a.answer }));
