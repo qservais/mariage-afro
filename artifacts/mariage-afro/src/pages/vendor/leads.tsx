@@ -18,6 +18,7 @@ interface VendorLead {
   weddingDate: string | null;
   message: string | null;
   status: "new" | "seen" | "contacted" | "won" | "lost" | string;
+  tags: string[];
   internalNote: string | null;
   seenAt: string | null;
   createdAt: string;
@@ -26,6 +27,7 @@ interface VendorLead {
 
 const STATUSES = ["new", "seen", "contacted", "won", "lost"] as const;
 const TYPES = ["quote", "availability", "booking", "zoom", "rdv"] as const;
+const LEAD_TAGS = ["hot", "vip", "follow_up", "negotiation", "cold"] as const;
 
 const STATUS_BADGE: Record<string, string> = {
   new: "bg-amber-100 text-amber-800 border-amber-200",
@@ -78,10 +80,11 @@ export default function VendorLeadsPage() {
   }, [selected?.id, selected?.internalNote]);
 
   const updateMutation = useMutation({
-    mutationFn: (vars: { id: number; status?: string; internalNote?: string | null; markSeen?: boolean }) =>
+    mutationFn: (vars: { id: number; status?: string; internalNote?: string | null; tags?: string[]; markSeen?: boolean }) =>
       vendorApi.patch<VendorLead>(`/api/vendor/leads/${vars.id}`, {
         status: vars.status,
         internalNote: vars.internalNote,
+        tags: vars.tags,
         markSeen: vars.markSeen,
       }),
     onSuccess: () => {
@@ -108,6 +111,12 @@ export default function VendorLeadsPage() {
       { id: selected.id, internalNote: noteDraft },
       { onSuccess: () => toast({ title: t("vendor.leads.note_saved") }) },
     );
+  }
+
+  function toggleTag(lead: VendorLead, tag: string) {
+    const current = lead.tags ?? [];
+    const next = current.includes(tag) ? current.filter((tt) => tt !== tag) : [...current, tag];
+    updateMutation.mutate({ id: lead.id, tags: next });
   }
 
   return (
@@ -280,6 +289,32 @@ export default function VendorLeadsPage() {
                       {t(`vendor.leads.status.${s}`)}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
+                  {t("vendor.leads.tags_label")}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {LEAD_TAGS.map((tag) => {
+                    const active = (selected.tags ?? []).includes(tag);
+                    return (
+                      <button
+                        key={tag}
+                        onClick={() => toggleTag(selected, tag)}
+                        disabled={updateMutation.isPending}
+                        className={`text-[11px] uppercase tracking-wider px-2.5 py-1 border transition-colors ${
+                          active
+                            ? "bg-gold/20 border-gold text-wine-deep"
+                            : "bg-white border-neutral-300 text-neutral-600 hover:border-gold"
+                        }`}
+                        data-testid={`button-tag-${tag}`}
+                      >
+                        {t(`vendor.leads.tags.${tag}`)}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

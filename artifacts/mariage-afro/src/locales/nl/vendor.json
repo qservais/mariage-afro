@@ -7,6 +7,7 @@
       "services": "Diensten",
       "agenda": "Agenda",
       "leads": "Aanvragen",
+      "subscription": "Abonnement",
       "settings": "Instellingen"
     },
     "availability": {
@@ -65,7 +66,81 @@
       "stat_views": "Weergaven",
       "stat_leads": "Aanvragen",
       "stat_messages": "Berichten",
+      "stat_conversion": "Conversie",
+      "stat_last_30d": "Laatste 30 dagen",
+      "stat_unread": "Ongelezen",
       "stat_soon": "Binnenkort beschikbaar"
+    },
+    "checklist": {
+      "title": "Bereid uw profiel voor",
+      "subtitle": "Doorloop deze stappen om meer aanvragen te ontvangen.",
+      "items": {
+        "onboarding": "Onboarding voltooien",
+        "profile": "Profiel en beschrijving (≥ 80 tekens)",
+        "gallery": "Voeg minstens 3 foto's toe",
+        "services": "Vermeld uw diensten",
+        "availability": "Stel uw beschikbaarheid in",
+        "tier": "Kies een abonnementsformule",
+        "verified": "Validatie door het Mariage Afro-team"
+      }
+    },
+    "subscription": {
+      "title": "Mijn abonnement",
+      "subtitle": "Verhoog uw zichtbaarheid in de marketplace. Geen online betaling — ons team neemt contact op om te activeren.",
+      "your_plan": "Uw formule",
+      "no_plan": "Geen formule",
+      "manage": "Beheren",
+      "current_plan": "Huidige formule",
+      "requested_state": "Aanvraag verzonden",
+      "activate": "Activeren",
+      "request": "Aanvragen",
+      "recommended": "Aanbevolen",
+      "toast_requested": "Uw aanvraag is naar ons team verzonden.",
+      "toast_activated": "Basic-formule geactiveerd.",
+      "notes_title": "Een bericht voor ons team?",
+      "notes_help": "Vermeld uw behoeften, uw doelperiode of vragen.",
+      "notes_placeholder": "Hallo, ik wens…",
+      "notes_attach": "Uw notities worden toegevoegd aan uw abonnementsaanvraag.",
+      "tiers": {
+        "basic": {
+          "label": "Basic",
+          "tagline": "Uw fiche in de marketplace.",
+          "features": [
+            "Publiek profiel + galerij",
+            "Onbeperkt aanvragen ontvangen",
+            "Berichten met koppels",
+            "Statistieken 30 dagen"
+          ]
+        },
+        "premium": {
+          "label": "Premium",
+          "tagline": "Meer zichtbaarheid, meer aanvragen.",
+          "features": [
+            "Alles uit Basic",
+            "Uitlichten in de lijst",
+            "Premium-badge op uw fiche",
+            "Prioritaire suggesties",
+            "Prioritaire e-mailondersteuning"
+          ]
+        },
+        "featured": {
+          "label": "Featured",
+          "tagline": "Maximale zichtbaarheid in de marketplace.",
+          "features": [
+            "Alles uit Premium",
+            "Bovenaan in uw categorie",
+            "Uitgelicht op de homepage",
+            "Featured-badge + kroon",
+            "Dedicated account manager"
+          ]
+        }
+      },
+      "status": {
+        "requested": "Aanvraag verzonden",
+        "active": "Actief",
+        "cancelled": "Geannuleerd",
+        "expired": "Verlopen"
+      }
     },
     "profile": {
       "title": "Mijn profiel",
@@ -129,6 +204,14 @@
       "col_status": "Status",
       "message_label": "Bericht",
       "status_label": "Status wijzigen",
+      "tags_label": "Labels",
+      "tags": {
+        "hot": "Hot",
+        "vip": "VIP",
+        "follow_up": "Opvolgen",
+        "negotiation": "Onderhandeling",
+        "cold": "Koud"
+      },
       "internal_note": "Interne notitie",
       "note_placeholder": "Privénotities (alleen voor u zichtbaar)",
       "save_note": "Notitie opslaan",

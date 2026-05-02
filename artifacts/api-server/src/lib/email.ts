@@ -642,6 +642,45 @@ export interface PartnerApplicationEmailPayload {
   description?: string | null;
 }
 
+export interface NotifyAdminSubscriptionRequestPayload {
+  vendorName: string;
+  contactName: string;
+  contactEmail: string;
+  tier: "basic" | "premium" | "featured";
+  notes?: string | null;
+}
+
+export async function notifyAdminSubscriptionRequest(p: NotifyAdminSubscriptionRequestPayload, log = logger): Promise<void> {
+  const tierLabel = p.tier === "featured" ? "Featured" : p.tier === "premium" ? "Premium" : "Basic";
+  const subject = `[Mariage Afro] Demande d'abonnement ${tierLabel} — ${p.vendorName}`;
+  const adminLink = `${appUrl()}/admin`;
+  const rows =
+    row("Prestataire", p.vendorName) +
+    row("Contact", `${p.contactName} <${p.contactEmail}>`) +
+    row("Formule demandée", tierLabel) +
+    (p.notes ? row("Note", p.notes) : "");
+  const html = wrap({
+    title: "Nouvelle demande d'abonnement",
+    intro: `${p.vendorName} souhaite souscrire à la formule ${tierLabel}.`,
+    rows,
+    ctaLabel: "Ouvrir l'admin",
+    ctaUrl: adminLink,
+    locale: "fr",
+  });
+  const text = plainText({
+    title: "Nouvelle demande d'abonnement",
+    lines: [
+      `Prestataire: ${p.vendorName}`,
+      `Contact: ${p.contactName} <${p.contactEmail}>`,
+      `Formule: ${tierLabel}`,
+      ...(p.notes ? [`Note: ${p.notes}`] : []),
+    ],
+    ctaLabel: "Admin",
+    ctaUrl: adminLink,
+  });
+  await sendOne({ to: ADMIN_TO, subject, html, text }, log);
+}
+
 export async function sendPartnerApplicationEmails(p: PartnerApplicationEmailPayload, log = logger): Promise<void> {
   const rows =
     row("Entreprise", p.businessName) +

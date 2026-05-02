@@ -13,7 +13,10 @@ import {
   vendorRequestsTable,
   vendorAccountsTable,
   vendorReviewsTable,
+  vendorSubscriptionsTable,
+  vendorViewsTable,
 } from "@workspace/db";
+import crypto from "node:crypto";
 import { eq, and, asc, desc, gte, lte, sql, inArray, or, ilike } from "drizzle-orm";
 import { notifyAdminNewLead, notifyVendorNewLead } from "../lib/email";
 
@@ -126,6 +129,23 @@ async function aggregateForVendors(vendorIds: number[]): Promise<Map<number, { c
 
 // ---------- Marketplace : vendors ----------
 
+function tierWeight(tier?: string | null): number {
+  if (tier === "featured") return 3;
+  if (tier === "premium") return 2;
+  return 1;
+}
+
+async function tierByVendorId(vendorIds: number[]): Promise<Map<number, string>> {
+  const map = new Map<number, string>();
+  if (vendorIds.length === 0) return map;
+  const rows = await db
+    .select({ vendorId: vendorSubscriptionsTable.vendorId, tier: vendorSubscriptionsTable.tier, status: vendorSubscriptionsTable.status })
+    .from(vendorSubscriptionsTable)
+    .where(and(inArray(vendorSubscriptionsTable.vendorId, vendorIds), eq(vendorSubscriptionsTable.status, "active")));
+  for (const r of rows) if (r.vendorId != null) map.set(r.vendorId, r.tier);
+  return map;
+}
+
 router.get("/marketplace/vendors", async (req: Request, res: Response) => {
   const conds = buildVendorFilters(req);
   const vendors = await db
@@ -134,13 +154,63 @@ router.get("/marketplace/vendors", async (req: Request, res: Response) => {
     .where(and(...conds))
     .orderBy(asc(marketplaceVendorsTable.name));
   const aggregates = await aggregateForVendors(vendors.map((v) => v.id));
+  const tiers = await tierByVendorId(vendors.map((v) => v.id));
+  const sorted = [...vendors].sort((a, b) => {
+    const wa = tierWeight(tiers.get(a.id));
+    const wb = tierWeight(tiers.get(b.id));
+    if (wa !== wb) return wb - wa;
+    return a.name.localeCompare(b.name);
+  });
   res.json(
-    vendors.map((v) => ({
+    sorted.map((v) => ({
       ...v,
+      tier: tiers.get(v.id) ?? "basic",
       reviewCount: aggregates.get(v.id)?.count ?? 0,
       averageRating: aggregates.get(v.id)?.average ?? 0,
     })),
   );
+});
+
+const VIEW_SOURCES = ["detail", "listing", "comparator"] as const;
+const trackViewSchema = z.object({
+  source: z.enum(VIEW_SOURCES).optional(),
+  referrer: z.string().max(500).optional().nullable(),
+});
+
+router.post("/marketplace/vendors/:id/track-view", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const parsed = trackViewSchema.safeParse(req.body ?? {});
+  const source = parsed.success ? (parsed.data.source ?? "detail") : "detail";
+  const referrer = parsed.success ? (parsed.data.referrer ?? null) : null;
+
+  // Best-effort vendor existence check (avoid orphan rows)
+  const [vendor] = await db
+    .select({ id: marketplaceVendorsTable.id })
+    .from(marketplaceVendorsTable)
+    .where(eq(marketplaceVendorsTable.id, id));
+  if (!vendor) { res.status(204).end(); return; }
+
+  const ip = (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim() || req.ip || "0.0.0.0";
+  const ua = req.headers["user-agent"] || "";
+  const day = new Date().toISOString().slice(0, 10);
+  const sessionHash = crypto.createHash("sha256").update(`${ip}|${ua}|${day}`).digest("hex").slice(0, 32);
+
+  // Dedupe per session+vendor+day to avoid inflating with refreshes
+  const todayStart = new Date(); todayStart.setUTCHours(0, 0, 0, 0);
+  const [existing] = await db
+    .select({ id: vendorViewsTable.id })
+    .from(vendorViewsTable)
+    .where(and(
+      eq(vendorViewsTable.vendorId, id),
+      eq(vendorViewsTable.sessionHash, sessionHash),
+      gte(vendorViewsTable.viewedAt, todayStart),
+    ))
+    .limit(1);
+  if (!existing) {
+    await db.insert(vendorViewsTable).values({ vendorId: id, source, sessionHash, referrer });
+  }
+  res.status(204).end();
 });
 
 router.get("/marketplace/vendors-by-tags", async (req: Request, res: Response) => {

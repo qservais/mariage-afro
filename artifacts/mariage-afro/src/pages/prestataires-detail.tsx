@@ -53,6 +53,15 @@ export default function PrestataireDetail() {
   });
 
   useEffect(() => {
+    if (!Number.isFinite(id) || id <= 0) return;
+    fetch(`/api/marketplace/vendors/${id}/track-view`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "detail", referrer: typeof document !== "undefined" ? document.referrer || null : null }),
+    }).catch(() => undefined);
+  }, [id]);
+
+  useEffect(() => {
     if (!vendor) return;
     document.title = `${vendor.name} — ${vendor.category} ${vendor.city} — Mariage Afro`;
     const desc = (vendor.tagline || vendor.description || "").slice(0, 158);

@@ -7,6 +7,7 @@
       "services": "Services",
       "agenda": "Agenda",
       "leads": "Demandes",
+      "subscription": "Abonnement",
       "settings": "Paramètres"
     },
     "availability": {
@@ -65,7 +66,81 @@
       "stat_views": "Vues",
       "stat_leads": "Demandes",
       "stat_messages": "Messages",
+      "stat_conversion": "Taux conversion",
+      "stat_last_30d": "30 derniers jours",
+      "stat_unread": "Non lus",
       "stat_soon": "Bientôt disponible"
+    },
+    "checklist": {
+      "title": "Préparez votre fiche",
+      "subtitle": "Complétez ces étapes pour maximiser vos demandes.",
+      "items": {
+        "onboarding": "Compléter l'onboarding",
+        "profile": "Profil et description (≥ 80 caractères)",
+        "gallery": "Ajouter au moins 3 photos",
+        "services": "Lister vos services",
+        "availability": "Définir vos disponibilités",
+        "tier": "Choisir une formule d'abonnement",
+        "verified": "Validation par l'équipe Mariage Afro"
+      }
+    },
+    "subscription": {
+      "title": "Mon abonnement",
+      "subtitle": "Boostez votre visibilité dans la marketplace. Aucun paiement en ligne — notre équipe vous contacte pour activer.",
+      "your_plan": "Votre formule",
+      "no_plan": "Aucune formule",
+      "manage": "Gérer",
+      "current_plan": "Formule actuelle",
+      "requested_state": "Demande envoyée",
+      "activate": "Activer",
+      "request": "Demander",
+      "recommended": "Recommandé",
+      "toast_requested": "Votre demande a bien été envoyée à notre équipe.",
+      "toast_activated": "Formule basique activée.",
+      "notes_title": "Un message pour notre équipe ?",
+      "notes_help": "Indiquez vos besoins, votre période de mariage cible, ou vos questions.",
+      "notes_placeholder": "Bonjour, je souhaite…",
+      "notes_attach": "Vos notes sont jointes à votre demande d'abonnement.",
+      "tiers": {
+        "basic": {
+          "label": "Basic",
+          "tagline": "Votre fiche dans la marketplace.",
+          "features": [
+            "Profil public + galerie",
+            "Réception illimitée de leads",
+            "Messagerie avec les couples",
+            "Statistiques 30 jours"
+          ]
+        },
+        "premium": {
+          "label": "Premium",
+          "tagline": "Plus de visibilité, plus de demandes.",
+          "features": [
+            "Tout le Basic",
+            "Mise en avant dans la liste",
+            "Badge Premium sur votre fiche",
+            "Suggestions prioritaires",
+            "Support email prioritaire"
+          ]
+        },
+        "featured": {
+          "label": "Featured",
+          "tagline": "L'exposition maximale dans la marketplace.",
+          "features": [
+            "Tout le Premium",
+            "Top de liste dans votre catégorie",
+            "Mise en avant page d'accueil",
+            "Badge Featured + couronne",
+            "Account manager dédié"
+          ]
+        }
+      },
+      "status": {
+        "requested": "Demande envoyée",
+        "active": "Active",
+        "cancelled": "Annulée",
+        "expired": "Expirée"
+      }
     },
     "profile": {
       "title": "Mon profil",
@@ -129,6 +204,14 @@
       "col_status": "Statut",
       "message_label": "Message",
       "status_label": "Changer le statut",
+      "tags_label": "Étiquettes",
+      "tags": {
+        "hot": "Chaud",
+        "vip": "VIP",
+        "follow_up": "À relancer",
+        "negotiation": "Négociation",
+        "cold": "Froid"
+      },
       "internal_note": "Note interne",
       "note_placeholder": "Notes privées (visibles uniquement par vous)",
       "save_note": "Enregistrer la note",

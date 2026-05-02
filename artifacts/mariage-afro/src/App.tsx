@@ -44,6 +44,7 @@ import VendorSettingsPage from "@/pages/vendor/settings";
 import VendorAvailabilityPage from "@/pages/vendor/availability";
 import VendorLeadsPage from "@/pages/vendor/leads";
 import VendorMessagesPage from "@/pages/vendor/messages";
+import VendorAbonnementPage from "@/pages/vendor/abonnement";
 import VendorSignInPage from "@/pages/vendor/sign-in";
 import VendorSignUpPage from "@/pages/vendor/sign-up";
 import Header from "@/components/layout/Header";
@@ -150,6 +151,7 @@ function AppRoutes() {
           <Route path="leads" element={<VendorLeadsPage />} />
           <Route path="messages" element={<VendorMessagesPage />} />
           <Route path="settings" element={<VendorSettingsPage />} />
+          <Route path="abonnement" element={<VendorAbonnementPage />} />
           <Route path="*" element={<Navigate to="/espace-pro" replace />} />
         </Route>
       </Routes>

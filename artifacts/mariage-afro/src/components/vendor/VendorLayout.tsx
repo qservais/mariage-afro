@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, Briefcase, Image as ImageIcon, ListChecks,
   Settings, LogOut, Menu, X, Heart, AlertCircle, CheckCircle2,
-  CalendarDays, Inbox, MessageCircle,
+  CalendarDays, Inbox, MessageCircle, Crown,
 } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import VendorOnboardingGate from "@/components/vendor/VendorOnboardingGate";
@@ -75,6 +75,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
     { to: "/espace-pro/gallery", label: t("vendor.nav.gallery"), icon: ImageIcon, badge: 0 },
     { to: "/espace-pro/services", label: t("vendor.nav.services"), icon: ListChecks, badge: 0 },
     { to: "/espace-pro/agenda", label: t("vendor.nav.agenda"), icon: CalendarDays, badge: 0 },
+    { to: "/espace-pro/abonnement", label: t("vendor.nav.subscription"), icon: Crown, badge: 0 },
     { to: "/espace-pro/settings", label: t("vendor.nav.settings"), icon: Settings, badge: 0 },
   ];
 

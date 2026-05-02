@@ -7,6 +7,7 @@
       "services": "Services",
       "agenda": "Calendar",
       "leads": "Leads",
+      "subscription": "Subscription",
       "settings": "Settings"
     },
     "availability": {
@@ -65,7 +66,81 @@
       "stat_views": "Views",
       "stat_leads": "Leads",
       "stat_messages": "Messages",
+      "stat_conversion": "Conversion rate",
+      "stat_last_30d": "Last 30 days",
+      "stat_unread": "Unread",
       "stat_soon": "Coming soon"
+    },
+    "checklist": {
+      "title": "Set up your listing",
+      "subtitle": "Complete these steps to maximise inquiries.",
+      "items": {
+        "onboarding": "Finish onboarding",
+        "profile": "Profile & description (≥ 80 characters)",
+        "gallery": "Add at least 3 photos",
+        "services": "List your services",
+        "availability": "Set your availability",
+        "tier": "Pick a subscription plan",
+        "verified": "Validation by the Mariage Afro team"
+      }
+    },
+    "subscription": {
+      "title": "My subscription",
+      "subtitle": "Boost your visibility in the marketplace. No online payment — our team contacts you to activate.",
+      "your_plan": "Your plan",
+      "no_plan": "No plan",
+      "manage": "Manage",
+      "current_plan": "Current plan",
+      "requested_state": "Request sent",
+      "activate": "Activate",
+      "request": "Request",
+      "recommended": "Recommended",
+      "toast_requested": "Your request has been sent to our team.",
+      "toast_activated": "Basic plan activated.",
+      "notes_title": "A message for our team?",
+      "notes_help": "Tell us your needs, target wedding period, or any questions.",
+      "notes_placeholder": "Hi, I would like to…",
+      "notes_attach": "Your notes are attached to your subscription request.",
+      "tiers": {
+        "basic": {
+          "label": "Basic",
+          "tagline": "Your listing in the marketplace.",
+          "features": [
+            "Public profile + gallery",
+            "Unlimited lead reception",
+            "Messaging with couples",
+            "30-day stats"
+          ]
+        },
+        "premium": {
+          "label": "Premium",
+          "tagline": "More visibility, more inquiries.",
+          "features": [
+            "Everything in Basic",
+            "Boosted in listings",
+            "Premium badge on your listing",
+            "Priority suggestions",
+            "Priority email support"
+          ]
+        },
+        "featured": {
+          "label": "Featured",
+          "tagline": "Maximum exposure across the marketplace.",
+          "features": [
+            "Everything in Premium",
+            "Top of category listings",
+            "Homepage spotlight",
+            "Featured badge + crown",
+            "Dedicated account manager"
+          ]
+        }
+      },
+      "status": {
+        "requested": "Request sent",
+        "active": "Active",
+        "cancelled": "Cancelled",
+        "expired": "Expired"
+      }
     },
     "profile": {
       "title": "My profile",
@@ -129,6 +204,14 @@
       "col_status": "Status",
       "message_label": "Message",
       "status_label": "Change status",
+      "tags_label": "Tags",
+      "tags": {
+        "hot": "Hot",
+        "vip": "VIP",
+        "follow_up": "Follow up",
+        "negotiation": "Negotiation",
+        "cold": "Cold"
+      },
       "internal_note": "Internal note",
       "note_placeholder": "Private notes (visible only to you)",
       "save_note": "Save note",

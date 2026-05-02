@@ -335,10 +335,37 @@ export const vendorLeadsTable = pgTable("vendor_leads", {
   weddingDate: text("wedding_date"),
   message: text("message"),
   status: text("status").notNull().default("new"),
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
   internalNote: text("internal_note"),
   seenAt: timestamp("seen_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// LOT 8 — Espace Pro pivot business
+export const vendorSubscriptionsTable = pgTable("vendor_subscriptions", {
+  id: serial("id").primaryKey(),
+  vendorAccountId: integer("vendor_account_id").notNull(),
+  vendorId: integer("vendor_id"),
+  tier: text("tier").notNull().default("basic"), // basic | premium | featured
+  status: text("status").notNull().default("requested"), // requested | active | cancelled | expired
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  endsAt: timestamp("ends_at", { withTimezone: true }),
+  requestedAt: timestamp("requested_at", { withTimezone: true }).notNull().defaultNow(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  vendorAccountIdx: uniqueIndex("vendor_subscriptions_vendor_account_idx").on(t.vendorAccountId),
+}));
+
+export const vendorViewsTable = pgTable("vendor_views", {
+  id: serial("id").primaryKey(),
+  vendorId: integer("vendor_id").notNull(),
+  source: text("source").notNull().default("detail"), // detail | listing | comparator
+  sessionHash: text("session_hash"),
+  referrer: text("referrer"),
+  viewedAt: timestamp("viewed_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const weddingRsvpsTable = pgTable("wedding_rsvps", {
@@ -395,3 +422,5 @@ export type VendorAccount = typeof vendorAccountsTable.$inferSelect;
 export type VendorAvailability = typeof vendorAvailabilityTable.$inferSelect;
 export type VendorLead = typeof vendorLeadsTable.$inferSelect;
 export type VendorReview = typeof vendorReviewsTable.$inferSelect;
+export type VendorSubscription = typeof vendorSubscriptionsTable.$inferSelect;
+export type VendorView = typeof vendorViewsTable.$inferSelect;

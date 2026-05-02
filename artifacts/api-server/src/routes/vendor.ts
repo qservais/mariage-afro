@@ -8,6 +8,8 @@ import {
   marketplaceVendorsTable,
   vendorAvailabilityTable,
   vendorLeadsTable,
+  vendorSubscriptionsTable,
+  vendorViewsTable,
   conversationsTable,
   messagesTable,
   couplesTable,
@@ -15,7 +17,7 @@ import {
 import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage } from "../lib/email";
+import { notifyConversationMessage, notifyAdminSubscriptionRequest } from "../lib/email";
 
 const router = Router();
 const storageService = new ObjectStorageService();
@@ -443,6 +445,7 @@ router.get("/vendor/leads/unseen-count", async (req, res) => {
 const leadUpdateSchema = z.object({
   status: z.enum(LEAD_STATUSES).optional(),
   internalNote: z.string().max(4000).optional().nullable(),
+  tags: z.array(z.string().min(1).max(40)).max(12).optional(),
   markSeen: z.boolean().optional(),
 });
 
@@ -483,6 +486,9 @@ router.patch("/vendor/leads/:id", async (req, res) => {
   }
   if (parsed.data.internalNote !== undefined) {
     update.internalNote = parsed.data.internalNote;
+  }
+  if (parsed.data.tags !== undefined) {
+    update.tags = parsed.data.tags;
   }
   if (parsed.data.markSeen) {
     if (!lead.seenAt) update.seenAt = new Date();
@@ -642,6 +648,185 @@ router.post("/vendor/conversations/:id/messages", async (req, res) => {
       ctaUrl: `${process.env.PUBLIC_APP_URL || ""}/espace-client/communication`,
     }, req.log);
   })().catch((err) => req.log.error({ err }, "Failed to notify couple of vendor message"));
+
+  res.status(201).json(row);
+});
+
+// ---------- LOT 8 — Stats, onboarding checklist, subscriptions ----------
+
+router.get("/vendor/stats", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const [account] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+    .limit(1);
+  if (!account) { res.json({ views7: 0, views30: 0, leads30: 0, leadsByStatus: {}, conversionRate: 0, unreadMessages: 0 }); return; }
+
+  const vendorId = account.vendorId;
+  const now = Date.now();
+  const d7 = new Date(now - 7 * 24 * 60 * 60 * 1000);
+  const d30 = new Date(now - 30 * 24 * 60 * 60 * 1000);
+
+  let views7 = 0;
+  let views30 = 0;
+  if (vendorId) {
+    const [v7] = await db
+      .select({ c: sql<number>`count(*)::int` })
+      .from(vendorViewsTable)
+      .where(and(eq(vendorViewsTable.vendorId, vendorId), gte(vendorViewsTable.viewedAt, d7)));
+    views7 = v7?.c ?? 0;
+    const [v30] = await db
+      .select({ c: sql<number>`count(*)::int` })
+      .from(vendorViewsTable)
+      .where(and(eq(vendorViewsTable.vendorId, vendorId), gte(vendorViewsTable.viewedAt, d30)));
+    views30 = v30?.c ?? 0;
+  }
+
+  const accessCond = leadAccessFilter(account.id, vendorId);
+  const leadsRows = await db
+    .select({ status: vendorLeadsTable.status, c: sql<number>`count(*)::int` })
+    .from(vendorLeadsTable)
+    .where(and(accessCond, gte(vendorLeadsTable.createdAt, d30)))
+    .groupBy(vendorLeadsTable.status);
+  const leadsByStatus: Record<string, number> = { new: 0, seen: 0, contacted: 0, won: 0, lost: 0 };
+  let leads30 = 0;
+  for (const row of leadsRows) {
+    leadsByStatus[row.status] = row.c;
+    leads30 += row.c;
+  }
+  const conversionRate = leads30 > 0 ? Math.round((leadsByStatus.won / leads30) * 1000) / 10 : 0;
+
+  let unreadMessages = 0;
+  if (vendorId) {
+    const [m] = await db
+      .select({ c: sql<number>`count(*)::int` })
+      .from(messagesTable)
+      .leftJoin(conversationsTable, eq(conversationsTable.id, messagesTable.conversationId))
+      .where(and(
+        eq(conversationsTable.vendorId, vendorId),
+        eq(messagesTable.authorRole, "couple"),
+        isNull(messagesTable.readAt),
+      ));
+    unreadMessages = m?.c ?? 0;
+  }
+
+  res.json({ views7, views30, leads30, leadsByStatus, conversionRate, unreadMessages });
+});
+
+router.get("/vendor/onboarding-checklist", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const [account] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+    .limit(1);
+  if (!account) { res.status(404).json({ error: "Account not found" }); return; }
+
+  const vendor = account.vendorId
+    ? (await db.select().from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.id, account.vendorId)).limit(1))[0]
+    : null;
+
+  const profileComplete = !!(vendor?.name && vendor?.tagline && vendor?.description && vendor.description.length >= 80);
+  const galleryComplete = (vendor?.images?.length ?? 0) >= 3;
+  const servicesComplete = (vendor?.services?.length ?? 0) >= 1;
+  const availabilityCount = vendor?.id
+    ? Number((await db.select({ c: sql<number>`count(*)::int` }).from(vendorAvailabilityTable).where(eq(vendorAvailabilityTable.vendorId, vendor.id)))[0]?.c ?? 0)
+    : 0;
+  const availabilitySet = availabilityCount > 0;
+
+  const [sub] = await db
+    .select()
+    .from(vendorSubscriptionsTable)
+    .where(eq(vendorSubscriptionsTable.vendorAccountId, account.id))
+    .limit(1);
+  const tierChosen = !!sub;
+
+  const items = [
+    { key: "onboarding", done: !!account.onboardedAt },
+    { key: "profile", done: profileComplete },
+    { key: "gallery", done: galleryComplete, count: vendor?.images?.length ?? 0 },
+    { key: "services", done: servicesComplete, count: vendor?.services?.length ?? 0 },
+    { key: "availability", done: availabilitySet },
+    { key: "tier", done: tierChosen },
+    { key: "verified", done: !!vendor?.verified },
+  ];
+  const completed = items.filter((i) => i.done).length;
+  res.json({ items, completed, total: items.length });
+});
+
+const TIERS = ["basic", "premium", "featured"] as const;
+const subscriptionSchema = z.object({
+  tier: z.enum(TIERS),
+  notes: z.string().max(2000).optional().nullable(),
+});
+
+router.get("/vendor/subscription", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const [sub] = await db
+    .select()
+    .from(vendorSubscriptionsTable)
+    .where(eq(vendorSubscriptionsTable.vendorAccountId, r.vendorAccountId))
+    .limit(1);
+  res.json(sub ?? null);
+});
+
+router.post("/vendor/subscription", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const parsed = subscriptionSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+
+  const [account] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+    .limit(1);
+  if (!account) { res.status(404).json({ error: "Account not found" }); return; }
+
+  const [existing] = await db
+    .select()
+    .from(vendorSubscriptionsTable)
+    .where(eq(vendorSubscriptionsTable.vendorAccountId, account.id))
+    .limit(1);
+
+  let row;
+  if (existing) {
+    [row] = await db
+      .update(vendorSubscriptionsTable)
+      .set({
+        tier: parsed.data.tier,
+        notes: parsed.data.notes ?? null,
+        status: parsed.data.tier === "basic" ? "active" : "requested",
+        startedAt: parsed.data.tier === "basic" ? new Date() : existing.startedAt,
+        requestedAt: new Date(),
+        vendorId: account.vendorId,
+        updatedAt: new Date(),
+      })
+      .where(eq(vendorSubscriptionsTable.id, existing.id))
+      .returning();
+  } else {
+    [row] = await db
+      .insert(vendorSubscriptionsTable)
+      .values({
+        vendorAccountId: account.id,
+        vendorId: account.vendorId,
+        tier: parsed.data.tier,
+        notes: parsed.data.notes ?? null,
+        status: parsed.data.tier === "basic" ? "active" : "requested",
+        startedAt: parsed.data.tier === "basic" ? new Date() : null,
+      })
+      .returning();
+  }
+
+  if (parsed.data.tier !== "basic") {
+    void notifyAdminSubscriptionRequest({
+      vendorName: account.businessName || `Vendor #${account.id}`,
+      contactEmail: account.email,
+      contactName: account.contactName,
+      tier: parsed.data.tier,
+      notes: parsed.data.notes ?? null,
+    }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to notify admin of subscription request"));
+  }
 
   res.status(201).json(row);
 });
