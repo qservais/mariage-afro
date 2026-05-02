@@ -9,8 +9,11 @@ import {
   vendorReviewsTable,
   marketplaceVendorsTable,
   couplesTable,
+  vendorSubscriptionsTable,
+  vendorAccountsTable,
 } from "@workspace/db";
 import { adminAuth, ADMIN_COOKIE, isAuthed } from "../middlewares/adminAuth";
+import { notifyVendorSubscriptionActivated } from "../lib/email";
 
 const router = Router();
 
@@ -633,6 +636,88 @@ router.post("/leads/:type/:id/note", adminAuth, async (req, res) => {
     await db.update(table).set({ internalNote }).where(eq(table.id, id));
   }
   res.redirect(`/admin/leads/${type}/${id}`);
+});
+
+// ---------- LOT 8 — Subscription management (JSON API) ----------
+router.get("/subscriptions", adminAuth, async (_req, res) => {
+  const rows = await db
+    .select({
+      sub: vendorSubscriptionsTable,
+      account: vendorAccountsTable,
+    })
+    .from(vendorSubscriptionsTable)
+    .leftJoin(vendorAccountsTable, eq(vendorAccountsTable.id, vendorSubscriptionsTable.vendorAccountId))
+    .orderBy(desc(vendorSubscriptionsTable.requestedAt));
+  res.json(rows.map((r) => ({ ...r.sub, account: r.account })));
+});
+
+router.post("/subscriptions/:id/activate", adminAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const tier = String(req.body?.tier ?? "");
+  if (!["basic", "premium", "featured"].includes(tier)) {
+    res.status(400).json({ error: "Invalid tier" }); return;
+  }
+  let endsAt: Date | null = null;
+  if (req.body?.endsAt) {
+    const d = new Date(String(req.body.endsAt));
+    if (isNaN(d.getTime())) { res.status(400).json({ error: "Invalid endsAt" }); return; }
+    endsAt = d;
+  }
+  const [updated] = await db
+    .update(vendorSubscriptionsTable)
+    .set({
+      tier,
+      status: "active",
+      startedAt: new Date(),
+      endsAt,
+      updatedAt: new Date(),
+    })
+    .where(eq(vendorSubscriptionsTable.id, id))
+    .returning();
+  if (!updated) { res.status(404).json({ error: "Not found" }); return; }
+  const [account] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, updated.vendorAccountId))
+    .limit(1);
+  if (account?.email) {
+    void notifyVendorSubscriptionActivated({
+      to: account.email,
+      vendorName: account.businessName || account.contactName || "Prestataire",
+      tier: updated.tier as "basic" | "premium" | "featured",
+      status: "active",
+      endsAt: updated.endsAt ? updated.endsAt.toISOString() : null,
+      locale: account.locale,
+    }).catch(() => undefined);
+  }
+  res.json(updated);
+});
+
+router.post("/subscriptions/:id/cancel", adminAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const [updated] = await db
+    .update(vendorSubscriptionsTable)
+    .set({ status: "cancelled", updatedAt: new Date() })
+    .where(eq(vendorSubscriptionsTable.id, id))
+    .returning();
+  if (!updated) { res.status(404).json({ error: "Not found" }); return; }
+  const [account] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, updated.vendorAccountId))
+    .limit(1);
+  if (account?.email) {
+    void notifyVendorSubscriptionActivated({
+      to: account.email,
+      vendorName: account.businessName || account.contactName || "Prestataire",
+      tier: updated.tier as "basic" | "premium" | "featured",
+      status: "cancelled",
+      locale: account.locale,
+    }).catch(() => undefined);
+  }
+  res.json(updated);
 });
 
 export default router;

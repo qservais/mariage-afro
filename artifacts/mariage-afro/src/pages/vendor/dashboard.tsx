@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Briefcase, Image as ImageIcon, ListChecks, Settings, ExternalLink,
   CalendarDays, Eye, Inbox, MessageCircle, Sparkles, Crown,
-  CheckCircle2, Circle, ArrowRight,
+  CheckCircle2, Circle, ArrowRight, Trophy, BarChart3,
 } from "lucide-react";
 import { useVendorMe } from "@/components/vendor/VendorLayout";
 import { vendorApi } from "@/lib/vendorApi";
@@ -12,14 +12,18 @@ import { vendorApi } from "@/lib/vendorApi";
 interface VendorStats {
   views7: number;
   views30: number;
+  views90: number;
   leads30: number;
   leadsByStatus: Record<string, number>;
   conversionRate: number;
   unreadMessages: number;
+  ranking: { rank: number; total: number; category: string } | null;
+  series: { date: string; views: number }[];
+  sources: { source: string; count: number }[];
 }
 
 interface ChecklistItem { key: string; done: boolean; count?: number }
-interface ChecklistResp { items: ChecklistItem[]; completed: number; total: number }
+interface ChecklistResp { items: ChecklistItem[]; completed: number; total: number; hide?: boolean }
 
 interface SubscriptionResp {
   id: number;
@@ -29,12 +33,16 @@ interface SubscriptionResp {
 
 const ITEM_LINKS: Record<string, string> = {
   onboarding: "/espace-pro",
-  profile: "/espace-pro/profile",
-  gallery: "/espace-pro/gallery",
-  services: "/espace-pro/services",
+  profile_basics: "/espace-pro/profile",
+  description_long: "/espace-pro/profile",
+  photos_5: "/espace-pro/gallery",
+  services_3: "/espace-pro/services",
+  location: "/espace-pro/profile",
+  languages: "/espace-pro/profile",
+  price: "/espace-pro/profile",
+  cultural_styles: "/espace-pro/profile",
   availability: "/espace-pro/agenda",
   tier: "/espace-pro/abonnement",
-  verified: "/espace-pro/profile",
 };
 
 export default function VendorDashboard() {
@@ -118,8 +126,47 @@ export default function VendorDashboard() {
         <StatCard icon={Sparkles} label={t("vendor.dashboard.stat_conversion")} value={`${stats?.conversionRate ?? 0}%`} sub={t("vendor.dashboard.stat_last_30d")} testid="stat-conversion" />
       </section>
 
-      {/* Onboarding checklist */}
-      {checklist && (
+      {/* 90-day chart + ranking */}
+      <section className="grid lg:grid-cols-[1fr_auto] gap-4">
+        <ViewsChart series={stats?.series ?? []} totalLabel={t("vendor.dashboard.chart_total")} title={t("vendor.dashboard.chart_title")} />
+        <RankingCard
+          ranking={stats?.ranking ?? null}
+          title={t("vendor.dashboard.ranking_title")}
+          empty={t("vendor.dashboard.ranking_none")}
+          formatValue={(rank, total) => t("vendor.dashboard.ranking_value", { rank, total })}
+        />
+      </section>
+
+      {/* Top sources */}
+      <section className="bg-white p-6 border border-neutral-200" data-testid="section-sources">
+        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">{t("vendor.dashboard.sources_title")}</p>
+        <h2 className="font-display text-lg text-wine-deep mb-4">{t("vendor.dashboard.stat_last_30d")}</h2>
+        {(!stats?.sources || stats.sources.length === 0) ? (
+          <p className="text-sm text-neutral-500">{t("vendor.dashboard.sources_empty")}</p>
+        ) : (
+          <ul className="space-y-2">
+            {stats.sources.map((s) => {
+              const total = stats.sources.reduce((acc, x) => acc + x.count, 0);
+              const pct = total > 0 ? Math.round((s.count / total) * 100) : 0;
+              const label = t(`vendor.dashboard.source_${s.source}`, s.source);
+              return (
+                <li key={s.source} data-testid={`source-row-${s.source}`}>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-wine-deep font-medium">{label}</span>
+                    <span className="text-neutral-600">{s.count} <span className="text-neutral-400">({pct}%)</span></span>
+                  </div>
+                  <div className="h-1.5 bg-neutral-100 mt-1 overflow-hidden">
+                    <div className="h-full bg-gold transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {/* Onboarding checklist (hidden when 100%) */}
+      {checklist && !checklist.hide && (
         <section className="bg-white p-6 border border-neutral-200" data-testid="section-onboarding-checklist">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -182,6 +229,71 @@ export default function VendorDashboard() {
           );
         })}
       </section>
+    </div>
+  );
+}
+
+function ViewsChart({ series, title, totalLabel }: { series: { date: string; views: number }[]; title: string; totalLabel: string }) {
+  const total = series.reduce((acc, p) => acc + p.views, 0);
+  const max = Math.max(1, ...series.map((p) => p.views));
+  return (
+    <div className="bg-white p-6 border border-neutral-200" data-testid="section-views-chart">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-neutral-500">{title}</p>
+          <p className="text-2xl font-bold text-wine-deep mt-1">
+            {total} <span className="text-sm font-normal text-neutral-500">{totalLabel}</span>
+          </p>
+        </div>
+        <BarChart3 className="w-5 h-5 text-gold" />
+      </div>
+      <svg viewBox={`0 0 ${Math.max(1, series.length)} 40`} preserveAspectRatio="none" className="w-full h-24" data-testid="chart-svg" aria-label={title}>
+        {series.map((p, i) => {
+          const h = (p.views / max) * 38;
+          return (
+            <rect
+              key={p.date}
+              x={i + 0.1}
+              y={40 - h}
+              width={0.8}
+              height={Math.max(0.5, h)}
+              fill="#c9a96e"
+              opacity={0.85}
+            >
+              <title>{`${p.date}: ${p.views}`}</title>
+            </rect>
+          );
+        })}
+      </svg>
+      <div className="flex justify-between text-[10px] text-neutral-400 mt-1">
+        <span>{series[0]?.date ?? ""}</span>
+        <span>{series[series.length - 1]?.date ?? ""}</span>
+      </div>
+    </div>
+  );
+}
+
+function RankingCard({
+  ranking, title, empty, formatValue,
+}: {
+  ranking: { rank: number; total: number; category: string } | null;
+  title: string;
+  empty: string;
+  formatValue: (rank: number, total: number) => string;
+}) {
+  return (
+    <div className="bg-wine-deep text-cream p-6 min-w-[16rem]" data-testid="section-ranking">
+      <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-gold">
+        <Trophy className="w-3.5 h-3.5" /> {title}
+      </div>
+      {ranking ? (
+        <>
+          <p className="text-3xl font-display mt-2" data-testid="ranking-value">{formatValue(ranking.rank, ranking.total)}</p>
+          <p className="text-xs text-cream/70 mt-1">{ranking.category}</p>
+        </>
+      ) : (
+        <p className="text-sm text-cream/70 mt-3">{empty}</p>
+      )}
     </div>
   );
 }

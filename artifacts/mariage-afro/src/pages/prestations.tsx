@@ -24,6 +24,8 @@ import {
   Map as MapIcon,
   Scale,
   Send,
+  Crown,
+  Sparkles,
 } from "lucide-react";
 
 import VendorAvailabilityCalendar from "@/components/VendorAvailabilityCalendar";
@@ -186,6 +188,7 @@ interface DisplayVendor {
   priceTier?: number | null;
   culturalStyles?: string[];
   spokenLanguages?: string[];
+  tier?: string | null;
 }
 
 const ACTIONS: { key: VendorAction; icon: typeof FileText }[] = [
@@ -762,6 +765,7 @@ export default function Prestations() {
         priceTier: (v.priceTier as number | null) ?? null,
         culturalStyles: (v.culturalStyles as string[] | undefined) ?? [],
         spokenLanguages: (v.spokenLanguages as string[] | undefined) ?? [],
+        tier: (v.tier as string | null | undefined) ?? null,
       }));
     },
   });
@@ -787,6 +791,21 @@ export default function Prestations() {
   const filtered = usingApi
     ? displayVendors
     : (filters.category ? displayVendors.filter((v) => v.category === filters.category) : displayVendors);
+
+  // Track listing impressions once per page-load (LOT 8: source=listing)
+  useEffect(() => {
+    if (!usingApi || filtered.length === 0) return;
+    const ids = filtered.slice(0, 24).map((v) => v.id);
+    ids.forEach((id) => {
+      fetch(`/api/marketplace/vendors/${id}/track-view`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: "listing" }),
+        keepalive: true,
+      }).catch(() => undefined);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiQueryString, usingApi]);
 
   // JSON-LD ItemList des prestataires affichés (l'AggregateRating est désormais sur la fiche détail)
   const jsonLdString = useMemo(() => {
@@ -998,6 +1017,16 @@ export default function Prestations() {
                       {vendor.category}
                     </span>
                     <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                      {vendor.tier === "featured" && (
+                        <span className="badge-editorial bg-gold text-wine-deep border-gold" data-testid={`tier-badge-${vendor.id}`}>
+                          <Crown className="w-3 h-3" /> Featured
+                        </span>
+                      )}
+                      {vendor.tier === "premium" && (
+                        <span className="badge-editorial bg-wine-deep text-cream border-wine-deep" data-testid={`tier-badge-${vendor.id}`}>
+                          <Sparkles className="w-3 h-3" /> Premium
+                        </span>
+                      )}
                       {vendor.verified && (
                         <span className="badge-editorial bg-cream/95 backdrop-blur-sm">
                           <CheckCircle2 className="w-3 h-3" />

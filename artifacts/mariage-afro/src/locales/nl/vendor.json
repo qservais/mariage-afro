@@ -69,19 +69,33 @@
       "stat_conversion": "Conversie",
       "stat_last_30d": "Laatste 30 dagen",
       "stat_unread": "Ongelezen",
-      "stat_soon": "Binnenkort beschikbaar"
+      "stat_soon": "Binnenkort beschikbaar",
+      "chart_title": "Weergaven over 90 dagen",
+      "chart_total": "Totaal",
+      "ranking_title": "Ranking in uw categorie",
+      "ranking_value": "{{rank}} van {{total}}",
+      "ranking_none": "Wacht op gegevens",
+      "sources_title": "Herkomst van weergaven",
+      "sources_empty": "Geen weergaven over 30 dagen.",
+      "source_detail": "Detailfiche",
+      "source_listing": "Leveranciersoverzicht",
+      "source_comparator": "Vergelijker"
     },
     "checklist": {
       "title": "Bereid uw profiel voor",
       "subtitle": "Doorloop deze stappen om meer aanvragen te ontvangen.",
       "items": {
         "onboarding": "Onboarding voltooien",
-        "profile": "Profiel en beschrijving (≥ 80 tekens)",
-        "gallery": "Voeg minstens 3 foto's toe",
-        "services": "Vermeld uw diensten",
+        "profile_basics": "Naam + pakkende slogan (≥ 10 tekens)",
+        "description_long": "Uitgebreide beschrijving (≥ 200 tekens)",
+        "photos_5": "Minstens 5 foto's in de galerij",
+        "services_3": "Minstens 3 diensten",
+        "location": "Adres met geolocatie (lat/long)",
+        "languages": "Gesproken talen vermelden",
+        "price": "Geef een prijsindicatie",
+        "cultural_styles": "Behandelde culturele stijlen",
         "availability": "Stel uw beschikbaarheid in",
-        "tier": "Kies een abonnementsformule",
-        "verified": "Validatie door het Mariage Afro-team"
+        "tier": "Kies een abonnementsformule"
       }
     },
     "subscription": {
@@ -222,9 +236,12 @@
         "new": "Nieuw",
         "seen": "Bekeken",
         "contacted": "Gecontacteerd",
+        "devis_envoye": "Offerte verstuurd",
         "won": "Geconverteerd",
         "lost": "Verloren"
       },
+      "view_kanban": "Kanban-weergave",
+      "view_table": "Tabelweergave",
       "type": {
         "quote": "Offerte",
         "availability": "Beschikbaarheid",

@@ -69,19 +69,33 @@
       "stat_conversion": "Taux conversion",
       "stat_last_30d": "30 derniers jours",
       "stat_unread": "Non lus",
-      "stat_soon": "Bientôt disponible"
+      "stat_soon": "Bientôt disponible",
+      "chart_title": "Vues sur 90 jours",
+      "chart_total": "Total",
+      "ranking_title": "Classement dans votre catégorie",
+      "ranking_value": "{{rank}} sur {{total}}",
+      "ranking_none": "En attente de données",
+      "sources_title": "Provenance des vues",
+      "sources_empty": "Aucune vue sur 30 jours.",
+      "source_detail": "Fiche détail",
+      "source_listing": "Liste prestataires",
+      "source_comparator": "Comparateur"
     },
     "checklist": {
       "title": "Préparez votre fiche",
       "subtitle": "Complétez ces étapes pour maximiser vos demandes.",
       "items": {
         "onboarding": "Compléter l'onboarding",
-        "profile": "Profil et description (≥ 80 caractères)",
-        "gallery": "Ajouter au moins 3 photos",
-        "services": "Lister vos services",
+        "profile_basics": "Nom + slogan accrocheur (≥ 10 car.)",
+        "description_long": "Description détaillée (≥ 200 car.)",
+        "photos_5": "5 photos minimum dans la galerie",
+        "services_3": "3 services au moins",
+        "location": "Adresse géolocalisée (latitude/longitude)",
+        "languages": "Langues parlées renseignées",
+        "price": "Indiquer une fourchette de prix",
+        "cultural_styles": "Styles culturels traités",
         "availability": "Définir vos disponibilités",
-        "tier": "Choisir une formule d'abonnement",
-        "verified": "Validation par l'équipe Mariage Afro"
+        "tier": "Choisir une formule d'abonnement"
       }
     },
     "subscription": {
@@ -222,9 +236,12 @@
         "new": "Nouveau",
         "seen": "Vu",
         "contacted": "Contacté",
+        "devis_envoye": "Devis envoyé",
         "won": "Converti",
         "lost": "Perdu"
       },
+      "view_kanban": "Vue Kanban",
+      "view_table": "Vue tableau",
       "type": {
         "quote": "Devis",
         "availability": "Disponibilité",

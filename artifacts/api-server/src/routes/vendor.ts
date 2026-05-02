@@ -382,7 +382,7 @@ router.delete("/vendor/availability/:date", async (req, res) => {
 });
 
 // ---------- Leads ----------
-const LEAD_STATUSES = ["new", "seen", "contacted", "won", "lost"] as const;
+const LEAD_STATUSES = ["new", "seen", "contacted", "devis_envoye", "won", "lost"] as const;
 
 function leadAccessFilter(accountId: number, vendorId: number | null) {
   if (vendorId == null) {
@@ -661,26 +661,96 @@ router.get("/vendor/stats", async (req, res) => {
     .from(vendorAccountsTable)
     .where(eq(vendorAccountsTable.id, r.vendorAccountId))
     .limit(1);
-  if (!account) { res.json({ views7: 0, views30: 0, leads30: 0, leadsByStatus: {}, conversionRate: 0, unreadMessages: 0 }); return; }
+  if (!account) {
+    res.json({
+      views7: 0, views30: 0, views90: 0, leads30: 0, leadsByStatus: {}, conversionRate: 0,
+      unreadMessages: 0, ranking: null, series: [], sources: [],
+    });
+    return;
+  }
 
   const vendorId = account.vendorId;
   const now = Date.now();
   const d7 = new Date(now - 7 * 24 * 60 * 60 * 1000);
   const d30 = new Date(now - 30 * 24 * 60 * 60 * 1000);
+  const d90 = new Date(now - 90 * 24 * 60 * 60 * 1000);
 
-  let views7 = 0;
-  let views30 = 0;
+  let views7 = 0, views30 = 0, views90 = 0;
+  let series: { date: string; views: number }[] = [];
+  let sources: { source: string; count: number }[] = [];
+  let ranking: { rank: number; total: number; category: string } | null = null;
+
   if (vendorId) {
-    const [v7] = await db
-      .select({ c: sql<number>`count(*)::int` })
+    const [v7] = await db.select({ c: sql<number>`count(*)::int` })
       .from(vendorViewsTable)
       .where(and(eq(vendorViewsTable.vendorId, vendorId), gte(vendorViewsTable.viewedAt, d7)));
     views7 = v7?.c ?? 0;
-    const [v30] = await db
-      .select({ c: sql<number>`count(*)::int` })
+    const [v30] = await db.select({ c: sql<number>`count(*)::int` })
       .from(vendorViewsTable)
       .where(and(eq(vendorViewsTable.vendorId, vendorId), gte(vendorViewsTable.viewedAt, d30)));
     views30 = v30?.c ?? 0;
+    const [v90] = await db.select({ c: sql<number>`count(*)::int` })
+      .from(vendorViewsTable)
+      .where(and(eq(vendorViewsTable.vendorId, vendorId), gte(vendorViewsTable.viewedAt, d90)));
+    views90 = v90?.c ?? 0;
+
+    const seriesRows = await db
+      .select({
+        d: sql<string>`to_char(date_trunc('day', ${vendorViewsTable.viewedAt}), 'YYYY-MM-DD')`,
+        c: sql<number>`count(*)::int`,
+      })
+      .from(vendorViewsTable)
+      .where(and(eq(vendorViewsTable.vendorId, vendorId), gte(vendorViewsTable.viewedAt, d90)))
+      .groupBy(sql`date_trunc('day', ${vendorViewsTable.viewedAt})`)
+      .orderBy(sql`date_trunc('day', ${vendorViewsTable.viewedAt})`);
+    const map = new Map(seriesRows.map((row) => [row.d, row.c]));
+    const dayMs = 24 * 60 * 60 * 1000;
+    for (let i = 89; i >= 0; i--) {
+      const d = new Date(now - i * dayMs);
+      const key = d.toISOString().slice(0, 10);
+      series.push({ date: key, views: map.get(key) ?? 0 });
+    }
+
+    const sourceRows = await db
+      .select({ source: vendorViewsTable.source, c: sql<number>`count(*)::int` })
+      .from(vendorViewsTable)
+      .where(and(eq(vendorViewsTable.vendorId, vendorId), gte(vendorViewsTable.viewedAt, d30)))
+      .groupBy(vendorViewsTable.source)
+      .orderBy(desc(sql`count(*)`));
+    sources = sourceRows.map((row) => ({ source: row.source, count: row.c }));
+
+    const [vendorRow] = await db
+      .select({ category: marketplaceVendorsTable.category })
+      .from(marketplaceVendorsTable)
+      .where(eq(marketplaceVendorsTable.id, vendorId))
+      .limit(1);
+    if (vendorRow?.category) {
+      const rankRows = await db
+        .select({
+          vendorId: marketplaceVendorsTable.id,
+          views: sql<number>`coalesce(count(${vendorViewsTable.id})::int, 0)`,
+        })
+        .from(marketplaceVendorsTable)
+        .leftJoin(
+          vendorViewsTable,
+          and(
+            eq(vendorViewsTable.vendorId, marketplaceVendorsTable.id),
+            gte(vendorViewsTable.viewedAt, d30),
+          ),
+        )
+        .where(and(
+          eq(marketplaceVendorsTable.category, vendorRow.category),
+          eq(marketplaceVendorsTable.active, true),
+        ))
+        .groupBy(marketplaceVendorsTable.id)
+        .orderBy(desc(sql`coalesce(count(${vendorViewsTable.id})::int, 0)`));
+      const idx = rankRows.findIndex((r) => r.vendorId === vendorId);
+      ranking = {
+        rank: idx >= 0 ? idx + 1 : rankRows.length + 1,
+        total: rankRows.length,
+        category: vendorRow.category,
+      };
+    }
   }
 
   const accessCond = leadAccessFilter(account.id, vendorId);
@@ -689,10 +759,12 @@ router.get("/vendor/stats", async (req, res) => {
     .from(vendorLeadsTable)
     .where(and(accessCond, gte(vendorLeadsTable.createdAt, d30)))
     .groupBy(vendorLeadsTable.status);
-  const leadsByStatus: Record<string, number> = { new: 0, seen: 0, contacted: 0, won: 0, lost: 0 };
+  const leadsByStatus: Record<string, number> = {
+    new: 0, seen: 0, contacted: 0, devis_envoye: 0, won: 0, lost: 0,
+  };
   let leads30 = 0;
   for (const row of leadsRows) {
-    leadsByStatus[row.status] = row.c;
+    leadsByStatus[row.status] = (leadsByStatus[row.status] ?? 0) + row.c;
     leads30 += row.c;
   }
   const conversionRate = leads30 > 0 ? Math.round((leadsByStatus.won / leads30) * 1000) / 10 : 0;
@@ -711,7 +783,10 @@ router.get("/vendor/stats", async (req, res) => {
     unreadMessages = m?.c ?? 0;
   }
 
-  res.json({ views7, views30, leads30, leadsByStatus, conversionRate, unreadMessages });
+  res.json({
+    views7, views30, views90, leads30, leadsByStatus, conversionRate,
+    unreadMessages, ranking, series, sources,
+  });
 });
 
 router.get("/vendor/onboarding-checklist", async (req, res) => {
@@ -727,9 +802,14 @@ router.get("/vendor/onboarding-checklist", async (req, res) => {
     ? (await db.select().from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.id, account.vendorId)).limit(1))[0]
     : null;
 
-  const profileComplete = !!(vendor?.name && vendor?.tagline && vendor?.description && vendor.description.length >= 80);
-  const galleryComplete = (vendor?.images?.length ?? 0) >= 3;
-  const servicesComplete = (vendor?.services?.length ?? 0) >= 1;
+  const profileBasics = !!(vendor?.name && vendor?.tagline && vendor.tagline.length >= 10);
+  const descriptionLong = !!(vendor?.description && vendor.description.length >= 200);
+  const photos5 = (vendor?.images?.length ?? 0) >= 5;
+  const services3 = (vendor?.services?.length ?? 0) >= 3;
+  const location = !!(vendor?.latitude && vendor?.longitude);
+  const languagesSet = (vendor?.spokenLanguages?.length ?? 0) >= 1;
+  const priceSet = vendor?.priceTier != null;
+  const culturalSet = (vendor?.culturalStyles?.length ?? 0) >= 1;
   const availabilityCount = vendor?.id
     ? Number((await db.select({ c: sql<number>`count(*)::int` }).from(vendorAvailabilityTable).where(eq(vendorAvailabilityTable.vendorId, vendor.id)))[0]?.c ?? 0)
     : 0;
@@ -744,15 +824,19 @@ router.get("/vendor/onboarding-checklist", async (req, res) => {
 
   const items = [
     { key: "onboarding", done: !!account.onboardedAt },
-    { key: "profile", done: profileComplete },
-    { key: "gallery", done: galleryComplete, count: vendor?.images?.length ?? 0 },
-    { key: "services", done: servicesComplete, count: vendor?.services?.length ?? 0 },
+    { key: "profile_basics", done: profileBasics },
+    { key: "description_long", done: descriptionLong, count: vendor?.description?.length ?? 0 },
+    { key: "photos_5", done: photos5, count: vendor?.images?.length ?? 0 },
+    { key: "services_3", done: services3, count: vendor?.services?.length ?? 0 },
+    { key: "location", done: location },
+    { key: "languages", done: languagesSet, count: vendor?.spokenLanguages?.length ?? 0 },
+    { key: "price", done: priceSet },
+    { key: "cultural_styles", done: culturalSet, count: vendor?.culturalStyles?.length ?? 0 },
     { key: "availability", done: availabilitySet },
     { key: "tier", done: tierChosen },
-    { key: "verified", done: !!vendor?.verified },
   ];
   const completed = items.filter((i) => i.done).length;
-  res.json({ items, completed, total: items.length });
+  res.json({ items, completed, total: items.length, hide: completed === items.length });
 });
 
 const TIERS = ["basic", "premium", "featured"] as const;

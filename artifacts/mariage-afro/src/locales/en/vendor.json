@@ -69,19 +69,33 @@
       "stat_conversion": "Conversion rate",
       "stat_last_30d": "Last 30 days",
       "stat_unread": "Unread",
-      "stat_soon": "Coming soon"
+      "stat_soon": "Coming soon",
+      "chart_title": "Views over 90 days",
+      "chart_total": "Total",
+      "ranking_title": "Ranking in your category",
+      "ranking_value": "{{rank}} of {{total}}",
+      "ranking_none": "Awaiting data",
+      "sources_title": "Where views come from",
+      "sources_empty": "No views in the last 30 days.",
+      "source_detail": "Detail page",
+      "source_listing": "Vendor listing",
+      "source_comparator": "Comparator"
     },
     "checklist": {
       "title": "Set up your listing",
       "subtitle": "Complete these steps to maximise inquiries.",
       "items": {
         "onboarding": "Finish onboarding",
-        "profile": "Profile & description (≥ 80 characters)",
-        "gallery": "Add at least 3 photos",
-        "services": "List your services",
+        "profile_basics": "Name + catchy tagline (≥ 10 chars)",
+        "description_long": "Detailed description (≥ 200 chars)",
+        "photos_5": "At least 5 photos in your gallery",
+        "services_3": "At least 3 services",
+        "location": "Geolocated address (lat/long)",
+        "languages": "Spoken languages set",
+        "price": "Provide a price range",
+        "cultural_styles": "Cultural styles you serve",
         "availability": "Set your availability",
-        "tier": "Pick a subscription plan",
-        "verified": "Validation by the Mariage Afro team"
+        "tier": "Pick a subscription plan"
       }
     },
     "subscription": {
@@ -222,9 +236,12 @@
         "new": "New",
         "seen": "Seen",
         "contacted": "Contacted",
+        "devis_envoye": "Quote sent",
         "won": "Won",
         "lost": "Lost"
       },
+      "view_kanban": "Kanban view",
+      "view_table": "Table view",
       "type": {
         "quote": "Quote",
         "availability": "Availability",

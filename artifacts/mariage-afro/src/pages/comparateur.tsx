@@ -65,6 +65,19 @@ export default function Comparateur() {
     if (meta) meta.setAttribute("content", t("comparateur.meta_desc"));
   }, [t]);
 
+  // LOT 8 — track comparator views
+  useEffect(() => {
+    if (ids.length === 0) return;
+    ids.forEach((id) => {
+      fetch(`/api/marketplace/vendors/${id}/track-view`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: "comparator" }),
+        keepalive: true,
+      }).catch(() => undefined);
+    });
+  }, [ids]);
+
   const { data: vendors = [], isLoading } = useQuery<Vendor[]>({
     queryKey: ["comparator-vendors", ids.join(",")],
     queryFn: async () => {

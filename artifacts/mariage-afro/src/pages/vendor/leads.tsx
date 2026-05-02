@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Mail, Phone, Calendar, MessageSquare, X } from "lucide-react";
+import { Loader2, Mail, Phone, Calendar, MessageSquare, X, LayoutGrid, List } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,7 +17,7 @@ interface VendorLead {
   phone: string | null;
   weddingDate: string | null;
   message: string | null;
-  status: "new" | "seen" | "contacted" | "won" | "lost" | string;
+  status: "new" | "seen" | "contacted" | "devis_envoye" | "won" | "lost" | string;
   tags: string[];
   internalNote: string | null;
   seenAt: string | null;
@@ -25,7 +25,7 @@ interface VendorLead {
   updatedAt: string;
 }
 
-const STATUSES = ["new", "seen", "contacted", "won", "lost"] as const;
+const STATUSES = ["new", "seen", "contacted", "devis_envoye", "won", "lost"] as const;
 const TYPES = ["quote", "availability", "booking", "zoom", "rdv"] as const;
 const LEAD_TAGS = ["hot", "vip", "follow_up", "negotiation", "cold"] as const;
 
@@ -33,6 +33,7 @@ const STATUS_BADGE: Record<string, string> = {
   new: "bg-amber-100 text-amber-800 border-amber-200",
   seen: "bg-blue-100 text-blue-800 border-blue-200",
   contacted: "bg-violet-100 text-violet-800 border-violet-200",
+  devis_envoye: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200",
   won: "bg-emerald-100 text-emerald-800 border-emerald-200",
   lost: "bg-stone-100 text-stone-700 border-stone-200",
 };
@@ -56,6 +57,7 @@ export default function VendorLeadsPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [noteDraft, setNoteDraft] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"table" | "kanban">("table");
 
   const { data: leads = [], isLoading } = useQuery<VendorLead[]>({
     queryKey: ["vendor", "leads"],
@@ -163,10 +165,69 @@ export default function VendorLeadsPage() {
         <span className="text-xs text-neutral-500 ml-auto">
           {t("vendor.leads.count", { count: filtered.length })}
         </span>
+        <div className="inline-flex border border-neutral-300 bg-white" role="tablist" aria-label="View toggle">
+          <button
+            onClick={() => setViewMode("table")}
+            className={`px-3 py-2 text-xs uppercase tracking-wider flex items-center gap-1.5 ${viewMode === "table" ? "bg-wine-deep text-cream" : "text-wine-deep"}`}
+            data-testid="button-view-table"
+            aria-pressed={viewMode === "table"}
+          >
+            <List className="w-3.5 h-3.5" /> {t("vendor.leads.view_table")}
+          </button>
+          <button
+            onClick={() => setViewMode("kanban")}
+            className={`px-3 py-2 text-xs uppercase tracking-wider flex items-center gap-1.5 border-l border-neutral-300 ${viewMode === "kanban" ? "bg-wine-deep text-cream" : "text-wine-deep"}`}
+            data-testid="button-view-kanban"
+            aria-pressed={viewMode === "kanban"}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" /> {t("vendor.leads.view_kanban")}
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_24rem]">
-        {/* Table */}
+        {viewMode === "kanban" ? (
+          <div className="overflow-x-auto" data-testid="kanban-board">
+            <div className="grid grid-flow-col auto-cols-[15rem] gap-3">
+              {STATUSES.map((s) => {
+                const col = filtered.filter((l) => l.status === s);
+                return (
+                  <div key={s} className="bg-neutral-50 border border-neutral-200 p-2 min-h-[20rem]" data-testid={`kanban-col-${s}`}>
+                    <div className="flex items-center justify-between mb-2 px-1">
+                      <span className={`inline-block text-[10px] uppercase tracking-widest border px-2 py-1 ${STATUS_BADGE[s] ?? ""}`}>
+                        {t(`vendor.leads.status.${s}`)}
+                      </span>
+                      <span className="text-xs text-neutral-500">{col.length}</span>
+                    </div>
+                    <div className="space-y-2">
+                      {col.map((lead) => (
+                        <button
+                          key={lead.id}
+                          onClick={() => openLead(lead)}
+                          className={`w-full text-left bg-white border p-2.5 hover:border-wine-deep transition-colors ${selectedId === lead.id ? "border-wine-deep" : "border-neutral-200"}`}
+                          data-testid={`kanban-card-${lead.id}`}
+                        >
+                          <p className="text-xs text-neutral-500">{formatDate(lead.createdAt)}</p>
+                          <p className="text-sm font-medium text-wine-deep mt-0.5">{lead.name}</p>
+                          <p className="text-[11px] text-neutral-500 mt-1">{t(`vendor.leads.type.${lead.requestType}`)}</p>
+                          {(lead.tags ?? []).length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {(lead.tags ?? []).map((tag) => (
+                                <span key={tag} className="text-[10px] bg-gold/15 text-wine-deep px-1.5 py-0.5">
+                                  {t(`vendor.leads.tags.${tag}`, tag)}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
         <div className="bg-white border border-neutral-200 overflow-hidden">
           {isLoading ? (
             <div className="p-12 text-center text-neutral-500">
@@ -217,6 +278,7 @@ export default function VendorLeadsPage() {
             </table>
           )}
         </div>
+        )}
 
         {/* Detail panel */}
         <aside className="bg-white border border-neutral-200 p-6 self-start sticky top-6">
@@ -273,7 +335,7 @@ export default function VendorLeadsPage() {
                 <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
                   {t("vendor.leads.status_label")}
                 </p>
-                <div className="grid grid-cols-3 gap-1">
+                <div className="grid grid-cols-2 gap-1">
                   {STATUSES.map((s) => (
                     <button
                       key={s}

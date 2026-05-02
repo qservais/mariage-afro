@@ -681,6 +681,52 @@ export async function notifyAdminSubscriptionRequest(p: NotifyAdminSubscriptionR
   await sendOne({ to: ADMIN_TO, subject, html, text }, log);
 }
 
+export interface NotifyVendorSubscriptionPayload {
+  to: string;
+  vendorName: string;
+  tier: "basic" | "premium" | "featured";
+  status: "active" | "cancelled" | "expired";
+  endsAt?: string | null;
+  locale?: string | null;
+}
+
+export async function notifyVendorSubscriptionActivated(p: NotifyVendorSubscriptionPayload, log = logger): Promise<void> {
+  const tierLabel = p.tier === "featured" ? "Featured" : p.tier === "premium" ? "Premium" : "Basic";
+  const isActive = p.status === "active";
+  const subject = isActive
+    ? `Votre formule ${tierLabel} est active — Mariage Afro`
+    : p.status === "cancelled"
+      ? `Votre abonnement ${tierLabel} a été annulé — Mariage Afro`
+      : `Votre abonnement ${tierLabel} a expiré — Mariage Afro`;
+  const intro = isActive
+    ? `Bonne nouvelle ${p.vendorName} ! Votre formule ${tierLabel} est maintenant active sur la marketplace.`
+    : p.status === "cancelled"
+      ? `${p.vendorName}, votre abonnement ${tierLabel} a été annulé.`
+      : `${p.vendorName}, votre abonnement ${tierLabel} a expiré.`;
+  const rows =
+    row("Formule", tierLabel) +
+    row("Statut", p.status) +
+    (p.endsAt ? row("Échéance", p.endsAt.slice(0, 10)) : "");
+  await sendOne({
+    to: p.to,
+    subject,
+    html: wrap({
+      title: isActive ? "Formule activée" : "Mise à jour de votre abonnement",
+      intro,
+      rows,
+      ctaLabel: "Ouvrir mon Espace Pro",
+      ctaUrl: `${appUrl()}/espace-pro/abonnement`,
+      locale: "fr",
+    }),
+    text: plainText({
+      title: subject,
+      lines: [intro, `Formule: ${tierLabel}`, `Statut: ${p.status}`],
+      ctaLabel: "Espace Pro",
+      ctaUrl: `${appUrl()}/espace-pro/abonnement`,
+    }),
+  }, log);
+}
+
 export async function sendPartnerApplicationEmails(p: PartnerApplicationEmailPayload, log = logger): Promise<void> {
   const rows =
     row("Entreprise", p.businessName) +

@@ -196,7 +196,8 @@ router.post("/marketplace/vendors/:id/track-view", async (req: Request, res: Res
   const day = new Date().toISOString().slice(0, 10);
   const sessionHash = crypto.createHash("sha256").update(`${ip}|${ua}|${day}`).digest("hex").slice(0, 32);
 
-  // Dedupe per session+vendor+day to avoid inflating with refreshes
+  // Dedupe per session+vendor+source+day to avoid inflating with refreshes
+  // while still allowing distinct attribution per source (detail/listing/comparator).
   const todayStart = new Date(); todayStart.setUTCHours(0, 0, 0, 0);
   const [existing] = await db
     .select({ id: vendorViewsTable.id })
@@ -204,6 +205,7 @@ router.post("/marketplace/vendors/:id/track-view", async (req: Request, res: Res
     .where(and(
       eq(vendorViewsTable.vendorId, id),
       eq(vendorViewsTable.sessionHash, sessionHash),
+      eq(vendorViewsTable.source, source),
       gte(vendorViewsTable.viewedAt, todayStart),
     ))
     .limit(1);
