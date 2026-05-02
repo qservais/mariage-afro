@@ -143,6 +143,47 @@ router.get("/marketplace/vendors", async (req: Request, res: Response) => {
   );
 });
 
+router.get("/marketplace/vendors-by-tags", async (req: Request, res: Response) => {
+  const tagsParam = String(req.query.tags ?? "").trim();
+  const limit = Math.min(Math.max(Number(req.query.limit) || 3, 1), 10);
+  if (!tagsParam) { res.json([]); return; }
+  const tags = tagsParam.split(",").map((t) => t.trim().toLowerCase()).filter(Boolean);
+  if (tags.length === 0) { res.json([]); return; }
+  const all = await db
+    .select()
+    .from(marketplaceVendorsTable)
+    .where(eq(marketplaceVendorsTable.active, true));
+  const scored = all
+    .map((v) => {
+      const haystack = [
+        v.category,
+        ...(v.services ?? []),
+        ...(v.culturalStyles ?? []),
+        v.tagline,
+        v.description,
+        v.name,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      let score = 0;
+      for (const t of tags) if (t && haystack.includes(t)) score += 1;
+      return { v, score };
+    })
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ v }) => ({
+      id: v.id,
+      name: v.name,
+      category: v.category,
+      city: v.city,
+      tagline: v.tagline,
+      coverImage: v.coverImage,
+    }));
+  res.json(scored);
+});
+
 router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }

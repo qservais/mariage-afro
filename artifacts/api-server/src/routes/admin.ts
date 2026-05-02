@@ -22,22 +22,43 @@ const STATUS_LABEL: Record<Status, string> = {
   done: "Traité",
 };
 
-const TYPES = ["lead", "vendor", "venue", "partner"] as const;
+const TYPES = [
+  "lead",
+  "lead_budget",
+  "lead_quiz",
+  "lead_magnet",
+  "lead_multi_devis",
+  "vendor",
+  "venue",
+  "partner",
+] as const;
 type LeadType = (typeof TYPES)[number];
 
 const TYPE_LABEL: Record<LeadType, string> = {
-  lead: "Lead",
+  lead: "Lead général",
+  lead_budget: "Calculateur budget",
+  lead_quiz: "Quiz style",
+  lead_magnet: "Lead magnet (PDF)",
+  lead_multi_devis: "Multi-devis",
   vendor: "Prestataire",
   venue: "Lieu",
   partner: "Partenaire",
 };
 
+// Map a "type" filter value to the underlying lead category column when applicable.
+const LEAD_CATEGORY_FOR_TYPE: Partial<Record<LeadType, string>> = {
+  lead_budget: "budget_calc",
+  lead_quiz: "quiz_result",
+  lead_magnet: "lead_magnet",
+  lead_multi_devis: "multi_devis",
+};
+
 function tableFor(type: LeadType) {
   switch (type) {
-    case "lead": return leadsTable;
     case "vendor": return vendorRequestsTable;
     case "venue": return venueRequestsTable;
     case "partner": return partnerApplicationsTable;
+    default: return leadsTable; // lead, lead_budget, lead_quiz, lead_magnet, lead_multi_devis
   }
 }
 
@@ -297,11 +318,27 @@ async function loadFeed(opts: {
 
   // Unified feed across the 4 lead tables, paginated and ordered at the DB level.
   // Each subquery exposes the same column shape so UNION ALL works.
+  // For leads, the "type" reflects the conversion-tool category so admins can filter precisely.
   const unionSql = sql`
-    SELECT 'lead'::text AS type, id, name, email, phone, wedding_date,
-           COALESCE(array_to_string(ARRAY(SELECT jsonb_array_elements_text(services)), ', '), '') AS services_text,
-           CASE WHEN category = 'service-request' THEN 'Demande services' ELSE 'Lead général' END AS subject,
-           status, created_at
+    SELECT
+      CASE category
+        WHEN 'budget_calc' THEN 'lead_budget'
+        WHEN 'quiz_result' THEN 'lead_quiz'
+        WHEN 'lead_magnet' THEN 'lead_magnet'
+        WHEN 'multi_devis' THEN 'lead_multi_devis'
+        ELSE 'lead'
+      END AS type,
+      id, name, email, phone, wedding_date,
+      COALESCE(array_to_string(ARRAY(SELECT jsonb_array_elements_text(services)), ', '), '') AS services_text,
+      CASE category
+        WHEN 'service-request' THEN 'Demande services'
+        WHEN 'budget_calc' THEN 'Calculateur budget'
+        WHEN 'quiz_result' THEN 'Quiz style mariage'
+        WHEN 'lead_magnet' THEN 'Téléchargement guide PDF'
+        WHEN 'multi_devis' THEN COALESCE('Multi-devis · ' || (payload->>'vendorName'), 'Multi-devis')
+        ELSE 'Lead général'
+      END AS subject,
+      status, created_at
       FROM leads
     UNION ALL
     SELECT 'vendor'::text, id, name, email, phone, wedding_date, '' AS services_text,
@@ -349,7 +386,16 @@ async function loadFeed(opts: {
     SELECT type, COUNT(*)::text AS count FROM (${unionSql}) feed GROUP BY type
   `);
 
-  const totals: Record<LeadType, number> = { lead: 0, vendor: 0, venue: 0, partner: 0 };
+  const totals: Record<LeadType, number> = {
+    lead: 0,
+    lead_budget: 0,
+    lead_quiz: 0,
+    lead_magnet: 0,
+    lead_multi_devis: 0,
+    vendor: 0,
+    venue: 0,
+    partner: 0,
+  };
   for (const r of totalsRes.rows) totals[r.type as LeadType] = Number(r.count);
 
   const rows: FeedRow[] = rowsRes.rows.map((r) => ({
@@ -379,10 +425,14 @@ router.get("/", adminAuth, async (req, res) => {
 
   const stats = `
     <div class="stats">
-      <div class="stat"><div class="lbl">Leads</div><div class="val">${totals.lead}</div></div>
-      <div class="stat"><div class="lbl">Demandes Prestataires</div><div class="val">${totals.vendor}</div></div>
-      <div class="stat"><div class="lbl">Demandes Lieux</div><div class="val">${totals.venue}</div></div>
-      <div class="stat"><div class="lbl">Candidatures Partenaires</div><div class="val">${totals.partner}</div></div>
+      <div class="stat"><div class="lbl">Leads généraux</div><div class="val">${totals.lead}</div></div>
+      <div class="stat"><div class="lbl">Calc. budget</div><div class="val">${totals.lead_budget}</div></div>
+      <div class="stat"><div class="lbl">Quiz</div><div class="val">${totals.lead_quiz}</div></div>
+      <div class="stat"><div class="lbl">Lead magnet</div><div class="val">${totals.lead_magnet}</div></div>
+      <div class="stat"><div class="lbl">Multi-devis</div><div class="val">${totals.lead_multi_devis}</div></div>
+      <div class="stat"><div class="lbl">Prestataires</div><div class="val">${totals.vendor}</div></div>
+      <div class="stat"><div class="lbl">Lieux</div><div class="val">${totals.venue}</div></div>
+      <div class="stat"><div class="lbl">Partenaires</div><div class="val">${totals.partner}</div></div>
     </div>`;
 
   const typeOpts = ["", ...TYPES].map(t => `<option value="${t}"${t === (filterType ?? "") ? " selected" : ""}>${t ? TYPE_LABEL[t as LeadType] : "Tous"}</option>`).join("");
@@ -442,14 +492,22 @@ router.get("/leads/:type/:id", adminAuth, async (req, res) => {
   if (!Number.isFinite(id)) { res.status(404).send("Not found"); return; }
 
   const table = tableFor(type);
+  const expectedCategory = LEAD_CATEGORY_FOR_TYPE[type];
   const [row] = await db.select().from(table as typeof leadsTable).where(eq(table.id, id)).limit(1);
   if (!row) { res.status(404).type("html").send(layout("Introuvable", `<div class="container"><p>Demande introuvable.</p></div>`)); return; }
+  // Enforce category alignment for lead subtypes so URLs cannot mislabel rows.
+  if (expectedCategory && (row as { category?: string }).category !== expectedCategory) {
+    res.status(404).type("html").send(layout("Introuvable", `<div class="container"><p>Demande introuvable.</p></div>`));
+    return;
+  }
 
   const r = row as Record<string, unknown>;
   const fields: Array<[string, unknown]> = [];
   fields.push(["Date", new Date(r.createdAt as string | Date).toLocaleString("fr-BE")]);
   fields.push(["Type", TYPE_LABEL[type]]);
-  if (type === "lead") {
+  // All lead subtypes share the same row shape — render common lead fields, then payload details.
+  const isLeadSubtype = type === "lead" || type === "lead_budget" || type === "lead_quiz" || type === "lead_magnet" || type === "lead_multi_devis";
+  if (isLeadSubtype) {
     fields.push(["Catégorie", r.category]);
     fields.push(["Nom", r.name]); fields.push(["Email", r.email]); fields.push(["Téléphone", r.phone]);
     fields.push(["Date du mariage", r.weddingDate]);
@@ -458,6 +516,40 @@ router.get("/leads/:type/:id", adminAuth, async (req, res) => {
     fields.push(["Type de mariage", r.weddingType]);
     fields.push(["Services souhaités", Array.isArray(r.services) ? (r.services as string[]).join(", ") : ""]);
     fields.push(["Message", r.message]);
+    // Subtype-specific payload extracts.
+    const payload = (r.payload ?? null) as Record<string, unknown> | null;
+    if (payload && typeof payload === "object") {
+      if (type === "lead_budget") {
+        const result = (payload.result ?? {}) as { totalMin?: number; totalMax?: number; breakdown?: Array<{ label: string; min: number; max: number }> };
+        const inputs = (payload.inputs ?? {}) as { region?: string; standing?: string; weddingMonth?: string };
+        if (result.totalMin != null && result.totalMax != null) {
+          fields.push(["Estimation", `${result.totalMin} € – ${result.totalMax} €`]);
+        }
+        if (inputs.region) fields.push(["Région", inputs.region]);
+        if (inputs.standing) fields.push(["Standing", inputs.standing]);
+        if (inputs.weddingMonth) fields.push(["Mois", inputs.weddingMonth]);
+        if (Array.isArray(result.breakdown)) {
+          const lines = result.breakdown.map((b) => `${b.label}: ${b.min} € – ${b.max} €`).join(" · ");
+          if (lines) fields.push(["Ventilation", lines]);
+        }
+      } else if (type === "lead_quiz") {
+        const profile = (payload.profile ?? {}) as { name?: string; description?: string };
+        if (profile.name) fields.push(["Profil", profile.name]);
+        if (profile.description) fields.push(["Description profil", profile.description]);
+        const reco = (payload.recommendedVendors ?? []) as Array<{ name: string; category?: string }>;
+        if (reco.length) fields.push(["Prestataires recommandés", reco.map((v) => `${v.name}${v.category ? ` (${v.category})` : ""}`).join(", ")]);
+        const answers = (payload.answers ?? {}) as Record<string, string>;
+        const answerLines = Object.entries(answers).map(([k, v]) => `${k}=${v}`).join(" · ");
+        if (answerLines) fields.push(["Réponses", answerLines]);
+      } else if (type === "lead_magnet") {
+        if (payload.magnetTitle) fields.push(["Lead magnet", payload.magnetTitle]);
+        if (payload.magnetId) fields.push(["Magnet ID", payload.magnetId]);
+      } else if (type === "lead_multi_devis") {
+        if (payload.vendorName) fields.push(["Prestataire", payload.vendorName]);
+        const allNames = (payload.allVendorNames ?? []) as string[];
+        if (allNames.length) fields.push(["Tous les prestataires de la demande", allNames.join(", ")]);
+      }
+    }
   } else if (type === "vendor") {
     fields.push(["Prestataire", r.vendorName]);
     fields.push(["Type de demande", r.requestType]);
@@ -517,7 +609,13 @@ router.post("/leads/:type/:id/status", adminAuth, async (req, res) => {
   const status = String(req.body?.status ?? "");
   if (!STATUSES.includes(status as Status)) { res.status(400).send("Invalid status"); return; }
   const table = tableFor(type);
-  await db.update(table).set({ status }).where(eq(table.id, id));
+  const expectedCategory = LEAD_CATEGORY_FOR_TYPE[type];
+  if (expectedCategory) {
+    await db.update(leadsTable).set({ status })
+      .where(and(eq(leadsTable.id, id), eq(leadsTable.category, expectedCategory)));
+  } else {
+    await db.update(table).set({ status }).where(eq(table.id, id));
+  }
   res.redirect(`/admin/leads/${type}/${id}`);
 });
 
@@ -527,7 +625,13 @@ router.post("/leads/:type/:id/note", adminAuth, async (req, res) => {
   const id = Number(req.params.id);
   const internalNote = String(req.body?.internalNote ?? "");
   const table = tableFor(type);
-  await db.update(table).set({ internalNote }).where(eq(table.id, id));
+  const expectedCategory = LEAD_CATEGORY_FOR_TYPE[type];
+  if (expectedCategory) {
+    await db.update(leadsTable).set({ internalNote })
+      .where(and(eq(leadsTable.id, id), eq(leadsTable.category, expectedCategory)));
+  } else {
+    await db.update(table).set({ internalNote }).where(eq(table.id, id));
+  }
   res.redirect(`/admin/leads/${type}/${id}`);
 });
 

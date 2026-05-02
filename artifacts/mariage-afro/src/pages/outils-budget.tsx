@@ -332,15 +332,36 @@ export default function OutilsBudget() {
                   <h3 className="font-display uppercase text-sm tracking-[0.2em] text-wine-deep/70 mb-4">
                     {t("tools.budget.breakdown")}
                   </h3>
-                  <div className="space-y-3">
-                    {breakdown.map((b) => (
-                      <div key={b.key} className="flex justify-between items-center text-sm">
-                        <span className="text-wine-deep">{b.label}</span>
-                        <span className="font-medium text-wine-deep">
-                          {fmt(b.min)} – {fmt(b.max)}
-                        </span>
-                      </div>
-                    ))}
+                  <div className="space-y-4" data-testid="budget-chart">
+                    {breakdown.map((b) => {
+                      const pctMin = totalMax > 0 ? Math.round((b.min / totalMax) * 100) : 0;
+                      const pctMax = totalMax > 0 ? Math.round((b.max / totalMax) * 100) : 0;
+                      return (
+                        <div key={b.key} className="space-y-1">
+                          <div className="flex justify-between items-baseline text-sm">
+                            <span className="text-wine-deep">{b.label}</span>
+                            <span className="font-medium text-wine-deep tabular-nums">
+                              {fmt(b.min)} – {fmt(b.max)}
+                            </span>
+                          </div>
+                          <div className="relative h-2 bg-wine-deep/8 overflow-hidden">
+                            <div
+                              className="absolute inset-y-0 left-0 bg-wine-deep/25"
+                              style={{ width: `${pctMax}%` }}
+                              aria-hidden
+                            />
+                            <div
+                              className="absolute inset-y-0 left-0 bg-gradient-to-r from-wine-deep to-gold"
+                              style={{ width: `${pctMin}%` }}
+                              aria-hidden
+                            />
+                          </div>
+                          <div className="text-[10px] uppercase tracking-wider text-wine-deep/50 tabular-nums">
+                            {pctMin}% – {pctMax}% {t("tools.budget.of_total")}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

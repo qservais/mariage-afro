@@ -300,12 +300,48 @@ router.post("/leads/quiz", async (req, res) => {
   }
   const data = parsed.data;
   try {
+    // Fetch up to 3 recommended vendors based on profile tags (lightweight scoring).
+    let recommendedVendors: Array<{ id: number; name: string; category: string }> = [];
+    const tags = data.profile.recommendedTags ?? [];
+    if (tags.length > 0) {
+      const all = await db
+        .select({
+          id: marketplaceVendorsTable.id,
+          name: marketplaceVendorsTable.name,
+          category: marketplaceVendorsTable.category,
+          services: marketplaceVendorsTable.services,
+          culturalStyles: marketplaceVendorsTable.culturalStyles,
+          tagline: marketplaceVendorsTable.tagline,
+          description: marketplaceVendorsTable.description,
+          active: marketplaceVendorsTable.active,
+        })
+        .from(marketplaceVendorsTable)
+        .where(eq(marketplaceVendorsTable.active, true));
+      const lc = tags.map((t) => t.toLowerCase());
+      recommendedVendors = all
+        .map((v) => {
+          const hay = [v.category, v.tagline, v.description, ...(v.services ?? []), ...(v.culturalStyles ?? [])]
+            .filter(Boolean).join(" ").toLowerCase();
+          const score = lc.reduce((s, t) => (t && hay.includes(t) ? s + 1 : s), 0);
+          return { v, score };
+        })
+        .filter((x) => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+        .map(({ v }) => ({ id: v.id, name: v.name, category: v.category }));
+    }
+
     const [row] = await db.insert(leadsTable).values({
       category: "quiz_result",
       name: data.name,
       email: data.email,
       phone: data.phone ?? null,
-      payload: { answers: data.answers, profile: data.profile, locale: data.locale ?? "fr" },
+      payload: {
+        answers: data.answers,
+        profile: data.profile,
+        recommendedVendors,
+        locale: data.locale ?? "fr",
+      },
     }).returning();
     void notifyQuizResult({
       to: data.email,
@@ -313,8 +349,13 @@ router.post("/leads/quiz", async (req, res) => {
       name: data.name,
       profileName: data.profile.name,
       profileDescription: data.profile.description ?? null,
+      recommendedVendors: recommendedVendors.map((v) => ({
+        name: v.name,
+        category: v.category,
+        url: `/partenaires/${v.id}`,
+      })),
     }, req.log).catch((err) => req.log.error({ err }, "Quiz result email failed"));
-    res.json({ success: true, id: row.id });
+    res.json({ success: true, id: row.id, recommendedVendors });
   } catch (err) {
     req.log.error({ err }, "Failed to insert quiz lead");
     res.status(500).json({ error: "Internal error" });
@@ -388,8 +429,8 @@ router.post("/leads/multi-devis", async (req, res) => {
       res.status(400).json({ error: "No valid vendors" });
       return;
     }
-    // Insert one vendor_request per vendor
-    const insertRows = vendors.map((v) => ({
+    // Insert one vendor_request per vendor (vendor-side tracking)
+    const vendorReqRows = vendors.map((v) => ({
       vendorId: String(v.id),
       vendorName: v.name,
       requestType: "quote",
@@ -399,21 +440,28 @@ router.post("/leads/multi-devis", async (req, res) => {
       weddingDate: data.weddingDate ?? null,
       message: data.message ?? null,
     }));
-    const inserted = await db.insert(vendorRequestsTable).values(insertRows).returning();
+    const insertedVendorReqs = await db.insert(vendorRequestsTable).values(vendorReqRows).returning();
 
-    // Tracking row in leads with category=multi_devis
-    await db.insert(leadsTable).values({
+    // Per task spec: 1 lead créé par prestataire sélectionné.
+    const leadRows = vendors.map((v) => ({
       category: "multi_devis",
       name: data.name,
       email: data.email,
       phone: data.phone ?? null,
       weddingDate: data.weddingDate ?? null,
       message: data.message ?? null,
-      payload: { vendorIds: ids, vendorNames: vendors.map((v) => v.name), locale: data.locale ?? "fr" },
-    });
+      payload: {
+        vendorId: v.id,
+        vendorName: v.name,
+        allVendorIds: ids,
+        allVendorNames: vendors.map((x) => x.name),
+        locale: data.locale ?? "fr",
+      },
+    }));
+    const insertedLeads = await db.insert(leadsTable).values(leadRows).returning();
 
     // Fire-and-forget vendor notifications
-    void Promise.all(vendors.map(async (v) => {
+    void Promise.all(vendors.map(async (v: { id: number; name: string }) => {
       try {
         const [account] = await db
           .select({ email: vendorAccountsTable.email, locale: vendorAccountsTable.locale })
@@ -448,7 +496,8 @@ router.post("/leads/multi-devis", async (req, res) => {
 
     res.json({
       success: true,
-      count: inserted.length,
+      count: insertedLeads.length,
+      vendorRequestsCount: insertedVendorReqs.length,
       vendorNames: vendors.map((v) => v.name),
     });
   } catch (err) {

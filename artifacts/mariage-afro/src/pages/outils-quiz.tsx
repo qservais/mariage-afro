@@ -15,6 +15,8 @@ interface Profile {
   name: string;
   description: string;
   recommendedTags: string[];
+  image: string;
+  gradient: string;
 }
 
 const PROFILES: Record<ProfileId, Profile> = {
@@ -23,32 +25,51 @@ const PROFILES: Record<ProfileId, Profile> = {
     name: "Élégance Sénégalaise",
     description: "Tonalité raffinée, palette dorée et bordeaux, drapés de bazin et ambiance feutrée. Une cérémonie qui célèbre l'héritage avec sobriété.",
     recommendedTags: ["bazin", "wedding-planner", "calligraphie"],
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80",
+    gradient: "from-[#68191e] via-[#8b3038] to-[#c9a96e]",
   },
   fusion_caribeenne: {
     id: "fusion_caribeenne",
     name: "Fusion Caribéenne",
     description: "Couleurs vibrantes, rythmes soca/zouk, fleurs tropicales et énergie festive. L'art de mélanger les traditions sans rien renier.",
     recommendedTags: ["dj-zouk", "tropical-deco", "rhum"],
+    image: "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=900&q=80",
+    gradient: "from-[#a44a2c] via-[#c9a96e] to-[#fff4e4]",
   },
   afro_chic: {
     id: "afro_chic",
     name: "Afro Chic Urbain",
     description: "Architecture contemporaine, matériaux nobles (laiton, terracotta), prints minimalistes. Pour les couples ancrés dans la modernité.",
     recommendedTags: ["lieu-loft", "deco-minimal", "photo-editorial"],
+    image: "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=900&q=80",
+    gradient: "from-[#1f1416] via-[#68191e] to-[#c9a96e]",
   },
   tradi_revisitee: {
     id: "tradi_revisitee",
     name: "Tradition Revisitée",
     description: "Cérémonie coutumière complète (dot, libations) suivie d'une réception épurée. L'authenticité au premier plan.",
     recommendedTags: ["ceremonie-coutumiere", "tenues-traditionnelles", "videaste-documentaire"],
+    image: "https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=900&q=80",
+    gradient: "from-[#68191e] via-[#a44a2c] to-[#c9a96e]",
   },
   minimaliste_dore: {
     id: "minimaliste_dore",
     name: "Minimaliste Doré",
     description: "Lignes pures, ivoire & gold uniquement, scénographie épurée. La sophistication par la retenue.",
     recommendedTags: ["fleuriste-japonisant", "calligraphie", "lieu-blanc"],
+    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=80",
+    gradient: "from-[#fff4e4] via-[#c9a96e] to-[#68191e]",
   },
 };
+
+interface RecommendedVendor {
+  id: number;
+  name: string;
+  category: string;
+  city?: string | null;
+  tagline?: string | null;
+  coverImage?: string | null;
+}
 
 interface Question {
   id: string;
@@ -162,6 +183,7 @@ export default function OutilsQuiz() {
   const [contact, setContact] = useState({ name: "", email: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [recommendedVendors, setRecommendedVendors] = useState<RecommendedVendor[]>([]);
 
   useEffect(() => {
     document.title = `${t("tools.quiz.meta_title")} — Mariage Afro`;
@@ -173,6 +195,18 @@ export default function OutilsQuiz() {
   const totalSteps = QUESTIONS.length + 1;
   const progress = Math.round(((step + 1) / totalSteps) * 100);
   const isResultStep = step === QUESTIONS.length;
+
+  // Fetch up to 3 recommended vendors when reaching the result, based on profile tags.
+  useEffect(() => {
+    if (!isResultStep) return;
+    let aborted = false;
+    const tags = profile.recommendedTags.join(",");
+    fetch(`/api/marketplace/vendors-by-tags?tags=${encodeURIComponent(tags)}&limit=3`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: RecommendedVendor[]) => { if (!aborted) setRecommendedVendors(Array.isArray(data) ? data : []); })
+      .catch(() => { if (!aborted) setRecommendedVendors([]); });
+    return () => { aborted = true; };
+  }, [isResultStep, profile.id]);
   const currentQuestion = !isResultStep ? QUESTIONS[step] : null;
   const canNext = !!(currentQuestion && answers[currentQuestion.id]);
 
@@ -277,13 +311,52 @@ export default function OutilsQuiz() {
 
             {isResultStep && (
               <div className="space-y-8" data-testid="quiz-result">
-                <div className="text-center">
-                  <span className="section-eyebrow text-wine-deep/60 mb-3 block">{t("tools.quiz.result_label")}</span>
-                  <h2 className="font-display text-3xl md:text-5xl text-wine-deep mb-3">
-                    {profile.name}
-                  </h2>
-                  <p className="text-wine-deep/75 max-w-xl mx-auto leading-relaxed">{profile.description}</p>
+                <div
+                  className={`relative h-56 md:h-72 w-full overflow-hidden bg-gradient-to-br ${profile.gradient} flex items-end`}
+                  data-testid="quiz-profile-hero"
+                >
+                  <img
+                    src={profile.image}
+                    alt={profile.name}
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                    className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/80 via-wine-deep/30 to-transparent" />
+                  <div className="relative p-6 md:p-8 text-cream">
+                    <span className="section-eyebrow text-cream/80 mb-2 block">{t("tools.quiz.result_label")}</span>
+                    <h2 className="font-display text-3xl md:text-5xl text-cream">{profile.name}</h2>
+                  </div>
                 </div>
+                <p className="text-wine-deep/75 max-w-xl mx-auto leading-relaxed text-center">{profile.description}</p>
+
+                {recommendedVendors.length > 0 && (
+                  <div className="border-t border-wine-deep/10 pt-6" data-testid="quiz-recommended-vendors">
+                    <h3 className="font-display uppercase text-sm tracking-[0.2em] text-wine-deep/70 mb-4 text-center">
+                      {t("tools.quiz.recommended_title")}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {recommendedVendors.map((v) => (
+                        <a
+                          key={v.id}
+                          href={`/partenaires/${v.id}`}
+                          className="block border border-wine-deep/15 bg-cream hover:border-wine-deep transition-colors group"
+                          data-testid={`quiz-vendor-${v.id}`}
+                        >
+                          {v.coverImage && (
+                            <div className="aspect-[4/3] overflow-hidden bg-wine-deep/5">
+                              <img src={v.coverImage} alt={v.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            </div>
+                          )}
+                          <div className="p-4">
+                            <div className="text-[10px] uppercase tracking-[0.2em] text-gold mb-1">{v.category}</div>
+                            <div className="font-display text-base text-wine-deep leading-tight">{v.name}</div>
+                            {v.city && <div className="text-xs text-wine-deep/60 mt-1">{v.city}</div>}
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {!submitted ? (
                   <form onSubmit={onSubmitEmail} className="bg-cream border border-gold/40 p-6 space-y-4">
