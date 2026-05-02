@@ -587,6 +587,7 @@
       "gallery": "Galerij",
       "services": "Diensten",
       "agenda": "Agenda",
+      "leads": "Aanvragen",
       "settings": "Instellingen"
     },
     "availability": {
@@ -685,6 +686,42 @@
       "status": "Status",
       "manage_account": "Account beheren",
       "signout": "Uitloggen"
+    },
+    "leads": {
+      "title": "Mijn aanvragen",
+      "subtitle": "Alle aanvragen ontvangen via uw leveranciersfiche.",
+      "filter_status": "Status",
+      "filter_type": "Type",
+      "all": "Alle",
+      "empty": "Nog geen aanvragen.",
+      "detail_empty": "Selecteer een aanvraag om de details te zien.",
+      "count": "{{count}} aanvragen",
+      "col_date": "Datum",
+      "col_name": "Contact",
+      "col_type": "Type",
+      "col_status": "Status",
+      "message_label": "Bericht",
+      "status_label": "Status wijzigen",
+      "internal_note": "Interne notitie",
+      "note_placeholder": "Privénotities (alleen voor u zichtbaar)",
+      "save_note": "Notitie opslaan",
+      "note_saved": "Notitie opgeslagen.",
+      "received_on": "Ontvangen op",
+      "error": "Er is een fout opgetreden.",
+      "status": {
+        "new": "Nieuw",
+        "seen": "Bekeken",
+        "contacted": "Gecontacteerd",
+        "won": "Geconverteerd",
+        "lost": "Verloren"
+      },
+      "type": {
+        "quote": "Offerte",
+        "availability": "Beschikbaarheid",
+        "booking": "Reservering",
+        "zoom": "Zoom-gesprek",
+        "rdv": "Afspraak"
+      }
     }
   }
 }

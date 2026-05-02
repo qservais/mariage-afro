@@ -1,12 +1,13 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { getAuth } from "@clerk/express";
 import { z } from "zod";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
 import {
   db,
   vendorAccountsTable,
   marketplaceVendorsTable,
   vendorAvailabilityTable,
+  vendorLeadsTable,
 } from "@workspace/db";
 import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
@@ -372,6 +373,128 @@ router.delete("/vendor/availability/:date", async (req, res) => {
       eq(vendorAvailabilityTable.date, date),
     ));
   res.status(204).end();
+});
+
+// ---------- Leads ----------
+const LEAD_STATUSES = ["new", "seen", "contacted", "won", "lost"] as const;
+
+function leadAccessFilter(accountId: number, vendorId: number | null) {
+  if (vendorId == null) {
+    return eq(vendorLeadsTable.vendorAccountId, accountId);
+  }
+  return or(
+    eq(vendorLeadsTable.vendorAccountId, accountId),
+    eq(vendorLeadsTable.vendorId, vendorId),
+  );
+}
+
+router.get("/vendor/leads", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const [account] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+    .limit(1);
+  if (!account) { res.json([]); return; }
+
+  const rows = await db
+    .select()
+    .from(vendorLeadsTable)
+    .where(leadAccessFilter(account.id, account.vendorId))
+    .orderBy(desc(vendorLeadsTable.createdAt));
+
+  // Backfill vendorAccountId for older rows that were created before vendor signed up
+  if (account.vendorId) {
+    await db
+      .update(vendorLeadsTable)
+      .set({ vendorAccountId: account.id })
+      .where(and(
+        eq(vendorLeadsTable.vendorId, account.vendorId),
+        isNull(vendorLeadsTable.vendorAccountId),
+      ));
+  }
+
+  res.json(rows);
+});
+
+router.get("/vendor/leads/unseen-count", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const [account] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+    .limit(1);
+  if (!account) { res.json({ count: 0 }); return; }
+
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(vendorLeadsTable)
+    .where(and(
+      leadAccessFilter(account.id, account.vendorId),
+      eq(vendorLeadsTable.status, "new"),
+    ));
+  res.json({ count: row?.count ?? 0 });
+});
+
+const leadUpdateSchema = z.object({
+  status: z.enum(LEAD_STATUSES).optional(),
+  internalNote: z.string().max(4000).optional().nullable(),
+  markSeen: z.boolean().optional(),
+});
+
+router.patch("/vendor/leads/:id", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const id = Number(req.params.id);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const parsed = leadUpdateSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid", issues: parsed.error.issues });
+    return;
+  }
+
+  const [account] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+    .limit(1);
+  if (!account) { res.status(404).json({ error: "Account not found" }); return; }
+
+  const [lead] = await db
+    .select()
+    .from(vendorLeadsTable)
+    .where(and(
+      eq(vendorLeadsTable.id, id),
+      leadAccessFilter(account.id, account.vendorId),
+    ))
+    .limit(1);
+  if (!lead) { res.status(404).json({ error: "Lead not found" }); return; }
+
+  const update: Partial<typeof vendorLeadsTable.$inferInsert> = { updatedAt: new Date() };
+  if (parsed.data.status !== undefined) {
+    update.status = parsed.data.status;
+    if (parsed.data.status !== "new" && !lead.seenAt) {
+      update.seenAt = new Date();
+    }
+  }
+  if (parsed.data.internalNote !== undefined) {
+    update.internalNote = parsed.data.internalNote;
+  }
+  if (parsed.data.markSeen) {
+    if (!lead.seenAt) update.seenAt = new Date();
+    if (lead.status === "new") update.status = "seen";
+  }
+  // Ensure ownership claim
+  if (lead.vendorAccountId == null) {
+    update.vendorAccountId = account.id;
+  }
+
+  const [updated] = await db
+    .update(vendorLeadsTable)
+    .set(update)
+    .where(eq(vendorLeadsTable.id, id))
+    .returning();
+  res.json(updated);
 });
 
 export default router;

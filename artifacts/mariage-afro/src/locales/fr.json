@@ -587,6 +587,7 @@
       "gallery": "Galerie",
       "services": "Services",
       "agenda": "Agenda",
+      "leads": "Demandes",
       "settings": "Paramètres"
     },
     "availability": {
@@ -685,6 +686,42 @@
       "status": "Statut",
       "manage_account": "Gérer mon compte",
       "signout": "Se déconnecter"
+    },
+    "leads": {
+      "title": "Mes demandes",
+      "subtitle": "Toutes les demandes reçues via votre fiche prestataire.",
+      "filter_status": "Statut",
+      "filter_type": "Type",
+      "all": "Tous",
+      "empty": "Aucune demande pour le moment.",
+      "detail_empty": "Sélectionnez une demande pour voir les détails.",
+      "count": "{{count}} demande(s)",
+      "col_date": "Date",
+      "col_name": "Contact",
+      "col_type": "Type",
+      "col_status": "Statut",
+      "message_label": "Message",
+      "status_label": "Changer le statut",
+      "internal_note": "Note interne",
+      "note_placeholder": "Notes privées (visibles uniquement par vous)",
+      "save_note": "Enregistrer la note",
+      "note_saved": "Note enregistrée.",
+      "received_on": "Reçue le",
+      "error": "Une erreur est survenue.",
+      "status": {
+        "new": "Nouveau",
+        "seen": "Vu",
+        "contacted": "Contacté",
+        "won": "Converti",
+        "lost": "Perdu"
+      },
+      "type": {
+        "quote": "Devis",
+        "availability": "Disponibilité",
+        "booking": "Réservation",
+        "zoom": "Appel Zoom",
+        "rdv": "Rendez-vous"
+      }
     }
   }
 }

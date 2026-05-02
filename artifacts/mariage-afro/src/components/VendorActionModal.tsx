@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { X, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import { fetchVendorAvailabilityStatus } from "@/components/VendorAvailabilityCalendar";
 
+import { clientApi } from "@/lib/clientApi";
 import {
   Form,
   FormControl,
@@ -90,20 +91,15 @@ export default function VendorActionModal({ open, onClose, vendor, action }: Pro
   }, [watchedDate, vendor.id, open]);
 
   const mutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      const res = await fetch("/api/vendor-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          vendorId: String(vendor.id),
-          vendorName: vendor.name,
-          requestType: action,
-          ...values,
-        }),
-      });
-      if (!res.ok) throw new Error("send_failed");
-      return res.json();
-    },
+    mutationFn: (values: FormValues) =>
+      clientApi.post(`/api/marketplace/vendors/${vendor.id}/lead`, {
+        requestType: action,
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        weddingDate: values.weddingDate,
+        message: values.message,
+      }),
     onSuccess: () => setSubmitted(true),
     onError: () =>
       toast({

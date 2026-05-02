@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { getAuth } from "@clerk/express";
+import { z } from "zod";
 import { db } from "@workspace/db";
 import {
   marketplaceVendorsTable,
@@ -8,6 +9,9 @@ import {
   clientVendorsTable,
   couplesTable,
   vendorAvailabilityTable,
+  vendorLeadsTable,
+  vendorRequestsTable,
+  vendorAccountsTable,
 } from "@workspace/db";
 import { eq, and, asc, gte, lte } from "drizzle-orm";
 
@@ -113,6 +117,83 @@ router.get("/marketplace/realisations", async (_req: Request, res: Response) => 
     .where(eq(realisationsTable.active, true))
     .orderBy(asc(realisationsTable.createdAt));
   res.json(rows);
+});
+
+const leadSchema = z.object({
+  requestType: z.enum(["quote", "availability", "booking", "zoom", "rdv"]),
+  name: z.string().min(2).max(120),
+  email: z.string().email(),
+  phone: z.string().max(40).optional().nullable(),
+  weddingDate: z.string().max(40).optional().nullable(),
+  message: z.string().max(4000).optional().nullable(),
+});
+
+router.post("/marketplace/vendors/:id/lead", async (req: Request, res: Response) => {
+  const vendorId = Number(req.params.id);
+  if (isNaN(vendorId)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const parsed = leadSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+    return;
+  }
+  const data = parsed.data;
+
+  const [vendor] = await db
+    .select()
+    .from(marketplaceVendorsTable)
+    .where(eq(marketplaceVendorsTable.id, vendorId));
+  if (!vendor) { res.status(404).json({ error: "Vendor not found" }); return; }
+
+  const [vendorAccount] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.vendorId, vendorId))
+    .limit(1);
+
+  try {
+    const result = await db.transaction(async (tx) => {
+      const [vendorLead] = await tx
+        .insert(vendorLeadsTable)
+        .values({
+          vendorId,
+          vendorAccountId: vendorAccount?.id ?? null,
+          requestType: data.requestType,
+          name: data.name,
+          email: data.email,
+          phone: data.phone ?? null,
+          weddingDate: data.weddingDate ?? null,
+          message: data.message ?? null,
+        })
+        .returning();
+
+      const [vendorRequest] = await tx
+        .insert(vendorRequestsTable)
+        .values({
+          vendorId: String(vendorId),
+          vendorName: vendor.name,
+          requestType: data.requestType,
+          name: data.name,
+          email: data.email,
+          phone: data.phone ?? null,
+          weddingDate: data.weddingDate ?? null,
+          message: data.message ?? null,
+        })
+        .returning();
+
+      return { vendorLead, vendorRequest };
+    });
+
+    res.status(201).json({
+      success: true,
+      vendorLeadId: result.vendorLead.id,
+      vendorRequestId: result.vendorRequest.id,
+      routedToVendor: !!vendorAccount,
+    });
+  } catch (err) {
+    req.log?.error?.({ err }, "Failed to create vendor lead");
+    res.status(500).json({ error: "Internal error" });
+  }
 });
 
 export default router;

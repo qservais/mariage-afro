@@ -275,6 +275,23 @@ export const vendorAvailabilityTable = pgTable("vendor_availability", {
   vendorDateIdx: uniqueIndex("vendor_availability_vendor_date_idx").on(t.vendorId, t.date),
 }));
 
+export const vendorLeadsTable = pgTable("vendor_leads", {
+  id: serial("id").primaryKey(),
+  vendorId: integer("vendor_id").notNull(),
+  vendorAccountId: integer("vendor_account_id"),
+  requestType: text("request_type").notNull(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  weddingDate: text("wedding_date"),
+  message: text("message"),
+  status: text("status").notNull().default("new"),
+  internalNote: text("internal_note"),
+  seenAt: timestamp("seen_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const weddingRsvpsTable = pgTable("wedding_rsvps", {
   id: serial("id").primaryKey(),
   weddingWebsiteId: integer("wedding_website_id").notNull(),
@@ -326,3 +343,4 @@ export type WeddingWebsite = typeof weddingWebsitesTable.$inferSelect;
 export type WeddingRsvp = typeof weddingRsvpsTable.$inferSelect;
 export type VendorAccount = typeof vendorAccountsTable.$inferSelect;
 export type VendorAvailability = typeof vendorAvailabilityTable.$inferSelect;
+export type VendorLead = typeof vendorLeadsTable.$inferSelect;

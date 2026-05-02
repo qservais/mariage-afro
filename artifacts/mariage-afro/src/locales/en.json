@@ -587,6 +587,7 @@
       "gallery": "Gallery",
       "services": "Services",
       "agenda": "Calendar",
+      "leads": "Leads",
       "settings": "Settings"
     },
     "availability": {
@@ -685,6 +686,42 @@
       "status": "Status",
       "manage_account": "Manage account",
       "signout": "Sign out"
+    },
+    "leads": {
+      "title": "My leads",
+      "subtitle": "All requests received through your vendor listing.",
+      "filter_status": "Status",
+      "filter_type": "Type",
+      "all": "All",
+      "empty": "No leads yet.",
+      "detail_empty": "Select a lead to view details.",
+      "count": "{{count}} lead(s)",
+      "col_date": "Date",
+      "col_name": "Contact",
+      "col_type": "Type",
+      "col_status": "Status",
+      "message_label": "Message",
+      "status_label": "Change status",
+      "internal_note": "Internal note",
+      "note_placeholder": "Private notes (visible only to you)",
+      "save_note": "Save note",
+      "note_saved": "Note saved.",
+      "received_on": "Received on",
+      "error": "An error occurred.",
+      "status": {
+        "new": "New",
+        "seen": "Seen",
+        "contacted": "Contacted",
+        "won": "Won",
+        "lost": "Lost"
+      },
+      "type": {
+        "quote": "Quote",
+        "availability": "Availability",
+        "booking": "Booking",
+        "zoom": "Zoom call",
+        "rdv": "Meeting"
+      }
     }
   }
 }

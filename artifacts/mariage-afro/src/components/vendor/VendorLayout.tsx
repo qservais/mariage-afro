@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, Briefcase, Image as ImageIcon, ListChecks,
-  Settings, LogOut, Menu, X, Heart, AlertCircle, CheckCircle2, CalendarDays,
+  Settings, LogOut, Menu, X, Heart, AlertCircle, CheckCircle2,
+  CalendarDays, Inbox,
 } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import VendorOnboardingGate from "@/components/vendor/VendorOnboardingGate";
@@ -43,6 +44,15 @@ export function useVendorMe() {
   });
 }
 
+export function useVendorUnseenLeadsCount() {
+  return useQuery<{ count: number }>({
+    queryKey: ["vendor", "leads", "unseen"],
+    queryFn: () => vendorApi.get<{ count: number }>("/api/vendor/leads/unseen-count"),
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
+  });
+}
+
 export default function VendorLayout({ children }: { children?: ReactNode }) {
   const { user } = useUser();
   const { signOut } = useClerk();
@@ -51,17 +61,20 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data } = useVendorMe();
+  const { data: unseen } = useVendorUnseenLeadsCount();
 
   const account = data?.account;
   const vendor = data?.vendor;
+  const unseenCount = unseen?.count ?? 0;
 
   const NAV = [
-    { to: "/espace-pro", label: t("vendor.nav.dashboard"), icon: LayoutDashboard, exact: true },
-    { to: "/espace-pro/profile", label: t("vendor.nav.profile"), icon: Briefcase },
-    { to: "/espace-pro/gallery", label: t("vendor.nav.gallery"), icon: ImageIcon },
-    { to: "/espace-pro/services", label: t("vendor.nav.services"), icon: ListChecks },
-    { to: "/espace-pro/agenda", label: t("vendor.nav.agenda"), icon: CalendarDays },
-    { to: "/espace-pro/settings", label: t("vendor.nav.settings"), icon: Settings },
+    { to: "/espace-pro", label: t("vendor.nav.dashboard"), icon: LayoutDashboard, exact: true, badge: 0 },
+    { to: "/espace-pro/leads", label: t("vendor.nav.leads"), icon: Inbox, badge: unseenCount },
+    { to: "/espace-pro/profile", label: t("vendor.nav.profile"), icon: Briefcase, badge: 0 },
+    { to: "/espace-pro/gallery", label: t("vendor.nav.gallery"), icon: ImageIcon, badge: 0 },
+    { to: "/espace-pro/services", label: t("vendor.nav.services"), icon: ListChecks, badge: 0 },
+    { to: "/espace-pro/agenda", label: t("vendor.nav.agenda"), icon: CalendarDays, badge: 0 },
+    { to: "/espace-pro/settings", label: t("vendor.nav.settings"), icon: Settings, badge: 0 },
   ];
 
   const isActive = (to: string, exact?: boolean) =>
@@ -101,7 +114,15 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
                 data-testid={`link-vendor-${item.to.split("/").pop()}`}
               >
                 <Icon className="w-4 h-4" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.badge > 0 && (
+                  <span
+                    className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-gold text-wine-deep"
+                    data-testid="badge-vendor-leads"
+                  >
+                    {item.badge > 99 ? "99+" : item.badge}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -139,7 +160,13 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
                     active ? "text-gold bg-wine-deep/60" : "text-cream/80"
                   }`}
                 >
-                  <Icon className="w-5 h-5" /> {item.label}
+                  <Icon className="w-5 h-5" />
+                  <span className="flex-1">{item.label}</span>
+                  {item.badge > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-gold text-wine-deep">
+                      {item.badge > 99 ? "99+" : item.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
