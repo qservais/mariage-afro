@@ -17,7 +17,8 @@ import {
 import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage, notifyAdminSubscriptionRequest } from "../lib/email";
+import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendorLeadFollowup } from "../lib/email";
+import { logger } from "../lib/logger";
 
 const router = Router();
 const storageService = new ObjectStorageService();
@@ -812,6 +813,80 @@ router.get("/vendor/stats", async (req, res) => {
   });
 });
 
+// ---------- LOT 8 — Settings (auto follow-up + custom lead tags) ----------
+const settingsSchema = z.object({
+  autoFollowupEnabled: z.boolean().optional(),
+  customLeadTags: z.array(z.string().min(1).max(40)).max(50).optional(),
+});
+
+router.get("/vendor/settings", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const [account] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, r.vendorAccountId)).limit(1);
+  if (!account) { res.status(404).json({ error: "Account not found" }); return; }
+  res.json({
+    autoFollowupEnabled: account.autoFollowupEnabled,
+    customLeadTags: account.customLeadTags ?? [],
+  });
+});
+
+router.patch("/vendor/settings", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const parsed = settingsSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const update: Record<string, unknown> = { updatedAt: new Date() };
+  if (parsed.data.autoFollowupEnabled !== undefined) update["autoFollowupEnabled"] = parsed.data.autoFollowupEnabled;
+  if (parsed.data.customLeadTags !== undefined) {
+    const seen = new Set<string>();
+    update["customLeadTags"] = parsed.data.customLeadTags.filter((t) => { const k = t.trim().toLowerCase(); if (!k || seen.has(k)) return false; seen.add(k); return true; });
+  }
+  const [updated] = await db.update(vendorAccountsTable).set(update).where(eq(vendorAccountsTable.id, r.vendorAccountId)).returning();
+  res.json({
+    autoFollowupEnabled: updated.autoFollowupEnabled,
+    customLeadTags: updated.customLeadTags ?? [],
+  });
+});
+
+// ---------- LOT 8 — Lead follow-up cron (exported, called by index.ts) ----------
+// Runs daily: for vendors with autoFollowupEnabled, sends a reminder email when
+// they have leads stuck in "new" >3 days or "contacted" >5 days, throttled to
+// at most once per vendor per 7 days.
+export async function runVendorFollowupCron(): Promise<void> {
+  const now = new Date();
+  const newThreshold = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+  const contactedThreshold = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000);
+  const throttleAfter = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const accounts = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(and(
+      eq(vendorAccountsTable.autoFollowupEnabled, true),
+      or(isNull(vendorAccountsTable.lastFollowupRunAt), lte(vendorAccountsTable.lastFollowupRunAt, throttleAfter)),
+    ));
+
+  for (const acc of accounts) {
+    if (!acc.email) continue;
+    const newRows = await db.select({ c: sql<number>`count(*)::int` }).from(vendorLeadsTable)
+      .where(and(eq(vendorLeadsTable.vendorAccountId, acc.id), eq(vendorLeadsTable.status, "new"), lte(vendorLeadsTable.createdAt, newThreshold)));
+    const contactedRows = await db.select({ c: sql<number>`count(*)::int` }).from(vendorLeadsTable)
+      .where(and(eq(vendorLeadsTable.vendorAccountId, acc.id), eq(vendorLeadsTable.status, "contacted"), lte(vendorLeadsTable.updatedAt, contactedThreshold)));
+    const newCount = newRows[0]?.c ?? 0;
+    const contactedCount = contactedRows[0]?.c ?? 0;
+    if (newCount + contactedCount === 0) continue;
+    try {
+      await notifyVendorLeadFollowup({
+        to: acc.email,
+        vendorName: acc.businessName || acc.contactName || "Prestataire",
+        newCount, contactedCount,
+        locale: acc.locale,
+      });
+      await db.update(vendorAccountsTable).set({ lastFollowupRunAt: new Date() }).where(eq(vendorAccountsTable.id, acc.id));
+    } catch (err) {
+      logger.warn({ err, accountId: acc.id }, "Vendor follow-up email failed");
+    }
+  }
+}
+
 router.get("/vendor/onboarding-checklist", async (req, res) => {
   const r = req as unknown as AuthedVendorRequest;
   const [account] = await db
@@ -825,14 +900,15 @@ router.get("/vendor/onboarding-checklist", async (req, res) => {
     ? (await db.select().from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.id, account.vendorId)).limit(1))[0]
     : null;
 
-  const profileBasics = !!(vendor?.name && vendor?.tagline && vendor.tagline.length >= 10);
-  const descriptionLong = !!(vendor?.description && vendor.description.length >= 200);
+  const logo = !!vendor?.logoUrl;
+  const cover = !!(vendor?.coverPhotoUrl || vendor?.coverImage);
+  const descriptionFr = !!(vendor?.descriptionFr && vendor.descriptionFr.length >= 200);
+  const descriptionNl = !!(vendor?.descriptionNl && vendor.descriptionNl.length >= 200);
+  const descriptionEn = !!(vendor?.descriptionEn && vendor.descriptionEn.length >= 200);
   const photos5 = (vendor?.images?.length ?? 0) >= 5;
-  const services3 = (vendor?.services?.length ?? 0) >= 3;
-  const location = !!(vendor?.latitude && vendor?.longitude);
-  const languagesSet = (vendor?.spokenLanguages?.length ?? 0) >= 1;
-  const priceSet = vendor?.priceTier != null;
-  const culturalSet = (vendor?.culturalStyles?.length ?? 0) >= 1;
+  const indicativePrice = !!(vendor?.indicativePrice && vendor.indicativePrice.length > 0);
+  const video = !!vendor?.videoUrl;
+  const firstPost = !!vendor?.hasFirstPost;
   const availabilityCount = vendor?.id
     ? Number((await db.select({ c: sql<number>`count(*)::int` }).from(vendorAvailabilityTable).where(eq(vendorAvailabilityTable.vendorId, vendor.id)))[0]?.c ?? 0)
     : 0;
@@ -845,16 +921,18 @@ router.get("/vendor/onboarding-checklist", async (req, res) => {
     .limit(1);
   const tierChosen = !!sub;
 
+  // LOT 8 spec items: onboarding + logo + cover + FR/NL/EN descriptions + indicative price + photos + video + first post + availability + tier
   const items = [
     { key: "onboarding", done: !!account.onboardedAt },
-    { key: "profile_basics", done: profileBasics },
-    { key: "description_long", done: descriptionLong, count: vendor?.description?.length ?? 0 },
+    { key: "logo", done: logo },
+    { key: "cover_photo", done: cover },
+    { key: "description_fr", done: descriptionFr, count: vendor?.descriptionFr?.length ?? 0 },
+    { key: "description_nl", done: descriptionNl, count: vendor?.descriptionNl?.length ?? 0 },
+    { key: "description_en", done: descriptionEn, count: vendor?.descriptionEn?.length ?? 0 },
+    { key: "indicative_price", done: indicativePrice },
     { key: "photos_5", done: photos5, count: vendor?.images?.length ?? 0 },
-    { key: "services_3", done: services3, count: vendor?.services?.length ?? 0 },
-    { key: "location", done: location },
-    { key: "languages", done: languagesSet, count: vendor?.spokenLanguages?.length ?? 0 },
-    { key: "price", done: priceSet },
-    { key: "cultural_styles", done: culturalSet, count: vendor?.culturalStyles?.length ?? 0 },
+    { key: "video", done: video },
+    { key: "first_post", done: firstPost },
     { key: "availability", done: availabilitySet },
     { key: "tier", done: tierChosen },
   ];

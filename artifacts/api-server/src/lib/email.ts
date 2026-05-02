@@ -727,6 +727,40 @@ export async function notifyVendorSubscriptionActivated(p: NotifyVendorSubscript
   }, log);
 }
 
+export interface NotifyVendorLeadFollowupPayload {
+  to: string;
+  vendorName: string;
+  newCount: number;
+  contactedCount: number;
+  locale?: string;
+}
+
+export async function notifyVendorLeadFollowup(p: NotifyVendorLeadFollowupPayload, log = logger): Promise<void> {
+  const subject = `Rappel : ${p.newCount + p.contactedCount} demande(s) en attente — Mariage Afro`;
+  const intro = `Bonjour ${p.vendorName}, vous avez encore des demandes sans réponse depuis plusieurs jours. Une réponse rapide augmente nettement vos chances de conversion.`;
+  const rows =
+    row("Nouvelles non vues", String(p.newCount)) +
+    row("Contactées sans relance", String(p.contactedCount));
+  await sendOne({
+    to: p.to,
+    subject,
+    html: wrap({
+      title: "Demandes en attente",
+      intro,
+      rows,
+      ctaLabel: "Voir mes demandes",
+      ctaUrl: `${appUrl()}/espace-pro/demandes`,
+      locale: "fr",
+    }),
+    text: plainText({
+      title: subject,
+      lines: [intro, `Nouvelles non vues: ${p.newCount}`, `Contactées sans relance: ${p.contactedCount}`, "Vous pouvez désactiver ces rappels dans vos paramètres."],
+      ctaLabel: "Espace Pro",
+      ctaUrl: `${appUrl()}/espace-pro/demandes`,
+    }),
+  }, log);
+}
+
 export async function sendPartnerApplicationEmails(p: PartnerApplicationEmailPayload, log = logger): Promise<void> {
   const rows =
     row("Entreprise", p.businessName) +

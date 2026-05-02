@@ -195,6 +195,15 @@ export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
   spokenLanguages: jsonb("spoken_languages").$type<string[]>().notNull().default([]),
   capacityMin: integer("capacity_min"),
   capacityMax: integer("capacity_max"),
+  // LOT 8 — Espace Pro pivot business: multilingual descriptions + media + first post
+  logoUrl: text("logo_url"),
+  coverPhotoUrl: text("cover_photo_url"),
+  videoUrl: text("video_url"),
+  descriptionFr: text("description_fr").notNull().default(""),
+  descriptionNl: text("description_nl").notNull().default(""),
+  descriptionEn: text("description_en").notNull().default(""),
+  indicativePrice: text("indicative_price"),
+  hasFirstPost: boolean("has_first_post").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -307,6 +316,10 @@ export const vendorAccountsTable = pgTable("vendor_accounts", {
   locale: text("locale").notNull().default("fr"),
   status: text("status").notNull().default("pending"),
   onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
+  // LOT 8 — Espace Pro pivot business
+  customLeadTags: jsonb("custom_lead_tags").$type<string[]>().notNull().default([]),
+  autoFollowupEnabled: boolean("auto_followup_enabled").notNull().default(true),
+  lastFollowupRunAt: timestamp("last_followup_run_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({

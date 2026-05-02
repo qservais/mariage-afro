@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
+interface VendorSettingsResp { autoFollowupEnabled: boolean; customLeadTags: string[] }
+
 interface VendorLead {
   id: number;
   vendorId: number;
@@ -65,6 +67,12 @@ export default function VendorLeadsPage() {
     queryKey: ["vendor", "leads"],
     queryFn: () => vendorApi.get<VendorLead[]>("/api/vendor/leads"),
   });
+
+  const { data: vendorSettings } = useQuery<VendorSettingsResp>({
+    queryKey: ["vendor", "settings"],
+    queryFn: () => vendorApi.get<VendorSettingsResp>("/api/vendor/settings"),
+  });
+  const customTags = vendorSettings?.customLeadTags ?? [];
 
   const filtered = useMemo(() => {
     return leads.filter((l) => {
@@ -389,6 +397,25 @@ export default function VendorLeadsPage() {
                         data-testid={`button-tag-${tag}`}
                       >
                         {t(`vendor.leads.tags.${tag}`)}
+                      </button>
+                    );
+                  })}
+                  {customTags.map((tag) => {
+                    const active = (selected.tags ?? []).includes(tag);
+                    return (
+                      <button
+                        key={`custom-${tag}`}
+                        onClick={() => toggleTag(selected, tag)}
+                        disabled={updateMutation.isPending}
+                        className={`text-[11px] uppercase tracking-wider px-2.5 py-1 border transition-colors ${
+                          active
+                            ? "bg-gold/30 border-gold text-wine-deep"
+                            : "bg-white border-gold/40 text-wine-deep/80 hover:border-gold"
+                        }`}
+                        data-testid={`button-custom-tag-${tag}`}
+                        title={t("vendor.settings.custom_tags_title")}
+                      >
+                        {tag}
                       </button>
                     );
                   })}

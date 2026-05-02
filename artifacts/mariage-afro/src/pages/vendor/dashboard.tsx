@@ -25,7 +25,10 @@ interface VendorStats {
   topPages: { source: string; count: number }[];
 }
 
-interface ChecklistItem { key: string; done: boolean; count?: number }
+type ChecklistItemKey =
+  | "onboarding" | "logo" | "cover_photo" | "description_fr" | "description_nl" | "description_en"
+  | "indicative_price" | "photos_5" | "video" | "first_post" | "availability" | "tier";
+interface ChecklistItem { key: ChecklistItemKey | string; done: boolean; count?: number }
 interface ChecklistResp { items: ChecklistItem[]; completed: number; total: number; hide?: boolean }
 
 interface SubscriptionResp {
@@ -36,14 +39,15 @@ interface SubscriptionResp {
 
 const ITEM_LINKS: Record<string, string> = {
   onboarding: "/espace-pro",
-  profile_basics: "/espace-pro/profile",
-  description_long: "/espace-pro/profile",
+  logo: "/espace-pro/profile",
+  cover_photo: "/espace-pro/gallery",
+  description_fr: "/espace-pro/profile",
+  description_nl: "/espace-pro/profile",
+  description_en: "/espace-pro/profile",
+  indicative_price: "/espace-pro/profile",
   photos_5: "/espace-pro/gallery",
-  services_3: "/espace-pro/services",
-  location: "/espace-pro/profile",
-  languages: "/espace-pro/profile",
-  price: "/espace-pro/profile",
-  cultural_styles: "/espace-pro/profile",
+  video: "/espace-pro/profile",
+  first_post: "/espace-pro/profile",
   availability: "/espace-pro/agenda",
   tier: "/espace-pro/abonnement",
 };
@@ -180,6 +184,32 @@ export default function VendorDashboard() {
           </ul>
         )}
       </section>
+
+      {/* Top pages (where viewers landed) */}
+      {stats?.topPages && stats.topPages.length > 0 && (
+        <section className="bg-white p-6 border border-neutral-200" data-testid="section-toppages">
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">{t("vendor.dashboard.toppages_title")}</p>
+          <h2 className="font-display text-lg text-wine-deep mb-4">{t("vendor.dashboard.stat_last_30d")}</h2>
+          <ul className="space-y-2">
+            {stats.topPages.map((p) => {
+              const total = stats.topPages.reduce((acc, x) => acc + x.count, 0);
+              const pct = total > 0 ? Math.round((p.count / total) * 100) : 0;
+              const label = t(`vendor.dashboard.source_${p.source}`, p.source);
+              return (
+                <li key={`tp-${p.source}`} data-testid={`toppage-row-${p.source}`}>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-wine-deep font-medium">{label}</span>
+                    <span className="text-neutral-600">{p.count} <span className="text-neutral-400">({pct}%)</span></span>
+                  </div>
+                  <div className="h-1.5 bg-neutral-100 mt-1 overflow-hidden">
+                    <div className="h-full bg-wine-deep transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {/* Onboarding checklist (hidden when 100%) */}
       {checklist && !checklist.hide && (

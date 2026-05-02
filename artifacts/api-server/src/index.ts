@@ -1,5 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { runVendorFollowupCron } from "./routes/vendor";
 
 const rawPort = process.env["PORT"];
 
@@ -22,4 +23,12 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // LOT 8 — daily vendor follow-up cron (with internal throttle).
+  const SIX_HOURS = 6 * 60 * 60 * 1000;
+  const tick = (): void => {
+    runVendorFollowupCron().catch((err) => logger.warn({ err }, "Vendor follow-up cron failed"));
+  };
+  setTimeout(tick, 60 * 1000);
+  setInterval(tick, SIX_HOURS);
 });
