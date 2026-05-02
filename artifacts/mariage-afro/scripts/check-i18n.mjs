@@ -160,4 +160,15 @@ console.log(`  Placeholder mismatches:  ${placeholderIssues.length}`);
 console.log(`  Hardcoded FR (heuristic):${hardTotal}`);
 console.log('================================================');
 
-process.exit(missing + placeholderIssues.length > 0 ? 1 : 0);
+// Brand name "Mariage Afro" is not translatable — exclude from CI failure threshold.
+const BRAND_RE = /^Mariage Afro( Pro)?$/;
+let hardActionable = 0;
+for (const items of hardBySection.values()) {
+  for (const it of items) if (!BRAND_RE.test(it.text.trim())) hardActionable++;
+}
+const failed = missing + placeholderIssues.length + hardActionable;
+if (failed > 0) {
+  console.error(`\n  ✗ Audit failed: ${failed} actionable issue(s) (brand-name hits ignored).`);
+  process.exit(1);
+}
+process.exit(0);
