@@ -398,6 +398,29 @@ export async function notifyCoupleNewRsvp(p: NotifyRsvpPayload, log = logger): P
   }, log);
 }
 
+// ---- LOT 9. Mood board collaborator invite ----
+export interface NotifyMoodBoardInvitePayload {
+  to: string;
+  locale?: string | null;
+  inviterName: string;
+  boardTitle: string;
+  acceptUrl: string;
+}
+
+export async function notifyMoodBoardInvite(p: NotifyMoodBoardInvitePayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = {
+    subject: { fr: `${p.inviterName} vous invite sur leur mood board`, nl: `${p.inviterName} nodigt u uit op hun moodboard`, en: `${p.inviterName} invited you to their mood board` }[locale],
+    title: { fr: "Invitation mood board", nl: "Moodboard uitnodiging", en: "Mood board invitation" }[locale],
+    intro: { fr: `${p.inviterName} vous invite à collaborer sur "${p.boardTitle}".`, nl: `${p.inviterName} nodigt u uit om mee te werken aan "${p.boardTitle}".`, en: `${p.inviterName} invites you to collaborate on "${p.boardTitle}".` }[locale],
+    cta: { fr: "Voir le mood board", nl: "Moodboard bekijken", en: "Open mood board" }[locale],
+  };
+  await sendOne({
+    to: p.to, subject: T.subject,
+    html: wrap({ title: T.title, intro: T.intro, ctaLabel: T.cta, ctaUrl: p.acceptUrl, locale }),
+  }, log);
+}
+
 // ---- 5. Vendor approved ----
 export interface NotifyVendorApprovedPayload {
   to: string;

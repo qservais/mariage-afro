@@ -47,6 +47,7 @@
     "@tanstack/react-query": "catalog:",
     "@types/node": "catalog:",
     "@types/pdfkit": "^0.17.6",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
@@ -91,6 +92,7 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "leaflet": "^1.9.4",
+    "qrcode": "^1.5.4",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.14.1"
   }

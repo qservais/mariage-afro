@@ -264,6 +264,12 @@ export default function MariagePublicPage() {
         </section>
       )}
 
+      <section className="py-12 text-center bg-foreground/5">
+        <a href={`/mariage/${slug}/cagnotte`} className="inline-flex items-center gap-2 text-sm text-primary hover:underline uppercase tracking-wider">
+          🎁 {t("mariage_public.cagnotte_link")}
+        </a>
+      </section>
+
       <footer className="py-8 text-center border-t border-border">
         <p className="text-xs text-muted-foreground">
           {t("mariage_public.footer_made_with")}{" "}

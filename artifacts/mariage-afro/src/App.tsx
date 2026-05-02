@@ -34,7 +34,11 @@ import JourJPage from "@/pages/client/jour-j";
 import ProfilPage from "@/pages/client/profil";
 import CommunicationPage from "@/pages/client/communication";
 import SiteMariagePage from "@/pages/client/site-mariage";
+import InspirationPage from "@/pages/client/inspiration";
+import CagnottePage from "@/pages/client/cagnotte";
 import MariagePublicPage from "@/pages/mariage-public";
+import MariageRsvpPage from "@/pages/mariage-rsvp";
+import MariageCagnottePage from "@/pages/mariage-cagnotte";
 import VendorLayout from "@/components/vendor/VendorLayout";
 import VendorDashboard from "@/pages/vendor/dashboard";
 import VendorProfilePage from "@/pages/vendor/profile";
@@ -132,6 +136,8 @@ function AppRoutes() {
     return (
       <Routes>
         <Route path="/mariage/:slug" element={<MariagePublicPage />} />
+        <Route path="/mariage/:slug/rsvp" element={<MariageRsvpPage />} />
+        <Route path="/mariage/:slug/cagnotte" element={<MariageCagnottePage />} />
         <Route path="*" element={<MariagePublicPage />} />
       </Routes>
     );
@@ -177,6 +183,8 @@ function AppRoutes() {
           <Route path="jour-j" element={<JourJPage />} />
           <Route path="communication" element={<CommunicationPage />} />
           <Route path="site" element={<SiteMariagePage />} />
+          <Route path="inspiration" element={<InspirationPage />} />
+          <Route path="cagnotte" element={<CagnottePage />} />
           <Route path="profil" element={<ProfilPage />} />
           <Route path="*" element={<Navigate to="/espace-client/dashboard" replace />} />
         </Route>

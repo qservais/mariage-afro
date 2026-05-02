@@ -35,7 +35,9 @@
       "day": "De grote dag",
       "communication": "Berichten",
       "site": "Mijn trouwsite",
-      "profile": "Profiel"
+      "profile": "Profiel",
+      "inspiration": "Inspiratie",
+      "cagnotte": "Geldpot"
     },
     "signout": "Afmelden",
     "hello": "Hallo 👋",
@@ -65,7 +67,9 @@
       "vendors": "Leveranciers",
       "documents": "Documenten",
       "day": "De grote dag",
-      "profile": "Profiel"
+      "profile": "Profiel",
+      "inspiration": "Inspiratie",
+      "cagnotte": "Geldpot"
     }
   },
   "budget": {
@@ -108,7 +112,26 @@
     "rsvp_pending": "In afwachting",
     "rsvp_confirmed": "Bevestigd",
     "rsvp_declined": "Afgewezen",
-    "empty": "Geen gasten"
+    "empty": "Geen gasten",
+    "yes": "Ja",
+    "no": "Nee",
+    "th_date": "Datum",
+    "th_email": "E-mail",
+    "th_attending": "Aanwezig",
+    "th_guests": "Pers.",
+    "custom_questions": "Aangepaste RSVP-vragen",
+    "custom_questions_desc": "Voeg vragen toe aan uw openbaar RSVP-formulier (allergieën, vervoer, accommodatie…).",
+    "question_label": "Vraagtekst",
+    "q_type_text": "Vrije tekst",
+    "q_type_yesno": "Ja / Nee",
+    "q_type_choice": "Meerkeuze",
+    "options_csv": "Opties (gescheiden door komma's)",
+    "required": "Verplicht",
+    "no_questions": "Nog geen aangepaste vragen.",
+    "public_rsvps": "Openbare RSVP-antwoorden",
+    "public_rsvps_desc": "Antwoorden ontvangen via uw openbare trouwsite.",
+    "no_rsvps": "Nog geen antwoorden.",
+    "export_csv": "CSV exporteren"
   },
   "planning": {
     "title": "Planning",
@@ -287,5 +310,56 @@
     "date_help": "U kunt dit op elk moment aanpassen vanuit uw profiel.",
     "saving": "Bezig met opslaan…",
     "submit": "Beginnen"
+  },
+  "mariage_public": {
+    "cagnotte_link": "Bekijk onze trouwgeldpot"
+  },
+  "inspiration": {
+    "title": "Moodboard & inspiratie",
+    "subtitle": "Maak inspiratieborden en nodig uw naasten uit om mee te werken.",
+    "invite": "Medewerker uitnodigen",
+    "new_board_placeholder": "Nieuw bord…",
+    "add_board": "Aanmaken",
+    "no_board": "Maak uw eerste bord om inspiratie te verzamelen.",
+    "add_image": "Afbeelding toevoegen",
+    "drop_hint": "Sleep uw afbeeldingen hier of klik op \"Afbeelding toevoegen\".",
+    "caption_placeholder": "Bijschrift…",
+    "delete_image": "Verwijderen",
+    "confirm_delete_board": "Dit bord en alle afbeeldingen verwijderen?",
+    "collaborators": "Medewerkers",
+    "no_collaborators": "Nog geen medewerkers uitgenodigd.",
+    "invite_modal_title": "Medewerker uitnodigen",
+    "invite_email": "E-mail",
+    "invite_name": "Naam (optioneel)",
+    "invite_role": "Rol",
+    "role_viewer": "Alleen-lezen",
+    "role_editor": "Editor",
+    "cancel": "Annuleren",
+    "send_invite": "Uitnodiging versturen"
+  },
+  "cagnotte": {
+    "title": "Trouwgeldpot",
+    "subtitle": "Laat uw gasten bijdragen aan uw huwelijksreis of aan een gezamenlijk cadeau.",
+    "create_title": "Nieuwe geldpot",
+    "edit_title": "Geldpot bewerken",
+    "field_title": "Titel",
+    "title_placeholder": "Onze huwelijksreis",
+    "field_iban": "IBAN (België)",
+    "field_external": "Externe link (Lydia, PayPal, GoFundMe…)",
+    "field_description": "Beschrijving",
+    "field_photo": "Foto",
+    "upload_photo": "Kies een foto",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "create": "Aanmaken",
+    "empty": "Nog geen geldpot aangemaakt.",
+    "confirm_delete": "Deze geldpot verwijderen?"
+  },
+  "mariage_cagnotte": {
+    "title": "Onze geldpot",
+    "intro": "Uw aanwezigheid is ons mooiste cadeau. Wilt u ons toch verwennen, dan kan dat zo.",
+    "empty": "Nog geen geldpot beschikbaar.",
+    "contribute": "Bijdragen",
+    "back_to_site": "Terug naar site"
   }
 }

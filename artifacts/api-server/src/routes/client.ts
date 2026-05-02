@@ -1,7 +1,7 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod";
-import { and, eq, asc, desc, sql, isNull, ne } from "drizzle-orm";
+import { and, eq, asc, desc, sql, isNull, ne, inArray } from "drizzle-orm";
 import {
   db,
   couplesTable,
@@ -19,10 +19,17 @@ import {
   weddingWebsitesTable,
   weddingRsvpsTable,
   vendorReviewsTable,
+  rsvpResponsesTable,
+  moodBoardsTable,
+  moodBoardImagesTable,
+  moodBoardCollaboratorsTable,
+  rsvpQuestionsTable,
+  cagnottesTable,
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage } from "../lib/email";
+import { notifyConversationMessage, notifyMoodBoardInvite, appUrl } from "../lib/email";
+import { nanoid } from "nanoid";
 
 const router = Router();
 const storageService = new ObjectStorageService();
@@ -912,6 +919,311 @@ router.post("/client/reviews", async (req, res) => {
     })
     .returning();
   res.status(201).json(row);
+});
+
+// ====================================================================
+// LOT 9 — Mood boards (collaborative inspiration)
+// ====================================================================
+const moodBoardSchema = z.object({
+  title: z.string().min(1).max(120),
+  description: z.string().max(2000).optional().default(""),
+  position: z.coerce.number().int().optional().default(0),
+});
+
+router.get("/client/mood-boards", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const boards = await db.select().from(moodBoardsTable)
+    .where(eq(moodBoardsTable.coupleId, r.coupleId))
+    .orderBy(asc(moodBoardsTable.position), asc(moodBoardsTable.id));
+  const images = await db.select().from(moodBoardImagesTable)
+    .where(eq(moodBoardImagesTable.coupleId, r.coupleId))
+    .orderBy(asc(moodBoardImagesTable.position), asc(moodBoardImagesTable.id));
+  res.json(boards.map((b) => ({ ...b, images: images.filter((im) => im.boardId === b.id) })));
+});
+
+router.post("/client/mood-boards", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = moodBoardSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const [row] = await db.insert(moodBoardsTable).values({ coupleId: r.coupleId, ...parsed.data }).returning();
+  res.status(201).json(row);
+});
+
+router.patch("/client/mood-boards/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  const parsed = moodBoardSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid" }); return; }
+  const [row] = await db.update(moodBoardsTable).set(parsed.data)
+    .where(and(eq(moodBoardsTable.id, id), eq(moodBoardsTable.coupleId, r.coupleId))).returning();
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(row);
+});
+
+router.delete("/client/mood-boards/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  await db.delete(moodBoardImagesTable).where(and(eq(moodBoardImagesTable.boardId, id), eq(moodBoardImagesTable.coupleId, r.coupleId)));
+  await db.delete(moodBoardsTable).where(and(eq(moodBoardsTable.id, id), eq(moodBoardsTable.coupleId, r.coupleId)));
+  res.json({ success: true });
+});
+
+const moodImageSchema = z.object({
+  boardId: z.coerce.number().int().positive(),
+  url: z.string().min(1),
+  caption: z.string().max(500).optional().default(""),
+  position: z.coerce.number().int().optional().default(0),
+});
+
+router.post("/client/mood-board-images", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = moodImageSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  // Validate the board belongs to this couple
+  const [board] = await db.select().from(moodBoardsTable)
+    .where(and(eq(moodBoardsTable.id, parsed.data.boardId), eq(moodBoardsTable.coupleId, r.coupleId))).limit(1);
+  if (!board) { res.status(404).json({ error: "Board not found" }); return; }
+
+  let { url } = parsed.data;
+  if (url.startsWith("/objects/")) {
+    if (!consumeUploadIntent(url, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
+    try {
+      url = await storageService.trySetObjectEntityAclPolicy(url, { owner: r.userId, visibility: "public" });
+    } catch (err) {
+      req.log?.error?.({ err }, "Failed to set ACL"); res.status(400).json({ error: "Invalid object path" }); return;
+    }
+  }
+  const [row] = await db.insert(moodBoardImagesTable).values({
+    coupleId: r.coupleId, boardId: parsed.data.boardId, url, caption: parsed.data.caption, position: parsed.data.position,
+  }).returning();
+  res.status(201).json(row);
+});
+
+router.patch("/client/mood-board-images/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  const parsed = z.object({ caption: z.string().max(500).optional(), position: z.coerce.number().int().optional(), boardId: z.coerce.number().int().optional() }).safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid" }); return; }
+  const [row] = await db.update(moodBoardImagesTable).set(parsed.data)
+    .where(and(eq(moodBoardImagesTable.id, id), eq(moodBoardImagesTable.coupleId, r.coupleId))).returning();
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(row);
+});
+
+router.delete("/client/mood-board-images/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  await db.delete(moodBoardImagesTable)
+    .where(and(eq(moodBoardImagesTable.id, id), eq(moodBoardImagesTable.coupleId, r.coupleId)));
+  res.json({ success: true });
+});
+
+// Mood board collaborators
+const collaboratorSchema = z.object({
+  email: z.string().email(),
+  name: z.string().max(120).optional().default(""),
+  role: z.enum(["viewer", "editor"]).optional().default("viewer"),
+  boardTitle: z.string().max(120).optional().default("Inspiration"),
+});
+
+router.get("/client/mood-board-collaborators", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const rows = await db.select().from(moodBoardCollaboratorsTable)
+    .where(eq(moodBoardCollaboratorsTable.coupleId, r.coupleId))
+    .orderBy(desc(moodBoardCollaboratorsTable.invitedAt));
+  res.json(rows);
+});
+
+router.post("/client/mood-board-collaborators", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = collaboratorSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const token = nanoid(24);
+  const [row] = await db.insert(moodBoardCollaboratorsTable).values({
+    coupleId: r.coupleId,
+    email: parsed.data.email,
+    name: parsed.data.name,
+    role: parsed.data.role,
+    token,
+  }).returning();
+
+  const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+  const inviterName = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || "Le couple";
+  notifyMoodBoardInvite({
+    to: parsed.data.email,
+    locale: couple?.locale || "fr",
+    inviterName,
+    boardTitle: parsed.data.boardTitle,
+    acceptUrl: `${appUrl()}/mood-board/shared/${token}`,
+  }, req.log).catch((err) => req.log.error({ err }, "Failed mood board invite email"));
+
+  res.status(201).json(row);
+});
+
+router.delete("/client/mood-board-collaborators/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  await db.delete(moodBoardCollaboratorsTable)
+    .where(and(eq(moodBoardCollaboratorsTable.id, id), eq(moodBoardCollaboratorsTable.coupleId, r.coupleId)));
+  res.json({ success: true });
+});
+
+// ====================================================================
+// LOT 9 — RSVP customizable questions
+// ====================================================================
+const rsvpQuestionSchema = z.object({
+  label: z.string().min(1).max(200),
+  type: z.enum(["text", "yesno", "choice"]).default("text"),
+  options: z.array(z.string()).optional().default([]),
+  required: z.boolean().optional().default(false),
+  position: z.coerce.number().int().optional().default(0),
+});
+
+async function getOwnedWeddingSiteId(coupleId: number): Promise<number | null> {
+  const [site] = await db.select({ id: weddingWebsitesTable.id }).from(weddingWebsitesTable)
+    .where(eq(weddingWebsitesTable.coupleId, coupleId)).limit(1);
+  return site?.id ?? null;
+}
+
+router.get("/client/rsvp-questions", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const siteId = await getOwnedWeddingSiteId(r.coupleId);
+  if (!siteId) { res.json([]); return; }
+  const rows = await db.select().from(rsvpQuestionsTable)
+    .where(eq(rsvpQuestionsTable.weddingWebsiteId, siteId))
+    .orderBy(asc(rsvpQuestionsTable.position), asc(rsvpQuestionsTable.id));
+  res.json(rows);
+});
+
+router.post("/client/rsvp-questions", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = rsvpQuestionSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const siteId = await getOwnedWeddingSiteId(r.coupleId);
+  if (!siteId) { res.status(400).json({ error: "Crée d'abord ton site mariage" }); return; }
+  const [row] = await db.insert(rsvpQuestionsTable).values({ weddingWebsiteId: siteId, ...parsed.data }).returning();
+  res.status(201).json(row);
+});
+
+router.patch("/client/rsvp-questions/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  const parsed = rsvpQuestionSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid" }); return; }
+  const siteId = await getOwnedWeddingSiteId(r.coupleId);
+  if (!siteId) { res.status(404).json({ error: "Not found" }); return; }
+  const [row] = await db.update(rsvpQuestionsTable).set(parsed.data)
+    .where(and(eq(rsvpQuestionsTable.id, id), eq(rsvpQuestionsTable.weddingWebsiteId, siteId))).returning();
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(row);
+});
+
+router.delete("/client/rsvp-questions/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  const siteId = await getOwnedWeddingSiteId(r.coupleId);
+  if (!siteId) { res.json({ success: true }); return; }
+  await db.delete(rsvpQuestionsTable)
+    .where(and(eq(rsvpQuestionsTable.id, id), eq(rsvpQuestionsTable.weddingWebsiteId, siteId)));
+  res.json({ success: true });
+});
+
+// ====================================================================
+// LOT 9 — Cagnottes
+// ====================================================================
+const cagnotteSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(2000).optional().default(""),
+  photo: z.string().optional().nullable(),
+  iban: z.string().max(50).optional().nullable(),
+  externalUrl: z.string().url().optional().nullable().or(z.literal("")),
+  position: z.coerce.number().int().optional().default(0),
+  active: z.boolean().optional().default(true),
+});
+
+router.get("/client/cagnottes", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const rows = await db.select().from(cagnottesTable)
+    .where(eq(cagnottesTable.coupleId, r.coupleId))
+    .orderBy(asc(cagnottesTable.position), asc(cagnottesTable.id));
+  res.json(rows);
+});
+
+router.post("/client/cagnottes", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = cagnotteSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  let photo = parsed.data.photo ?? null;
+  if (photo && photo.startsWith("/objects/")) {
+    if (!consumeUploadIntent(photo, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
+    try {
+      photo = await storageService.trySetObjectEntityAclPolicy(photo, { owner: r.userId, visibility: "public" });
+    } catch (err) {
+      req.log?.error?.({ err }, "Failed to set ACL"); res.status(400).json({ error: "Invalid object path" }); return;
+    }
+  }
+  const siteId = await getOwnedWeddingSiteId(r.coupleId);
+  const [row] = await db.insert(cagnottesTable).values({
+    coupleId: r.coupleId,
+    weddingWebsiteId: siteId,
+    title: parsed.data.title,
+    description: parsed.data.description,
+    photo,
+    iban: parsed.data.iban || null,
+    externalUrl: parsed.data.externalUrl || null,
+    position: parsed.data.position,
+    active: parsed.data.active,
+  }).returning();
+  res.status(201).json(row);
+});
+
+router.patch("/client/cagnottes/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  const parsed = cagnotteSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const patch: Record<string, unknown> = { ...parsed.data };
+  if (typeof parsed.data.photo === "string" && parsed.data.photo.startsWith("/objects/")) {
+    if (!consumeUploadIntent(parsed.data.photo, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
+    try {
+      patch.photo = await storageService.trySetObjectEntityAclPolicy(parsed.data.photo, { owner: r.userId, visibility: "public" });
+    } catch (err) {
+      req.log?.error?.({ err }, "Failed to set ACL"); res.status(400).json({ error: "Invalid object path" }); return;
+    }
+  }
+  if (parsed.data.externalUrl === "") patch.externalUrl = null;
+  const [row] = await db.update(cagnottesTable).set(patch)
+    .where(and(eq(cagnottesTable.id, id), eq(cagnottesTable.coupleId, r.coupleId))).returning();
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  res.json(row);
+});
+
+router.delete("/client/cagnottes/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  await db.delete(cagnottesTable)
+    .where(and(eq(cagnottesTable.id, id), eq(cagnottesTable.coupleId, r.coupleId)));
+  res.json({ success: true });
+});
+
+// LOT 9 — couple's RSVPs view (with answers grouped)
+router.get("/client/rsvps", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const siteId = await getOwnedWeddingSiteId(r.coupleId);
+  if (!siteId) { res.json({ rsvps: [], answers: {} }); return; }
+  const rsvps = await db.select().from(weddingRsvpsTable)
+    .where(eq(weddingRsvpsTable.weddingWebsiteId, siteId))
+    .orderBy(desc(weddingRsvpsTable.createdAt));
+  const ids = rsvps.map((r) => r.id);
+  const answers: Record<number, { questionId: number; answer: string }[]> = {};
+  if (ids.length > 0) {
+    const scoped = await db.select().from(rsvpResponsesTable)
+      .where(inArray(rsvpResponsesTable.rsvpId, ids));
+    for (const a of scoped) {
+      (answers[a.rsvpId] ||= []).push({ questionId: a.questionId, answer: a.answer });
+    }
+  }
+  res.json({ rsvps, answers });
 });
 
 // ---------- RSVP public-facing (no auth needed, outside requireCouple middleware) ----------

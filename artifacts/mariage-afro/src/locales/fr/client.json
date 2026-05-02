@@ -35,7 +35,9 @@
       "day": "Jour J",
       "communication": "Communication",
       "site": "Mon site mariage",
-      "profile": "Profil"
+      "profile": "Profil",
+      "inspiration": "Inspiration",
+      "cagnotte": "Cagnotte"
     },
     "signout": "Se déconnecter",
     "hello": "Bonjour 👋",
@@ -65,7 +67,9 @@
       "vendors": "Prestataires",
       "documents": "Documents",
       "day": "Jour J",
-      "profile": "Profil"
+      "profile": "Profil",
+      "inspiration": "Inspiration",
+      "cagnotte": "Cagnotte"
     }
   },
   "budget": {
@@ -108,7 +112,26 @@
     "rsvp_pending": "En attente",
     "rsvp_confirmed": "Confirmé",
     "rsvp_declined": "Décliné",
-    "empty": "Aucun invité"
+    "empty": "Aucun invité",
+    "yes": "Oui",
+    "no": "Non",
+    "th_date": "Date",
+    "th_email": "Email",
+    "th_attending": "Présent",
+    "th_guests": "Pers.",
+    "custom_questions": "Questions RSVP personnalisées",
+    "custom_questions_desc": "Ajoutez des questions à votre formulaire RSVP public (allergies, transport, hébergement…).",
+    "question_label": "Intitulé de la question",
+    "q_type_text": "Texte libre",
+    "q_type_yesno": "Oui / Non",
+    "q_type_choice": "Choix multiple",
+    "options_csv": "Options (séparées par virgules)",
+    "required": "Obligatoire",
+    "no_questions": "Aucune question personnalisée pour le moment.",
+    "public_rsvps": "Réponses RSVP publiques",
+    "public_rsvps_desc": "Réponses reçues via votre site mariage public.",
+    "no_rsvps": "Aucune réponse pour le moment.",
+    "export_csv": "Exporter CSV"
   },
   "planning": {
     "title": "Planning",
@@ -287,5 +310,56 @@
     "date_help": "Vous pourrez l'ajuster à tout moment depuis votre profil.",
     "saving": "Enregistrement…",
     "submit": "Commencer"
+  },
+  "mariage_public": {
+    "cagnotte_link": "Voir notre cagnotte de mariage"
+  },
+  "inspiration": {
+    "title": "Mood board & inspiration",
+    "subtitle": "Créez vos planches d'inspiration et invitez vos proches à collaborer.",
+    "invite": "Inviter un collaborateur",
+    "new_board_placeholder": "Nouvelle planche…",
+    "add_board": "Créer",
+    "no_board": "Créez votre première planche pour commencer à collecter vos inspirations.",
+    "add_image": "Ajouter image",
+    "drop_hint": "Glissez vos images ici ou cliquez sur \"Ajouter image\".",
+    "caption_placeholder": "Légende…",
+    "delete_image": "Supprimer",
+    "confirm_delete_board": "Supprimer cette planche et toutes ses images ?",
+    "collaborators": "Collaborateurs",
+    "no_collaborators": "Aucun collaborateur invité pour le moment.",
+    "invite_modal_title": "Inviter un collaborateur",
+    "invite_email": "Email",
+    "invite_name": "Nom (optionnel)",
+    "invite_role": "Rôle",
+    "role_viewer": "Lecture seule",
+    "role_editor": "Éditeur",
+    "cancel": "Annuler",
+    "send_invite": "Envoyer l'invitation"
+  },
+  "cagnotte": {
+    "title": "Cagnotte de mariage",
+    "subtitle": "Permettez à vos invités de contribuer à votre voyage de noces ou à un cadeau commun.",
+    "create_title": "Nouvelle cagnotte",
+    "edit_title": "Modifier la cagnotte",
+    "field_title": "Titre",
+    "title_placeholder": "Notre voyage de noces",
+    "field_iban": "IBAN (Belgique)",
+    "field_external": "Lien externe (Lydia, PayPal, GoFundMe…)",
+    "field_description": "Description",
+    "field_photo": "Photo",
+    "upload_photo": "Choisir une photo",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "create": "Créer",
+    "empty": "Aucune cagnotte créée pour le moment.",
+    "confirm_delete": "Supprimer cette cagnotte ?"
+  },
+  "mariage_cagnotte": {
+    "title": "Notre cagnotte",
+    "intro": "Votre présence est notre plus beau cadeau. Si vous souhaitez nous gâter, voici comment.",
+    "empty": "Aucune cagnotte n'est encore disponible.",
+    "contribute": "Contribuer",
+    "back_to_site": "Retour au site"
   }
 }

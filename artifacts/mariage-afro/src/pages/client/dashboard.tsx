@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle } from "lucide-react";
+import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,8 @@ const TILES: TileDef[] = [
   { to: "/espace-client/prestataires", labelKey: "client_dashboard.tile.vendors", icon: Briefcase, color: "bg-blue-50" },
   { to: "/espace-client/documents", labelKey: "client_dashboard.tile.documents", icon: FileText, color: "bg-purple-50" },
   { to: "/espace-client/jour-j", labelKey: "client_dashboard.tile.day", icon: Sparkles, color: "bg-orange-50" },
+  { to: "/espace-client/inspiration", labelKey: "client_dashboard.tile.inspiration", icon: ImageIcon, color: "bg-pink-50" },
+  { to: "/espace-client/cagnotte", labelKey: "client_dashboard.tile.cagnotte", icon: Gift, color: "bg-yellow-50" },
   { to: "/espace-client/profil", labelKey: "client_dashboard.tile.profile", icon: UserCircle, color: "bg-teal-50" },
 ];
 

@@ -35,7 +35,9 @@
       "day": "The big day",
       "communication": "Messages",
       "site": "My wedding site",
-      "profile": "Profile"
+      "profile": "Profile",
+      "inspiration": "Inspiration",
+      "cagnotte": "Honeymoon fund"
     },
     "signout": "Sign out",
     "hello": "Hello 👋",
@@ -65,7 +67,9 @@
       "vendors": "Vendors",
       "documents": "Documents",
       "day": "The big day",
-      "profile": "Profile"
+      "profile": "Profile",
+      "inspiration": "Inspiration",
+      "cagnotte": "Honeymoon fund"
     }
   },
   "budget": {
@@ -108,7 +112,26 @@
     "rsvp_pending": "Pending",
     "rsvp_confirmed": "Confirmed",
     "rsvp_declined": "Declined",
-    "empty": "No guests"
+    "empty": "No guests",
+    "yes": "Yes",
+    "no": "No",
+    "th_date": "Date",
+    "th_email": "Email",
+    "th_attending": "Attending",
+    "th_guests": "Guests",
+    "custom_questions": "Custom RSVP questions",
+    "custom_questions_desc": "Add questions to your public RSVP form (allergies, transport, accommodation…).",
+    "question_label": "Question label",
+    "q_type_text": "Free text",
+    "q_type_yesno": "Yes / No",
+    "q_type_choice": "Multiple choice",
+    "options_csv": "Options (comma-separated)",
+    "required": "Required",
+    "no_questions": "No custom questions yet.",
+    "public_rsvps": "Public RSVP replies",
+    "public_rsvps_desc": "Replies received through your public wedding site.",
+    "no_rsvps": "No replies yet.",
+    "export_csv": "Export CSV"
   },
   "planning": {
     "title": "Planning",
@@ -287,5 +310,56 @@
     "date_help": "You can adjust this anytime from your profile.",
     "saving": "Saving…",
     "submit": "Get started"
+  },
+  "mariage_public": {
+    "cagnotte_link": "See our wedding fund"
+  },
+  "inspiration": {
+    "title": "Mood board & inspiration",
+    "subtitle": "Create inspiration boards and invite loved ones to collaborate.",
+    "invite": "Invite a collaborator",
+    "new_board_placeholder": "New board…",
+    "add_board": "Create",
+    "no_board": "Create your first board to start collecting inspiration.",
+    "add_image": "Add image",
+    "drop_hint": "Drag images here or click \"Add image\".",
+    "caption_placeholder": "Caption…",
+    "delete_image": "Delete",
+    "confirm_delete_board": "Delete this board and all its images?",
+    "collaborators": "Collaborators",
+    "no_collaborators": "No collaborators invited yet.",
+    "invite_modal_title": "Invite a collaborator",
+    "invite_email": "Email",
+    "invite_name": "Name (optional)",
+    "invite_role": "Role",
+    "role_viewer": "View only",
+    "role_editor": "Editor",
+    "cancel": "Cancel",
+    "send_invite": "Send invite"
+  },
+  "cagnotte": {
+    "title": "Wedding fund",
+    "subtitle": "Let your guests contribute to your honeymoon or to a shared gift.",
+    "create_title": "New fund",
+    "edit_title": "Edit fund",
+    "field_title": "Title",
+    "title_placeholder": "Our honeymoon",
+    "field_iban": "IBAN (Belgium)",
+    "field_external": "External link (Lydia, PayPal, GoFundMe…)",
+    "field_description": "Description",
+    "field_photo": "Photo",
+    "upload_photo": "Choose a photo",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "empty": "No fund created yet.",
+    "confirm_delete": "Delete this fund?"
+  },
+  "mariage_cagnotte": {
+    "title": "Our wedding fund",
+    "intro": "Your presence is our greatest gift. If you'd still like to spoil us, here's how.",
+    "empty": "No fund is available yet.",
+    "contribute": "Contribute",
+    "back_to_site": "Back to site"
   }
 }

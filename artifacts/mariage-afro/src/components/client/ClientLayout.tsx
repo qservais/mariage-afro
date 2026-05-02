@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, Wallet, Users, ListChecks, Briefcase, FileText, Sparkles,
-  LogOut, Menu, X, Heart, UserCircle, MessageCircle, Globe, Armchair,
+  LogOut, Menu, X, Heart, UserCircle, MessageCircle, Globe, Armchair, Image as ImageIcon, Gift,
 } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import OnboardingGate from "@/components/client/OnboardingGate";
@@ -36,6 +36,8 @@ const NAV: NavItem[] = [
   { to: "/espace-client/jour-j", labelKey: "client_layout.nav.day", icon: Sparkles },
   { to: "/espace-client/communication", labelKey: "client_layout.nav.communication", icon: MessageCircle },
   { to: "/espace-client/site", labelKey: "client_layout.nav.site", icon: Globe },
+  { to: "/espace-client/inspiration", labelKey: "client_layout.nav.inspiration", icon: ImageIcon },
+  { to: "/espace-client/cagnotte", labelKey: "client_layout.nav.cagnotte", icon: Gift },
   { to: "/espace-client/profil", labelKey: "client_layout.nav.profile", icon: UserCircle },
 ];
 

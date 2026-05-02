@@ -392,6 +392,79 @@ export const weddingRsvpsTable = pgTable("wedding_rsvps", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// LOT 9 — Mood board (collaborative inspiration)
+export const moodBoardsTable = pgTable("mood_boards", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  title: text("title").notNull().default("Inspiration"),
+  description: text("description").notNull().default(""),
+  position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const moodBoardImagesTable = pgTable("mood_board_images", {
+  id: serial("id").primaryKey(),
+  boardId: integer("board_id").notNull(),
+  coupleId: integer("couple_id").notNull(),
+  url: text("url").notNull(),
+  caption: text("caption").notNull().default(""),
+  position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const moodBoardCollaboratorsTable = pgTable("mood_board_collaborators", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  email: text("email").notNull(),
+  name: text("name").notNull().default(""),
+  role: text("role").notNull().default("viewer"), // viewer | editor
+  token: text("token").notNull(),
+  invitedAt: timestamp("invited_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  tokenIdx: uniqueIndex("mood_board_collaborators_token_idx").on(t.token),
+}));
+
+// LOT 9 — RSVP customizable questions + responses
+export const rsvpQuestionsTable = pgTable("rsvp_questions", {
+  id: serial("id").primaryKey(),
+  weddingWebsiteId: integer("wedding_website_id").notNull(),
+  label: text("label").notNull(),
+  type: text("type").notNull().default("text"), // text | yesno | choice
+  options: jsonb("options").$type<string[]>().notNull().default([]),
+  required: boolean("required").notNull().default(false),
+  position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const rsvpResponsesTable = pgTable("rsvp_responses", {
+  id: serial("id").primaryKey(),
+  rsvpId: integer("rsvp_id").notNull(),
+  questionId: integer("question_id").notNull(),
+  answer: text("answer").notNull().default(""),
+});
+
+// LOT 9 — Cagnottes (gift list)
+export const cagnottesTable = pgTable("cagnottes", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  weddingWebsiteId: integer("wedding_website_id"),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  photo: text("photo"),
+  iban: text("iban"),
+  externalUrl: text("external_url"),
+  position: integer("position").notNull().default(0),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type MoodBoard = typeof moodBoardsTable.$inferSelect;
+export type MoodBoardImage = typeof moodBoardImagesTable.$inferSelect;
+export type MoodBoardCollaborator = typeof moodBoardCollaboratorsTable.$inferSelect;
+export type RsvpQuestion = typeof rsvpQuestionsTable.$inferSelect;
+export type RsvpResponse = typeof rsvpResponsesTable.$inferSelect;
+export type Cagnotte = typeof cagnottesTable.$inferSelect;
+
 export const insertLeadSchema = createInsertSchema(leadsTable).omit({
   id: true, createdAt: true, status: true, internalNote: true,
 });
