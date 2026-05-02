@@ -131,7 +131,15 @@
     "public_rsvps": "Réponses RSVP publiques",
     "public_rsvps_desc": "Réponses reçues via votre site mariage public.",
     "no_rsvps": "Aucune réponse pour le moment.",
-    "export_csv": "Exporter CSV"
+    "export_csv": "Exporter CSV",
+    "move_up": "Monter",
+    "move_down": "Descendre",
+    "total_rsvps": "Total RSVP",
+    "attending": "Présents",
+    "guest_total": "Convives totaux",
+    "filter_all": "Tous",
+    "filter_attending": "Présents",
+    "filter_declined": "Absents"
   },
   "planning": {
     "title": "Planning",

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, Download } from "lucide-react";
+import { Plus, Trash2, Download, ArrowUp, ArrowDown } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,8 @@ const RSVP_COLORS: Record<string, string> = { pending: "bg-amber-100 text-amber-
 interface RsvpQuestion { id: number; label: string; type: "text" | "yesno" | "choice"; options: string[]; required: boolean; position: number; }
 interface PublicRsvp { id: number; name: string; email: string | null; attending: boolean; guestCount: number; message: string | null; createdAt: string; }
 interface RsvpsView { rsvps: PublicRsvp[]; answers: Record<number, { questionId: number; answer: string }[]>; }
+
+type PublicFilter = "all" | "attending" | "declined";
 
 export default function GuestsPage() {
   const { t } = useTranslation();
@@ -30,6 +32,7 @@ export default function GuestsPage() {
   });
   const [form, setForm] = useState({ firstName: "", lastName: "", side: "partner1", table: "" });
   const [qForm, setQForm] = useState({ label: "", type: "text" as "text" | "yesno" | "choice", options: "", required: false });
+  const [publicFilter, setPublicFilter] = useState<PublicFilter>("all");
 
   const RSVP_LABELS = useMemo<Record<string, string>>(() => ({
     pending: t("invites.rsvp_pending"),
@@ -73,6 +76,21 @@ export default function GuestsPage() {
     mutationFn: (id: number) => clientApi.del(`/api/client/rsvp-questions/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "rsvp-questions"] }),
   });
+  const patchQ = useMutation({
+    mutationFn: ({ id, body }: { id: number; body: Partial<RsvpQuestion> }) =>
+      clientApi.patch(`/api/client/rsvp-questions/${id}`, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "rsvp-questions"] }),
+  });
+
+  const moveQuestion = (idx: number, direction: -1 | 1) => {
+    const sorted = [...questions].sort((a, b) => a.position - b.position);
+    const target = idx + direction;
+    if (target < 0 || target >= sorted.length) return;
+    const a = sorted[idx];
+    const b = sorted[target];
+    patchQ.mutate({ id: a.id, body: { position: b.position } });
+    patchQ.mutate({ id: b.id, body: { position: a.position } });
+  };
 
   const handleCsv = async (file: File) => {
     const text = await file.text();
@@ -111,6 +129,16 @@ export default function GuestsPage() {
   const confirmed = guests.filter((g) => g.rsvp === "confirmed").length;
   const declined = guests.filter((g) => g.rsvp === "declined").length;
   const pending = total - confirmed - declined;
+
+  const sortedQuestions = [...questions].sort((a, b) => a.position - b.position);
+
+  // Public RSVP stats
+  const allRsvps = rsvpsView?.rsvps || [];
+  const pubAttending = allRsvps.filter((r) => r.attending);
+  const pubDeclined = allRsvps.filter((r) => !r.attending);
+  const pubGuestSum = pubAttending.reduce((s, r) => s + (r.guestCount || 0), 0);
+  const filteredRsvps = publicFilter === "all" ? allRsvps
+    : publicFilter === "attending" ? pubAttending : pubDeclined;
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -204,28 +232,65 @@ export default function GuestsPage() {
           <Button type="submit" className="sm:col-span-1 rounded-none gap-1"><Plus className="w-3 h-3" /></Button>
         </form>
         <ul className="divide-y divide-neutral-100">
-          {questions.map((q) => (
-            <li key={q.id} className="py-2 flex items-center justify-between text-sm">
-              <span><strong>{q.label}</strong> <span className="text-neutral-500">— {t(`invites.q_type_${q.type}`)}{q.required ? " · " + t("invites.required") : ""}</span></span>
-              <button onClick={() => delQ.mutate(q.id)} className="text-neutral-400 hover:text-primary"><Trash2 className="w-4 h-4" /></button>
+          {sortedQuestions.map((q, idx) => (
+            <li key={q.id} className="py-2 flex items-center justify-between text-sm gap-2" data-testid={`question-row-${q.id}`}>
+              <span className="flex-1"><strong>{q.label}</strong> <span className="text-neutral-500">— {t(`invites.q_type_${q.type}`)}{q.required ? " · " + t("invites.required") : ""}</span></span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => moveQuestion(idx, -1)}
+                  disabled={idx === 0 || patchQ.isPending}
+                  className="p-1 text-neutral-500 hover:text-primary disabled:opacity-30"
+                  aria-label={t("invites.move_up")}
+                  data-testid={`button-up-${q.id}`}
+                ><ArrowUp className="w-4 h-4" /></button>
+                <button
+                  onClick={() => moveQuestion(idx, 1)}
+                  disabled={idx === sortedQuestions.length - 1 || patchQ.isPending}
+                  className="p-1 text-neutral-500 hover:text-primary disabled:opacity-30"
+                  aria-label={t("invites.move_down")}
+                  data-testid={`button-down-${q.id}`}
+                ><ArrowDown className="w-4 h-4" /></button>
+                <button onClick={() => delQ.mutate(q.id)} className="p-1 text-neutral-400 hover:text-primary"><Trash2 className="w-4 h-4" /></button>
+              </div>
             </li>
           ))}
-          {questions.length === 0 && <li className="py-4 text-sm text-neutral-400 text-center">{t("invites.no_questions")}</li>}
+          {sortedQuestions.length === 0 && <li className="py-4 text-sm text-neutral-400 text-center">{t("invites.no_questions")}</li>}
         </ul>
       </div>
 
       {/* Public RSVPs */}
       <div className="bg-white border border-neutral-200 p-5 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h3 className="font-bold text-sm uppercase tracking-wider">{t("invites.public_rsvps")}</h3>
             <p className="text-xs text-neutral-500 mt-1">{t("invites.public_rsvps_desc")}</p>
           </div>
-          <Button variant="outline" className="rounded-none gap-2 text-xs" disabled={!rsvpsView?.rsvps.length} onClick={exportRsvpCsv}>
+          <Button variant="outline" className="rounded-none gap-2 text-xs" disabled={!allRsvps.length} onClick={exportRsvpCsv}>
             <Download className="w-3.5 h-3.5" /> {t("invites.export_csv")}
           </Button>
         </div>
-        {!rsvpsView?.rsvps.length ? (
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.total_rsvps")}</p><p className="text-xl font-bold" data-testid="stat-total-rsvps">{allRsvps.length}</p></div>
+          <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.attending")}</p><p className="text-xl font-bold text-emerald-700" data-testid="stat-attending">{pubAttending.length}</p></div>
+          <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.declined")}</p><p className="text-xl font-bold text-rose-700" data-testid="stat-declined">{pubDeclined.length}</p></div>
+          <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.guest_total")}</p><p className="text-xl font-bold" data-testid="stat-guest-total">{pubGuestSum}</p></div>
+        </div>
+
+        <div className="flex gap-2 text-xs">
+          {(["all", "attending", "declined"] as PublicFilter[]).map((k) => (
+            <button
+              key={k}
+              onClick={() => setPublicFilter(k)}
+              className={`px-3 py-1.5 border ${publicFilter === k ? "border-primary bg-primary text-white" : "border-neutral-300 hover:border-primary"}`}
+              data-testid={`filter-${k}`}
+            >
+              {t(`invites.filter_${k}`)}
+            </button>
+          ))}
+        </div>
+
+        {!filteredRsvps.length ? (
           <p className="text-sm text-neutral-500">{t("invites.no_rsvps")}</p>
         ) : (
           <div className="overflow-x-auto">
@@ -240,7 +305,7 @@ export default function GuestsPage() {
                 </tr>
               </thead>
               <tbody>
-                {rsvpsView.rsvps.map((r) => (
+                {filteredRsvps.map((r) => (
                   <tr key={r.id} className="border-t border-neutral-100 align-top">
                     <td className="px-3 py-2 text-xs text-neutral-500">{new Date(r.createdAt).toLocaleDateString()}</td>
                     <td className="px-3 py-2 font-medium">{r.name}</td>

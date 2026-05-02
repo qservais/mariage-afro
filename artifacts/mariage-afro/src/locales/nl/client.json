@@ -131,7 +131,15 @@
     "public_rsvps": "Openbare RSVP-antwoorden",
     "public_rsvps_desc": "Antwoorden ontvangen via uw openbare trouwsite.",
     "no_rsvps": "Nog geen antwoorden.",
-    "export_csv": "CSV exporteren"
+    "export_csv": "CSV exporteren",
+    "move_up": "Omhoog",
+    "move_down": "Omlaag",
+    "total_rsvps": "Totaal RSVP",
+    "attending": "Aanwezig",
+    "guest_total": "Totaal gasten",
+    "filter_all": "Alle",
+    "filter_attending": "Aanwezig",
+    "filter_declined": "Afgemeld"
   },
   "planning": {
     "title": "Planning",

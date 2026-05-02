@@ -702,7 +702,9 @@
     "confirm": "Confirmer",
     "footer_made_with": "Créé avec",
     "footer_tagline": "La plateforme premium pour mariages afro et mixtes en Belgique",
-    "email_required": "Email"
+    "email_required": "Email",
+    "rsvp_cta_desc": "Confirmez votre présence en quelques clics.",
+    "rsvp_cta_button": "Confirmer ma présence"
   },
   "multi_devis": {
     "eyebrow": "Demande groupée",

@@ -171,97 +171,16 @@ export default function MariagePublicPage() {
               : t("mariage_public.rsvp_subtitle_no_date")}
           </p>
 
-          {rsvpDone ? (
-            <div className="bg-white border border-border p-10 text-center">
-              <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-bold font-serif mb-2">{t("mariage_public.rsvp_done_title")}</h3>
-              <p className="text-muted-foreground text-sm">
-                {t("mariage_public.rsvp_done_desc")}
-              </p>
-            </div>
-          ) : (
-            <div className="bg-white border border-border p-8 space-y-5">
-              <div className="space-y-2">
-                <Label>{t("mariage_public.your_name")}</Label>
-                <Input
-                  value={rsvpForm.name}
-                  onChange={(e) => setRsvpForm({ ...rsvpForm, name: e.target.value })}
-                  placeholder={t("mariage_public.name_placeholder")}
-                  className="rounded-none"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>{t("mariage_public.email_required")} *</Label>
-                <Input
-                  type="email"
-                  required
-                  value={rsvpForm.email}
-                  onChange={(e) => setRsvpForm({ ...rsvpForm, email: e.target.value })}
-                  placeholder={t("mariage_public.email_placeholder")}
-                  className="rounded-none"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>{t("mariage_public.presence")}</Label>
-                <div className="flex gap-3">
-                  {[
-                    { val: true, label: t("mariage_public.attending") },
-                    { val: false, label: t("mariage_public.not_attending") },
-                  ].map(({ val, label }) => (
-                    <button
-                      key={String(val)}
-                      onClick={() => setRsvpForm({ ...rsvpForm, attending: val })}
-                      className={`flex-1 text-sm py-2.5 px-3 border transition-colors ${
-                        rsvpForm.attending === val
-                          ? "border-primary bg-primary text-white"
-                          : "border-border text-foreground hover:border-primary"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {rsvpForm.attending && (
-                <div className="space-y-2">
-                  <Label>{t("mariage_public.guest_count")}</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    max={20}
-                    value={rsvpForm.guestCount}
-                    onChange={(e) => setRsvpForm({ ...rsvpForm, guestCount: Number(e.target.value) })}
-                    className="rounded-none w-28"
-                  />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label>{t("mariage_public.message_optional")}</Label>
-                <Textarea
-                  value={rsvpForm.message}
-                  onChange={(e) => setRsvpForm({ ...rsvpForm, message: e.target.value })}
-                  placeholder={t("mariage_public.message_placeholder")}
-                  className="rounded-none resize-none"
-                  rows={3}
-                />
-              </div>
-
-              <Button
-                onClick={() => rsvpMutation.mutate()}
-                disabled={!rsvpForm.name.trim() || !/.+@.+\..+/.test(rsvpForm.email) || rsvpMutation.isPending}
-                className="w-full rounded-none bg-primary hover:bg-primary/90 h-12 font-bold uppercase tracking-wider text-sm"
-              >
-                {rsvpMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : null}
-                {t("mariage_public.confirm")}
-              </Button>
-            </div>
-          )}
+          <div className="bg-white border border-border p-10 text-center space-y-5">
+            <p className="text-sm text-muted-foreground">{t("mariage_public.rsvp_cta_desc")}</p>
+            <a
+              href={`/mariage/${slug}/rsvp`}
+              className="inline-flex items-center justify-center w-full rounded-none bg-primary hover:bg-primary/90 text-white h-12 font-bold uppercase tracking-wider text-sm px-6"
+              data-testid="link-rsvp-cta"
+            >
+              {t("mariage_public.rsvp_cta_button")}
+            </a>
+          </div>
         </section>
       )}
 

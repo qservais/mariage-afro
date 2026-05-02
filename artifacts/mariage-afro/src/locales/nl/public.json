@@ -702,7 +702,9 @@
     "confirm": "Bevestigen",
     "footer_made_with": "Gemaakt met",
     "footer_tagline": "Het premium platform voor Afro en gemengde bruiloften in België",
-    "email_required": "E-mail"
+    "email_required": "E-mail",
+    "rsvp_cta_desc": "Bevestig uw aanwezigheid in een paar klikken.",
+    "rsvp_cta_button": "Mijn aanwezigheid bevestigen"
   },
   "multi_devis": {
     "eyebrow": "Groepsaanvraag",
