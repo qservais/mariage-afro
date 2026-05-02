@@ -140,8 +140,15 @@ i18n.on('languageChanged', (lng) => {
   }
 });
 
-if (typeof document !== 'undefined') {
-  document.documentElement.lang = i18n.language;
+// Persist initial detection on first load (cookie + html lang) — runs even if
+// the languageChanged listener missed init's synchronous emit.
+if (typeof window !== 'undefined') {
+  const lng = i18n.language;
+  try { window.localStorage.setItem(STORAGE_KEY, lng); } catch { /* ignore */ }
+  writeCookie(COOKIE_NAME, lng);
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = lng;
+  }
 }
 
 export default i18n;

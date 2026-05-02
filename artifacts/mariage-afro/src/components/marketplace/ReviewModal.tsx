@@ -35,7 +35,7 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
       onClose();
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Error";
+      const msg = err instanceof Error ? err.message : t("review_modal.error_title");
       toast({ title: t("review_modal.error_title"), description: msg, variant: "destructive" });
     },
   });
