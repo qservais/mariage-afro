@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote } from "lucide-react";
+import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown } from "lucide-react";
 
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
 import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
@@ -116,15 +116,23 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      {/* Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center pt-20">
+      {/* Hero Section — Vidéo en background, image en fallback */}
+      <section className="relative h-screen min-h-[600px] flex items-center pt-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img
-            src={heroImage}
-            alt="Wedding Reception"
+          <video
+            src={videoSrc}
+            poster={heroImage}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
             className="w-full h-full object-cover object-center"
+            aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-black/45" />
+          {/* Dégradé bordeaux pour cohérence avec la couleur primaire */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
         </div>
 
         <div className="container relative z-10 mx-auto px-6 md:px-12">
@@ -137,26 +145,43 @@ export default function Home() {
             <span className="inline-block text-xs md:text-sm uppercase tracking-[0.3em] mb-6 font-medium opacity-80">
               {t("hero.tagline")}
             </span>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 font-serif">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 font-serif drop-shadow-lg">
               {t("hero.title")}
             </h1>
-            <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl leading-relaxed">
+            <p className="text-lg md:text-xl text-white/95 mb-10 max-w-2xl leading-relaxed drop-shadow-md">
               {t("hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/contact">
-                <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto">
+                <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto shadow-xl">
                   {t("hero.cta_primary")}
                 </Button>
               </Link>
               <Link to="/plateforme">
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto bg-transparent">
+                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto bg-transparent backdrop-blur-sm">
                   {t("hero.cta_secondary")}
                 </Button>
               </Link>
             </div>
           </motion.div>
         </div>
+
+        {/* Indicateur de scroll */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden md:block"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="flex flex-col items-center gap-2 text-white/70"
+          >
+            <span className="text-xs uppercase tracking-widest">Scroll</span>
+            <ChevronDown className="w-5 h-5" />
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* How it works — 3 steps */}
