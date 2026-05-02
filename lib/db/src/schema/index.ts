@@ -101,10 +101,22 @@ export const guestsTable = pgTable("guests", {
   lastName: text("last_name").notNull().default(""),
   side: text("side").notNull().default("partner1"),
   table: text("table_name"),
+  tableId: integer("table_id"),
   rsvp: text("rsvp").notNull().default("pending"),
   diet: text("diet"),
   email: text("email"),
   notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const guestTablesTable = pgTable("guest_tables", {
+  id: serial("id").primaryKey(),
+  coupleId: integer("couple_id").notNull(),
+  name: text("name").notNull(),
+  shape: text("shape").notNull().default("round"),
+  capacity: integer("capacity").notNull().default(8),
+  positionX: integer("position_x").notNull().default(0),
+  positionY: integer("position_y").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -303,6 +315,7 @@ export type PartnerApplication = typeof partnerApplicationsTable.$inferSelect;
 export type Couple = typeof couplesTable.$inferSelect;
 export type BudgetItem = typeof budgetItemsTable.$inferSelect;
 export type Guest = typeof guestsTable.$inferSelect;
+export type GuestTable = typeof guestTablesTable.$inferSelect;
 export type PlanningTask = typeof planningTasksTable.$inferSelect;
 export type ClientVendor = typeof clientVendorsTable.$inferSelect;
 export type ClientDocument = typeof clientDocumentsTable.$inferSelect;

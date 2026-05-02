@@ -7,6 +7,7 @@ import {
   couplesTable,
   budgetItemsTable,
   guestsTable,
+  guestTablesTable,
   planningTasksTable,
   clientVendorsTable,
   clientDocumentsTable,
@@ -160,6 +161,7 @@ const guestSchema = z.object({
   lastName: z.string().optional().default(""),
   side: z.enum(["partner1", "partner2", "shared"]).optional().default("partner1"),
   table: z.string().optional().nullable(),
+  tableId: z.coerce.number().int().positive().optional().nullable(),
   rsvp: z.enum(["pending", "confirmed", "declined"]).optional().default("pending"),
   diet: z.string().optional().nullable(),
   email: z.string().optional().nullable(),
@@ -178,8 +180,47 @@ router.post("/client/guests", async (req, res) => {
   const body = Array.isArray(req.body) ? req.body : [req.body];
   const parsed = z.array(guestSchema).safeParse(body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
-  const rows = await db.insert(guestsTable)
-    .values(parsed.data.map((g) => ({ coupleId: r.coupleId, ...g }))).returning();
+
+  // If any incoming guest references a tableId, validate ownership and capacity
+  // (mirroring the rules enforced on PATCH).
+  const requestedTableIds = Array.from(
+    new Set(parsed.data.map((g) => g.tableId).filter((v): v is number => v != null))
+  );
+  const tableMap = new Map<number, { name: string; capacity: number }>();
+  if (requestedTableIds.length > 0) {
+    const tables = await db.select().from(guestTablesTable)
+      .where(eq(guestTablesTable.coupleId, r.coupleId));
+    for (const t of tables) tableMap.set(t.id, { name: t.name, capacity: t.capacity });
+    for (const id of requestedTableIds) {
+      if (!tableMap.has(id)) {
+        res.status(404).json({ error: `Table ${id} not found` });
+        return;
+      }
+    }
+    const seated = await db.select({ tableId: guestsTable.tableId }).from(guestsTable)
+      .where(eq(guestsTable.coupleId, r.coupleId));
+    const occupancy = new Map<number, number>();
+    for (const g of seated) {
+      if (g.tableId != null) occupancy.set(g.tableId, (occupancy.get(g.tableId) ?? 0) + 1);
+    }
+    for (const id of requestedTableIds) {
+      const incoming = parsed.data.filter((g) => g.tableId === id).length;
+      const current = occupancy.get(id) ?? 0;
+      const cap = tableMap.get(id)!.capacity;
+      if (current + incoming > cap) {
+        res.status(409).json({ error: `Table ${tableMap.get(id)!.name} is full` });
+        return;
+      }
+    }
+  }
+
+  const values = parsed.data.map((g) => ({
+    coupleId: r.coupleId,
+    ...g,
+    // Auto-sync legacy table text when assigning to a known table
+    table: g.tableId != null ? tableMap.get(g.tableId)!.name : g.table,
+  }));
+  const rows = await db.insert(guestsTable).values(values).returning();
   res.json(Array.isArray(req.body) ? rows : rows[0]);
 });
 router.patch("/client/guests/:id", async (req, res) => {
@@ -187,7 +228,29 @@ router.patch("/client/guests/:id", async (req, res) => {
   const id = Number(req.params.id);
   const parsed = guestSchema.partial().safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
-  const [row] = await db.update(guestsTable).set(parsed.data)
+  const patch: Record<string, unknown> = { ...parsed.data };
+  if (Object.prototype.hasOwnProperty.call(parsed.data, "tableId")) {
+    const newTableId = parsed.data.tableId;
+    if (newTableId == null) {
+      patch.tableId = null;
+      patch.table = null;
+    } else {
+      const [target] = await db.select().from(guestTablesTable)
+        .where(and(eq(guestTablesTable.id, newTableId), eq(guestTablesTable.coupleId, r.coupleId)))
+        .limit(1);
+      if (!target) { res.status(404).json({ error: "Table not found" }); return; }
+      const seated = await db.select({ id: guestsTable.id }).from(guestsTable)
+        .where(and(eq(guestsTable.tableId, newTableId), eq(guestsTable.coupleId, r.coupleId)));
+      const occupied = seated.filter((g) => g.id !== id).length;
+      if (occupied >= target.capacity) {
+        res.status(409).json({ error: "Table is full" });
+        return;
+      }
+      patch.tableId = newTableId;
+      patch.table = target.name;
+    }
+  }
+  const [row] = await db.update(guestsTable).set(patch)
     .where(and(eq(guestsTable.id, id), eq(guestsTable.coupleId, r.coupleId))).returning();
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
   res.json(row);
@@ -197,6 +260,67 @@ router.delete("/client/guests/:id", async (req, res) => {
   const id = Number(req.params.id);
   await db.delete(guestsTable)
     .where(and(eq(guestsTable.id, id), eq(guestsTable.coupleId, r.coupleId)));
+  res.json({ success: true });
+});
+
+// ---------- Guest Tables (seating) ----------
+const guestTableSchema = z.object({
+  name: z.string().min(1).max(80),
+  shape: z.enum(["round", "rect", "square"]).optional().default("round"),
+  capacity: z.coerce.number().int().min(1).max(40).optional().default(8),
+  positionX: z.coerce.number().int().optional().default(0),
+  positionY: z.coerce.number().int().optional().default(0),
+});
+
+router.get("/client/tables", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const rows = await db.select().from(guestTablesTable)
+    .where(eq(guestTablesTable.coupleId, r.coupleId))
+    .orderBy(asc(guestTablesTable.id));
+  res.json(rows);
+});
+
+router.post("/client/tables", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = guestTableSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const [row] = await db.insert(guestTablesTable)
+    .values({ coupleId: r.coupleId, ...parsed.data }).returning();
+  res.status(201).json(row);
+});
+
+router.patch("/client/tables/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  const parsed = guestTableSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  if (parsed.data.capacity != null) {
+    const seated = await db.select({ id: guestsTable.id }).from(guestsTable)
+      .where(and(eq(guestsTable.tableId, id), eq(guestsTable.coupleId, r.coupleId)));
+    if (seated.length > parsed.data.capacity) {
+      res.status(409).json({ error: "Capacity below current occupants" });
+      return;
+    }
+  }
+  const [row] = await db.update(guestTablesTable).set(parsed.data)
+    .where(and(eq(guestTablesTable.id, id), eq(guestTablesTable.coupleId, r.coupleId))).returning();
+  if (!row) { res.status(404).json({ error: "Not found" }); return; }
+  if (parsed.data.name) {
+    await db.update(guestsTable)
+      .set({ table: parsed.data.name })
+      .where(and(eq(guestsTable.tableId, id), eq(guestsTable.coupleId, r.coupleId)));
+  }
+  res.json(row);
+});
+
+router.delete("/client/tables/:id", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  await db.update(guestsTable)
+    .set({ tableId: null, table: null })
+    .where(and(eq(guestsTable.tableId, id), eq(guestsTable.coupleId, r.coupleId)));
+  await db.delete(guestTablesTable)
+    .where(and(eq(guestTablesTable.id, id), eq(guestTablesTable.coupleId, r.coupleId)));
   res.json({ success: true });
 });
 

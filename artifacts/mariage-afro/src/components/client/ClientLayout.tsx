@@ -4,7 +4,7 @@ import { useUser, useClerk } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
 import {
   LayoutDashboard, Wallet, Users, ListChecks, Briefcase, FileText, Sparkles,
-  LogOut, Menu, X, Heart, UserCircle, MessageCircle, Globe,
+  LogOut, Menu, X, Heart, UserCircle, MessageCircle, Globe, Armchair,
 } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import OnboardingGate from "@/components/client/OnboardingGate";
@@ -21,6 +21,7 @@ const NAV = [
   { to: "/espace-client", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
   { to: "/espace-client/budget", label: "Budget", icon: Wallet },
   { to: "/espace-client/invites", label: "Invités", icon: Users },
+  { to: "/espace-client/plan-de-table", label: "Plan de table", icon: Armchair },
   { to: "/espace-client/planning", label: "Planning", icon: ListChecks },
   { to: "/espace-client/prestataires", label: "Prestataires", icon: Briefcase },
   { to: "/espace-client/documents", label: "Documents", icon: FileText },

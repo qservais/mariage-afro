@@ -23,6 +23,7 @@ export interface Guest {
   lastName: string;
   side: string;
   table: string | null;
+  tableId: number | null;
   rsvp: string;
   diet: string | null;
   email: string | null;
@@ -33,12 +34,30 @@ export interface GuestCreate {
   lastName?: string;
   side?: string;
   table?: string | null;
+  tableId?: number | null;
   rsvp?: string;
   diet?: string | null;
   email?: string | null;
   notes?: string | null;
 }
 export type GuestPatch = Partial<GuestCreate>;
+
+export interface GuestTable {
+  id: number;
+  name: string;
+  shape: "round" | "rect" | "square";
+  capacity: number;
+  positionX: number;
+  positionY: number;
+}
+export interface GuestTableCreate {
+  name: string;
+  shape?: "round" | "rect" | "square";
+  capacity?: number;
+  positionX?: number;
+  positionY?: number;
+}
+export type GuestTablePatch = Partial<GuestTableCreate>;
 
 export interface PlanningTask {
   id: number;

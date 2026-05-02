@@ -1,0 +1,550 @@
+import { useMemo, useRef, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  DndContext,
+  PointerSensor,
+  useDroppable,
+  useDraggable,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import { Plus, Trash2, Search, Download, X, Pencil, FileText } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { clientApi } from "@/lib/clientApi";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import type { Guest, GuestTable, GuestTableCreate, GuestTablePatch } from "@/lib/clientTypes";
+
+const SHAPE_LABEL: Record<GuestTable["shape"], string> = {
+  round: "Ronde",
+  rect: "Rectangulaire",
+  square: "Carrée",
+};
+
+interface DraggableGuestProps {
+  guest: Guest;
+  inTable?: boolean;
+  onRemove?: () => void;
+}
+
+function DraggableGuest({ guest, inTable, onRemove }: DraggableGuestProps) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `guest-${guest.id}`,
+    data: { guestId: guest.id },
+  });
+  const style: React.CSSProperties = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    opacity: isDragging ? 0.4 : 1,
+  };
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className={`flex items-center justify-between gap-2 px-3 py-2 text-sm bg-white border border-neutral-200 cursor-grab active:cursor-grabbing select-none ${inTable ? "" : "hover:border-primary"}`}
+      data-testid={`guest-card-${guest.id}`}
+    >
+      <span className="truncate">
+        {guest.firstName} {guest.lastName}
+      </span>
+      {inTable && onRemove && (
+        <button
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          className="text-neutral-400 hover:text-primary"
+          aria-label="Retirer"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+interface DroppableTableProps {
+  table: GuestTable;
+  seated: Guest[];
+  onRename: (name: string) => void;
+  onCapacity: (capacity: number) => void;
+  onShape: (shape: GuestTable["shape"]) => void;
+  onDelete: () => void;
+  onRemoveGuest: (guestId: number) => void;
+}
+
+function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete, onRemoveGuest }: DroppableTableProps) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `table-${table.id}`,
+    data: { tableId: table.id },
+  });
+  const [editing, setEditing] = useState(false);
+  const free = Math.max(0, table.capacity - seated.length);
+  const full = seated.length >= table.capacity;
+  const shapeClass =
+    table.shape === "round"
+      ? "rounded-full"
+      : table.shape === "square"
+        ? "rounded-md aspect-square"
+        : "rounded-md";
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`bg-white border-2 ${isOver ? "border-primary" : full ? "border-rose-300" : "border-neutral-200"} p-4 transition-colors`}
+      data-testid={`table-${table.id}`}
+    >
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <div className="flex-1 min-w-0">
+          {editing ? (
+            <input
+              autoFocus
+              defaultValue={table.name}
+              onBlur={(e) => { onRename(e.target.value || table.name); setEditing(false); }}
+              onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+              className="font-semibold text-base border-b border-primary outline-none w-full"
+            />
+          ) : (
+            <button onClick={() => setEditing(true)} className="font-semibold text-base text-left flex items-center gap-2 hover:text-primary">
+              {table.name} <Pencil className="w-3 h-3 opacity-40" />
+            </button>
+          )}
+          <p className="text-xs text-neutral-500 mt-0.5">
+            {SHAPE_LABEL[table.shape]} · {seated.length}/{table.capacity} {full ? "(pleine)" : `(${free} libre${free > 1 ? "s" : ""})`}
+          </p>
+        </div>
+        <button onClick={onDelete} className="text-neutral-400 hover:text-primary" aria-label="Supprimer table">
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="flex gap-2 mb-3 text-xs">
+        <select
+          value={table.shape}
+          onChange={(e) => onShape(e.target.value as GuestTable["shape"])}
+          className="border border-neutral-300 px-2 py-1 text-xs"
+        >
+          <option value="round">Ronde</option>
+          <option value="rect">Rectangulaire</option>
+          <option value="square">Carrée</option>
+        </select>
+        <input
+          type="number"
+          min={1}
+          max={40}
+          defaultValue={table.capacity}
+          onBlur={(e) => {
+            const v = Math.max(1, Math.min(40, Number(e.target.value) || table.capacity));
+            if (v !== table.capacity) onCapacity(v);
+          }}
+          className="border border-neutral-300 px-2 py-1 text-xs w-20"
+          aria-label="Capacité"
+        />
+      </div>
+
+      <div
+        className={`min-h-[140px] p-3 ${shapeClass} bg-background/40 border border-dashed border-neutral-300 flex flex-col gap-1.5`}
+      >
+        {seated.map((g) => (
+          <DraggableGuest key={g.id} guest={g} inTable onRemove={() => onRemoveGuest(g.id)} />
+        ))}
+        {seated.length === 0 && (
+          <p className="text-xs text-neutral-400 text-center my-auto">Glissez des invités ici</p>
+        )}
+      </div>
+
+      <div
+        className="mt-3 flex flex-wrap gap-1.5 justify-center"
+        aria-label={`${seated.length} chaises occupées sur ${table.capacity}`}
+        data-testid={`chairs-${table.id}`}
+      >
+        {Array.from({ length: table.capacity }).map((_, i) => {
+          const occupied = i < seated.length;
+          return (
+            <span
+              key={i}
+              title={occupied ? seated[i] && `${seated[i].firstName} ${seated[i].lastName}` : "Chaise libre"}
+              className={`w-3 h-3 rounded-full border ${occupied ? "bg-primary border-primary" : "bg-white border-neutral-300"}`}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function UnassignedDropZone({ children }: { children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({ id: "unassigned", data: { tableId: null } });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`bg-white border-2 ${isOver ? "border-primary" : "border-neutral-200"} p-3 min-h-[100px]`}
+    >
+      {children}
+    </div>
+  );
+}
+
+export default function SeatingPage() {
+  const qc = useQueryClient();
+  const { data: tables = [] } = useQuery<GuestTable[]>({
+    queryKey: ["client", "tables"],
+    queryFn: () => clientApi.get<GuestTable[]>("/api/client/tables"),
+  });
+  const { data: guests = [] } = useQuery<Guest[]>({
+    queryKey: ["client", "guests"],
+    queryFn: () => clientApi.get<Guest[]>("/api/client/guests"),
+  });
+
+  const [search, setSearch] = useState("");
+  const [newTable, setNewTable] = useState<GuestTableCreate>({ name: "", shape: "round", capacity: 8 });
+  const [error, setError] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  const createTable = useMutation({
+    mutationFn: (b: GuestTableCreate) => clientApi.post<GuestTable>("/api/client/tables", b),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["client", "tables"] });
+      setNewTable({ name: "", shape: "round", capacity: 8 });
+    },
+  });
+  const updateTable = useMutation({
+    mutationFn: ({ id, body }: { id: number; body: GuestTablePatch }) =>
+      clientApi.patch<GuestTable>(`/api/client/tables/${id}`, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["client", "tables"] });
+      qc.invalidateQueries({ queryKey: ["client", "guests"] });
+    },
+    onError: (e: Error) => setError(e.message),
+  });
+  const deleteTable = useMutation({
+    mutationFn: (id: number) => clientApi.del(`/api/client/tables/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["client", "tables"] });
+      qc.invalidateQueries({ queryKey: ["client", "guests"] });
+    },
+  });
+  const assignGuest = useMutation({
+    mutationFn: ({ guestId, tableId }: { guestId: number; tableId: number | null }) =>
+      clientApi.patch<Guest>(`/api/client/guests/${guestId}`, { tableId }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
+    onError: (e: Error) => setError(e.message.includes("409") ? "Cette table est pleine." : e.message),
+  });
+
+  const confirmedGuests = useMemo(() => guests.filter((g) => g.rsvp === "confirmed"), [guests]);
+  const unassigned = useMemo(
+    () =>
+      confirmedGuests
+        .filter((g) => g.tableId == null)
+        .filter((g) =>
+          search ? `${g.firstName} ${g.lastName}`.toLowerCase().includes(search.toLowerCase()) : true,
+        ),
+    [confirmedGuests, search],
+  );
+  const guestsByTable = useMemo(() => {
+    const m = new Map<number, Guest[]>();
+    for (const g of confirmedGuests) {
+      if (g.tableId != null) {
+        if (!m.has(g.tableId)) m.set(g.tableId, []);
+        m.get(g.tableId)!.push(g);
+      }
+    }
+    return m;
+  }, [confirmedGuests]);
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setError(null);
+    const guestId = event.active.data.current?.guestId as number | undefined;
+    const tableId = event.over?.data.current?.tableId as number | null | undefined;
+    if (guestId == null || tableId === undefined) return;
+    const guest = guests.find((g) => g.id === guestId);
+    if (!guest) return;
+    if (guest.tableId === tableId) return;
+    assignGuest.mutate({ guestId, tableId });
+  };
+
+  const handleExportPng = async () => {
+    if (!canvasRef.current) return;
+    const canvas = await html2canvas(canvasRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const link = document.createElement("a");
+    link.download = `plan-de-table-${new Date().toISOString().slice(0, 10)}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
+  const handleExportPdf = async () => {
+    if (!canvasRef.current) return;
+    const canvas = await html2canvas(canvasRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const orientation = canvas.width >= canvas.height ? "landscape" : "portrait";
+    const pdf = new jsPDF({ orientation, unit: "pt", format: "a4" });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 24;
+    const availW = pageW - margin * 2;
+    const availH = pageH - margin * 2;
+    const ratio = Math.min(availW / canvas.width, availH / canvas.height);
+    const w = canvas.width * ratio;
+    const h = canvas.height * ratio;
+    pdf.addImage(imgData, "PNG", (pageW - w) / 2, (pageH - h) / 2, w, h);
+    pdf.save(`plan-de-table-${new Date().toISOString().slice(0, 10)}.pdf`);
+  };
+
+  const handleAddTable = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTable.name.trim()) return;
+    createTable.mutate({
+      name: newTable.name.trim(),
+      shape: newTable.shape,
+      capacity: newTable.capacity,
+    });
+  };
+
+  const seatedCount = confirmedGuests.filter((g) => g.tableId != null).length;
+  const totalCapacity = tables.reduce((s, t) => s + t.capacity, 0);
+
+  return (
+    <div className="space-y-6 max-w-7xl">
+      <div className="flex justify-between items-end flex-wrap gap-3">
+        <div>
+          <h2 className="font-bold text-2xl">Plan de table</h2>
+          <p className="text-sm text-neutral-600">
+            Créez vos tables et glissez-déposez vos invités RSVP confirmés.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="rounded-none uppercase tracking-wider text-xs gap-2"
+            onClick={handleExportPng}
+            disabled={tables.length === 0}
+            data-testid="button-export-png"
+          >
+            <Download className="w-3 h-3" /> PNG
+          </Button>
+          <Button
+            variant="outline"
+            className="rounded-none uppercase tracking-wider text-xs gap-2"
+            onClick={handleExportPdf}
+            disabled={tables.length === 0}
+            data-testid="button-export-pdf"
+          >
+            <FileText className="w-3 h-3" /> PDF
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white p-4 border border-neutral-200">
+          <p className="text-xs uppercase text-neutral-500 tracking-widest">Tables</p>
+          <p className="text-2xl font-bold">{tables.length}</p>
+        </div>
+        <div className="bg-white p-4 border border-neutral-200">
+          <p className="text-xs uppercase text-neutral-500 tracking-widest">Capacité totale</p>
+          <p className="text-2xl font-bold">{totalCapacity}</p>
+        </div>
+        <div className="bg-white p-4 border border-neutral-200">
+          <p className="text-xs uppercase text-neutral-500 tracking-widest">Invités placés</p>
+          <p className="text-2xl font-bold text-emerald-700">{seatedCount}</p>
+        </div>
+        <div className="bg-white p-4 border border-neutral-200">
+          <p className="text-xs uppercase text-neutral-500 tracking-widest">À placer</p>
+          <p className="text-2xl font-bold text-amber-700">
+            {confirmedGuests.length - seatedCount}
+          </p>
+        </div>
+      </div>
+
+      <form
+        onSubmit={handleAddTable}
+        className="bg-white p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
+      >
+        <Input
+          placeholder="Nom de la table (ex : Famille mariée)"
+          value={newTable.name}
+          onChange={(e) => setNewTable({ ...newTable, name: e.target.value })}
+          required
+          data-testid="input-table-name"
+        />
+        <select
+          className="border border-neutral-300 px-3 text-sm h-10"
+          value={newTable.shape}
+          onChange={(e) => setNewTable({ ...newTable, shape: e.target.value as GuestTable["shape"] })}
+        >
+          <option value="round">Ronde</option>
+          <option value="rect">Rectangulaire</option>
+          <option value="square">Carrée</option>
+        </select>
+        <Input
+          type="number"
+          min={1}
+          max={40}
+          placeholder="Capacité"
+          value={newTable.capacity}
+          onChange={(e) => setNewTable({ ...newTable, capacity: Number(e.target.value) || 1 })}
+        />
+        <Button
+          type="submit"
+          className="rounded-none uppercase tracking-wider text-xs gap-2 col-span-2 lg:col-span-2"
+          data-testid="button-add-table"
+        >
+          <Plus className="w-3 h-3" /> Ajouter table
+        </Button>
+      </form>
+
+      {error && (
+        <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-2 text-sm flex justify-between">
+          <span>{error}</span>
+          <button onClick={() => setError(null)}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Mobile fallback: vertical list with selects */}
+      <div className="lg:hidden space-y-4">
+        <div className="bg-white p-4 border border-neutral-200">
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Invités à placer</p>
+          {unassigned.length === 0 ? (
+            <p className="text-sm text-neutral-400">Tous les invités confirmés sont placés.</p>
+          ) : (
+            <div className="space-y-2">
+              {unassigned.map((g) => (
+                <div key={g.id} className="flex items-center justify-between gap-2 text-sm">
+                  <span className="truncate">{g.firstName} {g.lastName}</span>
+                  <select
+                    className="border border-neutral-300 px-2 py-1 text-xs"
+                    value=""
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v) assignGuest.mutate({ guestId: g.id, tableId: Number(v) });
+                    }}
+                    data-testid={`select-assign-${g.id}`}
+                  >
+                    <option value="">— Assigner —</option>
+                    {tables.map((t) => {
+                      const seated = guestsByTable.get(t.id)?.length ?? 0;
+                      return (
+                        <option key={t.id} value={t.id} disabled={seated >= t.capacity}>
+                          {t.name} ({seated}/{t.capacity})
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {tables.map((t) => {
+          const seated = guestsByTable.get(t.id) ?? [];
+          return (
+            <div key={t.id} className="bg-white p-4 border border-neutral-200">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <p className="font-semibold">{t.name}</p>
+                  <p className="text-xs text-neutral-500">
+                    {SHAPE_LABEL[t.shape]} · {seated.length}/{t.capacity}
+                  </p>
+                </div>
+                <button onClick={() => deleteTable.mutate(t.id)} className="text-neutral-400">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+              {seated.length === 0 ? (
+                <p className="text-xs text-neutral-400">Aucun invité assigné.</p>
+              ) : (
+                <ul className="space-y-1 text-sm">
+                  {seated.map((g) => (
+                    <li key={g.id} className="flex justify-between items-center">
+                      <span>{g.firstName} {g.lastName}</span>
+                      <button
+                        onClick={() => assignGuest.mutate({ guestId: g.id, tableId: null })}
+                        className="text-neutral-400"
+                        aria-label="Retirer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop: drag-and-drop layout */}
+      <div className="hidden lg:block">
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <div className="grid grid-cols-[280px_1fr] gap-6">
+            {/* Left: unassigned guests */}
+            <div className="space-y-3">
+              <div className="bg-white p-3 border border-neutral-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Search className="w-4 h-4 text-neutral-400" />
+                  <input
+                    placeholder="Rechercher…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="text-sm outline-none flex-1"
+                    data-testid="input-guest-search"
+                  />
+                </div>
+                <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
+                  À placer ({unassigned.length})
+                </p>
+                <UnassignedDropZone>
+                  {unassigned.length === 0 ? (
+                    <p className="text-xs text-neutral-400 text-center py-4">
+                      {confirmedGuests.length === 0
+                        ? "Aucun invité RSVP confirmé."
+                        : "Tous les invités sont placés."}
+                    </p>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {unassigned.map((g) => (
+                        <DraggableGuest key={g.id} guest={g} />
+                      ))}
+                    </div>
+                  )}
+                </UnassignedDropZone>
+              </div>
+            </div>
+
+            {/* Right: tables canvas */}
+            <div ref={canvasRef} className="bg-background/30 p-4 border border-neutral-200">
+              {tables.length === 0 ? (
+                <p className="text-center text-neutral-400 py-12">
+                  Créez votre première table avec le formulaire ci-dessus.
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+                  {tables.map((t) => (
+                    <DroppableTable
+                      key={t.id}
+                      table={t}
+                      seated={guestsByTable.get(t.id) ?? []}
+                      onRename={(name) => updateTable.mutate({ id: t.id, body: { name } })}
+                      onCapacity={(capacity) => updateTable.mutate({ id: t.id, body: { capacity } })}
+                      onShape={(shape) => updateTable.mutate({ id: t.id, body: { shape } })}
+                      onDelete={() => {
+                        if (confirm(`Supprimer la table "${t.name}" ? Les invités seront libérés.`)) {
+                          deleteTable.mutate(t.id);
+                        }
+                      }}
+                      onRemoveGuest={(guestId) => assignGuest.mutate({ guestId, tableId: null })}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </DndContext>
+      </div>
+    </div>
+  );
+}

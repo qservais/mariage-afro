@@ -78,11 +78,14 @@
   },
   "dependencies": {
     "@clerk/react": "^6.4.2",
+    "@dnd-kit/core": "^6.3.1",
     "@uppy/aws-s3": "^5.0.0",
     "@uppy/core": "^5.0.0",
     "@uppy/dashboard": "^5.0.0",
     "@uppy/react": "^5.0.0",
     "@workspace/object-storage-web": "workspace:*",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
     "react-router-dom": "^7.14.1"
   }
 }

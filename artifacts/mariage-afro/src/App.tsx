@@ -19,6 +19,7 @@ import ClientLayout from "@/components/client/ClientLayout";
 import ClientDashboard from "@/pages/client/dashboard";
 import BudgetPage from "@/pages/client/budget";
 import GuestsPage from "@/pages/client/invites";
+import SeatingPage from "@/pages/client/seating";
 import PlanningPage from "@/pages/client/planning";
 import VendorsPage from "@/pages/client/prestataires";
 import DocumentsPage from "@/pages/client/documents";
@@ -119,6 +120,7 @@ function AppRoutes() {
           <Route path="dashboard" element={<ClientDashboard />} />
           <Route path="budget" element={<BudgetPage />} />
           <Route path="invites" element={<GuestsPage />} />
+          <Route path="plan-de-table" element={<SeatingPage />} />
           <Route path="planning" element={<PlanningPage />} />
           <Route path="prestataires" element={<VendorsPage />} />
           <Route path="documents" element={<DocumentsPage />} />
