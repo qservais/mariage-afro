@@ -1,0 +1,170 @@
+{
+  "vendor": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "profile": "Mijn profiel",
+      "gallery": "Galerij",
+      "services": "Diensten",
+      "agenda": "Agenda",
+      "leads": "Aanvragen",
+      "settings": "Instellingen"
+    },
+    "availability": {
+      "title": "Mijn beschikbaarheidsagenda",
+      "subtitle": "Klik op een dag om deze te blokkeren of vrij te geven. Dagen 'geboekt' worden automatisch aangemaakt wanneer een huwelijk bevestigd is.",
+      "prev_month": "Vorige maand",
+      "next_month": "Volgende maand",
+      "weekdays_short": [
+        "M",
+        "D",
+        "W",
+        "D",
+        "V",
+        "Z",
+        "Z"
+      ],
+      "legend_free": "Beschikbaar",
+      "legend_blocked": "Geblokkeerd",
+      "legend_booked": "Geboekt",
+      "short_booked": "Geboekt",
+      "cannot_change_booked": "Deze dag is verbonden aan een bevestigd huwelijk en kan niet handmatig worden gewijzigd.",
+      "error_save": "Kan deze dag niet opslaan. Probeer opnieuw.",
+      "mobile_list_title": "Geblokkeerde dagen deze maand",
+      "mobile_empty": "Geen geblokkeerde dagen deze maand.",
+      "mobile_add_label": "Een datum blokkeren",
+      "remove_block": "Deze dag vrijgeven"
+    },
+    "layout": {
+      "pro_space": "Pro-zone",
+      "welcome": "Leveranciersruimte",
+      "signout": "Uitloggen",
+      "status_published": "Gepubliceerd",
+      "status_pending": "In behandeling"
+    },
+    "onboarding": {
+      "eyebrow": "Welkom",
+      "title": "Maak uw leveranciersprofiel aan",
+      "subtitle": "Enkele gegevens om uw profiel klaar te zetten.",
+      "business_name": "Bedrijfsnaam",
+      "contact_name": "Contactnaam",
+      "email": "Zakelijke e-mail",
+      "phone": "Telefoon",
+      "category": "Categorie",
+      "city": "Stad",
+      "website": "Website",
+      "description": "Beschrijving",
+      "review_notice": "Uw profiel wordt door ons team gecontroleerd vóór publicatie. U kunt ondertussen uw profiel en galerij aanvullen.",
+      "submit": "Mijn profiel aanmaken",
+      "saving": "Opslaan…"
+    },
+    "dashboard": {
+      "profile_status": "Status van uw profiel",
+      "status_published_desc": "Uw profiel is publiek zichtbaar in de marketplace.",
+      "status_pending_desc": "Uw profiel wacht op validatie door het Mariage Afro-team.",
+      "view_public": "Marketplace bekijken",
+      "stat_views": "Weergaven",
+      "stat_leads": "Aanvragen",
+      "stat_messages": "Berichten",
+      "stat_soon": "Binnenkort beschikbaar"
+    },
+    "profile": {
+      "title": "Mijn profiel",
+      "subtitle": "Werk de informatie bij die in de marketplace verschijnt.",
+      "name": "Naam van uw merk",
+      "category": "Categorie",
+      "city": "Stad",
+      "tagline": "Slogan",
+      "tagline_placeholder": "Een zin die u samenvat",
+      "description": "Beschrijving",
+      "email": "Contact-e-mail",
+      "phone": "Telefoon",
+      "website": "Website",
+      "save": "Opslaan",
+      "saving": "Opslaan…",
+      "saved": "Wijzigingen opgeslagen."
+    },
+    "gallery": {
+      "title": "Galerij",
+      "subtitle": "Uw mooiste realisaties. De omslagfoto wordt in de marketplace uitgelicht.",
+      "upload": "Foto's uploaden",
+      "empty": "Nog geen foto's.",
+      "cover_badge": "Omslag",
+      "set_cover": "Als omslag instellen",
+      "unset_cover": "Omslag verwijderen",
+      "remove": "Verwijderen",
+      "saved": "Galerij bijgewerkt."
+    },
+    "services": {
+      "title": "Mijn diensten",
+      "subtitle": "Som de diensten op die u aanbiedt.",
+      "add_placeholder": "Bijv.: 8-uur reportage, Fotoalbum…",
+      "empty": "Geen diensten toegevoegd.",
+      "save": "Opslaan",
+      "saving": "Opslaan…",
+      "saved": "Diensten opgeslagen."
+    },
+    "settings": {
+      "title": "Instellingen",
+      "subtitle": "Beheer uw account en inloggegevens.",
+      "account": "Account",
+      "email": "E-mail",
+      "name": "Naam",
+      "business": "Bedrijf",
+      "status": "Status",
+      "manage_account": "Account beheren",
+      "signout": "Uitloggen"
+    },
+    "leads": {
+      "title": "Mijn aanvragen",
+      "subtitle": "Alle aanvragen ontvangen via uw leveranciersfiche.",
+      "filter_status": "Status",
+      "filter_type": "Type",
+      "all": "Alle",
+      "empty": "Nog geen aanvragen.",
+      "detail_empty": "Selecteer een aanvraag om de details te zien.",
+      "count": "{{count}} aanvragen",
+      "col_date": "Datum",
+      "col_name": "Contact",
+      "col_type": "Type",
+      "col_status": "Status",
+      "message_label": "Bericht",
+      "status_label": "Status wijzigen",
+      "internal_note": "Interne notitie",
+      "note_placeholder": "Privénotities (alleen voor u zichtbaar)",
+      "save_note": "Notitie opslaan",
+      "note_saved": "Notitie opgeslagen.",
+      "received_on": "Ontvangen op",
+      "error": "Er is een fout opgetreden.",
+      "status": {
+        "new": "Nieuw",
+        "seen": "Bekeken",
+        "contacted": "Gecontacteerd",
+        "won": "Geconverteerd",
+        "lost": "Verloren"
+      },
+      "type": {
+        "quote": "Offerte",
+        "availability": "Beschikbaarheid",
+        "booking": "Reservering",
+        "zoom": "Zoom-gesprek",
+        "rdv": "Afspraak"
+      }
+    },
+    "messages": {
+      "nav": "Berichten",
+      "title": "Berichten",
+      "subtitle": "Beantwoord de koppels die u hebben gecontacteerd.",
+      "list_title": "Gesprekken",
+      "empty_list": "Nog geen gesprekken. Wanneer een koppel u contacteert, verschijnt het bericht hier.",
+      "select_conversation": "Selecteer een gesprek om berichten te bekijken.",
+      "no_messages": "Nog geen berichten — start het gesprek.",
+      "couple": "Koppel",
+      "you": "U",
+      "send": "Verzenden",
+      "placeholder": "Schrijf uw antwoord… (Ctrl+Enter om te verzenden)",
+      "loading": "Laden…",
+      "unread": "ongelezen",
+      "secure": "Gemodereerd gesprek"
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "home": "Home",
+    "platform": "Platform",
+    "services": "Services",
+    "partners": "Partners",
+    "venues": "Venues",
+    "realisations": "Portfolio",
+    "shop": "Shop",
+    "about": "About",
+    "contact": "Contact",
+    "client_area": "Client Area",
+    "cta": "Book an appointment",
+    "prestations": "Vendors",
+    "tool_budget": "Budget calculator",
+    "tool_quiz": "Wedding style quiz",
+    "write_us": "Write to us",
+    "pricing": "Pricing"
+  },
+  "header": {
+    "menu_open": "Menu",
+    "toggle_menu": "Toggle menu",
+    "menu_close": "Close",
+    "you_are": "You are",
+    "b2c_link": "A couple getting married",
+    "b2b_link": "A vendor",
+    "eyebrow_couples": "For couples",
+    "eyebrow_inspiration": "Inspiration",
+    "eyebrow_house": "The house",
+    "pro_space": "Pro Space"
+  },
+  "footer": {
+    "tagline": "Belgium's first premium platform dedicated to Afro and mixed weddings.",
+    "nav_title": "Navigation",
+    "explore_title": "Explore",
+    "contact_title": "Contact",
+    "social_title": "Social",
+    "address": "Brussels, Belgium",
+    "email": "info@mariage-afro.com",
+    "phone": "+32 XXX XX XX XX",
+    "legal": "Legal Notice",
+    "privacy": "Privacy Policy",
+    "made_by": "Site realized by Done. — madebydone.be",
+    "rights": "All rights reserved.",
+    "signature_eyebrow": "Mariage Afro",
+    "signature": "A bespoke celebration, two cultures united."
+  },
+  "popup": {
+    "eyebrow": "Free guide",
+    "title": "My Afro wedding in 12 steps",
+    "desc": "The practical guide offered by our team: timeline, checklist, traditions, average budget and pitfalls to avoid.",
+    "cta": "Get the guide",
+    "consent": "I agree to receive the guide and Mariage Afro news. Unsubscribe any time.",
+    "privacy_note": "Your data stays confidential — GDPR-compliant.",
+    "success_title": "The guide is on its way!",
+    "success_desc": "Check your inbox in a few minutes.",
+    "close": "Close"
+  },
+  "auth": {
+    "client": {
+      "eyebrow": "Client Area",
+      "title": "Mariage Afro"
+    },
+    "vendor": {
+      "eyebrow": "Pro Space",
+      "title": "Mariage Afro",
+      "subtitle": "Create your vendor account"
+    }
+  },
+  "not_found": {
+    "title": "Page not found",
+    "desc": "The page you are looking for does not exist or has been moved.",
+    "cta": "Return to homepage",
+    "code": "404",
+    "back_home": "Back to home"
+  },
+  "meta": {
+    "home": "Mariage Afro — Afro & Mixed Weddings in Belgium",
+    "services": "Services — Mariage Afro",
+    "home_description": "Premium wedding planning for Afro and mixed weddings in Belgium. Full planning, day-of coordination, vendor selection.",
+    "services_description": "Discover our wedding planning services: full planning, day-of coordination and vendor selection for your Afro or mixed wedding in Belgium."
+  }
+}

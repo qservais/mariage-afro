@@ -1,8 +1,26 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import frTranslations from './locales/fr.json';
-import enTranslations from './locales/en.json';
-import nlTranslations from './locales/nl.json';
+// Namespace-split locale files (LOT 7). Single monolithic JSON deprecated.
+import frCommon from './locales/fr/common.json';
+import frPublic from './locales/fr/public.json';
+import frClient from './locales/fr/client.json';
+import frVendor from './locales/fr/vendor.json';
+import frForms from './locales/fr/forms.json';
+import frEmails from './locales/fr/emails.json';
+import nlCommon from './locales/nl/common.json';
+import nlPublic from './locales/nl/public.json';
+import nlClient from './locales/nl/client.json';
+import nlVendor from './locales/nl/vendor.json';
+import nlForms from './locales/nl/forms.json';
+import nlEmails from './locales/nl/emails.json';
+import enCommon from './locales/en/common.json';
+import enPublic from './locales/en/public.json';
+import enClient from './locales/en/client.json';
+import enVendor from './locales/en/vendor.json';
+import enForms from './locales/en/forms.json';
+import enEmails from './locales/en/emails.json';
+
+export const NAMESPACES = ['common', 'public', 'client', 'vendor', 'forms', 'emails'] as const;
 
 const STORAGE_KEY = 'mariage-afro-lang';
 const COOKIE_NAME = 'lang';
@@ -87,15 +105,25 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      fr: { translation: frTranslations },
-      en: { translation: enTranslations },
-      nl: { translation: nlTranslations }
+      fr: {
+        common: frCommon, public: frPublic, client: frClient,
+        vendor: frVendor, forms: frForms, emails: frEmails,
+      },
+      nl: {
+        common: nlCommon, public: nlPublic, client: nlClient,
+        vendor: nlVendor, forms: nlForms, emails: nlEmails,
+      },
+      en: {
+        common: enCommon, public: enPublic, client: enClient,
+        vendor: enVendor, forms: enForms, emails: enEmails,
+      },
     },
+    ns: NAMESPACES as unknown as string[],
+    defaultNS: 'common',
+    fallbackNS: ['public', 'client', 'vendor', 'forms', 'emails'],
     lng: getInitialLang(),
     fallbackLng: 'fr',
-    interpolation: {
-      escapeValue: false
-    }
+    interpolation: { escapeValue: false },
   });
 
 i18n.on('languageChanged', (lng) => {

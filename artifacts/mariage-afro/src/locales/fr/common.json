@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "platform": "Plateforme",
+    "services": "Services",
+    "partners": "Partenaires",
+    "venues": "Lieux",
+    "realisations": "Réalisations",
+    "shop": "Shop",
+    "about": "À Propos",
+    "contact": "Contact",
+    "client_area": "Espace client",
+    "cta": "Prendre rendez-vous",
+    "prestations": "Prestataires",
+    "tool_budget": "Calculateur de budget",
+    "tool_quiz": "Quiz style de mariage",
+    "write_us": "Nous écrire",
+    "pricing": "Tarifs"
+  },
+  "header": {
+    "menu_open": "Menu",
+    "toggle_menu": "Ouvrir/fermer le menu",
+    "menu_close": "Fermer",
+    "you_are": "Vous êtes",
+    "b2c_link": "Un couple à marier",
+    "b2b_link": "Un prestataire",
+    "eyebrow_couples": "Pour les mariés",
+    "eyebrow_inspiration": "Inspiration",
+    "eyebrow_house": "La maison",
+    "pro_space": "Espace Pro"
+  },
+  "footer": {
+    "tagline": "La première plateforme premium dédiée aux mariages afro et mixtes en Belgique.",
+    "nav_title": "Navigation",
+    "explore_title": "Explorer",
+    "contact_title": "Contact",
+    "social_title": "Social",
+    "address": "Bruxelles, Belgique",
+    "email": "info@mariage-afro.com",
+    "phone": "+32 XXX XX XX XX",
+    "legal": "Mentions légales",
+    "privacy": "Politique de confidentialité",
+    "made_by": "Site réalisé par Done. — madebydone.be",
+    "rights": "Tous droits réservés.",
+    "signature_eyebrow": "Mariage Afro",
+    "signature": "Une célébration sur mesure, deux cultures réunies."
+  },
+  "popup": {
+    "eyebrow": "Guide gratuit",
+    "title": "Mon mariage afro en 12 étapes",
+    "desc": "Le guide pratique offert par notre équipe : timeline, checklist, traditions, budget moyen et erreurs à éviter.",
+    "cta": "Recevoir le guide",
+    "consent": "J'accepte de recevoir le guide et les actualités de Mariage Afro. Désinscription possible à tout moment.",
+    "privacy_note": "Vos données restent confidentielles — RGPD conforme.",
+    "success_title": "Le guide est en route !",
+    "success_desc": "Vérifiez votre boîte mail dans quelques minutes.",
+    "close": "Fermer"
+  },
+  "auth": {
+    "client": {
+      "eyebrow": "Espace client",
+      "title": "Mariage Afro"
+    },
+    "vendor": {
+      "eyebrow": "Espace Pro",
+      "title": "Mariage Afro",
+      "subtitle": "Créez votre compte prestataire"
+    }
+  },
+  "not_found": {
+    "title": "Page introuvable",
+    "desc": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "cta": "Retourner à l'accueil",
+    "code": "404",
+    "back_home": "Retourner à l'accueil"
+  },
+  "meta": {
+    "home": "Mariage Afro — Mariages Afro & Mixtes en Belgique",
+    "services": "Services — Mariage Afro",
+    "home_description": "Wedding planning premium pour mariages afro et mixtes en Belgique. Organisation complète, coordination jour J, sélection de prestataires.",
+    "services_description": "Découvrez nos services de wedding planning complet, coordination jour-J et sélection de prestataires pour votre mariage afro ou mixte en Belgique."
+  }
+}

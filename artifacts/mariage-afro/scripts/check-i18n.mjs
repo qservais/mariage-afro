@@ -14,8 +14,16 @@ function flat(obj, prefix='') {
   return out;
 }
 
+const NAMESPACES = ['common', 'public', 'client', 'vendor', 'forms', 'emails'];
+
 function loadLocale(lang) {
-  return flat(JSON.parse(fs.readFileSync(path.join(LOCALES_DIR, `${lang}.json`), 'utf8')));
+  const merged = {};
+  for (const ns of NAMESPACES) {
+    const file = path.join(LOCALES_DIR, lang, `${ns}.json`);
+    if (!fs.existsSync(file)) continue;
+    Object.assign(merged, JSON.parse(fs.readFileSync(file, 'utf8')));
+  }
+  return flat(merged);
 }
 
 const fr = loadLocale('fr'), nl = loadLocale('nl'), en = loadLocale('en');

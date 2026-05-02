@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "home": "Home",
+    "platform": "Platform",
+    "services": "Diensten",
+    "partners": "Partners",
+    "venues": "Locaties",
+    "realisations": "Realisaties",
+    "shop": "Shop",
+    "about": "Over Ons",
+    "contact": "Contact",
+    "client_area": "Klantenzone",
+    "cta": "Maak een afspraak",
+    "prestations": "Leveranciers",
+    "tool_budget": "Budgetcalculator",
+    "tool_quiz": "Bruiloftsstijl quiz",
+    "write_us": "Schrijf ons",
+    "pricing": "Tarieven"
+  },
+  "header": {
+    "menu_open": "Menu",
+    "toggle_menu": "Menu openen/sluiten",
+    "menu_close": "Sluiten",
+    "you_are": "U bent",
+    "b2c_link": "Een koppel om te trouwen",
+    "b2b_link": "Een leverancier",
+    "eyebrow_couples": "Voor de bruidsparen",
+    "eyebrow_inspiration": "Inspiratie",
+    "eyebrow_house": "Het huis",
+    "pro_space": "Pro-ruimte"
+  },
+  "footer": {
+    "tagline": "Het eerste premium platform gewijd aan Afro en gemengde bruiloften in België.",
+    "nav_title": "Navigatie",
+    "explore_title": "Ontdek",
+    "contact_title": "Contact",
+    "social_title": "Sociaal",
+    "address": "Brussel, België",
+    "email": "info@mariage-afro.com",
+    "phone": "+32 XXX XX XX XX",
+    "legal": "Wettelijke vermeldingen",
+    "privacy": "Privacybeleid",
+    "made_by": "Site gerealiseerd door Done. — madebydone.be",
+    "rights": "Alle rechten voorbehouden.",
+    "signature_eyebrow": "Mariage Afro",
+    "signature": "Een viering op maat, twee culturen verenigd."
+  },
+  "popup": {
+    "eyebrow": "Gratis gids",
+    "title": "Mijn Afrikaanse bruiloft in 12 stappen",
+    "desc": "De praktische gids van ons team: tijdlijn, checklist, tradities, gemiddeld budget en valkuilen om te vermijden.",
+    "cta": "Gids ontvangen",
+    "consent": "Ik ga akkoord om de gids en het nieuws van Mariage Afro te ontvangen. Op elk moment uitschrijven.",
+    "privacy_note": "Uw gegevens blijven vertrouwelijk — GDPR-conform.",
+    "success_title": "De gids is onderweg!",
+    "success_desc": "Controleer uw inbox over enkele minuten.",
+    "close": "Sluiten"
+  },
+  "auth": {
+    "client": {
+      "eyebrow": "Klantruimte",
+      "title": "Mariage Afro"
+    },
+    "vendor": {
+      "eyebrow": "Pro-ruimte",
+      "title": "Mariage Afro",
+      "subtitle": "Maak uw leveranciersaccount aan"
+    }
+  },
+  "not_found": {
+    "title": "Pagina niet gevonden",
+    "desc": "De pagina die u zoekt bestaat niet of is verplaatst.",
+    "cta": "Terug naar de startpagina",
+    "code": "404",
+    "back_home": "Terug naar de startpagina"
+  },
+  "meta": {
+    "home": "Mariage Afro — Afro & Gemengde Bruiloften in België",
+    "services": "Diensten — Mariage Afro",
+    "home_description": "Premium wedding planning voor afro en mixed bruiloften in België. Volledige organisatie, day-of-coördinatie, selectie van leveranciers.",
+    "services_description": "Ontdek onze diensten: volledige wedding planning, day-of-coördinatie en selectie van leveranciers voor uw afro of mixed bruiloft in België."
+  }
+}
