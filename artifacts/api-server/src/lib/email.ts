@@ -434,6 +434,7 @@ export async function notifyPartnerApplicationReceived(p: NotifyPartnerApplicati
 // =====================================================================
 
 const LEAD_MAGNET_PDF_URL = process.env.LEAD_MAGNET_PDF_URL || `${appUrl()}/guide-mariage-afro.pdf`;
+const BUDGET_GUIDE_PDF_URL = process.env.BUDGET_GUIDE_PDF_URL || `${appUrl()}/guide-budget-mariage.pdf`;
 
 export interface NotifyBudgetResultPayload {
   to: string;
@@ -481,7 +482,7 @@ export async function notifyBudgetResult(p: NotifyBudgetResultPayload, log = log
       bodyHtml: `<p>${esc(pick(T.body, locale))}</p>${adminBreakdown}`,
       rows: headerRows,
       ctaLabel: pick(T.cta, locale),
-      ctaUrl: `${appUrl()}/contact`,
+      ctaUrl: BUDGET_GUIDE_PDF_URL,
       locale,
     }),
   }, log);

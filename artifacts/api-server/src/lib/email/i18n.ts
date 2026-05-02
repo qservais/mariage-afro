@@ -310,9 +310,9 @@ export const dict: Dictionary = {
       en: "This is an indicative estimate — every wedding is unique. Contact our team for a personalised budget.",
     },
     cta: {
-      fr: "Échanger avec notre équipe",
-      nl: "Contact opnemen met ons team",
-      en: "Talk with our team",
+      fr: "Télécharger le guide budget (PDF)",
+      nl: "Download de budgetgids (PDF)",
+      en: "Download the budget guide (PDF)",
     },
   },
 
