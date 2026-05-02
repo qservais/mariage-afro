@@ -9,7 +9,7 @@ export type { Locale } from "./email/i18n";
 const FROM = process.env.EMAIL_FROM || "Mariage Afro <noreply@mariage-afro.com>";
 const ADMIN_TO = process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL || "info@mariage-afro.com";
 
-function appUrl(): string {
+export function appUrl(): string {
   const explicit = process.env.PUBLIC_APP_URL;
   if (explicit) return explicit.replace(/\/$/, "");
   const dom = process.env.REPLIT_DEPLOYMENT_DOMAIN || process.env.REPLIT_DEV_DOMAIN;

@@ -12,6 +12,7 @@ import {
   notifyQuizResult,
   notifyLeadMagnet,
   notifyMultiDevisConfirmation,
+  appUrl,
 } from "../lib/email";
 
 const router = Router();
@@ -352,7 +353,7 @@ router.post("/leads/quiz", async (req, res) => {
       recommendedVendors: recommendedVendors.map((v) => ({
         name: v.name,
         category: v.category,
-        url: `/partenaires/${v.id}`,
+        url: `${appUrl()}/partenaires/${v.id}`,
       })),
     }, req.log).catch((err) => req.log.error({ err }, "Quiz result email failed"));
     res.json({ success: true, id: row.id, recommendedVendors });
