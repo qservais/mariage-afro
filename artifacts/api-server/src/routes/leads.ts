@@ -1,13 +1,17 @@
 import { Router } from "express";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
-import { db, leadsTable, vendorRequestsTable, venueRequestsTable, partnerApplicationsTable, vendorAccountsTable } from "@workspace/db";
+import { eq, inArray } from "drizzle-orm";
+import { db, leadsTable, vendorRequestsTable, venueRequestsTable, partnerApplicationsTable, vendorAccountsTable, marketplaceVendorsTable } from "@workspace/db";
 import {
   sendLeadEmails,
   sendVendorRequestEmails,
   sendVenueRequestEmails,
   sendPartnerApplicationEmails,
   notifyVendorNewLead,
+  notifyBudgetResult,
+  notifyQuizResult,
+  notifyLeadMagnet,
+  notifyMultiDevisConfirmation,
 } from "../lib/email";
 
 const router = Router();
@@ -208,6 +212,247 @@ router.post("/venue-request", async (req, res) => {
     res.json({ success: true, id: row.id });
   } catch (err) {
     req.log.error({ err }, "Failed to insert venue request");
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+
+// =====================================================================
+// LOT 6 — Conversion tools & lead magnets
+// =====================================================================
+
+const budgetCalcSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().optional().nullable(),
+  locale: z.string().optional().nullable(),
+  inputs: z.object({
+    guestCount: z.number().int().positive(),
+    region: z.string(),
+    standing: z.enum(["essentiel", "premium", "luxe"]),
+    services: z.array(z.string()).default([]),
+    weddingMonth: z.string().optional().nullable(),
+  }),
+  result: z.object({
+    totalMin: z.number().nonnegative(),
+    totalMax: z.number().nonnegative(),
+    breakdown: z.array(z.object({
+      label: z.string(),
+      min: z.number().nonnegative(),
+      max: z.number().nonnegative(),
+    })),
+  }),
+});
+
+router.post("/leads/budget-calculator", async (req, res) => {
+  const parsed = budgetCalcSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+    return;
+  }
+  const data = parsed.data;
+  try {
+    const [row] = await db.insert(leadsTable).values({
+      category: "budget_calc",
+      name: data.name,
+      email: data.email,
+      phone: data.phone ?? null,
+      guestCount: data.inputs.guestCount,
+      services: data.inputs.services,
+      payload: { inputs: data.inputs, result: data.result, locale: data.locale ?? "fr" },
+    }).returning();
+    void notifyBudgetResult({
+      to: data.email,
+      locale: data.locale,
+      name: data.name,
+      totalMin: data.result.totalMin,
+      totalMax: data.result.totalMax,
+      breakdown: data.result.breakdown,
+      guestCount: data.inputs.guestCount,
+      region: data.inputs.region,
+      standing: data.inputs.standing,
+    }, req.log).catch((err) => req.log.error({ err }, "Budget result email failed"));
+    res.json({ success: true, id: row.id });
+  } catch (err) {
+    req.log.error({ err }, "Failed to insert budget calc lead");
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+
+const quizSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().optional().nullable(),
+  locale: z.string().optional().nullable(),
+  answers: z.record(z.string(), z.string()),
+  profile: z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string().optional().nullable(),
+    recommendedTags: z.array(z.string()).optional().default([]),
+  }),
+});
+
+router.post("/leads/quiz", async (req, res) => {
+  const parsed = quizSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+    return;
+  }
+  const data = parsed.data;
+  try {
+    const [row] = await db.insert(leadsTable).values({
+      category: "quiz_result",
+      name: data.name,
+      email: data.email,
+      phone: data.phone ?? null,
+      payload: { answers: data.answers, profile: data.profile, locale: data.locale ?? "fr" },
+    }).returning();
+    void notifyQuizResult({
+      to: data.email,
+      locale: data.locale,
+      name: data.name,
+      profileName: data.profile.name,
+      profileDescription: data.profile.description ?? null,
+    }, req.log).catch((err) => req.log.error({ err }, "Quiz result email failed"));
+    res.json({ success: true, id: row.id });
+  } catch (err) {
+    req.log.error({ err }, "Failed to insert quiz lead");
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+
+const magnetSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().optional().nullable(),
+  locale: z.string().optional().nullable(),
+  magnetId: z.string().default("guide-12-etapes"),
+  magnetTitle: z.string().optional().nullable(),
+  consent: z.boolean().refine((v) => v === true, { message: "RGPD consent required" }),
+});
+
+router.post("/leads/magnet", async (req, res) => {
+  const parsed = magnetSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+    return;
+  }
+  const data = parsed.data;
+  try {
+    const [row] = await db.insert(leadsTable).values({
+      category: "lead_magnet",
+      name: data.name,
+      email: data.email,
+      phone: data.phone ?? null,
+      payload: { magnetId: data.magnetId, magnetTitle: data.magnetTitle ?? null, consent: true, locale: data.locale ?? "fr" },
+    }).returning();
+    void notifyLeadMagnet({
+      to: data.email,
+      locale: data.locale,
+      name: data.name,
+      magnetTitle: data.magnetTitle ?? null,
+    }, req.log).catch((err) => req.log.error({ err }, "Lead magnet email failed"));
+    res.json({ success: true, id: row.id });
+  } catch (err) {
+    req.log.error({ err }, "Failed to insert lead magnet");
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+
+const multiDevisSchema = z.object({
+  vendorIds: z.array(z.coerce.number().int().positive()).min(1).max(5),
+  name: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().optional().nullable(),
+  weddingDate: z.string().optional().nullable(),
+  message: z.string().optional().nullable(),
+  locale: z.string().optional().nullable(),
+});
+
+router.post("/leads/multi-devis", async (req, res) => {
+  const parsed = multiDevisSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+    return;
+  }
+  const data = parsed.data;
+  // Dedupe & cap at 5
+  const ids = Array.from(new Set(data.vendorIds)).slice(0, 5);
+  try {
+    // Resolve vendor names
+    const vendors = await db
+      .select({ id: marketplaceVendorsTable.id, name: marketplaceVendorsTable.name })
+      .from(marketplaceVendorsTable)
+      .where(inArray(marketplaceVendorsTable.id, ids));
+    if (vendors.length === 0) {
+      res.status(400).json({ error: "No valid vendors" });
+      return;
+    }
+    // Insert one vendor_request per vendor
+    const insertRows = vendors.map((v) => ({
+      vendorId: String(v.id),
+      vendorName: v.name,
+      requestType: "quote",
+      name: data.name,
+      email: data.email,
+      phone: data.phone ?? null,
+      weddingDate: data.weddingDate ?? null,
+      message: data.message ?? null,
+    }));
+    const inserted = await db.insert(vendorRequestsTable).values(insertRows).returning();
+
+    // Tracking row in leads with category=multi_devis
+    await db.insert(leadsTable).values({
+      category: "multi_devis",
+      name: data.name,
+      email: data.email,
+      phone: data.phone ?? null,
+      weddingDate: data.weddingDate ?? null,
+      message: data.message ?? null,
+      payload: { vendorIds: ids, vendorNames: vendors.map((v) => v.name), locale: data.locale ?? "fr" },
+    });
+
+    // Fire-and-forget vendor notifications
+    void Promise.all(vendors.map(async (v) => {
+      try {
+        const [account] = await db
+          .select({ email: vendorAccountsTable.email, locale: vendorAccountsTable.locale })
+          .from(vendorAccountsTable)
+          .where(eq(vendorAccountsTable.vendorId, v.id))
+          .limit(1);
+        if (account?.email) {
+          await notifyVendorNewLead({
+            to: account.email,
+            locale: account.locale,
+            vendorName: v.name,
+            contactName: data.name,
+            contactEmail: data.email,
+            contactPhone: data.phone,
+            requestType: "quote",
+            weddingDate: data.weddingDate,
+            message: data.message,
+          }, req.log);
+        }
+      } catch (err) {
+        req.log.error({ err, vendorId: v.id }, "Failed to notify vendor of multi-devis lead");
+      }
+    })).catch((err) => req.log.error({ err }, "Multi-devis vendor notifications failed"));
+
+    // Confirmation to couple
+    void notifyMultiDevisConfirmation({
+      to: data.email,
+      locale: data.locale,
+      name: data.name,
+      vendorNames: vendors.map((v) => v.name),
+    }, req.log).catch((err) => req.log.error({ err }, "Multi-devis confirmation email failed"));
+
+    res.json({
+      success: true,
+      count: inserted.length,
+      vendorNames: vendors.map((v) => v.name),
+    });
+  } catch (err) {
+    req.log.error({ err }, "Failed to process multi-devis");
     res.status(500).json({ error: "Internal error" });
   }
 });

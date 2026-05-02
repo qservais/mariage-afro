@@ -15,6 +15,9 @@ import Shop from "@/pages/shop";
 import Realisations from "@/pages/realisations";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
+import OutilsBudget from "@/pages/outils-budget";
+import OutilsQuiz from "@/pages/outils-quiz";
+import ExitIntentPopup from "@/components/ExitIntentPopup";
 import SignInPage from "@/pages/sign-in";
 import SignUpPage from "@/pages/sign-up";
 import ClientLayout from "@/components/client/ClientLayout";
@@ -73,6 +76,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
+      <ExitIntentPopup />
     </div>
   );
 }
@@ -154,6 +158,8 @@ function AppRoutes() {
         <Route path="/a-propos" element={<About />} />
         <Route path="/about" element={<Navigate to="/a-propos" replace />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/outils/budget" element={<OutilsBudget />} />
+        <Route path="/outils/quiz" element={<OutilsQuiz />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </PublicLayout>

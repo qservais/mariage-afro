@@ -430,6 +430,186 @@ export async function notifyPartnerApplicationReceived(p: NotifyPartnerApplicati
 }
 
 // =====================================================================
+// LOT 6 — Conversion tools & lead magnets
+// =====================================================================
+
+const LEAD_MAGNET_PDF_URL = process.env.LEAD_MAGNET_PDF_URL || `${appUrl()}/guide-mariage-afro.pdf`;
+
+export interface NotifyBudgetResultPayload {
+  to: string;
+  locale?: string | null;
+  name: string;
+  totalMin: number;
+  totalMax: number;
+  breakdown: Array<{ label: string; min: number; max: number }>;
+  guestCount?: number | null;
+  region?: string | null;
+  standing?: string | null;
+}
+
+function fmtEur(n: number): string {
+  return new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+}
+
+export async function notifyBudgetResult(p: NotifyBudgetResultPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = dict.budgetResult;
+  const totalLabel = { fr: "Fourchette totale", nl: "Totaalbereik", en: "Total range" }[locale];
+  const guestsLabel = { fr: "Nombre d'invités", nl: "Aantal gasten", en: "Guest count" }[locale];
+  const regionLabel = { fr: "Région", nl: "Regio", en: "Region" }[locale];
+  const standingLabel = { fr: "Standing", nl: "Standing", en: "Standing" }[locale];
+  const breakdownLabel = { fr: "Ventilation par poste", nl: "Verdeling per post", en: "Breakdown by item" }[locale];
+
+  const breakdownRows = p.breakdown
+    .map((b) => row(b.label, `${fmtEur(b.min)} – ${fmtEur(b.max)}`))
+    .join("");
+
+  const adminBreakdown = `<h3 style="margin:20px 0 8px;color:#68191e;font-size:14px;">${esc(breakdownLabel)}</h3><table style="width:100%;border-collapse:collapse;border-top:1px solid #eee;">${breakdownRows}</table>`;
+
+  const headerRows =
+    row(totalLabel, `${fmtEur(p.totalMin)} – ${fmtEur(p.totalMax)}`) +
+    row(guestsLabel, p.guestCount ?? undefined) +
+    row(regionLabel, p.region) +
+    row(standingLabel, p.standing);
+
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject, locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.name), locale),
+      bodyHtml: `<p>${esc(pick(T.body, locale))}</p>${adminBreakdown}`,
+      rows: headerRows,
+      ctaLabel: pick(T.cta, locale),
+      ctaUrl: `${appUrl()}/contact`,
+      locale,
+    }),
+  }, log);
+
+  // Admin copy
+  await sendOne({
+    to: ADMIN_TO,
+    subject: `[Mariage Afro] Calculateur budget — ${p.name}`,
+    html: wrap({
+      title: "Lead calculateur budget",
+      intro: `${p.name} (${p.to}) a complété le calculateur de budget.`,
+      rows: row("Email", p.to) + headerRows,
+      bodyHtml: adminBreakdown,
+      locale: "fr",
+    }),
+  }, log);
+}
+
+export interface NotifyQuizResultPayload {
+  to: string;
+  locale?: string | null;
+  name: string;
+  profileName: string;
+  profileDescription?: string | null;
+  recommendedVendors?: Array<{ name: string; category?: string | null; url?: string | null }>;
+}
+
+export async function notifyQuizResult(p: NotifyQuizResultPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = dict.quizResult;
+  const profileBody = p.profileDescription
+    ? `<blockquote style="margin:16px 0;padding:12px 16px;background:#fff4e4;border-left:3px solid #c9a96e;color:#1f1416;">${esc(p.profileDescription)}</blockquote>`
+    : "";
+  const recoLabel = { fr: "Prestataires recommandés", nl: "Aanbevolen leveranciers", en: "Recommended vendors" }[locale];
+  const recoHtml = (p.recommendedVendors ?? []).length
+    ? `<h3 style="margin:20px 0 8px;color:#68191e;font-size:14px;">${esc(recoLabel)}</h3><ul style="padding-left:20px;color:#1f1416;">${(p.recommendedVendors ?? [])
+        .map((v) =>
+          `<li style="margin:6px 0;"><strong>${esc(v.name)}</strong>${v.category ? ` <span style="color:#888;">— ${esc(v.category)}</span>` : ""}${v.url ? ` <a href="${esc(v.url)}" style="color:#68191e;">Voir →</a>` : ""}</li>`,
+        )
+        .join("")}</ul>`
+    : "";
+
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject(p.profileName), locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.name, p.profileName), locale),
+      bodyHtml: `${profileBody}<p>${esc(pick(T.body, locale))}</p>${recoHtml}`,
+      ctaLabel: pick(T.cta, locale),
+      ctaUrl: `${appUrl()}/partenaires`,
+      locale,
+    }),
+  }, log);
+
+  await sendOne({
+    to: ADMIN_TO,
+    subject: `[Mariage Afro] Quiz — ${p.name} (${p.profileName})`,
+    html: wrap({
+      title: "Lead quiz mariage",
+      intro: `${p.name} (${p.to}) a complété le quiz. Profil : ${p.profileName}.`,
+      rows: row("Profil", p.profileName) + row("Email", p.to),
+      locale: "fr",
+    }),
+  }, log);
+}
+
+export interface NotifyLeadMagnetPayload {
+  to: string;
+  locale?: string | null;
+  name: string;
+  magnetTitle?: string | null;
+}
+
+export async function notifyLeadMagnet(p: NotifyLeadMagnetPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = dict.leadMagnet;
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject, locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.name), locale),
+      bodyHtml: `<p>${esc(pick(T.body, locale))}</p>`,
+      ctaLabel: pick(T.cta, locale),
+      ctaUrl: LEAD_MAGNET_PDF_URL,
+      locale,
+    }),
+  }, log);
+
+  await sendOne({
+    to: ADMIN_TO,
+    subject: `[Mariage Afro] Lead magnet téléchargé — ${p.name}`,
+    html: wrap({
+      title: "Téléchargement lead magnet",
+      intro: `${p.name} (${p.to}) a téléchargé "${p.magnetTitle ?? "Mon mariage afro en 12 étapes"}".`,
+      rows: row("Email", p.to),
+      locale: "fr",
+    }),
+  }, log);
+}
+
+export interface NotifyMultiDevisPayload {
+  to: string;
+  locale?: string | null;
+  name: string;
+  vendorNames: string[];
+}
+
+export async function notifyMultiDevisConfirmation(p: NotifyMultiDevisPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const T = dict.multiDevis;
+  await sendOne({
+    to: p.to,
+    subject: pick(T.subject, locale),
+    html: wrap({
+      title: pick(T.title, locale),
+      intro: pick(T.intro(p.name, p.vendorNames.length), locale),
+      bodyHtml: `<p>${esc(pick(T.body, locale))}</p>`,
+      rows: row(pick(T.rowVendors, locale), p.vendorNames.join(", ")),
+      ctaLabel: pick(dict.ctaOpen, locale),
+      ctaUrl: `${appUrl()}/partenaires`,
+      locale,
+    }),
+  }, log);
+}
+
+// =====================================================================
 // LEGACY partner / contact emails (kept)
 // =====================================================================
 

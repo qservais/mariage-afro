@@ -98,7 +98,15 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Full CRUD under `/admin/content/` — vendors, venues, réalisations, messages, wedding-websites
 
 ### DB (`lib/db`)
-- **Tables**: couples, budgetItems, guests, planningTasks, clientVendors, clientDocuments, jourJEvents, leads, marketplaceVendors, marketplaceVenues, realisations, messages, weddingWebsites, weddingRsvps, vendorAccounts (LOT 1 — Clerk userId ↔ marketplaceVendor link, status pending/approved/rejected)
+- **Tables**: couples, budgetItems, guests, planningTasks, clientVendors, clientDocuments, jourJEvents, leads (+ `payload jsonb` for budget/quiz/magnet/multi-devis since LOT 6), marketplaceVendors, marketplaceVenues, realisations, messages, weddingWebsites, weddingRsvps, vendorAccounts (LOT 1 — Clerk userId ↔ marketplaceVendor link, status pending/approved/rejected)
+
+### LOT 6 — Conversion tools & lead magnets
+- `/outils/budget` — 5-step wizard, deterministic client-side estimate, email capture
+- `/outils/quiz` — 7-question quiz scoring 5 wedding-style profiles, email capture
+- `<ExitIntentPopup>` mounted in `PublicLayout` — desktop mouseleave + 30s mobile scroll inactivity, 1×/session via sessionStorage, suppressed on `/outils/`, `/contact`, auth & dashboard paths
+- `<MultiDevisForm>` triggered from `ComparatorBar` — sends 1 demand to up to 5 vendors at once, creates N `vendor_requests` rows + couple confirmation
+- API routes: `POST /api/leads/{budget-calculator,quiz,magnet,multi-devis}` (zod-validated, fire-and-forget emails)
+- Optional env: `LEAD_MAGNET_PDF_URL` (fallback `${appUrl()}/guide-mariage-afro.pdf`)
 
 ## Environment Variables
 

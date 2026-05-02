@@ -71,6 +71,38 @@ interface Dictionary {
     intro: (name: string) => Record<Locale, string>;
     body: Record<Locale, string>;
   };
+
+  budgetResult: {
+    subject: Record<Locale, string>;
+    title: Record<Locale, string>;
+    intro: (name: string) => Record<Locale, string>;
+    body: Record<Locale, string>;
+    cta: Record<Locale, string>;
+  };
+
+  quizResult: {
+    subject: (profile: string) => Record<Locale, string>;
+    title: Record<Locale, string>;
+    intro: (name: string, profile: string) => Record<Locale, string>;
+    body: Record<Locale, string>;
+    cta: Record<Locale, string>;
+  };
+
+  leadMagnet: {
+    subject: Record<Locale, string>;
+    title: Record<Locale, string>;
+    intro: (name: string) => Record<Locale, string>;
+    body: Record<Locale, string>;
+    cta: Record<Locale, string>;
+  };
+
+  multiDevis: {
+    subject: Record<Locale, string>;
+    title: Record<Locale, string>;
+    intro: (name: string, count: number) => Record<Locale, string>;
+    body: Record<Locale, string>;
+    rowVendors: Record<Locale, string>;
+  };
 }
 
 export const dict: Dictionary = {
@@ -253,6 +285,118 @@ export const dict: Dictionary = {
       fr: "Notre équipe étudie votre dossier et reviendra vers vous dans les plus brefs délais. À très vite.",
       nl: "Ons team bestudeert uw dossier en neemt zo spoedig mogelijk contact met u op. Tot snel.",
       en: "Our team is reviewing your application and will get back to you shortly. Talk soon.",
+    },
+  },
+
+  budgetResult: {
+    subject: {
+      fr: "Votre estimation de budget mariage — Mariage Afro",
+      nl: "Uw budgetschatting voor de bruiloft — Mariage Afro",
+      en: "Your wedding budget estimate — Mariage Afro",
+    },
+    title: {
+      fr: "Votre estimation de budget",
+      nl: "Uw budgetschatting",
+      en: "Your budget estimate",
+    },
+    intro: (name) => ({
+      fr: `Bonjour ${name}, voici l'estimation détaillée de votre budget mariage.`,
+      nl: `Hallo ${name}, hier is de gedetailleerde schatting van uw bruiloftsbudget.`,
+      en: `Hello ${name}, here is the detailed estimate of your wedding budget.`,
+    }),
+    body: {
+      fr: "Cette estimation est indicative — chaque mariage est unique. Pour un budget personnalisé, échangez avec notre équipe.",
+      nl: "Deze schatting is indicatief — elke bruiloft is uniek. Neem contact op met ons team voor een persoonlijk budget.",
+      en: "This is an indicative estimate — every wedding is unique. Contact our team for a personalised budget.",
+    },
+    cta: {
+      fr: "Échanger avec notre équipe",
+      nl: "Contact opnemen met ons team",
+      en: "Talk with our team",
+    },
+  },
+
+  quizResult: {
+    subject: (profile) => ({
+      fr: `Votre profil de mariage : ${profile} — Mariage Afro`,
+      nl: `Uw bruiloftsprofiel: ${profile} — Mariage Afro`,
+      en: `Your wedding profile: ${profile} — Mariage Afro`,
+    }),
+    title: {
+      fr: "Votre profil de mariage",
+      nl: "Uw bruiloftsprofiel",
+      en: "Your wedding profile",
+    },
+    intro: (name, profile) => ({
+      fr: `Bonjour ${name}, votre profil de mariage est : ${profile}.`,
+      nl: `Hallo ${name}, uw bruiloftsprofiel is: ${profile}.`,
+      en: `Hello ${name}, your wedding profile is: ${profile}.`,
+    }),
+    body: {
+      fr: "Découvrez les prestataires recommandés pour votre profil sur notre plateforme.",
+      nl: "Ontdek de aanbevolen leveranciers voor uw profiel op ons platform.",
+      en: "Discover the recommended vendors for your profile on our platform.",
+    },
+    cta: {
+      fr: "Voir mes prestataires recommandés",
+      nl: "Mijn aanbevolen leveranciers bekijken",
+      en: "See my recommended vendors",
+    },
+  },
+
+  leadMagnet: {
+    subject: {
+      fr: "Mon mariage afro en 12 étapes — votre guide gratuit",
+      nl: "Mijn Afrikaanse bruiloft in 12 stappen — uw gratis gids",
+      en: "My Afro wedding in 12 steps — your free guide",
+    },
+    title: {
+      fr: "Votre guide gratuit",
+      nl: "Uw gratis gids",
+      en: "Your free guide",
+    },
+    intro: (name) => ({
+      fr: `Bonjour ${name}, voici votre guide "Mon mariage afro en 12 étapes".`,
+      nl: `Hallo ${name}, hier is uw gids "Mijn Afrikaanse bruiloft in 12 stappen".`,
+      en: `Hello ${name}, here is your guide "My Afro wedding in 12 steps".`,
+    }),
+    body: {
+      fr: "Téléchargez le guide ci-dessous et n'hésitez pas à nous écrire pour toute question.",
+      nl: "Download de gids hieronder en aarzel niet om ons te schrijven met vragen.",
+      en: "Download the guide below and feel free to write to us with any questions.",
+    },
+    cta: {
+      fr: "Télécharger le guide",
+      nl: "Gids downloaden",
+      en: "Download the guide",
+    },
+  },
+
+  multiDevis: {
+    subject: {
+      fr: "Vos demandes de devis ont été envoyées — Mariage Afro",
+      nl: "Uw offerteaanvragen zijn verzonden — Mariage Afro",
+      en: "Your quote requests have been sent — Mariage Afro",
+    },
+    title: {
+      fr: "Vos demandes ont été envoyées",
+      nl: "Uw aanvragen zijn verzonden",
+      en: "Your requests have been sent",
+    },
+    intro: (name, count) => ({
+      fr: `Bonjour ${name}, nous avons envoyé votre demande à ${count} prestataire${count > 1 ? "s" : ""}.`,
+      nl: `Hallo ${name}, wij hebben uw aanvraag naar ${count} leverancier${count > 1 ? "s" : ""} gestuurd.`,
+      en: `Hello ${name}, we sent your request to ${count} vendor${count > 1 ? "s" : ""}.`,
+    }),
+    body: {
+      fr: "Chaque prestataire reviendra vers vous individuellement. Vous pouvez suivre vos échanges depuis votre boîte mail.",
+      nl: "Elke leverancier neemt individueel contact met u op. U kunt uw uitwisselingen volgen via uw inbox.",
+      en: "Each vendor will reply to you individually. Track your conversations from your inbox.",
+    },
+    rowVendors: {
+      fr: "Prestataires contactés",
+      nl: "Gecontacteerde leveranciers",
+      en: "Vendors contacted",
     },
   },
 };

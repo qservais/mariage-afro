@@ -14,6 +14,7 @@ export const leadsTable = pgTable("leads", {
   weddingType: text("wedding_type"),
   services: jsonb("services").$type<string[]>().default([]),
   message: text("message"),
+  payload: jsonb("payload").$type<Record<string, unknown>>(),
   status: text("status").notNull().default("new"),
   internalNote: text("internal_note"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

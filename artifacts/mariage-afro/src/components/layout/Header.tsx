@@ -51,6 +51,8 @@ export default function Header() {
       links: [
         { to: "/plateforme", label: t("nav.platform") },
         { to: "/services", label: t("nav.services") },
+        { to: "/outils/budget", label: t("nav.tool_budget") },
+        { to: "/outils/quiz", label: t("nav.tool_quiz") },
         { to: "/shop", label: t("nav.shop") },
       ],
     },
