@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { db } from "@workspace/db";
 import {
   marketplaceVendorsTable,
@@ -801,6 +801,14 @@ router.post("/content/vendor-accounts/:id/reject", async (req: Request, res: Res
 });
 
 // ============ TEST EMAIL (dev only) ============
+
+router.use("/test-email", (_req: Request, res: Response, next: NextFunction) => {
+  if (process.env.NODE_ENV === "production") {
+    res.status(404).type("html").send("Not found");
+    return;
+  }
+  next();
+});
 
 router.get("/test-email", (_req: Request, res: Response) => {
   const apiKeyOk = !!process.env.RESEND_API_KEY;
