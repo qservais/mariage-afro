@@ -435,6 +435,17 @@
     },
     "add_to_project": "Add to my project"
   },
+  "marketplace": {
+    "availability": {
+      "title": "Availability (6 months)",
+      "toggle": "View availability",
+      "weekdays_short": ["M", "T", "W", "T", "F", "S", "S"],
+      "legend_free": "Available",
+      "legend_unavailable": "Unavailable",
+      "no_blocks": "No unavailable dates reported for the next 6 months.",
+      "warning_unavailable": "This date appears to be unavailable — you can still send the request but the vendor may not be free."
+    }
+  },
   "realisations": {
     "subtitle": "Discover our most beautiful love stories through a selection of unforgettable moments.",
     "filter_all": "All",
@@ -575,7 +586,25 @@
       "profile": "My profile",
       "gallery": "Gallery",
       "services": "Services",
+      "agenda": "Calendar",
       "settings": "Settings"
+    },
+    "availability": {
+      "title": "My availability calendar",
+      "subtitle": "Click a day to block or free it. Days marked as 'booked' are created automatically when a wedding is confirmed.",
+      "prev_month": "Previous month",
+      "next_month": "Next month",
+      "weekdays_short": ["M", "T", "W", "T", "F", "S", "S"],
+      "legend_free": "Available",
+      "legend_blocked": "Blocked",
+      "legend_booked": "Booked",
+      "short_booked": "Booked",
+      "cannot_change_booked": "This day is tied to a confirmed wedding and cannot be edited manually.",
+      "error_save": "Could not save this day. Please retry.",
+      "mobile_list_title": "Blocked days this month",
+      "mobile_empty": "No blocked days this month.",
+      "mobile_add_label": "Add a date to block",
+      "remove_block": "Free this day"
     },
     "layout": {
       "pro_space": "Pro space",

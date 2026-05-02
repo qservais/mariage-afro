@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { X, Loader2, CheckCircle2 } from "lucide-react";
+import { X, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import { fetchVendorAvailabilityStatus } from "@/components/VendorAvailabilityCalendar";
 
 import {
   Form,
@@ -59,12 +60,34 @@ export default function VendorActionModal({ open, onClose, vendor, action }: Pro
     defaultValues: { name: "", email: "", phone: "", weddingDate: "", message: "" },
   });
 
+  const watchedDate = form.watch("weddingDate");
+  const [dateStatus, setDateStatus] = useState<"blocked" | "booked" | null>(null);
+  const [checkingDate, setCheckingDate] = useState(false);
+
   useEffect(() => {
     if (!open) {
       setSubmitted(false);
+      setDateStatus(null);
       form.reset();
     }
   }, [open, form]);
+
+  useEffect(() => {
+    if (!open || !watchedDate || !/^\d{4}-\d{2}-\d{2}$/.test(watchedDate)) {
+      setDateStatus(null);
+      return;
+    }
+    let cancelled = false;
+    setCheckingDate(true);
+    fetchVendorAvailabilityStatus(vendor.id, watchedDate)
+      .then((status) => {
+        if (!cancelled) setDateStatus(status);
+      })
+      .finally(() => {
+        if (!cancelled) setCheckingDate(false);
+      });
+    return () => { cancelled = true; };
+  }, [watchedDate, vendor.id, open]);
 
   const mutation = useMutation({
     mutationFn: async (values: FormValues) => {
@@ -200,6 +223,15 @@ export default function VendorActionModal({ open, onClose, vendor, action }: Pro
                             <Input type="date" {...field} className="rounded-none" />
                           </FormControl>
                           <FormMessage />
+                          {watchedDate && !checkingDate && dateStatus && (
+                            <div
+                              className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900"
+                              data-testid="warning-date-unavailable"
+                            >
+                              <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                              <span>{t("marketplace.availability.warning_unavailable")}</span>
+                            </div>
+                          )}
                         </FormItem>
                       )}
                     />

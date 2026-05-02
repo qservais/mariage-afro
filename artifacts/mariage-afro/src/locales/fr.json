@@ -435,6 +435,17 @@
     },
     "add_to_project": "Ajouter à mon projet"
   },
+  "marketplace": {
+    "availability": {
+      "title": "Disponibilité (6 mois)",
+      "toggle": "Voir disponibilités",
+      "weekdays_short": ["L", "M", "M", "J", "V", "S", "D"],
+      "legend_free": "Libre",
+      "legend_unavailable": "Indispo",
+      "no_blocks": "Aucune date indispo signalée pour les 6 prochains mois.",
+      "warning_unavailable": "Cette date semble réservée — vous pouvez quand même envoyer la demande mais le prestataire risque de ne pas être disponible."
+    }
+  },
   "realisations": {
     "subtitle": "Découvrez nos plus belles histoires d'amour à travers une sélection de moments inoubliables.",
     "filter_all": "Tous",
@@ -575,7 +586,25 @@
       "profile": "Mon profil",
       "gallery": "Galerie",
       "services": "Services",
+      "agenda": "Agenda",
       "settings": "Paramètres"
+    },
+    "availability": {
+      "title": "Mon agenda de disponibilité",
+      "subtitle": "Cliquez sur un jour pour le bloquer ou le libérer. Les jours « réservés » sont créés automatiquement quand un mariage est confirmé.",
+      "prev_month": "Mois précédent",
+      "next_month": "Mois suivant",
+      "weekdays_short": ["L", "M", "M", "J", "V", "S", "D"],
+      "legend_free": "Libre",
+      "legend_blocked": "Bloqué",
+      "legend_booked": "Réservé",
+      "short_booked": "Réservé",
+      "cannot_change_booked": "Ce jour est lié à un mariage confirmé et ne peut pas être modifié manuellement.",
+      "error_save": "Impossible d'enregistrer ce jour. Réessayez.",
+      "mobile_list_title": "Jours bloqués ce mois-ci",
+      "mobile_empty": "Aucun jour bloqué ce mois-ci.",
+      "mobile_add_label": "Ajouter une date à bloquer",
+      "remove_block": "Libérer ce jour"
     },
     "layout": {
       "pro_space": "Espace Pro",

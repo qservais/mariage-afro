@@ -6,7 +6,9 @@ import {
   db,
   vendorAccountsTable,
   marketplaceVendorsTable,
+  vendorAvailabilityTable,
 } from "@workspace/db";
+import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
 
@@ -259,6 +261,117 @@ router.patch("/vendor/profile/images", async (req, res) => {
     .where(eq(marketplaceVendorsTable.id, vendor.id))
     .returning();
   res.json(updated);
+});
+
+// ---------- Availability ----------
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+const availabilityQuerySchema = z.object({
+  from: z.string().regex(dateRegex).optional(),
+  to: z.string().regex(dateRegex).optional(),
+});
+
+const availabilityUpsertSchema = z.object({
+  date: z.string().regex(dateRegex),
+  status: z.literal("blocked").default("blocked"),
+  note: z.string().max(280).optional().nullable(),
+});
+
+router.get("/vendor/availability", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const vendor = await getMyVendor(r.vendorAccountId);
+  if (!vendor) {
+    res.status(404).json({ error: "Vendor profile not found — complete onboarding first" });
+    return;
+  }
+  const parsed = availabilityQuerySchema.safeParse(req.query);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid query", issues: parsed.error.issues });
+    return;
+  }
+  const { from, to } = parsed.data;
+  const conditions = [eq(vendorAvailabilityTable.vendorId, vendor.id)];
+  if (from) conditions.push(gte(vendorAvailabilityTable.date, from));
+  if (to) conditions.push(lte(vendorAvailabilityTable.date, to));
+  const rows = await db
+    .select()
+    .from(vendorAvailabilityTable)
+    .where(and(...conditions));
+  res.json(rows);
+});
+
+router.post("/vendor/availability", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const vendor = await getMyVendor(r.vendorAccountId);
+  if (!vendor) {
+    res.status(404).json({ error: "Vendor profile not found — complete onboarding first" });
+    return;
+  }
+  const parsed = availabilityUpsertSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid", issues: parsed.error.issues });
+    return;
+  }
+  const { date, status, note } = parsed.data;
+  const [existing] = await db
+    .select()
+    .from(vendorAvailabilityTable)
+    .where(and(
+      eq(vendorAvailabilityTable.vendorId, vendor.id),
+      eq(vendorAvailabilityTable.date, date),
+    ))
+    .limit(1);
+  if (existing) {
+    if (existing.status === "booked") {
+      res.status(409).json({ error: "Date is booked and cannot be modified manually" });
+      return;
+    }
+    const [updated] = await db
+      .update(vendorAvailabilityTable)
+      .set({ status, note: note ?? null })
+      .where(eq(vendorAvailabilityTable.id, existing.id))
+      .returning();
+    res.json(updated);
+    return;
+  }
+  const [created] = await db
+    .insert(vendorAvailabilityTable)
+    .values({ vendorId: vendor.id, date, status, note: note ?? null })
+    .returning();
+  res.status(201).json(created);
+});
+
+router.delete("/vendor/availability/:date", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const vendor = await getMyVendor(r.vendorAccountId);
+  if (!vendor) {
+    res.status(404).json({ error: "Vendor profile not found — complete onboarding first" });
+    return;
+  }
+  const date = req.params.date;
+  if (!dateRegex.test(date)) {
+    res.status(400).json({ error: "Invalid date format" });
+    return;
+  }
+  const [existing] = await db
+    .select()
+    .from(vendorAvailabilityTable)
+    .where(and(
+      eq(vendorAvailabilityTable.vendorId, vendor.id),
+      eq(vendorAvailabilityTable.date, date),
+    ))
+    .limit(1);
+  if (existing && existing.status === "booked") {
+    res.status(409).json({ error: "Date is booked and cannot be modified manually" });
+    return;
+  }
+  await db
+    .delete(vendorAvailabilityTable)
+    .where(and(
+      eq(vendorAvailabilityTable.vendorId, vendor.id),
+      eq(vendorAvailabilityTable.date, date),
+    ));
+  res.status(204).end();
 });
 
 export default router;

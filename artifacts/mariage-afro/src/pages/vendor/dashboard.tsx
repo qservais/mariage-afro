@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Briefcase, Image as ImageIcon, ListChecks, Settings, ExternalLink } from "lucide-react";
+import { Briefcase, Image as ImageIcon, ListChecks, Settings, ExternalLink, CalendarDays } from "lucide-react";
 import { useVendorMe } from "@/components/vendor/VendorLayout";
 
 export default function VendorDashboard() {
@@ -13,6 +13,7 @@ export default function VendorDashboard() {
     { to: "/espace-pro/profile", label: t("vendor.nav.profile"), icon: Briefcase, color: "bg-cream" },
     { to: "/espace-pro/gallery", label: t("vendor.nav.gallery"), icon: ImageIcon, color: "bg-amber-50" },
     { to: "/espace-pro/services", label: t("vendor.nav.services"), icon: ListChecks, color: "bg-rose-50" },
+    { to: "/espace-pro/agenda", label: t("vendor.nav.agenda"), icon: CalendarDays, color: "bg-emerald-50" },
     { to: "/espace-pro/settings", label: t("vendor.nav.settings"), icon: Settings, color: "bg-stone-50" },
   ];
 

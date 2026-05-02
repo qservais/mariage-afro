@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, Briefcase, Image as ImageIcon, ListChecks,
-  Settings, LogOut, Menu, X, Heart, AlertCircle, CheckCircle2,
+  Settings, LogOut, Menu, X, Heart, AlertCircle, CheckCircle2, CalendarDays,
 } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import VendorOnboardingGate from "@/components/vendor/VendorOnboardingGate";
@@ -60,6 +60,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
     { to: "/espace-pro/profile", label: t("vendor.nav.profile"), icon: Briefcase },
     { to: "/espace-pro/gallery", label: t("vendor.nav.gallery"), icon: ImageIcon },
     { to: "/espace-pro/services", label: t("vendor.nav.services"), icon: ListChecks },
+    { to: "/espace-pro/agenda", label: t("vendor.nav.agenda"), icon: CalendarDays },
     { to: "/espace-pro/settings", label: t("vendor.nav.settings"), icon: Settings },
   ];
 

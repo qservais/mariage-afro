@@ -18,7 +18,11 @@ import {
   CalendarClock,
   Loader2,
   PlusCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
+
+import VendorAvailabilityCalendar from "@/components/VendorAvailabilityCalendar";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -707,6 +711,7 @@ export default function Prestations() {
     action: VendorAction;
   } | null>(null);
   const [addingId, setAddingId] = useState<number | null>(null);
+  const [expandedAvailability, setExpandedAvailability] = useState<number | null>(null);
 
   const categories = t("prestations.items", { returnObjects: true }) as string[];
 
@@ -918,7 +923,28 @@ export default function Prestations() {
                       </ul>
                     </div>
 
-                    <div className="mt-auto space-y-2">
+                    <div className="mt-auto space-y-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedAvailability((cur) => (cur === vendor.id ? null : vendor.id))
+                        }
+                        className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-wine-deep/80 border-t border-wine-deep/10 pt-3"
+                        data-testid={`toggle-availability-${vendor.id}`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <CalendarCheck className="w-3.5 h-3.5" />
+                          {t("marketplace.availability.toggle")}
+                        </span>
+                        {expandedAvailability === vendor.id ? (
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        ) : (
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                      {expandedAvailability === vendor.id && (
+                        <VendorAvailabilityCalendar vendorId={vendor.id} months={6} />
+                      )}
                       <button
                         onClick={() => handleAddToProject(vendor)}
                         disabled={addingId === vendor.id}

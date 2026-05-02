@@ -435,6 +435,17 @@
     },
     "add_to_project": "Toevoegen aan mijn project"
   },
+  "marketplace": {
+    "availability": {
+      "title": "Beschikbaarheid (6 maanden)",
+      "toggle": "Beschikbaarheid bekijken",
+      "weekdays_short": ["M", "D", "W", "D", "V", "Z", "Z"],
+      "legend_free": "Beschikbaar",
+      "legend_unavailable": "Niet beschikbaar",
+      "no_blocks": "Geen niet-beschikbare data voor de komende 6 maanden.",
+      "warning_unavailable": "Deze datum lijkt niet beschikbaar — u kunt de aanvraag toch versturen, maar de leverancier is mogelijk niet vrij."
+    }
+  },
   "realisations": {
     "subtitle": "Ontdek onze mooiste liefdesverhalen via een selectie van onvergetelijke momenten.",
     "filter_all": "Alle",
@@ -575,7 +586,25 @@
       "profile": "Mijn profiel",
       "gallery": "Galerij",
       "services": "Diensten",
+      "agenda": "Agenda",
       "settings": "Instellingen"
+    },
+    "availability": {
+      "title": "Mijn beschikbaarheidsagenda",
+      "subtitle": "Klik op een dag om deze te blokkeren of vrij te geven. Dagen 'geboekt' worden automatisch aangemaakt wanneer een huwelijk bevestigd is.",
+      "prev_month": "Vorige maand",
+      "next_month": "Volgende maand",
+      "weekdays_short": ["M", "D", "W", "D", "V", "Z", "Z"],
+      "legend_free": "Beschikbaar",
+      "legend_blocked": "Geblokkeerd",
+      "legend_booked": "Geboekt",
+      "short_booked": "Geboekt",
+      "cannot_change_booked": "Deze dag is verbonden aan een bevestigd huwelijk en kan niet handmatig worden gewijzigd.",
+      "error_save": "Kan deze dag niet opslaan. Probeer opnieuw.",
+      "mobile_list_title": "Geblokkeerde dagen deze maand",
+      "mobile_empty": "Geen geblokkeerde dagen deze maand.",
+      "mobile_add_label": "Een datum blokkeren",
+      "remove_block": "Deze dag vrijgeven"
     },
     "layout": {
       "pro_space": "Pro-zone",

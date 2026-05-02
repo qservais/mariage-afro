@@ -33,6 +33,7 @@ import VendorProfilePage from "@/pages/vendor/profile";
 import VendorGalleryPage from "@/pages/vendor/gallery";
 import VendorServicesPage from "@/pages/vendor/services";
 import VendorSettingsPage from "@/pages/vendor/settings";
+import VendorAvailabilityPage from "@/pages/vendor/availability";
 import VendorSignInPage from "@/pages/vendor/sign-in";
 import VendorSignUpPage from "@/pages/vendor/sign-up";
 import Header from "@/components/layout/Header";
@@ -98,6 +99,7 @@ function AppRoutes() {
           <Route path="profile" element={<VendorProfilePage />} />
           <Route path="gallery" element={<VendorGalleryPage />} />
           <Route path="services" element={<VendorServicesPage />} />
+          <Route path="agenda" element={<VendorAvailabilityPage />} />
           <Route path="settings" element={<VendorSettingsPage />} />
           <Route path="*" element={<Navigate to="/espace-pro" replace />} />
         </Route>

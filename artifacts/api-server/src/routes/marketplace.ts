@@ -7,8 +7,9 @@ import {
   realisationsTable,
   clientVendorsTable,
   couplesTable,
+  vendorAvailabilityTable,
 } from "@workspace/db";
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and, asc, gte, lte } from "drizzle-orm";
 
 const router = Router();
 
@@ -72,6 +73,37 @@ router.get("/marketplace/venues", async (_req: Request, res: Response) => {
     .where(eq(marketplaceVenuesTable.active, true))
     .orderBy(asc(marketplaceVenuesTable.name));
   res.json(venues);
+});
+
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+router.get("/marketplace/vendors/:id/availability", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const [vendor] = await db
+    .select()
+    .from(marketplaceVendorsTable)
+    .where(and(eq(marketplaceVendorsTable.id, id), eq(marketplaceVendorsTable.active, true)));
+  if (!vendor) { res.status(404).json({ error: "Not found" }); return; }
+
+  const from = typeof req.query.from === "string" && dateRegex.test(req.query.from)
+    ? req.query.from : null;
+  const to = typeof req.query.to === "string" && dateRegex.test(req.query.to)
+    ? req.query.to : null;
+
+  const conditions = [eq(vendorAvailabilityTable.vendorId, id)];
+  if (from) conditions.push(gte(vendorAvailabilityTable.date, from));
+  if (to) conditions.push(lte(vendorAvailabilityTable.date, to));
+
+  const rows = await db
+    .select({
+      date: vendorAvailabilityTable.date,
+      status: vendorAvailabilityTable.status,
+    })
+    .from(vendorAvailabilityTable)
+    .where(and(...conditions));
+  res.json(rows);
 });
 
 router.get("/marketplace/realisations", async (_req: Request, res: Response) => {
