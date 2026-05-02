@@ -44,9 +44,13 @@ export default function ExitIntentPopup() {
     }
 
     let scrollTimer: number | null = null;
+    let onFirstScroll: (() => void) | null = null;
 
     const trigger = () => {
       if (triggeredRef.current) return;
+      // Re-check suppression at trigger time in case the route changed
+      // between effect setup and the trigger firing.
+      if (shouldSuppress(window.location.pathname)) return;
       triggeredRef.current = true;
       try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* noop */ }
       setOpen(true);
@@ -64,11 +68,11 @@ export default function ExitIntentPopup() {
     if (isMobile()) {
       // Mobile: 30s of scroll inactivity AFTER first scroll
       let firstScrollSeen = false;
-      const onFirstScroll = () => {
+      onFirstScroll = () => {
         firstScrollSeen = true;
         lastScrollRef.current = Date.now();
         window.addEventListener("scroll", onScroll, { passive: true });
-        window.removeEventListener("scroll", onFirstScroll);
+        if (onFirstScroll) window.removeEventListener("scroll", onFirstScroll);
       };
       window.addEventListener("scroll", onFirstScroll, { passive: true });
       scrollTimer = window.setInterval(() => {
@@ -82,6 +86,7 @@ export default function ExitIntentPopup() {
     return () => {
       document.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("scroll", onScroll);
+      if (onFirstScroll) window.removeEventListener("scroll", onFirstScroll);
       if (scrollTimer != null) window.clearInterval(scrollTimer);
     };
   }, [pathname]);
