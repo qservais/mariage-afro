@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown, ArrowRight } from "lucide-react";
+import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown, ArrowRight, Heart, Briefcase } from "lucide-react";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
@@ -129,6 +129,96 @@ export default function Home() {
           scrollToExpand="Faites défiler pour découvrir"
         />
       </div>
+
+      {/* Choix B2B / B2C — orientation immédiate du visiteur */}
+      <section
+        className="relative bg-cream py-20 md:py-28 border-t border-wine-deep/10"
+        aria-label="Choisissez votre parcours"
+        data-testid="section-audience-choice"
+      >
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
+          <motion.div {...fadeIn} className="text-center mb-12 md:mb-16">
+            <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.4em] text-gold font-medium mb-5">
+              <span className="block w-8 h-px bg-gold" />
+              Vous êtes
+              <span className="block w-8 h-px bg-gold" />
+            </span>
+            <h2 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl text-wine-deep tracking-tight leading-tight">
+              Que recherchez-vous aujourd'hui&nbsp;?
+            </h2>
+            <p className="text-wine-deep/60 max-w-xl mx-auto mt-5 text-sm md:text-base font-light">
+              Mariage Afro est à la fois une plateforme pour les couples qui se marient
+              et un réseau de prestataires professionnels.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-wine-deep/10 border border-wine-deep/10">
+            {/* B2C — Couples */}
+            <motion.div {...fadeIn}>
+              <Link
+                to="/services"
+                className="group relative block bg-cream hover:bg-wine-deep transition-colors duration-500 p-8 md:p-12 lg:p-14 h-full"
+                data-testid="link-audience-b2c"
+              >
+                <div className="flex items-start justify-between mb-10 md:mb-14">
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">
+                    01 — Particulier
+                  </span>
+                  <Heart className="w-5 h-5 text-gold transition-transform group-hover:scale-110" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl text-wine-deep group-hover:text-cream transition-colors leading-[1.05] tracking-tight mb-5">
+                  Je me marie
+                </h3>
+                <p className="text-wine-deep/65 group-hover:text-cream/75 transition-colors text-sm md:text-base font-light leading-relaxed mb-10 max-w-md">
+                  Découvrez nos formules d'accompagnement, accédez à un réseau de prestataires sélectionnés et organisez votre mariage afro ou mixte sur notre plateforme dédiée.
+                </p>
+                <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] font-medium text-gold">
+                  <span>Voir nos services</span>
+                  <span className="block w-8 h-px bg-gold transition-all group-hover:w-14" />
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* B2B — Prestataires */}
+            <motion.div {...fadeIn} transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}>
+              <Link
+                to="/partenaires#become-partner"
+                className="group relative block bg-wine-deep text-cream hover:bg-wine-deep/95 transition-colors duration-500 p-8 md:p-12 lg:p-14 h-full"
+                data-testid="link-audience-b2b"
+              >
+                <div className="flex items-start justify-between mb-10 md:mb-14">
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">
+                    02 — Professionnel
+                  </span>
+                  <Briefcase className="w-5 h-5 text-gold transition-transform group-hover:scale-110" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl text-cream leading-[1.05] tracking-tight mb-5">
+                  Je suis prestataire
+                </h3>
+                <p className="text-cream/70 text-sm md:text-base font-light leading-relaxed mb-10 max-w-md">
+                  Photographes, traiteurs, lieux, DJs, fleuristes... Rejoignez le réseau Mariage Afro pour proposer vos services et recevoir des leads qualifiés de couples afro et mixtes en Belgique.
+                </p>
+                <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] font-medium text-gold">
+                  <span>Devenir partenaire</span>
+                  <span className="block w-8 h-px bg-gold transition-all group-hover:w-14" />
+                </div>
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Lien tertiaire — Espace client existant */}
+          <motion.div {...fadeIn} className="text-center mt-10 md:mt-14">
+            <Link
+              to="/espace-client/login"
+              className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-wine-deep/60 hover:text-gold font-medium transition-colors"
+              data-testid="link-audience-existing-client"
+            >
+              <span>Déjà client&nbsp;? Accédez à votre espace</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Hero Section — Style lamangue : fond wine, titre serif éditorial, vidéo offset droite */}
       <section className="relative min-h-screen bg-wine-deep text-cream overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:pl-16">

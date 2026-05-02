@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, User, ArrowUpRight } from "lucide-react";
+import { Menu, X, User, ArrowUpRight, Briefcase } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoColor from "@assets/logo-mariage-affro-01.svg";
 
@@ -42,16 +42,36 @@ export default function Header() {
   const isOverDarkRoute = DARK_HERO_ROUTES.includes(location);
   const isOverDark = isOverDarkRoute && !isScrolled;
 
-  const primaryNav = [
-    { to: "/", label: t("nav.home") },
-    { to: "/plateforme", label: t("nav.platform") },
-    { to: "/services", label: t("nav.services") },
-    { to: "/partenaires", label: t("nav.partners") },
-    { to: "/lieux", label: t("nav.venues") },
-    { to: "/realisations", label: t("nav.realisations") },
-    { to: "/shop", label: t("nav.shop") },
-    { to: "/a-propos", label: t("nav.about") },
-    { to: "/contact", label: t("nav.contact") },
+  // Menu catégorisé en 3 colonnes pour tout afficher sans scroll.
+  // Hiérarchie pensée pour qu'un visiteur comprenne immédiatement où aller.
+  const menuColumns = [
+    {
+      eyebrow: "Pour les mariés",
+      audience: "b2c" as const,
+      links: [
+        { to: "/plateforme", label: t("nav.platform") },
+        { to: "/services", label: t("nav.services") },
+        { to: "/shop", label: t("nav.shop") },
+      ],
+    },
+    {
+      eyebrow: "Inspiration",
+      audience: "discover" as const,
+      links: [
+        { to: "/partenaires", label: t("nav.partners") },
+        { to: "/lieux", label: t("nav.venues") },
+        { to: "/realisations", label: t("nav.realisations") },
+      ],
+    },
+    {
+      eyebrow: "La maison",
+      audience: "brand" as const,
+      links: [
+        { to: "/", label: t("nav.home") },
+        { to: "/a-propos", label: t("nav.about") },
+        { to: "/contact", label: t("nav.contact") },
+      ],
+    },
   ];
 
   // Liens rapides dans la sidebar verticale (style lamangue)
@@ -185,68 +205,119 @@ export default function Header() {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="fixed inset-0 z-40 bg-wine-deep flex flex-col"
           >
-            <div className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-32 pt-24 pb-12 overflow-y-auto">
-              <nav className="flex flex-col gap-2 md:gap-4">
-                {primaryNav.map((link, i) => (
+            {/* Bandeau B2B/B2C en haut du menu pour orienter immédiatement */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="pt-24 pb-6 md:pb-8 px-6 md:px-16 lg:px-32 border-b border-cream/10"
+            >
+              <p className="text-[10px] tracking-[0.3em] uppercase text-gold/70 mb-3">Vous êtes</p>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                <Link
+                  to="/services"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="group inline-flex items-center gap-3 text-cream hover:text-gold transition-colors"
+                  data-testid="link-menu-b2c"
+                >
+                  <span className="font-display uppercase text-xl md:text-2xl tracking-tight">
+                    Un couple à marier
+                  </span>
+                  <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                </Link>
+                <span className="hidden sm:block text-cream/30">·</span>
+                <Link
+                  to="/partenaires#become-partner"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="group inline-flex items-center gap-3 text-cream/80 hover:text-gold transition-colors"
+                  data-testid="link-menu-b2b"
+                >
+                  <Briefcase className="w-4 h-4" />
+                  <span className="font-display uppercase text-xl md:text-2xl tracking-tight">
+                    Un prestataire
+                  </span>
+                  <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Menu en 3 colonnes catégorisées : tout visible, jamais de scroll */}
+            <div className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-32 py-8 md:py-12">
+              <nav className="grid grid-cols-1 md:grid-cols-3 gap-x-10 lg:gap-x-16 gap-y-10 md:gap-y-0">
+                {menuColumns.map((col, ci) => (
                   <motion.div
-                    key={link.to}
+                    key={col.eyebrow}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.15 + i * 0.04 }}
+                    transition={{ duration: 0.4, delay: 0.2 + ci * 0.08 }}
+                    className="flex flex-col"
                   >
-                    <Link
-                      to={link.to}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`group flex items-baseline gap-4 font-display uppercase text-3xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1] transition-colors ${
-                        isActive(link.to) ? "text-gold" : "text-cream hover:text-gold"
-                      }`}
-                      data-testid={`link-mobile-${link.to.replace(/\//g, "") || "home"}`}
-                    >
-                      <span className="text-xs md:text-sm tracking-[0.3em] text-gold/60 font-sans font-medium opacity-70 group-hover:opacity-100 transition-opacity">
-                        0{i + 1}
-                      </span>
-                      <span>{link.label}</span>
-                    </Link>
+                    <p className="text-[10px] tracking-[0.3em] uppercase text-gold/70 mb-5 md:mb-7">
+                      {col.eyebrow}
+                    </p>
+                    <ul className="flex flex-col gap-2 md:gap-3">
+                      {col.links.map((link) => (
+                        <li key={link.to}>
+                          <Link
+                            to={link.to}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={`font-display uppercase text-2xl md:text-3xl lg:text-[2.25rem] tracking-tight leading-tight transition-colors ${
+                              isActive(link.to) ? "text-gold" : "text-cream hover:text-gold"
+                            }`}
+                            data-testid={`link-mobile-${link.to.replace(/\//g, "") || "home"}`}
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </motion.div>
                 ))}
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.55 }}
-                  className="mt-4 pt-6 border-t border-cream/15 flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-12"
-                >
-                  <Link
-                    to="/espace-client/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-2 text-cream/80 hover:text-gold transition-colors text-sm uppercase tracking-[0.2em] font-medium"
-                  >
-                    <User className="w-4 h-4" />
-                    {t("nav.client_area")}
-                  </Link>
-                  <Link
-                    to="/contact"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 text-gold hover:text-gold-light text-sm uppercase tracking-[0.2em] font-medium group"
-                  >
-                    <span>{t("nav.cta")}</span>
-                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </Link>
-                </motion.div>
               </nav>
             </div>
 
-            {/* Footer overlay */}
-            <div className="px-6 md:px-16 lg:px-32 pb-8 flex items-center justify-between text-cream/50 text-[10px] tracking-[0.25em] uppercase">
-              <span>Mariage Afro · Belgique</span>
-              <div className="flex items-center gap-3">
+            {/* Footer overlay : CTA secondaires + langues */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+              className="px-6 md:px-16 lg:px-32 py-6 md:py-7 border-t border-cream/10 flex flex-col md:flex-row items-start md:items-center md:justify-between gap-5"
+            >
+              <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+                <Link
+                  to="/espace-client/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 text-cream/80 hover:text-gold transition-colors text-[11px] uppercase tracking-[0.25em] font-medium"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  {t("nav.client_area")}
+                </Link>
+                <Link
+                  to="/partenaires#become-partner"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 text-cream/80 hover:text-gold transition-colors text-[11px] uppercase tracking-[0.25em] font-medium"
+                  data-testid="link-mobile-espace-pro"
+                >
+                  <Briefcase className="w-3.5 h-3.5" />
+                  Espace Pro
+                </Link>
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 text-gold hover:text-gold-light text-[11px] uppercase tracking-[0.25em] font-medium group"
+                >
+                  <span>{t("nav.cta")}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </Link>
+              </div>
+              <div className="flex items-center gap-3 text-cream/50 text-[10px] tracking-[0.25em] uppercase">
                 <button onClick={() => changeLanguage("fr")} className={i18n.language === "fr" ? "text-gold" : "hover:text-gold"}>FR</button>
                 <span className="opacity-50">·</span>
                 <button onClick={() => changeLanguage("nl")} className={i18n.language === "nl" ? "text-gold" : "hover:text-gold"}>NL</button>
                 <span className="opacity-50">·</span>
                 <button onClick={() => changeLanguage("en")} className={i18n.language === "en" ? "text-gold" : "hover:text-gold"}>EN</button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
