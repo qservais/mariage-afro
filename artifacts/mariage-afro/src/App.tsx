@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import i18n, { SUPPORTED_LANGS, type SupportedLang } from "@/i18n";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Show } from "@clerk/react";
 import { Toaster } from "@/components/ui/toaster";
@@ -79,6 +81,22 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <ExitIntentPopup />
     </div>
   );
+}
+
+function LangPrefixHandler({ children }: { children: React.ReactNode }) {
+  const { pathname, search, hash } = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const segs = pathname.split("/").filter(Boolean);
+    const first = segs[0];
+    if (first && first.length === 2 && (SUPPORTED_LANGS as readonly string[]).includes(first)) {
+      const lang = first as SupportedLang;
+      if (i18n.language !== lang) i18n.changeLanguage(lang);
+      const rest = "/" + segs.slice(1).join("/");
+      navigate({ pathname: rest === "/" ? "/" : rest, search, hash }, { replace: true });
+    }
+  }, [pathname, search, hash, navigate]);
+  return <>{children}</>;
 }
 
 function AppRoutes() {
@@ -173,7 +191,9 @@ function App() {
         <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <MariageAfroClerkProvider>
             <ScrollToTop />
-            <AppRoutes />
+            <LangPrefixHandler>
+              <AppRoutes />
+            </LangPrefixHandler>
           </MariageAfroClerkProvider>
         </BrowserRouter>
         <Toaster />
