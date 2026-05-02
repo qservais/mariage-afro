@@ -60,6 +60,7 @@ export default function Footer() {
               <li><Link to="/a-propos" className="hover:text-gold transition-colors">{t("nav.about")}</Link></li>
               <li><Link to="/contact" className="hover:text-gold transition-colors">{t("nav.contact")}</Link></li>
               <li><Link to="/espace-client" className="hover:text-gold transition-colors">{t("nav.client_area")}</Link></li>
+              <li><Link to="/guide" className="hover:text-gold transition-colors">Guide complet</Link></li>
             </ul>
           </div>
 

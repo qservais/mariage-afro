@@ -19,6 +19,7 @@ import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import OutilsBudget from "@/pages/outils-budget";
 import OutilsQuiz from "@/pages/outils-quiz";
+import GuidePage from "@/pages/guide";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
 import SignInPage from "@/pages/sign-in";
 import SignUpPage from "@/pages/sign-up";
@@ -220,6 +221,7 @@ function AppRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/outils/budget" element={<OutilsBudget />} />
         <Route path="/outils/quiz" element={<OutilsQuiz />} />
+        <Route path="/guide" element={<GuidePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </PublicLayout>
