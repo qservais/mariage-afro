@@ -160,35 +160,53 @@ export interface VenueRequestEmailPayload {
   weddingDate?: string | null;
   guestCount?: number | null;
   message?: string | null;
+  locale?: string | null;
 }
 
 export async function sendVenueRequestEmails(p: VenueRequestEmailPayload, log = logger): Promise<void> {
-  const labels: Record<string, string> = { visit: "Demande de visite", quote: "Demande de devis" };
-  const reqLabel = labels[p.requestType] ?? p.requestType;
-  const rows =
+  const locale = normalizeLocale(p.locale);
+  const labels: Record<string, Record<Locale, string>> = {
+    visit: { fr: "Demande de visite", nl: "Bezoekaanvraag", en: "Visit request" },
+    quote: { fr: "Demande de devis", nl: "Offerte aanvraag", en: "Quote request" },
+  };
+  const reqLabel = labels[p.requestType]?.[locale] ?? p.requestType;
+  const reqLabelFR = labels[p.requestType]?.fr ?? p.requestType;
+  const T = dict.adminNewLead;
+  const venueLabel = { fr: "Lieu", nl: "Locatie", en: "Venue" }[locale];
+  const typeLabel = { fr: "Type de demande", nl: "Type aanvraag", en: "Request type" }[locale];
+  const rowsAdmin =
     row("Lieu", p.venueName) +
-    row("Type de demande", reqLabel) +
-    row("Nom", p.name) +
-    row("Email", p.email) +
-    row("Téléphone", p.phone) +
-    row("Date du mariage", p.weddingDate) +
-    row("Nombre d'invités", p.guestCount ?? undefined) +
-    row("Message", p.message);
+    row("Type de demande", reqLabelFR) +
+    row(pick(T.rowName, "fr"), p.name) +
+    row(pick(T.rowEmail, "fr"), p.email) +
+    row(pick(T.rowPhone, "fr"), p.phone) +
+    row(pick(T.rowDate, "fr"), p.weddingDate) +
+    row(pick(T.rowGuests, "fr"), p.guestCount ?? undefined) +
+    row(pick(T.rowMessage, "fr"), p.message);
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] ${reqLabel} pour ${p.venueName} — ${p.name}`,
-    html: wrap({ title: `${reqLabel} — ${p.venueName}`, rows, locale: "fr" }),
+    subject: `[Mariage Afro] ${reqLabelFR} pour ${p.venueName} — ${p.name}`,
+    html: wrap({ title: `${reqLabelFR} — ${p.venueName}`, rows: rowsAdmin, locale: "fr" }),
   }, log);
 
+  const rowsClient =
+    row(venueLabel, p.venueName) +
+    row(typeLabel, reqLabel) +
+    row(pick(T.rowDate, locale), p.weddingDate) +
+    row(pick(T.rowGuests, locale), p.guestCount ?? undefined) +
+    row(pick(T.rowMessage, locale), p.message);
+  const greeting = pick(dict.greeting(p.name), locale);
+  const confirmTitle = { fr: "Merci pour votre demande", nl: "Bedankt voor uw aanvraag", en: "Thank you for your request" }[locale];
+  const confirmBody = { fr: `Nous avons bien reçu votre demande concernant ${p.venueName}.`, nl: `Wij hebben uw aanvraag voor ${p.venueName} goed ontvangen.`, en: `We received your request regarding ${p.venueName}.` }[locale];
   await sendOne({
     to: p.email,
-    subject: `Votre ${reqLabel.toLowerCase()} a bien été reçue — Mariage Afro`,
+    subject: `${reqLabel} — Mariage Afro`,
     html: wrap({
-      title: "Merci pour votre demande",
-      bodyHtml: `<p>Bonjour ${esc(p.name)},</p><p>Nous avons bien reçu votre demande concernant ${esc(p.venueName)}.</p>`,
-      rows,
-      locale: "fr",
+      title: confirmTitle,
+      bodyHtml: `<p>${esc(greeting)}</p><p>${esc(confirmBody)}</p>`,
+      rows: rowsClient,
+      locale,
     }),
   }, log);
 }
