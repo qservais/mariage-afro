@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@clerk/react";
 import {
   MapPin,
@@ -20,9 +20,17 @@ import {
   PlusCircle,
   ChevronDown,
   ChevronUp,
+  List as ListIcon,
+  Map as MapIcon,
+  Scale,
 } from "lucide-react";
 
 import VendorAvailabilityCalendar from "@/components/VendorAvailabilityCalendar";
+import MarketplaceFilters, { buildSearchFromFilters, readFiltersFromSearch } from "@/components/marketplace/MarketplaceFilters";
+import MarketplaceMap from "@/components/marketplace/MarketplaceMap";
+import ComparatorBar, { useComparator } from "@/components/marketplace/ComparatorBar";
+import { ReviewStars } from "@/components/marketplace/ReviewStars";
+import { comparator, MAX_COMPARE } from "@/lib/comparator";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -168,6 +176,14 @@ interface DisplayVendor {
   image: string;
   gallery: string[];
   verified: boolean;
+  averageRating?: number;
+  reviewCount?: number;
+  latitude?: string | null;
+  longitude?: string | null;
+  region?: string | null;
+  priceTier?: number | null;
+  culturalStyles?: string[];
+  spokenLanguages?: string[];
 }
 
 const ACTIONS: { key: VendorAction; icon: typeof FileText }[] = [
@@ -714,11 +730,15 @@ export default function Prestations() {
   const [expandedAvailability, setExpandedAvailability] = useState<number | null>(null);
 
   const categories = t("prestations.items", { returnObjects: true }) as string[];
+  const [searchParams] = useSearchParams();
+  const apiQueryString = searchParams.toString();
+  const filters = useMemo(() => readFiltersFromSearch(searchParams), [searchParams]);
+  const [view, setView] = useState<"list" | "map">("list");
 
   const { data: apiVendors = [] } = useQuery<DisplayVendor[]>({
-    queryKey: ["marketplace-vendors"],
+    queryKey: ["marketplace-vendors", apiQueryString],
     queryFn: async () => {
-      const res = await fetch("/api/marketplace/vendors");
+      const res = await fetch(`/api/marketplace/vendors${apiQueryString ? `?${apiQueryString}` : ""}`);
       if (!res.ok) return [];
       const rows = await res.json();
       return rows.map((v: Record<string, unknown>) => ({
@@ -729,20 +749,29 @@ export default function Prestations() {
         tagline: v.tagline as string,
         services: v.services as string[],
         rating: v.rating as number,
-        image: (v.coverImage as string | null) || (v.images as string[])[0] || img1,
-        gallery: (v.images as string[]).slice(0, 3),
+        image: (v.coverImage as string | null) || ((v.images as string[]) ?? [])[0] || img1,
+        gallery: ((v.images as string[]) ?? []).slice(0, 3),
         verified: v.verified as boolean,
+        averageRating: typeof v.averageRating === "number" ? v.averageRating : 0,
+        reviewCount: typeof v.reviewCount === "number" ? v.reviewCount : 0,
+        latitude: (v.latitude as string | null) ?? null,
+        longitude: (v.longitude as string | null) ?? null,
+        region: (v.region as string | null) ?? null,
+        priceTier: (v.priceTier as number | null) ?? null,
+        culturalStyles: (v.culturalStyles as string[] | undefined) ?? [],
+        spokenLanguages: (v.spokenLanguages as string[] | undefined) ?? [],
       }));
     },
   });
 
+  const usingApi = apiVendors.length > 0;
   const displayVendors: DisplayVendor[] = useMemo(() => {
-    if (apiVendors.length > 0) return apiVendors;
+    if (usingApi) return apiVendors;
     return VENDORS.map((v) => ({ ...v, category: categories[v.categoryIndex] ?? "" }));
-  }, [apiVendors, categories]);
+  }, [apiVendors, categories, usingApi]);
 
   const uniqueCategories = useMemo(
-    () => [...new Set(displayVendors.map((v) => v.category))],
+    () => [...new Set(displayVendors.map((v) => v.category))].filter(Boolean),
     [displayVendors],
   );
 
@@ -752,15 +781,43 @@ export default function Prestations() {
     if (meta) meta.setAttribute("content", t("prestations.subtitle"));
   }, [t]);
 
-  const filtered =
-    activeFilter === null
-      ? displayVendors
-      : displayVendors.filter((v) => v.category === activeFilter);
+  // Quand on a l'API, le filtrage est server-side ; en fallback on filtre sur la catégorie locale.
+  const filtered = usingApi
+    ? displayVendors
+    : (filters.category ? displayVendors.filter((v) => v.category === filters.category) : displayVendors);
 
-  const filters = [
-    { label: t("prestations.filter_all"), value: null as string | null },
-    ...uniqueCategories.map((cat) => ({ label: cat, value: cat })),
-  ];
+  // JSON-LD AggregateRating sur les prestataires ayant des avis
+  const jsonLdString = useMemo(() => {
+    const rated = filtered.filter((v) => (v.reviewCount ?? 0) > 0 && (v.averageRating ?? 0) > 0);
+    if (rated.length === 0) return "";
+    const items = rated.map((v) => ({
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      name: v.name,
+      address: { "@type": "PostalAddress", addressLocality: v.city, addressCountry: "BE" },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: v.averageRating!.toFixed(1),
+        reviewCount: v.reviewCount!,
+        bestRating: "5",
+        worstRating: "1",
+      },
+    }));
+    // Échappe </script> pour empêcher toute évasion JSON-LD via un nom de prestataire malicieux.
+    return JSON.stringify(items.length === 1 ? items[0] : items)
+      .replace(/<\/(script)/gi, "<\\/$1")
+      .replace(/<!--/g, "<\\!--")
+      .replace(/\u2028|\u2029/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
+  }, [filtered]);
+
+  // Comparator state — déclenche un re-render lorsqu'on coche/décoche
+  const { ids: compareIds } = useComparator("vendor");
+  const handleToggleCompare = (id: number) => {
+    const r = comparator.toggle("vendor", id);
+    if (r.reachedMax) {
+      toast({ title: `Maximum ${MAX_COMPARE} prestataires`, description: "Retirez-en un avant d'en ajouter un autre.", variant: "destructive" });
+    }
+  };
 
   async function handleAddToProject(vendor: DisplayVendor) {
     if (!isSignedIn) {
@@ -821,26 +878,57 @@ export default function Prestations() {
         </div>
       </section>
 
-      <section className="bg-cream border-b border-wine-deep/10 py-2 sticky top-[62px] lg:top-[72px] z-30">
-        <div className="container mx-auto px-4 md:px-12">
-          <div className="flex gap-1 overflow-x-auto scrollbar-hide snap-x">
-            {filters.map((filter) => (
-              <button
-                key={String(filter.value)}
-                onClick={() => setActiveFilter(filter.value)}
-                className={`tab-editorial snap-start ${
-                  activeFilter === filter.value ? "tab-editorial-active" : ""
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
+      {jsonLdString && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
+      )}
+
+      <div className="sticky top-[62px] lg:top-[72px] z-30">
+        <MarketplaceFilters
+          showCategory
+          categoryOptions={uniqueCategories}
+          totalResults={filtered.length}
+        />
+        <div className="bg-cream border-b border-wine-deep/10">
+          <div className="container mx-auto px-4 md:px-12 py-2 flex items-center justify-end gap-1">
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              className={`px-3 py-2 text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1.5 border ${view === "list" ? "bg-wine-deep text-cream border-wine-deep" : "border-wine-deep/20 text-wine-deep hover:border-wine-deep/60"}`}
+              data-testid="view-list"
+            >
+              <ListIcon className="w-3.5 h-3.5" /> Liste
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("map")}
+              className={`px-3 py-2 text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1.5 border ${view === "map" ? "bg-wine-deep text-cream border-wine-deep" : "border-wine-deep/20 text-wine-deep hover:border-wine-deep/60"}`}
+              data-testid="view-map"
+            >
+              <MapIcon className="w-3.5 h-3.5" /> Carte
+            </button>
           </div>
         </div>
-      </section>
+      </div>
 
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-6 md:px-12">
+          {view === "map" ? (
+            <MarketplaceMap
+              points={filtered.map((v) => ({
+                id: v.id,
+                name: v.name,
+                city: v.city,
+                category: v.category,
+                latitude: v.latitude ?? null,
+                longitude: v.longitude ?? null,
+                href: `/partenaires?focus=${v.id}`,
+                image: v.image,
+                averageRating: v.averageRating,
+                reviewCount: v.reviewCount,
+              }))}
+              height={640}
+            />
+          ) : (
           <AnimatePresence mode="wait">
             <motion.div
               key={String(activeFilter)}
@@ -868,22 +956,41 @@ export default function Prestations() {
                     <span className="badge-editorial-dark absolute top-4 left-4">
                       {vendor.category}
                     </span>
-                    {vendor.verified && (
-                      <span className="badge-editorial absolute top-4 right-4 bg-cream/95 backdrop-blur-sm">
-                        <CheckCircle2 className="w-3 h-3" />
-                        {t("prestations.verified_badge")}
-                      </span>
-                    )}
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                      {vendor.verified && (
+                        <span className="badge-editorial bg-cream/95 backdrop-blur-sm">
+                          <CheckCircle2 className="w-3 h-3" />
+                          {t("prestations.verified_badge")}
+                        </span>
+                      )}
+                      <label className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-cream/95 backdrop-blur-sm text-[10px] uppercase tracking-[0.2em] text-wine-deep cursor-pointer hover:bg-cream">
+                        <input
+                          type="checkbox"
+                          checked={compareIds.includes(vendor.id)}
+                          onChange={() => handleToggleCompare(vendor.id)}
+                          className="accent-wine-deep"
+                          data-testid={`compare-${vendor.id}`}
+                        />
+                        <Scale className="w-3 h-3" /> Comparer
+                      </label>
+                    </div>
                     <div className="absolute bottom-5 left-5 right-5 text-cream">
                       <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight leading-[1] mb-2">
                         {vendor.name}
                       </h3>
-                      <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.2em]">
+                      <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] flex-wrap">
                         <span className="flex items-center gap-1.5 text-cream/80">
                           <MapPin className="w-3 h-3" />
                           {vendor.city}
                         </span>
-                        <StarRating count={vendor.rating} />
+                        {(vendor.reviewCount ?? 0) > 0 && (vendor.averageRating ?? 0) > 0 ? (
+                          <span className="flex items-center gap-1.5 text-cream/90">
+                            <ReviewStars rating={vendor.averageRating!} size={12} />
+                            <span>{vendor.averageRating!.toFixed(1)} ({vendor.reviewCount})</span>
+                          </span>
+                        ) : (
+                          <StarRating count={vendor.rating} />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -982,6 +1089,7 @@ export default function Prestations() {
               ))}
             </motion.div>
           </AnimatePresence>
+          )}
 
           {filtered.length === 0 && (
             <div className="text-center py-24 text-muted-foreground">
@@ -990,6 +1098,11 @@ export default function Prestations() {
           )}
         </div>
       </section>
+
+      <ComparatorBar
+        kind="vendor"
+        vendors={displayVendors.map((v) => ({ id: v.id, name: v.name, category: v.category, city: v.city, image: v.image }))}
+      />
 
       <ServiceRequestSection />
       <BecomePartnerSection />

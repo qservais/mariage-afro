@@ -75,6 +75,7 @@ export const couplesTable = pgTable("couples", {
   ceremonyVenue: text("ceremony_venue"),
   guestEstimate: integer("guest_estimate"),
   budget: integer("budget"),
+  status: text("status").notNull().default("planning"),
   onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -184,6 +185,15 @@ export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
   website: text("website"),
   phone: text("phone"),
   email: text("email"),
+  // LOT 5 — geo, filtres, comparateur
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+  region: text("region"),
+  priceTier: integer("price_tier"),
+  culturalStyles: jsonb("cultural_styles").$type<string[]>().notNull().default([]),
+  spokenLanguages: jsonb("spoken_languages").$type<string[]>().notNull().default([]),
+  capacityMin: integer("capacity_min"),
+  capacityMax: integer("capacity_max"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -198,8 +208,32 @@ export const marketplaceVenuesTable = pgTable("marketplace_venues", {
   images: jsonb("images").$type<string[]>().notNull().default([]),
   coverImage: text("cover_image"),
   active: boolean("active").notNull().default(true),
+  // LOT 5 — geo, filtres
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+  region: text("region"),
+  priceTier: integer("price_tier"),
+  culturalStyles: jsonb("cultural_styles").$type<string[]>().notNull().default([]),
+  spokenLanguages: jsonb("spoken_languages").$type<string[]>().notNull().default([]),
+  capacityMin: integer("capacity_min"),
+  capacityMax: integer("capacity_max"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const vendorReviewsTable = pgTable("vendor_reviews", {
+  id: serial("id").primaryKey(),
+  vendorId: integer("vendor_id").notNull(),
+  coupleId: integer("couple_id").notNull(),
+  rating: integer("rating").notNull(),
+  title: text("title").notNull().default(""),
+  comment: text("comment").notNull().default(""),
+  status: text("status").notNull().default("pending"),
+  internalNote: text("internal_note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  vendorCoupleIdx: uniqueIndex("vendor_reviews_vendor_couple_idx").on(t.vendorId, t.coupleId),
+}));
 
 export const realisationsTable = pgTable("realisations", {
   id: serial("id").primaryKey(),
@@ -359,3 +393,4 @@ export type WeddingRsvp = typeof weddingRsvpsTable.$inferSelect;
 export type VendorAccount = typeof vendorAccountsTable.$inferSelect;
 export type VendorAvailability = typeof vendorAvailabilityTable.$inferSelect;
 export type VendorLead = typeof vendorLeadsTable.$inferSelect;
+export type VendorReview = typeof vendorReviewsTable.$inferSelect;

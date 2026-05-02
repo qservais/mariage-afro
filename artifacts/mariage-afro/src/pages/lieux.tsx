@@ -1,10 +1,12 @@
 import { useEffect, useState, FormEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { MapPin, Users, Sparkles, CheckCircle2 } from "lucide-react";
+import { MapPin, Users, Sparkles, List as ListIcon, Map as MapIcon } from "lucide-react";
+
+import MarketplaceFilters from "@/components/marketplace/MarketplaceFilters";
+import MarketplaceMap from "@/components/marketplace/MarketplaceMap";
 
 import img1 from "@assets/pexels-innocent-kapesa-760824113-18751317_1776285262172.jpg";
 import img2 from "@assets/GM-00679.jpg_1776614313614.jpeg";
@@ -25,9 +27,18 @@ interface Venue {
   options: string[];
 }
 
+interface VenueApi extends Venue {
+  id: number;
+  image?: string;
+  latitude?: string | null;
+  longitude?: string | null;
+}
+
 export default function Lieux() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [view, setView] = useState<"list" | "map">("list");
   const [formData, setFormData] = useState({ name: "", venue: "", date: "" });
 
   const handleSubmit = (e: FormEvent) => {
@@ -47,30 +58,33 @@ export default function Lieux() {
     }
   }, [t]);
 
-  const { data: apiVenues = [] } = useQuery({
-    queryKey: ["marketplace-venues"],
+  const apiQueryString = searchParams.toString();
+  const { data: apiVenues = [] } = useQuery<VenueApi[]>({
+    queryKey: ["marketplace-venues", apiQueryString],
     queryFn: async () => {
-      const res = await fetch("/api/marketplace/venues");
+      const res = await fetch(`/api/marketplace/venues${apiQueryString ? `?${apiQueryString}` : ""}`);
       if (!res.ok) return [];
-      return res.json();
-    },
-  });
-
-  const i18nVenues = (t("venues.items", { returnObjects: true }) as Venue[]) || [];
-
-  const venues: (Venue & { image?: string })[] = useMemo(() => {
-    if (apiVenues.length > 0) {
-      return apiVenues.map((v: Record<string, unknown>) => ({
+      const rows = await res.json();
+      return rows.map((v: Record<string, unknown>) => ({
+        id: v.id as number,
         name: v.name as string,
         city: v.city as string,
         capacity: v.capacity as string,
         style: v.style as string,
         desc: v.description as string,
-        options: v.options as string[],
-        image: (v.coverImage as string | null) || (v.images as string[])[0],
+        options: (v.options as string[]) ?? [],
+        image: (v.coverImage as string | null) ?? ((v.images as string[]) ?? [])[0],
+        latitude: (v.latitude as string | null) ?? null,
+        longitude: (v.longitude as string | null) ?? null,
       }));
-    }
-    return i18nVenues;
+    },
+  });
+
+  const i18nVenues = (t("venues.items", { returnObjects: true }) as Venue[]) || [];
+
+  const venues: VenueApi[] = useMemo(() => {
+    if (apiVenues.length > 0) return apiVenues;
+    return i18nVenues.map((v, i) => ({ ...v, id: i }));
   }, [apiVenues, i18nVenues]);
 
   return (
@@ -108,13 +122,52 @@ export default function Lieux() {
         </div>
       </section>
 
-      {/* Venue cards */}
+      <div className="sticky top-[62px] lg:top-[72px] z-30">
+        <MarketplaceFilters showCapacity totalResults={venues.length} />
+        <div className="bg-cream border-b border-wine-deep/10">
+          <div className="container mx-auto px-4 md:px-12 py-2 flex items-center justify-end gap-1">
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              className={`px-3 py-2 text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1.5 border ${view === "list" ? "bg-wine-deep text-cream border-wine-deep" : "border-wine-deep/20 text-wine-deep hover:border-wine-deep/60"}`}
+              data-testid="view-list-venues"
+            >
+              <ListIcon className="w-3.5 h-3.5" /> Liste
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("map")}
+              className={`px-3 py-2 text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1.5 border ${view === "map" ? "bg-wine-deep text-cream border-wine-deep" : "border-wine-deep/20 text-wine-deep hover:border-wine-deep/60"}`}
+              data-testid="view-map-venues"
+            >
+              <MapIcon className="w-3.5 h-3.5" /> Carte
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Venue cards or map */}
       <section className="py-20 md:py-28 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
+          {view === "map" ? (
+            <MarketplaceMap
+              points={venues.map((v) => ({
+                id: v.id,
+                name: v.name,
+                city: v.city,
+                category: "Lieu",
+                latitude: v.latitude ?? null,
+                longitude: v.longitude ?? null,
+                href: "/contact",
+                image: v.image,
+              }))}
+              height={640}
+            />
+          ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
             {venues.map((venue, i) => (
               <motion.div
-                key={i}
+                key={venue.id ?? i}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
@@ -124,7 +177,7 @@ export default function Lieux() {
                 {/* Image */}
                 <div className="relative h-80 overflow-hidden flex-shrink-0">
                   <img
-                    src={(venue as { image?: string }).image || VENUE_IMAGES[i % VENUE_IMAGES.length]}
+                    src={venue.image || VENUE_IMAGES[i % VENUE_IMAGES.length]}
                     alt={venue.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -186,7 +239,13 @@ export default function Lieux() {
                 </div>
               </motion.div>
             ))}
+            {venues.length === 0 && (
+              <div className="col-span-full text-center py-16 text-wine-deep/60">
+                Aucun lieu trouvé pour ces filtres. Essayez de réinitialiser.
+              </div>
+            )}
           </div>
+          )}
         </div>
       </section>
 

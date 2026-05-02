@@ -12,19 +12,129 @@ import {
   vendorLeadsTable,
   vendorRequestsTable,
   vendorAccountsTable,
+  vendorReviewsTable,
 } from "@workspace/db";
-import { eq, and, asc, gte, lte } from "drizzle-orm";
+import { eq, and, asc, desc, gte, lte, sql, inArray, or, ilike } from "drizzle-orm";
 import { notifyAdminNewLead, notifyVendorNewLead } from "../lib/email";
 
 const router = Router();
 
-router.get("/marketplace/vendors", async (_req: Request, res: Response) => {
+// ---------- Helpers : filtres marketplace ----------
+
+function parseList(q: unknown): string[] {
+  if (typeof q !== "string" || !q.trim()) return [];
+  return q.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+function parseIntList(q: unknown): number[] {
+  return parseList(q)
+    .map((s) => Number(s))
+    .filter((n) => Number.isFinite(n));
+}
+
+function buildVendorFilters(req: Request) {
+  const conds = [eq(marketplaceVendorsTable.active, true)];
+  const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+  if (q.length >= 1) {
+    const like = `%${q.replace(/[%_]/g, (m) => `\\${m}`)}%`;
+    conds.push(
+      or(
+        ilike(marketplaceVendorsTable.name, like),
+        ilike(marketplaceVendorsTable.tagline, like),
+        ilike(marketplaceVendorsTable.city, like),
+      )!,
+    );
+  }
+  const category = typeof req.query.category === "string" ? req.query.category.trim() : "";
+  if (category) conds.push(eq(marketplaceVendorsTable.category, category));
+  const regions = parseList(req.query.region);
+  if (regions.length > 0) conds.push(inArray(marketplaceVendorsTable.region, regions));
+  const tiers = parseIntList(req.query.priceTier);
+  if (tiers.length > 0) conds.push(inArray(marketplaceVendorsTable.priceTier, tiers));
+  const styles = parseList(req.query.culturalStyle);
+  for (const s of styles) {
+    conds.push(sql`${marketplaceVendorsTable.culturalStyles} @> ${JSON.stringify([s])}::jsonb`);
+  }
+  const langs = parseList(req.query.spokenLanguage);
+  for (const l of langs) {
+    conds.push(sql`${marketplaceVendorsTable.spokenLanguages} @> ${JSON.stringify([l])}::jsonb`);
+  }
+  return conds;
+}
+
+function buildVenueFilters(req: Request) {
+  const conds = [eq(marketplaceVenuesTable.active, true)];
+  const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+  if (q.length >= 1) {
+    const like = `%${q.replace(/[%_]/g, (m) => `\\${m}`)}%`;
+    conds.push(
+      or(
+        ilike(marketplaceVenuesTable.name, like),
+        ilike(marketplaceVenuesTable.city, like),
+        ilike(marketplaceVenuesTable.style, like),
+      )!,
+    );
+  }
+  const regions = parseList(req.query.region);
+  if (regions.length > 0) conds.push(inArray(marketplaceVenuesTable.region, regions));
+  const tiers = parseIntList(req.query.priceTier);
+  if (tiers.length > 0) conds.push(inArray(marketplaceVenuesTable.priceTier, tiers));
+  const styles = parseList(req.query.culturalStyle);
+  for (const s of styles) {
+    conds.push(sql`${marketplaceVenuesTable.culturalStyles} @> ${JSON.stringify([s])}::jsonb`);
+  }
+  const langs = parseList(req.query.spokenLanguage);
+  for (const l of langs) {
+    conds.push(sql`${marketplaceVenuesTable.spokenLanguages} @> ${JSON.stringify([l])}::jsonb`);
+  }
+  const capacityMin = Number(req.query.capacityMin);
+  if (Number.isFinite(capacityMin) && capacityMin > 0) {
+    conds.push(
+      or(
+        gte(marketplaceVenuesTable.capacityMax, capacityMin),
+        // fallback : si capacityMax pas renseignée, on garde aussi (NULL)
+        sql`${marketplaceVenuesTable.capacityMax} IS NULL`,
+      )!,
+    );
+  }
+  return conds;
+}
+
+async function aggregateForVendors(vendorIds: number[]): Promise<Map<number, { count: number; average: number }>> {
+  const map = new Map<number, { count: number; average: number }>();
+  if (vendorIds.length === 0) return map;
+  const rows = await db
+    .select({
+      vendorId: vendorReviewsTable.vendorId,
+      count: sql<number>`count(*)::int`,
+      avg: sql<number>`coalesce(avg(${vendorReviewsTable.rating}), 0)::float`,
+    })
+    .from(vendorReviewsTable)
+    .where(and(eq(vendorReviewsTable.status, "published"), inArray(vendorReviewsTable.vendorId, vendorIds)))
+    .groupBy(vendorReviewsTable.vendorId);
+  for (const r of rows) {
+    map.set(r.vendorId, { count: r.count, average: Math.round(r.avg * 10) / 10 });
+  }
+  return map;
+}
+
+// ---------- Marketplace : vendors ----------
+
+router.get("/marketplace/vendors", async (req: Request, res: Response) => {
+  const conds = buildVendorFilters(req);
   const vendors = await db
     .select()
     .from(marketplaceVendorsTable)
-    .where(eq(marketplaceVendorsTable.active, true))
+    .where(and(...conds))
     .orderBy(asc(marketplaceVendorsTable.name));
-  res.json(vendors);
+  const aggregates = await aggregateForVendors(vendors.map((v) => v.id));
+  res.json(
+    vendors.map((v) => ({
+      ...v,
+      reviewCount: aggregates.get(v.id)?.count ?? 0,
+      averageRating: aggregates.get(v.id)?.average ?? 0,
+    })),
+  );
 });
 
 router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
@@ -35,7 +145,46 @@ router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
     .from(marketplaceVendorsTable)
     .where(and(eq(marketplaceVendorsTable.id, id), eq(marketplaceVendorsTable.active, true)));
   if (!vendor) { res.status(404).json({ error: "Not found" }); return; }
-  res.json(vendor);
+  const aggregates = await aggregateForVendors([id]);
+  const recent = await db
+    .select({
+      id: vendorReviewsTable.id,
+      rating: vendorReviewsTable.rating,
+      title: vendorReviewsTable.title,
+      comment: vendorReviewsTable.comment,
+      createdAt: vendorReviewsTable.createdAt,
+      authorName: sql<string>`COALESCE(NULLIF(${couplesTable.partner1Name}, ''), 'Couple anonyme')`,
+    })
+    .from(vendorReviewsTable)
+    .leftJoin(couplesTable, eq(vendorReviewsTable.coupleId, couplesTable.id))
+    .where(and(eq(vendorReviewsTable.vendorId, id), eq(vendorReviewsTable.status, "published")))
+    .orderBy(desc(vendorReviewsTable.createdAt))
+    .limit(10);
+  res.json({
+    ...vendor,
+    reviewCount: aggregates.get(id)?.count ?? 0,
+    averageRating: aggregates.get(id)?.average ?? 0,
+    reviews: recent,
+  });
+});
+
+router.get("/marketplace/vendors/:id/reviews", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const rows = await db
+    .select({
+      id: vendorReviewsTable.id,
+      rating: vendorReviewsTable.rating,
+      title: vendorReviewsTable.title,
+      comment: vendorReviewsTable.comment,
+      createdAt: vendorReviewsTable.createdAt,
+      authorName: sql<string>`COALESCE(NULLIF(${couplesTable.partner1Name}, ''), 'Couple anonyme')`,
+    })
+    .from(vendorReviewsTable)
+    .leftJoin(couplesTable, eq(vendorReviewsTable.coupleId, couplesTable.id))
+    .where(and(eq(vendorReviewsTable.vendorId, id), eq(vendorReviewsTable.status, "published")))
+    .orderBy(desc(vendorReviewsTable.createdAt));
+  res.json(rows);
 });
 
 router.post("/marketplace/vendors/:id/add-to-project", async (req: Request, res: Response) => {
@@ -71,11 +220,14 @@ router.post("/marketplace/vendors/:id/add-to-project", async (req: Request, res:
   res.status(201).json(row);
 });
 
-router.get("/marketplace/venues", async (_req: Request, res: Response) => {
+// ---------- Marketplace : venues ----------
+
+router.get("/marketplace/venues", async (req: Request, res: Response) => {
+  const conds = buildVenueFilters(req);
   const venues = await db
     .select()
     .from(marketplaceVenuesTable)
-    .where(eq(marketplaceVenuesTable.active, true))
+    .where(and(...conds))
     .orderBy(asc(marketplaceVenuesTable.name));
   res.json(venues);
 });
@@ -129,6 +281,82 @@ const leadSchema = z.object({
   message: z.string().max(4000).optional().nullable(),
 });
 
+async function createVendorLead(
+  vendorId: number,
+  data: z.infer<typeof leadSchema>,
+  log: Request["log"],
+) {
+  const [vendor] = await db
+    .select()
+    .from(marketplaceVendorsTable)
+    .where(eq(marketplaceVendorsTable.id, vendorId));
+  if (!vendor) return null;
+
+  const [vendorAccount] = await db
+    .select()
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.vendorId, vendorId))
+    .limit(1);
+
+  const result = await db.transaction(async (tx) => {
+    const [vendorLead] = await tx
+      .insert(vendorLeadsTable)
+      .values({
+        vendorId,
+        vendorAccountId: vendorAccount?.id ?? null,
+        requestType: data.requestType,
+        name: data.name,
+        email: data.email,
+        phone: data.phone ?? null,
+        weddingDate: data.weddingDate ?? null,
+        message: data.message ?? null,
+      })
+      .returning();
+
+    const [vendorRequest] = await tx
+      .insert(vendorRequestsTable)
+      .values({
+        vendorId: String(vendorId),
+        vendorName: vendor.name,
+        requestType: data.requestType,
+        name: data.name,
+        email: data.email,
+        phone: data.phone ?? null,
+        weddingDate: data.weddingDate ?? null,
+        message: data.message ?? null,
+      })
+      .returning();
+
+    return { vendorLead, vendorRequest, vendor, vendorAccount };
+  });
+
+  void notifyAdminNewLead({
+    source: "vendor-request",
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    weddingDate: data.weddingDate,
+    message: data.message ? `[${data.requestType}] ${data.message}` : `[${data.requestType}]`,
+    vendorName: result.vendor.name,
+  }, log).catch((err) => log?.error?.({ err }, "Failed to notify admin of vendor lead"));
+
+  if (result.vendorAccount?.email) {
+    void notifyVendorNewLead({
+      to: result.vendorAccount.email,
+      locale: result.vendorAccount.locale,
+      vendorName: result.vendor.name,
+      contactName: data.name,
+      contactEmail: data.email,
+      contactPhone: data.phone,
+      requestType: data.requestType,
+      weddingDate: data.weddingDate,
+      message: data.message,
+    }, log).catch((err) => log?.error?.({ err }, "Failed to notify vendor of new lead"));
+  }
+
+  return result;
+}
+
 router.post("/marketplace/vendors/:id/lead", async (req: Request, res: Response) => {
   const vendorId = Number(req.params.id);
   if (isNaN(vendorId)) { res.status(400).json({ error: "Invalid id" }); return; }
@@ -138,88 +366,50 @@ router.post("/marketplace/vendors/:id/lead", async (req: Request, res: Response)
     res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
     return;
   }
-  const data = parsed.data;
-
-  const [vendor] = await db
-    .select()
-    .from(marketplaceVendorsTable)
-    .where(eq(marketplaceVendorsTable.id, vendorId));
-  if (!vendor) { res.status(404).json({ error: "Vendor not found" }); return; }
-
-  const [vendorAccount] = await db
-    .select()
-    .from(vendorAccountsTable)
-    .where(eq(vendorAccountsTable.vendorId, vendorId))
-    .limit(1);
-
   try {
-    const result = await db.transaction(async (tx) => {
-      const [vendorLead] = await tx
-        .insert(vendorLeadsTable)
-        .values({
-          vendorId,
-          vendorAccountId: vendorAccount?.id ?? null,
-          requestType: data.requestType,
-          name: data.name,
-          email: data.email,
-          phone: data.phone ?? null,
-          weddingDate: data.weddingDate ?? null,
-          message: data.message ?? null,
-        })
-        .returning();
-
-      const [vendorRequest] = await tx
-        .insert(vendorRequestsTable)
-        .values({
-          vendorId: String(vendorId),
-          vendorName: vendor.name,
-          requestType: data.requestType,
-          name: data.name,
-          email: data.email,
-          phone: data.phone ?? null,
-          weddingDate: data.weddingDate ?? null,
-          message: data.message ?? null,
-        })
-        .returning();
-
-      return { vendorLead, vendorRequest };
-    });
-
-    // Fire-and-forget notifications (admin always; vendor if account exists)
-    void notifyAdminNewLead({
-      source: "vendor-request",
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      weddingDate: data.weddingDate,
-      message: data.message ? `[${data.requestType}] ${data.message}` : `[${data.requestType}]`,
-      vendorName: vendor.name,
-    }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to notify admin of vendor lead"));
-
-    if (vendorAccount?.email) {
-      void notifyVendorNewLead({
-        to: vendorAccount.email,
-        locale: vendorAccount.locale,
-        vendorName: vendor.name,
-        contactName: data.name,
-        contactEmail: data.email,
-        contactPhone: data.phone,
-        requestType: data.requestType,
-        weddingDate: data.weddingDate,
-        message: data.message,
-      }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to notify vendor of new lead"));
-    }
-
+    const result = await createVendorLead(vendorId, parsed.data, req.log);
+    if (!result) { res.status(404).json({ error: "Vendor not found" }); return; }
     res.status(201).json({
       success: true,
       vendorLeadId: result.vendorLead.id,
       vendorRequestId: result.vendorRequest.id,
-      routedToVendor: !!vendorAccount,
+      routedToVendor: !!result.vendorAccount,
     });
   } catch (err) {
     req.log?.error?.({ err }, "Failed to create vendor lead");
     res.status(500).json({ error: "Internal error" });
   }
+});
+
+// ---------- Comparator : 1-3 leads en une fois ----------
+const comparatorSchema = z.object({
+  vendorIds: z.array(z.number().int().positive()).min(1).max(3),
+  contact: leadSchema,
+});
+
+router.post("/marketplace/comparator/leads", async (req: Request, res: Response) => {
+  const parsed = comparatorSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+    return;
+  }
+  const { vendorIds, contact } = parsed.data;
+  const created: Array<{ vendorId: number; vendorLeadId: number }> = [];
+  const failed: Array<{ vendorId: number; reason: string }> = [];
+  for (const vendorId of vendorIds) {
+    try {
+      const result = await createVendorLead(vendorId, contact, req.log);
+      if (!result) {
+        failed.push({ vendorId, reason: "not_found" });
+        continue;
+      }
+      created.push({ vendorId, vendorLeadId: result.vendorLead.id });
+    } catch (err) {
+      req.log?.error?.({ err, vendorId }, "Failed to create comparator lead");
+      failed.push({ vendorId, reason: "error" });
+    }
+  }
+  res.status(created.length > 0 ? 201 : 500).json({ created, failed });
 });
 
 export default router;

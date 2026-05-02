@@ -1,11 +1,14 @@
 import { Router } from "express";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc, and, inArray } from "drizzle-orm";
 import {
   db,
   leadsTable,
   vendorRequestsTable,
   venueRequestsTable,
   partnerApplicationsTable,
+  vendorReviewsTable,
+  marketplaceVendorsTable,
+  couplesTable,
 } from "@workspace/db";
 import { adminAuth, ADMIN_COOKIE, isAuthed } from "../middlewares/adminAuth";
 
@@ -114,12 +117,119 @@ function layout(title: string, body: string, showNav = true): string {
   const nav = showNav ? `
     <div class="topbar">
       <h1><a href="/admin" style="color:inherit;">Mariage Afro · Admin</a></h1>
-      <form method="POST" action="/admin/logout" style="margin:0;">
-        <button type="submit">Déconnexion</button>
-      </form>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <a href="/admin">Demandes</a>
+        <a href="/admin/reviews">Avis</a>
+        <form method="POST" action="/admin/logout" style="margin:0;">
+          <button type="submit">Déconnexion</button>
+        </form>
+      </div>
     </div>` : "";
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} — Mariage Afro Admin</title><style>${css}</style></head><body>${nav}${body}</body></html>`;
 }
+
+// ---------- Reviews moderation ----------
+const REVIEW_STATUSES = ["pending", "published", "rejected"] as const;
+type ReviewStatus = (typeof REVIEW_STATUSES)[number];
+const REVIEW_STATUS_LABEL: Record<ReviewStatus, string> = {
+  pending: "En attente",
+  published: "Publié",
+  rejected: "Rejeté",
+};
+
+router.get("/reviews", adminAuth, async (req, res) => {
+  const filterStatus = REVIEW_STATUSES.includes(req.query.status as ReviewStatus)
+    ? (req.query.status as ReviewStatus)
+    : "pending";
+
+  const conds = [eq(vendorReviewsTable.status, filterStatus)];
+  const rows = await db
+    .select({
+      id: vendorReviewsTable.id,
+      vendorId: vendorReviewsTable.vendorId,
+      coupleId: vendorReviewsTable.coupleId,
+      rating: vendorReviewsTable.rating,
+      title: vendorReviewsTable.title,
+      comment: vendorReviewsTable.comment,
+      status: vendorReviewsTable.status,
+      createdAt: vendorReviewsTable.createdAt,
+      vendorName: marketplaceVendorsTable.name,
+      coupleEmail: couplesTable.email,
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+    })
+    .from(vendorReviewsTable)
+    .leftJoin(marketplaceVendorsTable, eq(vendorReviewsTable.vendorId, marketplaceVendorsTable.id))
+    .leftJoin(couplesTable, eq(vendorReviewsTable.coupleId, couplesTable.id))
+    .where(and(...conds))
+    .orderBy(desc(vendorReviewsTable.createdAt));
+
+  const counts = await db
+    .select({ status: vendorReviewsTable.status, count: sql<number>`count(*)::int` })
+    .from(vendorReviewsTable)
+    .groupBy(vendorReviewsTable.status);
+  const countByStatus: Record<ReviewStatus, number> = { pending: 0, published: 0, rejected: 0 };
+  for (const c of counts) {
+    if ((REVIEW_STATUSES as readonly string[]).includes(c.status)) {
+      countByStatus[c.status as ReviewStatus] = c.count;
+    }
+  }
+
+  const tabs = REVIEW_STATUSES.map((s) => `
+    <a href="/admin/reviews?status=${s}" class="badge status-${s === "published" ? "done" : s === "rejected" ? "new" : "in_progress"}" style="${s === filterStatus ? "outline:2px solid #68191e;" : ""}">
+      ${REVIEW_STATUS_LABEL[s]} (${countByStatus[s]})
+    </a>
+  `).join("");
+
+  const stars = (n: number) => "★".repeat(n) + "☆".repeat(5 - n);
+
+  const tableBody = rows.length === 0
+    ? `<tr><td colspan="6" class="empty">Aucun avis ${REVIEW_STATUS_LABEL[filterStatus].toLowerCase()}.</td></tr>`
+    : rows.map((r) => `
+        <tr>
+          <td>${escapeHtml(new Date(r.createdAt as Date).toISOString().slice(0, 10))}</td>
+          <td><strong>${escapeHtml(r.vendorName ?? `Vendor #${r.vendorId}`)}</strong></td>
+          <td>
+            <div style="font-weight:600;">${escapeHtml([r.partner1Name, r.partner2Name].filter(Boolean).join(" & ") || "Couple anonyme")}</div>
+            <div style="color:#888;font-size:11px;">${escapeHtml(r.coupleEmail ?? "")}</div>
+          </td>
+          <td style="color:#c9a96e;font-size:18px;letter-spacing:2px;">${stars(r.rating)}</td>
+          <td>
+            ${r.title ? `<div style="font-weight:600;margin-bottom:4px;">${escapeHtml(r.title)}</div>` : ""}
+            <div style="white-space:pre-wrap;max-width:400px;">${escapeHtml(r.comment)}</div>
+          </td>
+          <td style="white-space:nowrap;">
+            ${r.status !== "published" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;"><input type="hidden" name="status" value="published"/><button class="btn primary" type="submit">Publier</button></form>` : ""}
+            ${r.status !== "rejected" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;"><input type="hidden" name="status" value="rejected"/><button class="btn" type="submit">Rejeter</button></form>` : ""}
+            ${r.status !== "pending" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;"><input type="hidden" name="status" value="pending"/><button class="btn" type="submit">Re-modérer</button></form>` : ""}
+          </td>
+        </tr>`).join("");
+
+  res.type("html").send(layout("Avis", `
+    <div class="container">
+      <h2 style="margin-bottom:16px;font-size:22px;color:#68191e;">Modération des avis couples</h2>
+      <div class="filters" style="display:flex;gap:12px;align-items:center;">
+        <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#666;">Statut :</span>
+        ${tabs}
+      </div>
+      <table>
+        <thead><tr><th>Date</th><th>Prestataire</th><th>Couple</th><th>Note</th><th>Avis</th><th>Actions</th></tr></thead>
+        <tbody>${tableBody}</tbody>
+      </table>
+    </div>
+  `));
+});
+
+router.post("/reviews/:id/status", adminAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  const status = String(req.body?.status ?? "");
+  if (!Number.isFinite(id)) { res.status(400).send("Invalid id"); return; }
+  if (!REVIEW_STATUSES.includes(status as ReviewStatus)) { res.status(400).send("Invalid status"); return; }
+  await db.update(vendorReviewsTable)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(vendorReviewsTable.id, id));
+  res.redirect(`/admin/reviews?status=${status}`);
+});
 
 router.get("/login", (req, res) => {
   if (!process.env.ADMIN_PASSWORD) {

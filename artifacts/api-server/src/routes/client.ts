@@ -18,6 +18,7 @@ import {
   marketplaceVendorsTable,
   weddingWebsitesTable,
   weddingRsvpsTable,
+  vendorReviewsTable,
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
@@ -100,6 +101,7 @@ const coupleUpdateSchema = z.object({
   ceremonyVenue: z.string().optional().nullable(),
   guestEstimate: z.coerce.number().int().nonnegative().optional().nullable(),
   budget: z.coerce.number().int().nonnegative().optional().nullable(),
+  status: z.enum(["planning", "completed"]).optional(),
   onboarded: z.boolean().optional(),
 });
 
@@ -833,6 +835,83 @@ router.patch("/client/wedding-website", async (req, res) => {
       .returning();
     res.json(row);
   }
+});
+
+// ---------- Reviews (couple → vendor) ----------
+const reviewSchema = z.object({
+  vendorId: z.coerce.number().int().positive(),
+  rating: z.coerce.number().int().min(1).max(5),
+  title: z.string().max(160).optional().default(""),
+  comment: z.string().min(10).max(4000),
+});
+
+router.get("/client/reviews", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const rows = await db
+    .select({
+      id: vendorReviewsTable.id,
+      vendorId: vendorReviewsTable.vendorId,
+      rating: vendorReviewsTable.rating,
+      title: vendorReviewsTable.title,
+      comment: vendorReviewsTable.comment,
+      status: vendorReviewsTable.status,
+      createdAt: vendorReviewsTable.createdAt,
+      vendorName: marketplaceVendorsTable.name,
+    })
+    .from(vendorReviewsTable)
+    .leftJoin(marketplaceVendorsTable, eq(vendorReviewsTable.vendorId, marketplaceVendorsTable.id))
+    .where(eq(vendorReviewsTable.coupleId, r.coupleId))
+    .orderBy(desc(vendorReviewsTable.createdAt));
+  res.json(rows);
+});
+
+router.post("/client/reviews", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = reviewSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid", issues: parsed.error.issues });
+    return;
+  }
+  const { vendorId, rating, title, comment } = parsed.data;
+
+  // Vérifier que le mariage est marqué "completed"
+  const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+  if (!couple) { res.status(404).json({ error: "Couple not found" }); return; }
+  if (couple.status !== "completed") {
+    res.status(403).json({ error: "Vous pourrez laisser un avis une fois votre mariage marqué comme terminé." });
+    return;
+  }
+  // Vérifier que le vendor existe
+  const [vendor] = await db
+    .select({ id: marketplaceVendorsTable.id })
+    .from(marketplaceVendorsTable)
+    .where(eq(marketplaceVendorsTable.id, vendorId))
+    .limit(1);
+  if (!vendor) { res.status(404).json({ error: "Prestataire introuvable" }); return; }
+
+  // Empêcher doublon (vendor + couple)
+  const [existing] = await db
+    .select()
+    .from(vendorReviewsTable)
+    .where(and(eq(vendorReviewsTable.vendorId, vendorId), eq(vendorReviewsTable.coupleId, r.coupleId)))
+    .limit(1);
+  if (existing) {
+    res.status(409).json({ error: "Vous avez déjà laissé un avis pour ce prestataire." });
+    return;
+  }
+
+  const [row] = await db
+    .insert(vendorReviewsTable)
+    .values({
+      vendorId,
+      coupleId: r.coupleId,
+      rating,
+      title: title ?? "",
+      comment,
+      status: "pending",
+    })
+    .returning();
+  res.status(201).json(row);
 });
 
 // ---------- RSVP public-facing (no auth needed, outside requireCouple middleware) ----------
