@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -8,6 +7,10 @@
 @theme inline {
   --color-cream: #fff4e4;
   --color-charcoal: #3b3632;
+  --color-wine-deep: #1f1416;
+  --color-wine-mid: #2a1c1f;
+  --color-gold: #c9a96e;
+  --color-gold-light: #d9bc88;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -140,7 +143,8 @@
   --chart-5: 0 0% 100%;
 
   --app-font-sans: 'Montserrat', sans-serif;
-  --app-font-serif: 'Montserrat', sans-serif;
+  --app-font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --app-font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --app-font-mono: Menlo, monospace;
   --radius: 0.125rem; /* 2px max radius */
   --shadow-2xs: 0px 2px 0px 0px hsl(356 61% 25% / 0.00);
@@ -281,6 +285,29 @@ html {
 
 
 @layer utilities {
+
+  /* Premium editorial typography utilities */
+  .font-display {
+    font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .text-wine-deep { color: #1f1416; }
+  .bg-wine-deep { background-color: #1f1416; }
+  .bg-wine-mid { background-color: #2a1c1f; }
+  .text-gold { color: #c9a96e; }
+  .bg-gold { background-color: #c9a96e; }
+  .border-gold { border-color: #c9a96e; }
+
+  /* Vertical rotated sidebar text (lamangue style) */
+  .vertical-text-up {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 500;
+  }
 
   /* Hide ugly search cancel button in Chrome until we can style it properly */
   input[type="search"]::-webkit-search-cancel-button {

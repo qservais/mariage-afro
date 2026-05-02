@@ -247,21 +247,26 @@ export default function Realisations() {
   }, [apiRealisations]);
 
   return (
-    <div className="w-full pt-28">
-      {/* Header */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-6 md:px-12 text-center max-w-3xl">
+    <div className="w-full">
+      {/* Hero éditorial — wine-deep style lamangue */}
+      <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="relative z-10 container mx-auto px-6 md:px-12 max-w-5xl text-center">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-5"
+            className="inline-flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.4em] text-gold font-medium mb-8"
           >
+            <span className="block w-8 h-px bg-gold"></span>
             {t("realisations.badge")}
+            <span className="block w-8 h-px bg-gold"></span>
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold font-serif mb-6 text-foreground"
+            className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] mb-8 text-cream text-5xl md:text-7xl lg:text-[6rem]"
           >
             {t("realisations.title")}
           </motion.h1>
@@ -269,7 +274,7 @@ export default function Realisations() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground"
+            className="text-base md:text-lg text-cream/70 font-light max-w-2xl mx-auto leading-relaxed"
           >
             {t("realisations.subtitle")}
           </motion.p>
@@ -285,19 +290,22 @@ export default function Realisations() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-foreground text-center">
+      {/* CTA — wine deep editorial */}
+      <section className="py-24 md:py-32 bg-wine-deep text-center text-cream">
         <div className="container mx-auto px-6 max-w-2xl">
-          <Heart className="w-10 h-10 text-primary mx-auto mb-6" />
-          <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4">
+          <Heart className="w-8 h-8 text-gold mx-auto mb-8" />
+          <h2 className="font-display uppercase font-medium text-3xl md:text-5xl mb-6 leading-[1.05] tracking-tight">
             {t("realisations.cta_title")}
           </h2>
-          <p className="text-white/70 mb-8">{t("realisations.cta_subtitle")}</p>
+          <p className="text-cream/70 mb-10 font-light leading-relaxed">{t("realisations.cta_subtitle")}</p>
           <a
             href="/contact"
-            className="inline-flex items-center gap-2 bg-primary text-white font-bold uppercase tracking-wider px-8 py-3 hover:bg-primary/90 transition-colors text-sm"
+            className="group inline-flex items-center gap-3 border border-gold/60 hover:border-gold hover:bg-gold/10 px-7 py-4 transition-all"
           >
-            {t("realisations.cta_btn")}
+            <span className="text-[11px] uppercase tracking-[0.25em] text-gold font-medium">
+              {t("realisations.cta_btn")}
+            </span>
+            <span className="block w-8 h-px bg-gold transition-all group-hover:w-12"></span>
           </a>
         </div>
       </section>

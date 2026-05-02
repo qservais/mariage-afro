@@ -74,21 +74,26 @@ export default function Lieux() {
   }, [apiVenues, i18nVenues]);
 
   return (
-    <div className="w-full pt-28">
-      {/* Header */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-6 md:px-12 text-center max-w-3xl">
+    <div className="w-full">
+      {/* Hero éditorial — wine-deep style lamangue */}
+      <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
+        />
+        <div className="relative z-10 container mx-auto px-6 md:px-12 text-center max-w-5xl">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-5"
+            className="inline-flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.4em] text-gold font-medium mb-8"
           >
+            <span className="block w-8 h-px bg-gold"></span>
             {t("venues.tagline")}
+            <span className="block w-8 h-px bg-gold"></span>
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold font-serif mb-6 text-foreground"
+            className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] mb-8 text-cream text-5xl md:text-7xl lg:text-[6rem]"
           >
             {t("venues.title")}
           </motion.h1>
@@ -96,7 +101,7 @@ export default function Lieux() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground mx-auto"
+            className="text-base md:text-lg text-cream/70 font-light max-w-2xl mx-auto leading-relaxed"
           >
             {t("venues.subtitle")}
           </motion.p>

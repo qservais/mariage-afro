@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown } from "lucide-react";
+import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown, ArrowRight } from "lucide-react";
 
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
 import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
@@ -116,70 +116,98 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      {/* Hero Section — Vidéo en background, image en fallback */}
-      <section className="relative h-screen min-h-[600px] flex items-center pt-20 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <video
-            src={videoSrc}
-            poster={heroImage}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="w-full h-full object-cover object-center"
-            aria-hidden="true"
-          />
-          {/* Dégradé bordeaux pour cohérence avec la couleur primaire */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-black/70" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
-        </div>
+      {/* Hero Section — Style lamangue : fond wine, titre serif éditorial, vidéo offset droite */}
+      <section className="relative min-h-screen bg-wine-deep text-cream overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:pl-16">
+        {/* Texture grain subtile (effet papier ancien) */}
+        <div
+          className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")"
+          }}
+        />
 
-        <div className="container relative z-10 mx-auto px-6 md:px-12">
+        <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center px-6 md:px-12 lg:pr-0">
+          {/* Texte gauche */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="max-w-3xl text-white"
+            transition={{ duration: 1.1, delay: 0.3 }}
+            className="lg:col-span-7 xl:col-span-6 lg:pl-4"
           >
-            <span className="inline-block text-xs md:text-sm uppercase tracking-[0.3em] mb-6 font-medium opacity-80">
+            <span className="inline-flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.4em] mb-8 md:mb-12 text-gold font-medium">
+              <span className="block w-8 h-px bg-gold"></span>
               {t("hero.tagline")}
             </span>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 font-serif drop-shadow-lg">
+
+            <h1 className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] text-cream mb-10 md:mb-14 text-[2.6rem] sm:text-5xl md:text-6xl lg:text-[5.2rem] xl:text-[6.2rem]">
               {t("hero.title")}
             </h1>
-            <p className="text-lg md:text-xl text-white/95 mb-10 max-w-2xl leading-relaxed drop-shadow-md">
+
+            <p className="text-base md:text-lg text-cream/70 max-w-xl leading-relaxed mb-10 md:mb-14 font-light">
               {t("hero.subtitle")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/contact">
-                <Button className="bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto shadow-xl">
+
+            <div className="flex flex-col sm:flex-row gap-5 sm:items-center">
+              <Link to="/contact" className="group inline-flex items-center gap-3 border border-gold/60 hover:border-gold px-7 py-4 transition-all hover:bg-gold/10">
+                <span className="text-[11px] uppercase tracking-[0.25em] text-gold font-medium">
                   {t("hero.cta_primary")}
-                </Button>
+                </span>
+                <span className="block w-8 h-px bg-gold transition-all group-hover:w-12"></span>
               </Link>
-              <Link to="/plateforme">
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-black rounded-none uppercase tracking-wider h-14 px-8 w-full sm:w-auto bg-transparent backdrop-blur-sm">
+              <Link to="/plateforme" className="group inline-flex items-center gap-3 px-2 py-4 transition-all">
+                <span className="text-[11px] uppercase tracking-[0.25em] text-cream/80 group-hover:text-gold font-medium transition-colors">
                   {t("hero.cta_secondary")}
-                </Button>
+                </span>
+                <ArrowRight className="w-4 h-4 text-cream/60 group-hover:text-gold group-hover:translate-x-1 transition-all" />
               </Link>
+            </div>
+          </motion.div>
+
+          {/* Vidéo offset droite */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.4, delay: 0.5, ease: "easeOut" }}
+            className="lg:col-span-5 xl:col-span-6 lg:-mr-6 xl:-mr-12 relative"
+          >
+            <div className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[4/5] overflow-hidden shadow-2xl">
+              <video
+                src={videoSrc}
+                poster={heroImage}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                className="w-full h-full object-cover"
+                aria-hidden="true"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/40 via-transparent to-transparent pointer-events-none" />
+            </div>
+            {/* Petit accent gold flottant */}
+            <div className="hidden lg:block absolute -bottom-6 -left-6 bg-wine-deep border border-gold/40 px-5 py-3 backdrop-blur-sm">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-gold/80 font-medium block">
+                Belgique · 2026
+              </span>
             </div>
           </motion.div>
         </div>
 
-        {/* Indicateur de scroll */}
+        {/* Indicateur scroll en bas centré */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden md:block"
+          transition={{ delay: 1.6, duration: 1 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden md:block"
         >
           <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center gap-2 text-white/70"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            className="flex flex-col items-center gap-2 text-cream/40"
           >
-            <span className="text-xs uppercase tracking-widest">Scroll</span>
-            <ChevronDown className="w-5 h-5" />
+            <span className="text-[9px] uppercase tracking-[0.4em]">Découvrir</span>
+            <ChevronDown className="w-4 h-4" />
           </motion.div>
         </motion.div>
       </section>
