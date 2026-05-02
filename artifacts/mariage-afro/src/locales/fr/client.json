@@ -361,5 +361,18 @@
     "empty": "Aucune cagnotte n'est encore disponible.",
     "contribute": "Contribuer",
     "back_to_site": "Retour au site"
+  },
+  "shared_board": {
+    "title": "Tableau d'inspiration partagé",
+    "subtitle_viewer": "Vous consultez ce tableau en lecture seule.",
+    "subtitle_editor": "Vous pouvez ajouter des images.",
+    "add_image": "Ajouter une image",
+    "caption": "Légende",
+    "upload": "Téléverser",
+    "invalid_link": "Ce lien est invalide ou a expiré.",
+    "empty": "Aucune image pour le moment.",
+    "loading": "Chargement…",
+    "added": "Image ajoutée",
+    "upload_failed": "Échec du téléversement"
   }
 }

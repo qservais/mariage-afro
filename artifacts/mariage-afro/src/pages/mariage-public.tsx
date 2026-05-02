@@ -192,9 +192,10 @@ export default function MariagePublicPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t("mariage_public.email_optional")}</Label>
+                <Label>{t("mariage_public.email_required")} *</Label>
                 <Input
                   type="email"
+                  required
                   value={rsvpForm.email}
                   onChange={(e) => setRsvpForm({ ...rsvpForm, email: e.target.value })}
                   placeholder={t("mariage_public.email_placeholder")}
@@ -251,7 +252,7 @@ export default function MariagePublicPage() {
 
               <Button
                 onClick={() => rsvpMutation.mutate()}
-                disabled={!rsvpForm.name.trim() || rsvpMutation.isPending}
+                disabled={!rsvpForm.name.trim() || !/.+@.+\..+/.test(rsvpForm.email) || rsvpMutation.isPending}
                 className="w-full rounded-none bg-primary hover:bg-primary/90 h-12 font-bold uppercase tracking-wider text-sm"
               >
                 {rsvpMutation.isPending ? (

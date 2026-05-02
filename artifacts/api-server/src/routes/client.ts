@@ -1229,7 +1229,7 @@ router.get("/client/rsvps", async (req, res) => {
 // ---------- RSVP public-facing (no auth needed, outside requireCouple middleware) ----------
 export const rsvpSchema = z.object({
   name: z.string().min(1).max(100),
-  email: z.string().email().optional(),
+  email: z.string().email(),
   attending: z.boolean(),
   guestCount: z.number().int().min(1).max(20).default(1),
   message: z.string().max(1000).optional(),

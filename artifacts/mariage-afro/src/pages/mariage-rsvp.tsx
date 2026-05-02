@@ -21,6 +21,7 @@ export default function MariageRsvpPage() {
   const { slug } = useParams<{ slug: string }>();
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", attending: true, guestCount: 1, message: "" });
+  const emailValid = /.+@.+\..+/.test(form.email);
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
   const { data: site } = useQuery({
@@ -68,7 +69,7 @@ export default function MariageRsvpPage() {
 
   // Required-field validation includes custom required questions
   const customMissing = questions.some((q) => q.required && !((answers[q.id] || "").trim()));
-  const canSubmit = !!form.name.trim() && !customMissing && !submit.isPending;
+  const canSubmit = !!form.name.trim() && emailValid && !customMissing && !submit.isPending;
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
@@ -85,8 +86,8 @@ export default function MariageRsvpPage() {
             <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="rounded-none" data-testid="input-rsvp-name" />
           </div>
           <div className="space-y-2">
-            <Label>{t("mariage_public.email_optional")}</Label>
-            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-none" />
+            <Label>{t("mariage_public.email_required")} *</Label>
+            <Input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-none" data-testid="input-rsvp-email" />
           </div>
           <div className="space-y-2">
             <Label>{t("mariage_public.presence")}</Label>

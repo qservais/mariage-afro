@@ -361,5 +361,18 @@
     "empty": "Nog geen geldpot beschikbaar.",
     "contribute": "Bijdragen",
     "back_to_site": "Terug naar site"
+  },
+  "shared_board": {
+    "title": "Gedeeld moodboard",
+    "subtitle_viewer": "U bekijkt dit bord in alleen-lezen modus.",
+    "subtitle_editor": "U kunt afbeeldingen toevoegen.",
+    "add_image": "Afbeelding toevoegen",
+    "caption": "Bijschrift",
+    "upload": "Uploaden",
+    "invalid_link": "Deze link is ongeldig of verlopen.",
+    "empty": "Nog geen afbeeldingen.",
+    "loading": "Laden…",
+    "added": "Afbeelding toegevoegd",
+    "upload_failed": "Uploaden mislukt"
   }
 }

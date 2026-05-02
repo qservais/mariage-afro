@@ -361,5 +361,18 @@
     "empty": "No fund is available yet.",
     "contribute": "Contribute",
     "back_to_site": "Back to site"
+  },
+  "shared_board": {
+    "title": "Shared mood board",
+    "subtitle_viewer": "You are viewing this board in read-only mode.",
+    "subtitle_editor": "You can add images.",
+    "add_image": "Add an image",
+    "caption": "Caption",
+    "upload": "Upload",
+    "invalid_link": "This link is invalid or expired.",
+    "empty": "No images yet.",
+    "loading": "Loading…",
+    "added": "Image added",
+    "upload_failed": "Upload failed"
   }
 }

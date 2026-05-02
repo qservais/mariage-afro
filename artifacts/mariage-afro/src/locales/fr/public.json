@@ -701,7 +701,8 @@
     "message_placeholder": "Allergie alimentaire, message pour les mariés…",
     "confirm": "Confirmer",
     "footer_made_with": "Créé avec",
-    "footer_tagline": "La plateforme premium pour mariages afro et mixtes en Belgique"
+    "footer_tagline": "La plateforme premium pour mariages afro et mixtes en Belgique",
+    "email_required": "Email"
   },
   "multi_devis": {
     "eyebrow": "Demande groupée",

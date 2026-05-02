@@ -701,7 +701,8 @@
     "message_placeholder": "Voedselallergie, bericht voor de bruidsparen…",
     "confirm": "Bevestigen",
     "footer_made_with": "Gemaakt met",
-    "footer_tagline": "Het premium platform voor Afro en gemengde bruiloften in België"
+    "footer_tagline": "Het premium platform voor Afro en gemengde bruiloften in België",
+    "email_required": "E-mail"
   },
   "multi_devis": {
     "eyebrow": "Groepsaanvraag",

@@ -39,6 +39,7 @@ import CagnottePage from "@/pages/client/cagnotte";
 import MariagePublicPage from "@/pages/mariage-public";
 import MariageRsvpPage from "@/pages/mariage-rsvp";
 import MariageCagnottePage from "@/pages/mariage-cagnotte";
+import MoodBoardSharedPage from "@/pages/mood-board-shared";
 import VendorLayout from "@/components/vendor/VendorLayout";
 import VendorDashboard from "@/pages/vendor/dashboard";
 import VendorProfilePage from "@/pages/vendor/profile";
@@ -131,6 +132,15 @@ function AppRoutes() {
   const isClient = pathname.startsWith("/espace-client") || pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
   const isVendor = pathname.startsWith("/espace-pro");
   const isWeddingPage = pathname.startsWith("/mariage/");
+  const isSharedBoard = pathname.startsWith("/mood-board/shared/");
+
+  if (isSharedBoard) {
+    return (
+      <Routes>
+        <Route path="/mood-board/shared/:token" element={<MoodBoardSharedPage />} />
+      </Routes>
+    );
+  }
 
   if (isWeddingPage) {
     return (

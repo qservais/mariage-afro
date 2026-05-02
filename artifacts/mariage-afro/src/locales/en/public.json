@@ -701,7 +701,8 @@
     "message_placeholder": "Food allergy, message for the couple…",
     "confirm": "Confirm",
     "footer_made_with": "Made with",
-    "footer_tagline": "The premium platform for Afro and mixed weddings in Belgium"
+    "footer_tagline": "The premium platform for Afro and mixed weddings in Belgium",
+    "email_required": "Email"
   },
   "multi_devis": {
     "eyebrow": "Bulk request",
