@@ -919,7 +919,7 @@ export default function Prestations() {
                 category: v.category,
                 latitude: v.latitude ?? null,
                 longitude: v.longitude ?? null,
-                href: `/partenaires?focus=${v.id}`,
+                href: `/partenaires/${v.id}`,
                 image: v.image,
                 averageRating: v.averageRating,
                 reviewCount: v.reviewCount,

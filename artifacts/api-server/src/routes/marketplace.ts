@@ -59,6 +59,9 @@ function buildVendorFilters(req: Request) {
   for (const l of langs) {
     conds.push(sql`${marketplaceVendorsTable.spokenLanguages} @> ${JSON.stringify([l])}::jsonb`);
   }
+  if (req.query.hasGeo === "1" || req.query.hasGeo === "true") {
+    conds.push(sql`${marketplaceVendorsTable.latitude} IS NOT NULL AND ${marketplaceVendorsTable.longitude} IS NOT NULL`);
+  }
   return conds;
 }
 
@@ -96,6 +99,9 @@ function buildVenueFilters(req: Request) {
         sql`${marketplaceVenuesTable.capacityMax} IS NULL`,
       )!,
     );
+  }
+  if (req.query.hasGeo === "1" || req.query.hasGeo === "true") {
+    conds.push(sql`${marketplaceVenuesTable.latitude} IS NOT NULL AND ${marketplaceVenuesTable.longitude} IS NOT NULL`);
   }
   return conds;
 }
