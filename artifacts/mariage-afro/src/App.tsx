@@ -39,7 +39,6 @@ import VendorSignInPage from "@/pages/vendor/sign-in";
 import VendorSignUpPage from "@/pages/vendor/sign-up";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import FloatingCTA from "@/components/layout/FloatingCTA";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import { MariageAfroClerkProvider } from "@/lib/clerk";
 import "./i18n";
@@ -70,7 +69,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
-      <FloatingCTA />
     </div>
   );
 }
