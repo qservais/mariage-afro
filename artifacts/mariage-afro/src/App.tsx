@@ -83,9 +83,11 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function LangPrefixHandler({ children }: { children: React.ReactNode }) {
+function LangUrlSync({ children }: { children: React.ReactNode }) {
   const { pathname, search, hash } = useLocation();
   const navigate = useNavigate();
+
+  // Inbound: /<lang>/path → strip prefix, persist via ?lang=
   useEffect(() => {
     const segs = pathname.split("/").filter(Boolean);
     const first = segs[0];
@@ -93,9 +95,29 @@ function LangPrefixHandler({ children }: { children: React.ReactNode }) {
       const lang = first as SupportedLang;
       if (i18n.language !== lang) i18n.changeLanguage(lang);
       const rest = "/" + segs.slice(1).join("/");
-      navigate({ pathname: rest === "/" ? "/" : rest, search, hash }, { replace: true });
+      const params = new URLSearchParams(search);
+      params.set("lang", lang);
+      navigate(
+        { pathname: rest === "/" ? "/" : rest, search: `?${params.toString()}`, hash },
+        { replace: true },
+      );
     }
   }, [pathname, search, hash, navigate]);
+
+  // Outbound: when language toggles, mirror it into ?lang= so the URL stays shareable
+  useEffect(() => {
+    const onChange = (lng: string) => {
+      const lang = (SUPPORTED_LANGS as readonly string[]).includes(lng) ? lng : null;
+      if (!lang) return;
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("lang") === lang) return;
+      url.searchParams.set("lang", lang);
+      window.history.replaceState({}, "", url.toString());
+    };
+    i18n.on("languageChanged", onChange);
+    return () => { i18n.off("languageChanged", onChange); };
+  }, []);
+
   return <>{children}</>;
 }
 
@@ -191,9 +213,9 @@ function App() {
         <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <MariageAfroClerkProvider>
             <ScrollToTop />
-            <LangPrefixHandler>
+            <LangUrlSync>
               <AppRoutes />
-            </LangPrefixHandler>
+            </LangUrlSync>
           </MariageAfroClerkProvider>
         </BrowserRouter>
         <Toaster />
