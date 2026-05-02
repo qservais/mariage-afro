@@ -23,12 +23,14 @@ import {
   List as ListIcon,
   Map as MapIcon,
   Scale,
+  Send,
 } from "lucide-react";
 
 import VendorAvailabilityCalendar from "@/components/VendorAvailabilityCalendar";
 import MarketplaceFilters, { buildSearchFromFilters, readFiltersFromSearch } from "@/components/marketplace/MarketplaceFilters";
 import MarketplaceMap from "@/components/marketplace/MarketplaceMap";
 import ComparatorBar, { useComparator } from "@/components/marketplace/ComparatorBar";
+import MultiDevisForm from "@/components/MultiDevisForm";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
 import { comparator, MAX_COMPARE } from "@/lib/comparator";
 
@@ -810,6 +812,11 @@ export default function Prestations() {
 
   // Comparator state — déclenche un re-render lorsqu'on coche/décoche
   const { ids: compareIds } = useComparator("vendor");
+  const [multiDevisOpen, setMultiDevisOpen] = useState(false);
+  const compareVendors = compareIds
+    .map((id) => filtered.find((v) => v.id === id))
+    .filter((v): v is NonNullable<typeof v> => Boolean(v))
+    .map((v) => ({ id: v.id, name: v.name }));
   const handleToggleCompare = (id: number) => {
     const r = comparator.toggle("vendor", id);
     if (r.reachedMax) {
@@ -873,8 +880,44 @@ export default function Prestations() {
           >
             {t("prestations.subtitle")}
           </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="mt-10 flex flex-col sm:flex-row gap-3 items-center justify-center"
+          >
+            <button
+              type="button"
+              onClick={() => {
+                if (compareVendors.length === 0) {
+                  toast({
+                    title: t("multi_devis.no_vendors"),
+                    description: t("prestations.multi_devis_hint"),
+                  });
+                  return;
+                }
+                setMultiDevisOpen(true);
+              }}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-wine-deep text-xs uppercase tracking-[0.25em] font-medium hover:bg-gold/90 transition"
+              data-testid="hero-multi-devis"
+            >
+              <Send className="w-4 h-4" />
+              {compareVendors.length > 0
+                ? t("prestations.multi_devis_cta_count", { count: compareVendors.length })
+                : t("prestations.multi_devis_cta")}
+            </button>
+            <span className="text-cream/50 text-[11px] uppercase tracking-[0.2em]">
+              {t("prestations.multi_devis_hint")}
+            </span>
+          </motion.div>
         </div>
       </section>
+
+      <MultiDevisForm
+        open={multiDevisOpen}
+        onClose={() => setMultiDevisOpen(false)}
+        vendors={compareVendors}
+      />
 
       {jsonLdString && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
