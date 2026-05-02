@@ -48,8 +48,10 @@ export default function Comparateur() {
 
   const ids = useMemo(() => {
     const raw = sp.get("ids") || "";
-    const fromUrl = raw.split(",").map((s) => Number(s.trim())).filter((n) => Number.isFinite(n));
-    return fromUrl.length > 0 ? fromUrl : comparator.get("vendor");
+    const fromUrl = raw.split(",").map((s) => Number(s.trim())).filter((n) => Number.isFinite(n) && n > 0);
+    const source = fromUrl.length > 0 ? fromUrl : comparator.get("vendor");
+    // Déduplique et clamp à MAX_COMPARE pour rester aligné avec la limite produit + backend.
+    return Array.from(new Set(source)).slice(0, 3);
   }, [sp]);
 
   useEffect(() => {
