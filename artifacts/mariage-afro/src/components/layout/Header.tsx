@@ -124,6 +124,9 @@ export default function Header() {
             <img
               src={logoColor}
               alt="Mariage Afro"
+              width={180}
+              height={48}
+              fetchPriority="high"
               className={`h-10 md:h-12 w-auto transition-all duration-500 ${
                 isOverDark && !isScrolled && !mobileMenuOpen ? "brightness-0 invert" : ""
               }`}
@@ -139,20 +142,26 @@ export default function Header() {
             >
               <button
                 onClick={() => changeLanguage("fr")}
+                aria-label="Français"
+                aria-current={i18n.language === "fr" ? "true" : undefined}
                 className={`hover:text-gold transition-colors ${i18n.language === "fr" ? "text-gold" : ""}`}
               >
                 FR
               </button>
-              <span className="opacity-50">·</span>
+              <span className="opacity-50" aria-hidden="true">·</span>
               <button
                 onClick={() => changeLanguage("nl")}
+                aria-label="Nederlands"
+                aria-current={i18n.language === "nl" ? "true" : undefined}
                 className={`hover:text-gold transition-colors ${i18n.language === "nl" ? "text-gold" : ""}`}
               >
                 NL
               </button>
-              <span className="opacity-50">·</span>
+              <span className="opacity-50" aria-hidden="true">·</span>
               <button
                 onClick={() => changeLanguage("en")}
+                aria-label="English"
+                aria-current={i18n.language === "en" ? "true" : undefined}
                 className={`hover:text-gold transition-colors ${i18n.language === "en" ? "text-gold" : ""}`}
               >
                 EN

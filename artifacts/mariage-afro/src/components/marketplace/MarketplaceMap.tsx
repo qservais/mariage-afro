@@ -73,7 +73,7 @@ export default function MarketplaceMap({ points, height = 560 }: { points: MapPo
             <Popup>
               <div style={{ minWidth: 200, fontFamily: "system-ui" }}>
                 {p.image && (
-                  <img src={p.image} alt={p.name} style={{ width: "100%", height: 90, objectFit: "cover", marginBottom: 8 }} />
+                  <img src={p.image} alt={p.name} width={240} height={90} loading="lazy" decoding="async" style={{ width: "100%", height: 90, objectFit: "cover", marginBottom: 8, aspectRatio: "8 / 3" }} />
                 )}
                 <div style={{ fontWeight: 700, fontSize: 14, color: "#68191e", marginBottom: 2 }}>{p.name}</div>
                 {p.category && (

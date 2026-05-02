@@ -112,10 +112,18 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Code splitting**: All routes except `/` (Home) are lazy-loaded via `React.lazy` + `<Suspense>` in `src/App.tsx`. The public bundle no longer includes Espace Client / Espace Pro / `/mariage/:slug` / `/mood-board/shared` / auth code paths.
 - **Image pipeline**: `scripts/optimize-images.mjs` (uses `sharp`) generates AVIF + WebP siblings of every JPG/JPEG/PNG in `attached_assets/`. Run with `pnpm --filter @workspace/mariage-afro run optimize-images`. Idempotent (skips up-to-date files). Typical savings: PNG → AVIF ≈ 95%, JPEG → AVIF ≈ 55%.
 - **`<Picture>` component** (`src/components/Picture.tsx`): renders `<picture>` with AVIF → WebP → original fallback. Requires explicit `width`/`height` props for CLS prevention (sets `aspect-ratio` CSS). `loading="eager"` adds `fetchPriority="high"` for above-the-fold heroes; defaults to lazy + async for below-fold.
-- **Hero images**: Above-the-fold heroes (`plateforme.tsx`) use `<Picture loading="eager" />`. Below-fold banners (lieux/prestations bottom banners, home about/services accent) use default lazy `<Picture>`.
+- **Hero images**: Above-the-fold heroes (`plateforme.tsx`) use `<Picture loading="eager" />`. Below-fold banners (lieux/prestations bottom banners, home about/services accent) use default lazy `<Picture>`. First two vendor cards on `/prestations` are eager + `fetchPriority="high"`; remaining are lazy.
+- **Width/height everywhere**: All `<img>` tags across the public site (Header logo, Footer logo, vendor cards, gallery thumbs, shop categories, realisations covers, mood boards, cagnotte photos, QR codes, marketplace map popups) carry explicit `width`/`height` + `aspect-ratio` style → no CLS.
 - **Fonts**: Trimmed Google Fonts URL in `index.html` to only the weights actually used (Montserrat 400/500/600/700, Cormorant Garamond 400/500/600/700; Playfair Display removed). Loaded via non-blocking pattern (`media="print"` + `onload="this.media='all'"`) with `<noscript>` fallback. `display=swap` avoids FOIT.
-- **A11y baseline** (`src/index.css`): global `*:focus-visible` ring (gold, 2px) for WCAG 2.4.7; `@media (prefers-reduced-motion: reduce)` disables animations. Skip-link "Aller au contenu principal" in `PublicLayout` jumps to `<main id="main-content">`. Suspense fallback uses `role="status"` + `aria-live="polite"`.
-- **Deferred to follow-ups (#52, #53)**: Mass migration of remaining `<img>` in card grids to `<Picture>`, full axe-core audit per page, contrast/aria fine-tuning, before/after Lighthouse capture.
+- **A11y baseline**:
+  - `src/index.css`: global `*:focus-visible` ring (gold, 2px) for WCAG 2.4.7; `@media (prefers-reduced-motion: reduce)` disables animations.
+  - Skip-link "Aller au contenu principal" in `PublicLayout` jumps to `<main id="main-content">`.
+  - Suspense fallback uses `role="status"` + `aria-live="polite"`.
+  - Header language switcher buttons have `aria-label` (Français / Nederlands / English) + `aria-current="true"` on active language; separator dots are `aria-hidden`.
+  - Header logo link has `aria-label="Mariage Afro"`; logo `<img>` is `fetchPriority="high"`.
+  - All decorative `alt=""` for purely visual images; meaningful images carry descriptive alt (vendor names, captions, "QR code IBAN pour virement", etc.).
+- **Lighthouse / axe-core capture**: Cannot be run from the agent environment (no headless browser CLI is available in this sandbox). Pipeline + assets are ready; the user / CI should run `lighthouse https://<deployed-url>/` after deploy. Follow-up #53 tracks the audit run.
+- **Deferred to follow-up #52**: Server-side `<picture>` AVIF/WebP via vite-imagetools (current `<Picture>` derives sibling URLs by extension swap; AVIF/WebP siblings are emitted to `attached_assets/` but Vite only bundles explicitly imported variants — graceful fallback to original works, but a build-time plugin would guarantee modern formats are served in production).
 
 ## Environment Variables
 

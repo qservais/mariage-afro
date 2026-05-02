@@ -30,7 +30,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-12 mb-16">
           <div className="col-span-2 md:col-span-2">
             <Link to="/" className="block mb-6">
-              <img src={logoCreme} alt="Mariage Afro" loading="lazy" decoding="async" className="h-16 w-auto" />
+              <img src={logoCreme} alt="Mariage Afro" width={200} height={64} loading="lazy" decoding="async" className="h-16 w-auto" />
             </Link>
             <p className="text-cream/60 text-sm leading-relaxed max-w-xs font-light">
               {t("footer.tagline")}

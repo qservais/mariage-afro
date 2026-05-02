@@ -116,7 +116,7 @@ export default function MoodBoardSharedPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {b.images.map((im) => (
                 <Card key={im.id} className="rounded-none overflow-hidden">
-                  <img src={storageUrl(im.url)} alt={im.caption || ""} loading="lazy" decoding="async" className="w-full h-48 object-cover" />
+                  <img src={storageUrl(im.url)} alt={im.caption || "Inspiration"} width={400} height={192} loading="lazy" decoding="async" className="w-full h-48 object-cover" style={{ aspectRatio: "25 / 12" }} />
                   {im.caption && <div className="p-2 text-sm">{im.caption}</div>}
                 </Card>
               ))}

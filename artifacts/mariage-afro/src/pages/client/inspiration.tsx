@@ -200,7 +200,7 @@ export default function InspirationPage() {
               <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 [column-fill:_balance]">
                 {activeBoard.images.map((img) => (
                   <div key={img.id} className="mb-3 break-inside-avoid relative group">
-                    <img src={objectUrl(img.url)} alt={img.caption} loading="lazy" decoding="async" className="w-full block" />
+                    <img src={objectUrl(img.url)} alt={img.caption || "Inspiration"} loading="lazy" decoding="async" className="w-full block" />
                     <button
                       onClick={() => deleteImage.mutate(img.id)}
                       className="absolute top-2 right-2 bg-white/90 p-1 opacity-0 group-hover:opacity-100 hover:bg-primary hover:text-white"

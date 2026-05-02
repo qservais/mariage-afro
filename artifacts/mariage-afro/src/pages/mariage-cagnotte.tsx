@@ -25,7 +25,7 @@ function objectUrl(p: string | null) {
 function QrPreview({ value }: { value: string }) {
   const [src, setSrc] = useState("");
   useEffect(() => { QRCode.toDataURL(value, { margin: 1, width: 180 }).then(setSrc).catch(() => setSrc("")); }, [value]);
-  return src ? <img src={src} alt="QR IBAN" loading="lazy" decoding="async" className="w-40 h-40 border border-border bg-white p-2" /> : null;
+  return src ? <img src={src} alt="QR code IBAN pour virement" width={160} height={160} loading="lazy" decoding="async" className="w-40 h-40 border border-border bg-white p-2" /> : null;
 }
 
 export default function MariageCagnottePage() {
@@ -65,7 +65,7 @@ export default function MariageCagnottePage() {
 
         {cagnottes.map((c) => (
           <article key={c.id} className="bg-white border border-border p-6 flex flex-col md:flex-row gap-6">
-            {c.photo && <img src={objectUrl(c.photo)} alt={c.title} loading="lazy" decoding="async" className="w-full md:w-44 h-44 object-cover" />}
+            {c.photo && <img src={objectUrl(c.photo)} alt={c.title} width={400} height={176} loading="lazy" decoding="async" className="w-full md:w-44 h-44 object-cover" />}
             <div className="flex-1 space-y-3">
               <h2 className="text-xl font-bold font-serif text-foreground">{c.title}</h2>
               {c.description && <p className="text-sm text-foreground/80 leading-relaxed">{c.description}</p>}

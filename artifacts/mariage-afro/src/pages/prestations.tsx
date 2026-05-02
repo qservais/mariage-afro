@@ -1011,7 +1011,13 @@ export default function Prestations() {
                     <img
                       src={vendor.image}
                       alt={vendor.name}
+                      width={1200}
+                      height={900}
+                      loading={i < 2 ? "eager" : "lazy"}
+                      decoding="async"
+                      fetchPriority={i < 2 ? "high" : "auto"}
                       className="w-full h-full object-cover"
+                      style={{ aspectRatio: "4 / 3" }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/85 via-wine-deep/30 to-transparent" />
                     <span className="badge-editorial-dark absolute top-4 left-4">
@@ -1078,8 +1084,12 @@ export default function Prestations() {
                         <img
                           src={g}
                           alt={`${vendor.name} ${idx + 1}`}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                          width={400}
+                          height={300}
                           loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                          style={{ aspectRatio: "4 / 3" }}
                         />
                       </div>
                     ))}

@@ -344,7 +344,7 @@ export default function OutilsQuiz() {
                         >
                           {v.coverImage && (
                             <div className="aspect-[4/3] overflow-hidden bg-wine-deep/5">
-                              <img src={v.coverImage} alt={v.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                              <img src={v.coverImage} alt={v.name} width={800} height={600} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform" style={{ aspectRatio: "4 / 3" }} />
                             </div>
                           )}
                           <div className="p-4">

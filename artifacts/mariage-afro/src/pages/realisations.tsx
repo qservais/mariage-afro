@@ -114,6 +114,11 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
           <img
             src={cover}
             alt={r.coupleName}
+            width={1200}
+            height={1500}
+            loading="lazy"
+            decoding="async"
+            style={{ aspectRatio: "4 / 5" }}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/60 via-wine-deep/10 to-transparent" />
@@ -186,7 +191,7 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
                   onClick={() => openGallery(i)}
                   className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
                 >
-                  <img src={img} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                  <img src={img} alt="" width={400} height={400} loading="lazy" decoding="async" className="w-full h-full object-cover" style={{ aspectRatio: "1 / 1" }} />
                 </button>
               ))}
             </div>
