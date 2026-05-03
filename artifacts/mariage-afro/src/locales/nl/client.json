@@ -306,7 +306,31 @@
     "rsvp_form": "RSVP-formulier",
     "rsvp_form_desc": "Uw gasten kunnen hun aanwezigheid direct op uw site bevestigen.",
     "save": "Wijzigingen opslaan",
-    "slug_prefix": "…/mariage/"
+    "slug_prefix": "…/mariage/",
+    "template": {
+      "title": "Site-ontwerp",
+      "help": "Kies de visuele sfeer van uw publieke site. De wijziging wordt onmiddellijk toegepast.",
+      "selected_badge": "Geselecteerd",
+      "selected_toast": "Ontwerp toegepast op uw site",
+      "items": {
+        "royal-afro": {
+          "name": "Royal Afro",
+          "desc": "Diep bordeaux en gouden accenten, traditionele elegantie."
+        },
+        "boheme": {
+          "name": "Bohème",
+          "desc": "Crème en plantaardige accenten, poëtische zachtheid."
+        },
+        "moderne": {
+          "name": "Modern",
+          "desc": "Minimalistisch zwart en goud, strakke typografie."
+        },
+        "tropical": {
+          "name": "Tropisch",
+          "desc": "Diep groen en koraal, feestelijke en zonnige energie."
+        }
+      }
+    }
   },
   "onboarding": {
     "title": "Welkom 👋",

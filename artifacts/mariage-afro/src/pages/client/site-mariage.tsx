@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Globe, Eye, EyeOff, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { Globe, Eye, EyeOff, Plus, Trash2, ExternalLink, Loader2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,12 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { clientFetch } from "@/lib/clientApi";
+import {
+  WEDDING_TEMPLATE_IDS,
+  TemplateThumbnail,
+  normalizeTemplate,
+  type WeddingTemplateId,
+} from "@/lib/wedding-templates";
 
 interface WeddingWebsite {
   id: number;
@@ -21,6 +27,7 @@ interface WeddingWebsite {
   city: string | null;
   programme: { time: string; event: string }[];
   coverImage: string | null;
+  template: WeddingTemplateId | null;
   active: boolean;
   rsvpEnabled: boolean;
 }
@@ -78,6 +85,19 @@ export default function SiteMariagePage() {
     onError: (e: Error) => toast({ title: e.message, variant: "destructive" }),
   });
 
+  const templateMutation = useMutation({
+    mutationFn: (template: WeddingTemplateId) =>
+      clientFetch("/api/client/wedding-website", {
+        method: "PATCH",
+        body: JSON.stringify({ template }),
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["wedding-website"] });
+      toast({ title: t("site_mariage.template.selected_toast") });
+    },
+    onError: (e: Error) => toast({ title: e.message, variant: "destructive" }),
+  });
+
   function addProgrammeRow() {
     setProgramme([...programme, { time: "", event: "" }]);
   }
@@ -91,6 +111,36 @@ export default function SiteMariagePage() {
   const publicUrl = site?.slug
     ? `${window.location.origin}${BASE_URL}mariage/${site.slug}`
     : null;
+
+  const currentTemplate: WeddingTemplateId = normalizeTemplate(site?.template);
+  const templateBtnsRef = useRef<Array<HTMLButtonElement | null>>([]);
+
+  function onTemplateKeyDown(e: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+    const last = WEDDING_TEMPLATE_IDS.length - 1;
+    let next = index;
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        next = index === last ? 0 : index + 1;
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+        next = index === 0 ? last : index - 1;
+        break;
+      case "Home":
+        next = 0;
+        break;
+      case "End":
+        next = last;
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+    const target = WEDDING_TEMPLATE_IDS[next];
+    templateBtnsRef.current[next]?.focus();
+    if (currentTemplate !== target) templateMutation.mutate(target);
+  }
 
   if (isLoading) {
     return (
@@ -124,6 +174,82 @@ export default function SiteMariagePage() {
             {t("site_mariage.view_site")}
           </a>
         )}
+      </div>
+
+      {/* Template gallery */}
+      <div
+        className="bg-white border border-border p-6 space-y-5"
+        data-testid="template-gallery"
+      >
+        <div>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
+            {t("site_mariage.template.title")}
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            {t("site_mariage.template.help")}
+          </p>
+        </div>
+
+        <div
+          role="radiogroup"
+          aria-label={t("site_mariage.template.title")}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3"
+        >
+          {WEDDING_TEMPLATE_IDS.map((id, idx) => {
+            const isSelected = currentTemplate === id;
+            const isPending = templateMutation.isPending && templateMutation.variables === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex={isSelected ? 0 : -1}
+                ref={(el) => { templateBtnsRef.current[idx] = el; }}
+                onKeyDown={(e) => onTemplateKeyDown(e, idx)}
+                disabled={templateMutation.isPending}
+                onClick={() => {
+                  if (!isSelected) templateMutation.mutate(id);
+                }}
+                data-testid={`template-card-${id}`}
+                data-selected={isSelected ? "true" : "false"}
+                className={[
+                  "relative text-left border bg-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                  isSelected
+                    ? "border-primary ring-2 ring-primary/20"
+                    : "border-border hover:border-primary/40",
+                  templateMutation.isPending && !isSelected ? "opacity-60" : "",
+                ].join(" ")}
+              >
+                {isSelected && (
+                  <span
+                    className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1"
+                    data-testid={`template-badge-${id}`}
+                  >
+                    <Check className="w-3 h-3" />
+                    {t("site_mariage.template.selected_badge")}
+                  </span>
+                )}
+                {isPending && (
+                  <span className="absolute inset-0 z-10 flex items-center justify-center bg-white/70">
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                  </span>
+                )}
+                <div className="aspect-[3/2] w-full overflow-hidden bg-muted">
+                  <TemplateThumbnail id={id} className="w-full h-full" />
+                </div>
+                <div className="p-3">
+                  <p className="text-sm font-semibold text-foreground">
+                    {t(`site_mariage.template.items.${id}.name`)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-snug">
+                    {t(`site_mariage.template.items.${id}.desc`)}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Publication status */}

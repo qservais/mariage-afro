@@ -306,7 +306,31 @@
     "rsvp_form": "RSVP form",
     "rsvp_form_desc": "Your guests can confirm their attendance directly on your site.",
     "save": "Save changes",
-    "slug_prefix": "…/mariage/"
+    "slug_prefix": "…/mariage/",
+    "template": {
+      "title": "Site template",
+      "help": "Choose the visual mood of your public site. Changes apply instantly.",
+      "selected_badge": "Selected",
+      "selected_toast": "Template applied to your site",
+      "items": {
+        "royal-afro": {
+          "name": "Royal Afro",
+          "desc": "Deep bordeaux and gold accents, traditional elegance."
+        },
+        "boheme": {
+          "name": "Bohemian",
+          "desc": "Cream and botanical accents, poetic softness."
+        },
+        "moderne": {
+          "name": "Modern",
+          "desc": "Minimalist black and gold, refined typography."
+        },
+        "tropical": {
+          "name": "Tropical",
+          "desc": "Deep green and coral, festive sunny energy."
+        }
+      }
+    }
   },
   "onboarding": {
     "title": "Welcome 👋",

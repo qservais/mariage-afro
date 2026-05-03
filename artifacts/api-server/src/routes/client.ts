@@ -795,6 +795,7 @@ const websiteSchema = z.object({
   venue: z.string().max(200).optional(),
   city: z.string().max(100).optional(),
   programme: z.array(z.object({ time: z.string(), event: z.string() })).optional(),
+  template: z.enum(["royal-afro", "boheme", "moderne", "tropical"]).optional(),
   active: z.boolean().optional(),
   rsvpEnabled: z.boolean().optional(),
 });

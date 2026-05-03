@@ -306,7 +306,31 @@
     "rsvp_form": "Formulaire RSVP",
     "rsvp_form_desc": "Vos invités pourront confirmer leur présence directement sur votre site.",
     "save": "Enregistrer les modifications",
-    "slug_prefix": "…/mariage/"
+    "slug_prefix": "…/mariage/",
+    "template": {
+      "title": "Maquette du site",
+      "help": "Choisissez l'ambiance visuelle de votre site public. Le changement est appliqué immédiatement.",
+      "selected_badge": "Sélectionnée",
+      "selected_toast": "Maquette appliquée à votre site",
+      "items": {
+        "royal-afro": {
+          "name": "Royal Afro",
+          "desc": "Bordeaux profond et touches dorées, élégance traditionnelle."
+        },
+        "boheme": {
+          "name": "Bohème",
+          "desc": "Cream et accents végétaux, douceur poétique."
+        },
+        "moderne": {
+          "name": "Moderne",
+          "desc": "Minimaliste noir et or, typographie épurée."
+        },
+        "tropical": {
+          "name": "Tropical",
+          "desc": "Vert profond et corail, énergie festive et solaire."
+        }
+      }
+    }
   },
   "onboarding": {
     "title": "Bienvenue 👋",

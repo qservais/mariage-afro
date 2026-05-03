@@ -293,6 +293,7 @@ export const weddingWebsitesTable = pgTable("wedding_websites", {
   city: text("city"),
   programme: jsonb("programme").$type<{time: string; event: string}[]>().notNull().default([]),
   coverImage: text("cover_image"),
+  template: text("template").notNull().default("royal-afro"),
   active: boolean("active").notNull().default(false),
   rsvpEnabled: boolean("rsvp_enabled").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
