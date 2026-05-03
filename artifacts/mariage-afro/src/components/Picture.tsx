@@ -37,7 +37,19 @@ export function Picture({
   // Vite asset URLs come back with a hashed filename + extension, e.g.
   //   "/assets/foo.GM-00756.jpg_xxx-AbCdEf12.jpeg"
   // We derive the AVIF/WebP siblings by replacing only the trailing extension.
+  //
+  // IMPORTANT: <picture> does NOT fall back from a failed <source> request to
+  // the <img>. If a <source> matches by type and the resource 404s, the browser
+  // shows a broken image. So we only emit AVIF/WebP <source> tags for local
+  // bundled assets (where our Vite plugin guarantees the siblings exist) and
+  // for known-static extensions (.jpg/.jpeg/.png). External URLs (http(s)://,
+  // data:, blob:) — e.g. API-provided images from object storage — render as a
+  // plain <img> so they degrade safely.
   const lastDot = src.lastIndexOf(".");
+  const ext = lastDot > 0 ? src.slice(lastDot).toLowerCase() : "";
+  const isLocalAsset = !/^(?:https?:|data:|blob:)/i.test(src);
+  const isStaticImageExt = [".jpg", ".jpeg", ".png"].includes(ext);
+  const enableModernSources = isLocalAsset && isStaticImageExt;
   const stem = lastDot > 0 ? src.slice(0, lastDot) : src;
   const avif = `${stem}.avif`;
   const webp = `${stem}.webp`;
@@ -50,8 +62,12 @@ export function Picture({
 
   return (
     <picture>
-      <source srcSet={avif} type="image/avif" />
-      <source srcSet={webp} type="image/webp" />
+      {enableModernSources && (
+        <>
+          <source srcSet={avif} type="image/avif" />
+          <source srcSet={webp} type="image/webp" />
+        </>
+      )}
       <img
         src={src}
         alt={alt}

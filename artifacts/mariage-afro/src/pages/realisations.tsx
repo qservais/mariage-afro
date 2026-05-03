@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Heart, Images, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Picture } from "@/components/Picture";
 
 import img1 from "@assets/WhatsApp-Image-2025-10-30-at-17.42.50_1776614313615.jpeg";
 import img2 from "@assets/GM-00679.jpg_1776614313614.jpeg";
@@ -112,14 +113,12 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
           className={`relative h-80 lg:h-auto min-h-[420px] overflow-hidden cursor-pointer group ${isReversed ? "lg:order-2" : ""}`}
           onClick={() => galleryImages.length > 0 && openGallery(0)}
         >
-          <img
+          <Picture
             src={cover}
             alt={r.coupleName}
             width={1200}
             height={1500}
             loading="lazy"
-            decoding="async"
-            style={{ aspectRatio: "4 / 5" }}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/60 via-wine-deep/10 to-transparent" />
@@ -192,7 +191,7 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
                   onClick={() => openGallery(i)}
                   className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
                 >
-                  <img src={img} alt="" width={400} height={400} loading="lazy" decoding="async" className="w-full h-full object-cover" style={{ aspectRatio: "1 / 1" }} />
+                  <Picture src={img} alt="" width={400} height={400} loading="lazy" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

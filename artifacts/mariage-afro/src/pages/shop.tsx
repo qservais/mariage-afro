@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Sparkles, Layout, BookOpen, Globe } from "lucide-react";
+import { Picture } from "@/components/Picture";
 
 import img1 from "@assets/New-Project-12_1776614330308.png";
 import img2 from "@assets/GM-00719.jpg_1776614313614.jpeg";
@@ -84,7 +85,7 @@ export default function Shop() {
               >
                 {/* Image */}
                 <div className="relative h-80 md:h-[480px] overflow-hidden">
-                  <img src={cat.image} alt={cat.title} width={1200} height={900} loading="lazy" decoding="async" className="w-full h-full object-cover" style={{ aspectRatio: "4 / 3" }} />
+                  <Picture src={cat.image} alt={cat.title} width={1200} height={900} loading="lazy" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-wine-deep/30" />
                   <div className="absolute top-6 left-6 w-14 h-14 border border-gold bg-cream/95 text-wine-deep flex items-center justify-center">
                     <Icon className="w-5 h-5" />

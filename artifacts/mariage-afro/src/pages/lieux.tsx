@@ -172,9 +172,12 @@ export default function Lieux() {
               >
                 {/* Image */}
                 <div className="relative h-80 overflow-hidden flex-shrink-0">
-                  <img
+                  <Picture
                     src={venue.image || VENUE_IMAGES[i % VENUE_IMAGES.length]}
                     alt={venue.name}
+                    width={1200}
+                    height={900}
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/85 via-wine-deep/20 to-transparent" />

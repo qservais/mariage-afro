@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { Picture } from "@/components/Picture";
 
 import contactImg from "@assets/MielMagGM-156of162.jpg_1776614313614.jpeg";
 import { SEO } from "@/components/SEO";
@@ -437,9 +438,12 @@ export default function Contact() {
               className="flex flex-col justify-between"
             >
               <div className="mb-10 relative">
-                <img
+                <Picture
                   src={contactImg}
                   alt="Wedding Rings"
+                  width={1200}
+                  height={1500}
+                  loading="lazy"
                   className="w-full h-[480px] object-cover"
                 />
                 <div className="absolute -bottom-4 -right-4 hidden md:flex w-24 h-24 border border-gold items-center justify-center bg-cream">

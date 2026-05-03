@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { Picture } from "@/components/Picture";
 import bannerImg from "@assets/MielmagMS-48of267.jpg_1776614313615.jpeg";
 import { SEO } from "@/components/SEO";
 
@@ -58,9 +59,12 @@ export default function About() {
             </p>
             <p>{t("about.text1")}</p>
             <p>{t("about.text2")}</p>
-            <img
+            <Picture
               src={bannerImg}
               alt="Black and white wedding moment"
+              width={1200}
+              height={800}
+              loading="lazy"
               className="w-full h-auto my-12 rounded-sm"
             />
             <h2 className="text-3xl font-serif text-foreground mt-12 mb-6">{t("about.vision_title")}</h2>
