@@ -119,7 +119,7 @@ export default function Plateforme() {
                     {m.desc}
                   </p>
                   <div className="border-t border-wine-deep/10 pt-5 flex items-start gap-2.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-gold flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-gold-deep flex-shrink-0 mt-1" />
                     <span className="text-[11px] uppercase tracking-[0.15em] text-wine-deep/80 font-medium leading-snug">
                       {m.benefit}
                     </span>

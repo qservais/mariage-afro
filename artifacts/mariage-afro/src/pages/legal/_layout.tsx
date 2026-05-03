@@ -62,7 +62,7 @@ export function LegalPage({ ns }: { ns: LegalNs }) {
                   <p className="text-wine-deep/80 leading-relaxed mb-3">{s.p}</p>
                 ) : null}
                 {s.ul && (
-                  <ul className="list-disc pl-6 space-y-1.5 text-wine-deep/80 marker:text-gold">
+                  <ul className="list-disc pl-6 space-y-1.5 text-wine-deep/80 marker:text-gold-deep">
                     {s.ul.map((li, k) => (
                       <li key={k} className="leading-relaxed">
                         {li}

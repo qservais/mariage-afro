@@ -389,8 +389,8 @@ export default function OutilsQuiz() {
                     </Button>
                   </form>
                 ) : (
-                  <div className="bg-cream border border-gold/40 p-8 text-center" data-testid="quiz-success">
-                    <CheckCircle2 className="w-12 h-12 text-gold mx-auto mb-3" />
+                  <div className="bg-cream border border-gold-deep/40 p-8 text-center" data-testid="quiz-success">
+                    <CheckCircle2 className="w-12 h-12 text-gold-deep mx-auto mb-3" />
                     <h3 className="font-display text-2xl text-wine-deep">{t("tools.quiz.success_title")}</h3>
                     <p className="text-sm text-wine-deep/70 mt-2">{t("tools.quiz.success_desc")}</p>
                   </div>

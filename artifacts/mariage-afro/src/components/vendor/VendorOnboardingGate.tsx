@@ -95,7 +95,7 @@ export default function VendorOnboardingGate({ account, children }: Props) {
           });
         }}
       >
-        <div className="flex items-center gap-2 text-gold font-bold tracking-widest text-sm uppercase">
+        <div className="flex items-center gap-2 text-gold-deep font-bold tracking-widest text-sm uppercase">
           <Briefcase className="w-4 h-4" />
           <span className="text-wine-deep">{t("vendor.onboarding.eyebrow")}</span>
         </div>
