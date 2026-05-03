@@ -92,9 +92,9 @@ export default function Services() {
                 transition={{ delay: i * 0.1 }}
                 className="bg-cream p-10 md:p-12 flex flex-col items-start"
               >
-                <span className="font-display text-6xl text-gold mb-6 leading-none">0{i}</span>
+                <span className="font-display text-6xl text-gold-deep mb-6 leading-none">0{i}</span>
                 <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{t(`services.item${i}_title`)}</h3>
-                <div className="w-8 h-px bg-gold mb-6"></div>
+                <div className="w-8 h-px bg-gold-deep mb-6"></div>
                 <p className="text-wine-deep/70 leading-relaxed mb-10 flex-grow font-light text-sm md:text-base">
                   {t(`services.item${i}_desc`)}
                 </p>

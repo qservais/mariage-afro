@@ -94,14 +94,14 @@ export default function Home() {
   ];
 
   const prestationsItems = [
-    { icon: <Camera className="w-7 h-7 text-gold" />, label: t("prestations.items.0") },
-    { icon: <Video className="w-7 h-7 text-gold" />, label: t("prestations.items.1") },
-    { icon: <Music className="w-7 h-7 text-gold" />, label: t("prestations.items.2") },
-    { icon: <Flower2 className="w-7 h-7 text-gold" />, label: t("prestations.items.3") },
-    { icon: <Utensils className="w-7 h-7 text-gold" />, label: t("prestations.items.4") },
-    { icon: <Scissors className="w-7 h-7 text-gold" />, label: t("prestations.items.5") },
-    { icon: <MapPin className="w-7 h-7 text-gold" />, label: t("prestations.items.6") },
-    { icon: <Car className="w-7 h-7 text-gold" />, label: t("prestations.items.7") }
+    { icon: <Camera className="w-7 h-7" />, label: t("prestations.items.0") },
+    { icon: <Video className="w-7 h-7" />, label: t("prestations.items.1") },
+    { icon: <Music className="w-7 h-7" />, label: t("prestations.items.2") },
+    { icon: <Flower2 className="w-7 h-7" />, label: t("prestations.items.3") },
+    { icon: <Utensils className="w-7 h-7" />, label: t("prestations.items.4") },
+    { icon: <Scissors className="w-7 h-7" />, label: t("prestations.items.5") },
+    { icon: <MapPin className="w-7 h-7" />, label: t("prestations.items.6") },
+    { icon: <Car className="w-7 h-7" />, label: t("prestations.items.7") }
   ];
 
   const platformPoints = [
@@ -354,7 +354,7 @@ export default function Home() {
                 className="relative bg-cream p-10 md:p-12 flex flex-col"
               >
                 <div className="flex items-baseline gap-4 mb-8">
-                  <span className="font-display text-6xl md:text-7xl text-gold leading-none">
+                  <span className="font-display text-6xl md:text-7xl text-gold-deep leading-none">
                     {step.num}
                   </span>
                   <div className="h-px flex-grow bg-gold/40"></div>
@@ -591,7 +591,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: i * 0.06 }}
                 className="group bg-white p-10 flex flex-col items-center justify-center text-center hover:bg-cream transition-colors cursor-pointer"
               >
-                <div className="mb-5 text-gold group-hover:scale-110 transition-transform">{item.icon}</div>
+                <div className="mb-5 text-gold-deep group-hover:scale-110 transition-transform">{item.icon}</div>
                 <h3 className="font-display uppercase text-base tracking-tight text-wine-deep">{item.label}</h3>
               </motion.div>
             ))}

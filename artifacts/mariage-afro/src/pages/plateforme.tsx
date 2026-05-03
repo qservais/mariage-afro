@@ -107,10 +107,10 @@ export default function Plateforme() {
                   className="bg-cream p-10 flex flex-col group hover:bg-white transition-colors"
                 >
                   <div className="flex items-start justify-between mb-8">
-                    <div className="w-14 h-14 border border-gold/40 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-cream transition-colors">
+                    <div className="w-14 h-14 border border-gold-deep flex items-center justify-center text-gold-deep group-hover:bg-gold-deep group-hover:text-cream transition-colors">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <span className="font-display text-5xl text-gold/30 leading-none">
+                    <span className="font-display text-5xl text-gold-deep/40 leading-none">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                   </div>

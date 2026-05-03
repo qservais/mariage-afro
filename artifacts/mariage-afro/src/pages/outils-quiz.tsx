@@ -356,9 +356,9 @@ export default function OutilsQuiz() {
                 )}
 
                 {!submitted ? (
-                  <form onSubmit={onSubmitEmail} className="bg-cream border border-gold/40 p-6 space-y-4">
+                  <form onSubmit={onSubmitEmail} className="bg-cream border border-gold-deep p-6 space-y-4">
                     <div className="text-center">
-                      <Mail className="w-8 h-8 text-gold mx-auto mb-2" />
+                      <Mail className="w-8 h-8 text-gold-deep mx-auto mb-2" />
                       <h3 className="font-display text-xl text-wine-deep">{t("tools.quiz.email_title")}</h3>
                       <p className="text-sm text-wine-deep/60 mt-1">{t("tools.quiz.email_desc")}</p>
                     </div>

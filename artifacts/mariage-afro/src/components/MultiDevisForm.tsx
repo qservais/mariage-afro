@@ -78,7 +78,7 @@ export default function MultiDevisForm({ open, onClose, vendors, onSuccess }: Mu
       aria-modal="true"
       aria-labelledby="multi-devis-title"
     >
-      <div className="relative w-full max-w-2xl bg-white border border-gold/40 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-white border border-gold-deep shadow-2xl max-h-[90vh] overflow-y-auto">
         <button
           type="button"
           onClick={handleClose}
@@ -92,7 +92,7 @@ export default function MultiDevisForm({ open, onClose, vendors, onSuccess }: Mu
         {!submitted ? (
           <div className="p-8 md:p-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 border border-gold/60 flex items-center justify-center text-gold">
+              <div className="w-10 h-10 border border-gold-deep flex items-center justify-center text-gold-deep">
                 <Send className="w-5 h-5" />
               </div>
               <span className="text-xs uppercase tracking-[0.2em] text-wine-deep/60 font-medium">
@@ -191,7 +191,7 @@ export default function MultiDevisForm({ open, onClose, vendors, onSuccess }: Mu
           </div>
         ) : (
           <div className="p-10 text-center" data-testid="multi-devis-success">
-            <CheckCircle2 className="w-14 h-14 text-gold mx-auto mb-4" />
+            <CheckCircle2 className="w-14 h-14 text-gold-deep mx-auto mb-4" />
             <h3 className="font-display text-2xl text-wine-deep mb-2">{t("multi_devis.success_title")}</h3>
             <p className="text-sm text-wine-deep/70 mb-4">
               {t("multi_devis.success_desc", { count: vendors.length })}

@@ -198,7 +198,7 @@ export default function ExitIntentPopup() {
           </div>
         ) : (
           <div className="p-10 text-center" data-testid="popup-success">
-            <CheckCircle2 className="w-14 h-14 text-gold mx-auto mb-4" />
+            <CheckCircle2 className="w-14 h-14 text-gold-deep mx-auto mb-4" />
             <h3 className="font-display text-2xl text-wine-deep mb-2">{t("popup.success_title")}</h3>
             <p className="text-sm text-wine-deep/70 mb-6">{t("popup.success_desc")}</p>
             <Button
