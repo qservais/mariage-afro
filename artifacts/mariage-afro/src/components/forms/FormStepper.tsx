@@ -24,6 +24,8 @@ export interface FormStepperProps<TValues extends Record<string, unknown>> {
   className?: string;
   /** Optional observer fired whenever values change (debounced by React batching). */
   onValuesChange?: (values: TValues) => void;
+  /** Optional observer fired whenever the visible step index changes. */
+  onStepChange?: (info: { stepIndex: number; totalSteps: number; isLast: boolean }) => void;
   "data-testid"?: string;
 }
 
@@ -55,6 +57,7 @@ export function FormStepper<TValues extends Record<string, unknown>>({
   labels,
   className,
   onValuesChange,
+  onStepChange,
   "data-testid": testId,
 }: FormStepperProps<TValues>) {
   const titleId = useId();
@@ -73,6 +76,10 @@ export function FormStepper<TValues extends Record<string, unknown>>({
 
   const totalSteps = steps.length;
   const isLast = stepIndex === totalSteps - 1;
+
+  useEffect(() => {
+    onStepChange?.({ stepIndex, totalSteps, isLast });
+  }, [stepIndex, totalSteps, isLast, onStepChange]);
   const currentStep = steps[stepIndex];
 
   const validateCurrent = useCallback((): boolean => {

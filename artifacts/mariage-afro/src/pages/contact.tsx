@@ -450,6 +450,12 @@ function SummaryCard({
         testId="summary-edit-project"
       />
       <SummaryRow
+        label={`${t("contact.summary.date")} · ${t("contact.summary.guest_count")}`}
+        value={`${values.date || "—"} · ${values.guestCount || "—"}`}
+        onEdit={() => goTo(0)}
+        testId="summary-edit-project-details"
+      />
+      <SummaryRow
         label={`${t("contact.summary.services")} · ${t("contact.summary.budget")}`}
         value={`${lookupMulti(serviceOptions, values.services)} — ${
           values.budget ? lookup(budgetOptions, values.budget) : t("contact.summary.no_value")
@@ -458,8 +464,8 @@ function SummaryCard({
         testId="summary-edit-needs"
       />
       <SummaryRow
-        label={`${t("contact.summary.name")} · ${t("contact.summary.email")}`}
-        value={`${values.name || "—"} · ${values.email || "—"}`}
+        label={`${t("contact.summary.name")} · ${t("contact.summary.email")} · ${t("contact.summary.phone")}`}
+        value={`${values.name || "—"} · ${values.email || "—"} · ${values.phone || "—"}`}
         onEdit={() => goTo(2)}
         testId="summary-edit-coords"
       />

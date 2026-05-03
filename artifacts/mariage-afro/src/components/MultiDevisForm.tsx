@@ -330,10 +330,15 @@ function StickyCounterStepper({
 }) {
   const { t } = useTranslation();
   const [count, setCount] = useState(initialValues.selectedIds.length);
+  const [isLastStep, setIsLastStep] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const handleValues = useCallback((v: MdValues) => {
     setCount(v.selectedIds.length);
+  }, []);
+
+  const handleStep = useCallback((info: { isLast: boolean }) => {
+    setIsLastStep(info.isLast);
   }, []);
 
   const triggerStepperCta = useCallback(() => {
@@ -356,6 +361,7 @@ function StickyCounterStepper({
         persist
         labels={labels}
         onValuesChange={handleValues}
+        onStepChange={handleStep}
         data-testid="multi-devis-stepper"
       />
       <div
@@ -375,7 +381,7 @@ function StickyCounterStepper({
           className="bg-wine-deep text-cream px-4 h-10 uppercase tracking-[0.18em] text-[11px] font-medium rounded-none hover:bg-wine-deep/90 disabled:opacity-60"
           data-testid="multi-devis-sticky-cta"
         >
-          {labels.next}
+          {isLastStep ? labels.submit : labels.next}
         </button>
       </div>
     </div>
