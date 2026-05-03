@@ -317,7 +317,25 @@
     "name_placeholder": "First name",
     "date_help": "You can adjust this anytime from your profile.",
     "saving": "Saving…",
-    "submit": "Get started"
+    "submit": "Get started",
+    "steps": {
+      "s1_title": "Welcome",
+      "s1_desc": "A few quick questions to personalize your space.",
+      "s2_title": "You",
+      "s2_desc": "How would you like to be addressed?",
+      "s3_title": "Your partner",
+      "s3_desc": "Optional — you can complete this later.",
+      "s4_title": "Your date",
+      "s4_desc": "Estimated — adjustable anytime.",
+      "s5_title": "Summary",
+      "s5_desc": "Almost there, let's review together."
+    },
+    "welcome_lead": "Welcome to your private space.",
+    "welcome_body": "In 5 steps we personalize your dashboard so everything is ready for the big day.",
+    "summary_partner1": "You",
+    "summary_partner2": "Partner",
+    "summary_partner2_empty": "To be completed later",
+    "summary_date": "Estimated date"
   },
   "mariage_public": {
     "cagnotte_link": "See our wedding fund"

@@ -317,7 +317,25 @@
     "name_placeholder": "Voornaam",
     "date_help": "U kunt dit op elk moment aanpassen vanuit uw profiel.",
     "saving": "Bezig met opslaan…",
-    "submit": "Beginnen"
+    "submit": "Beginnen",
+    "steps": {
+      "s1_title": "Welkom",
+      "s1_desc": "Een paar snelle vragen om uw ruimte te personaliseren.",
+      "s2_title": "U",
+      "s2_desc": "Hoe wilt u aangesproken worden?",
+      "s3_title": "Uw partner",
+      "s3_desc": "Optioneel — u kunt dit later aanvullen.",
+      "s4_title": "Uw datum",
+      "s4_desc": "Geschat — altijd aanpasbaar.",
+      "s5_title": "Overzicht",
+      "s5_desc": "Bijna klaar, laten we het samen nakijken."
+    },
+    "welcome_lead": "Welkom in uw persoonlijke ruimte.",
+    "welcome_body": "In 5 stappen personaliseren we uw dashboard zodat alles klaar is op de grote dag.",
+    "summary_partner1": "U",
+    "summary_partner2": "Partner",
+    "summary_partner2_empty": "Later aan te vullen",
+    "summary_date": "Geschatte datum"
   },
   "mariage_public": {
     "cagnotte_link": "Bekijk onze trouwgeldpot"

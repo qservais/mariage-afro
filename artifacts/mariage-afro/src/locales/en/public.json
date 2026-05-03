@@ -591,7 +591,29 @@
       "error": "An error occurred. Please try again."
     },
     "eyebrow_form": "Detailed form",
-    "eyebrow_contact": "Contact details"
+    "eyebrow_contact": "Contact details",
+    "steps": {
+      "s1_title": "Your contact details",
+      "s1_desc": "So we can reach you within 48 business hours.",
+      "s2_title": "Wedding type",
+      "s2_desc": "Pick the format that matches your vision.",
+      "s3_title": "Project details",
+      "s3_desc": "Help us prepare a tailored quote.",
+      "s4_title": "Your message",
+      "s4_desc": "A few words about what matters most to you."
+    },
+    "summary": {
+      "title": "Summary",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "date": "Date",
+      "wedding_type": "Type",
+      "guest_count": "Guests",
+      "budget": "Budget",
+      "services": "Services",
+      "message": "Message"
+    }
   },
   "contact_extra": {
     "detailed_form": "Detailed form",
@@ -755,7 +777,30 @@
     "success_title": "Requests sent!",
     "success_desc": "Your {{count}} requests are on their way. Each vendor will reply individually.",
     "no_vendors": "No vendors selected",
-    "error": "Send failed. Please try again."
+    "error": "Send failed. Please try again.",
+    "steps": {
+      "s1_title": "Your contact details",
+      "s1_desc": "So vendors can reach back out to you.",
+      "s2_title": "Your project",
+      "s2_desc": "Planned date and message to share.",
+      "s3_title": "Summary",
+      "s3_desc": "Review the recipients before sending."
+    },
+    "recipients_count": "Recipients ({{count}})",
+    "name": "Full name",
+    "email": "Email",
+    "summary_message_empty": "No message."
+  },
+  "lead_modal": {
+    "eyebrow": "Contact request",
+    "title": "Tell us about your project",
+    "desc": "Our team gets back to you within 48h.",
+    "steps": {
+      "s1_title": "Your contact details",
+      "s1_desc": "How we can reach you.",
+      "s2_title": "Your project",
+      "s2_desc": "Ceremony type and message."
+    }
   },
   "tools": {
     "common": {

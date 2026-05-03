@@ -317,7 +317,25 @@
     "name_placeholder": "Prénom",
     "date_help": "Vous pourrez l'ajuster à tout moment depuis votre profil.",
     "saving": "Enregistrement…",
-    "submit": "Commencer"
+    "submit": "Commencer",
+    "steps": {
+      "s1_title": "Bienvenue",
+      "s1_desc": "Quelques infos rapides pour personnaliser votre espace.",
+      "s2_title": "Vous",
+      "s2_desc": "Comment souhaitez-vous être appelé(e) ?",
+      "s3_title": "Votre partenaire",
+      "s3_desc": "Optionnel — vous pourrez le compléter plus tard.",
+      "s4_title": "Votre date",
+      "s4_desc": "Estimative — ajustable à tout moment.",
+      "s5_title": "Récapitulatif",
+      "s5_desc": "On y est presque, vérifions ensemble."
+    },
+    "welcome_lead": "Bienvenue dans votre espace privé.",
+    "welcome_body": "En 5 étapes, nous personnalisons votre tableau de bord pour que tout soit prêt le jour J.",
+    "summary_partner1": "Vous",
+    "summary_partner2": "Partenaire",
+    "summary_partner2_empty": "À compléter plus tard",
+    "summary_date": "Date estimée"
   },
   "mariage_public": {
     "cagnotte_link": "Voir notre cagnotte de mariage"

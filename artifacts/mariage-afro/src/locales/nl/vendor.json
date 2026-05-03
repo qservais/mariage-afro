@@ -56,7 +56,34 @@
       "description": "Beschrijving",
       "review_notice": "Uw profiel wordt door ons team gecontroleerd vóór publicatie. U kunt ondertussen uw profiel en galerij aanvullen.",
       "submit": "Mijn profiel aanmaken",
-      "saving": "Opslaan…"
+      "saving": "Opslaan…",
+      "steps": {
+        "s1_title": "Uw bedrijf",
+        "s1_desc": "De naam die in de marketplace verschijnt.",
+        "s2_title": "Hoofdcontact",
+        "s2_desc": "Om met ons team en de koppels uit te wisselen.",
+        "s3_title": "Categorie",
+        "s3_desc": "Kies uw hoofdspecialiteit.",
+        "s4_title": "Locatie",
+        "s4_desc": "Waar bent u gevestigd?",
+        "s5_title": "Online aanwezigheid",
+        "s5_desc": "Optioneel maar sterk aanbevolen.",
+        "s6_title": "Voorstelling",
+        "s6_desc": "Enkele regels om koppels te overtuigen."
+      },
+      "categories": {
+        "Photographie": "Fotografie",
+        "Vidéo": "Video",
+        "DJ & Animation": "DJ & Animatie",
+        "Décoration": "Decoratie",
+        "Traiteur": "Catering",
+        "Coiffure & Maquillage": "Kapsel & Make-up",
+        "Robe de mariée": "Trouwjurk",
+        "Transport": "Vervoer",
+        "Invitations": "Uitnodigingen",
+        "Lieu de réception": "Trouwlocatie",
+        "Autre": "Andere"
+      }
     },
     "dashboard": {
       "profile_status": "Status van uw profiel",

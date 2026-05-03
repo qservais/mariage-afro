@@ -591,7 +591,29 @@
       "error": "Er is een fout opgetreden. Probeer het opnieuw."
     },
     "eyebrow_form": "Gedetailleerd formulier",
-    "eyebrow_contact": "Contactgegevens"
+    "eyebrow_contact": "Contactgegevens",
+    "steps": {
+      "s1_title": "Uw contactgegevens",
+      "s1_desc": "Om u binnen 48 werkuren te bereiken.",
+      "s2_title": "Type huwelijk",
+      "s2_desc": "Kies het formaat dat bij uw visie past.",
+      "s3_title": "Projectdetails",
+      "s3_desc": "Help ons uw offerte beter voor te bereiden.",
+      "s4_title": "Uw bericht",
+      "s4_desc": "Een paar woorden over wat voor u telt."
+    },
+    "summary": {
+      "title": "Overzicht",
+      "name": "Naam",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "date": "Datum",
+      "wedding_type": "Type",
+      "guest_count": "Gasten",
+      "budget": "Budget",
+      "services": "Diensten",
+      "message": "Bericht"
+    }
   },
   "contact_extra": {
     "detailed_form": "Gedetailleerd formulier",
@@ -755,7 +777,30 @@
     "success_title": "Aanvragen verzonden!",
     "success_desc": "Uw {{count}} aanvragen zijn onderweg. Elke leverancier antwoordt u individueel.",
     "no_vendors": "Geen leveranciers geselecteerd",
-    "error": "Verzenden mislukt. Probeer het opnieuw."
+    "error": "Verzenden mislukt. Probeer het opnieuw.",
+    "steps": {
+      "s1_title": "Uw contactgegevens",
+      "s1_desc": "Zodat de leveranciers u kunnen bereiken.",
+      "s2_title": "Uw project",
+      "s2_desc": "Geplande datum en bericht.",
+      "s3_title": "Overzicht",
+      "s3_desc": "Controleer de ontvangers voor verzending."
+    },
+    "recipients_count": "Ontvangers ({{count}})",
+    "name": "Volledige naam",
+    "email": "E-mail",
+    "summary_message_empty": "Geen bericht."
+  },
+  "lead_modal": {
+    "eyebrow": "Contactaanvraag",
+    "title": "Vertel ons over uw project",
+    "desc": "Ons team antwoordt binnen 48 uur.",
+    "steps": {
+      "s1_title": "Uw contactgegevens",
+      "s1_desc": "Hoe wij u kunnen bereiken.",
+      "s2_title": "Uw project",
+      "s2_desc": "Type ceremonie en bericht."
+    }
   },
   "tools": {
     "common": {

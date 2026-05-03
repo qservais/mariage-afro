@@ -56,7 +56,34 @@
       "description": "Présentation",
       "review_notice": "Votre fiche sera examinée par notre équipe avant publication. Vous pouvez compléter votre profil et galerie en attendant.",
       "submit": "Créer ma fiche",
-      "saving": "Enregistrement…"
+      "saving": "Enregistrement…",
+      "steps": {
+        "s1_title": "Votre entreprise",
+        "s1_desc": "Le nom qui apparaîtra dans la marketplace.",
+        "s2_title": "Contact principal",
+        "s2_desc": "Pour échanger avec notre équipe et les couples.",
+        "s3_title": "Catégorie",
+        "s3_desc": "Choisissez votre spécialité principale.",
+        "s4_title": "Localisation",
+        "s4_desc": "Où êtes-vous basé(e) ?",
+        "s5_title": "Présence en ligne",
+        "s5_desc": "Optionnel mais fortement recommandé.",
+        "s6_title": "Présentation",
+        "s6_desc": "Quelques lignes pour séduire les couples."
+      },
+      "categories": {
+        "Photographie": "Photographie",
+        "Vidéo": "Vidéo",
+        "DJ & Animation": "DJ & Animation",
+        "Décoration": "Décoration",
+        "Traiteur": "Traiteur",
+        "Coiffure & Maquillage": "Coiffure & Maquillage",
+        "Robe de mariée": "Robe de mariée",
+        "Transport": "Transport",
+        "Invitations": "Invitations",
+        "Lieu de réception": "Lieu de réception",
+        "Autre": "Autre"
+      }
     },
     "dashboard": {
       "profile_status": "Statut de votre fiche",

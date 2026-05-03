@@ -56,7 +56,34 @@
       "description": "About you",
       "review_notice": "Your profile will be reviewed by our team before publication. You can complete your profile and gallery while you wait.",
       "submit": "Create my profile",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "steps": {
+        "s1_title": "Your business",
+        "s1_desc": "The name shown in the marketplace.",
+        "s2_title": "Main contact",
+        "s2_desc": "To exchange with our team and couples.",
+        "s3_title": "Category",
+        "s3_desc": "Pick your main specialty.",
+        "s4_title": "Location",
+        "s4_desc": "Where are you based?",
+        "s5_title": "Online presence",
+        "s5_desc": "Optional but highly recommended.",
+        "s6_title": "About you",
+        "s6_desc": "A few lines to win couples over."
+      },
+      "categories": {
+        "Photographie": "Photography",
+        "Vidéo": "Video",
+        "DJ & Animation": "DJ & Entertainment",
+        "Décoration": "Decoration",
+        "Traiteur": "Catering",
+        "Coiffure & Maquillage": "Hair & Makeup",
+        "Robe de mariée": "Wedding dress",
+        "Transport": "Transport",
+        "Invitations": "Invitations",
+        "Lieu de réception": "Venue",
+        "Autre": "Other"
+      }
     },
     "dashboard": {
       "profile_status": "Profile status",

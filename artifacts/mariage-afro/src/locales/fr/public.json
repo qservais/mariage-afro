@@ -591,7 +591,29 @@
       "error": "Une erreur est survenue. Veuillez réessayer."
     },
     "eyebrow_form": "Formulaire détaillé",
-    "eyebrow_contact": "Coordonnées"
+    "eyebrow_contact": "Coordonnées",
+    "steps": {
+      "s1_title": "Vos coordonnées",
+      "s1_desc": "Pour vous recontacter sous 48h ouvrées.",
+      "s2_title": "Type de mariage",
+      "s2_desc": "Choisissez le format qui correspond à votre vision.",
+      "s3_title": "Détails du projet",
+      "s3_desc": "Aidez-nous à mieux préparer votre devis.",
+      "s4_title": "Votre message",
+      "s4_desc": "Quelques mots sur ce qui compte pour vous."
+    },
+    "summary": {
+      "title": "Récapitulatif",
+      "name": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "date": "Date",
+      "wedding_type": "Type",
+      "guest_count": "Invités",
+      "budget": "Budget",
+      "services": "Services",
+      "message": "Message"
+    }
   },
   "contact_extra": {
     "detailed_form": "Formulaire détaillé",
@@ -755,7 +777,30 @@
     "success_title": "Demandes envoyées !",
     "success_desc": "Vos {{count}} demandes sont en route. Chaque prestataire vous répondra individuellement.",
     "no_vendors": "Aucun prestataire sélectionné",
-    "error": "Échec de l'envoi. Réessayez svp."
+    "error": "Échec de l'envoi. Réessayez svp.",
+    "steps": {
+      "s1_title": "Vos coordonnées",
+      "s1_desc": "Pour que les prestataires puissent vous recontacter.",
+      "s2_title": "Votre projet",
+      "s2_desc": "Date envisagée et message à transmettre.",
+      "s3_title": "Récapitulatif",
+      "s3_desc": "Vérifiez les destinataires avant l'envoi."
+    },
+    "recipients_count": "Destinataires ({{count}})",
+    "name": "Nom complet",
+    "email": "Email",
+    "summary_message_empty": "Aucun message."
+  },
+  "lead_modal": {
+    "eyebrow": "Demande de contact",
+    "title": "Parlez-nous de votre projet",
+    "desc": "Notre équipe vous répond sous 48h.",
+    "steps": {
+      "s1_title": "Vos coordonnées",
+      "s1_desc": "Comment vous joindre.",
+      "s2_title": "Votre projet",
+      "s2_desc": "Type de cérémonie et message."
+    }
   },
   "tools": {
     "common": {
