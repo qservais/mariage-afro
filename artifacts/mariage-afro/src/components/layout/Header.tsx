@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Menu, X, User, ArrowUpRight, Briefcase } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoColor from "@assets/logo-mariage-affro-01.svg";
-import logoCreme from "@assets/logo-mariage-affro-02.svg";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -120,15 +119,17 @@ export default function Header() {
             </span>
           </button>
 
-          {/* Logo center — variante crème dès que le fond est sombre (scroll, menu, hero éditorial) */}
+          {/* Logo center — wordmark Mariage Afro toujours présent ; recoloré en blanc via filter sur fonds sombres pour rester lisible */}
           <Link to="/" className="flex items-center" aria-label="Mariage Afro">
             <img
-              src={isScrolled || mobileMenuOpen || isOverDark ? logoCreme : logoColor}
+              src={logoColor}
               alt="Mariage Afro"
               width={180}
               height={48}
               fetchPriority="high"
-              className="h-10 md:h-12 w-auto transition-all duration-500"
+              className={`h-10 md:h-12 w-auto transition-all duration-500 ${
+                isScrolled || mobileMenuOpen || isOverDark ? "brightness-0 invert" : ""
+              }`}
             />
           </Link>
 
