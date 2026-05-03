@@ -66,6 +66,9 @@ app.use(
           "https://clerk-telemetry.com",
           "https://*.tile.openstreetmap.org",
           "https://nominatim.openstreetmap.org",
+          "https://storage.googleapis.com",
+          "https://*.storage.googleapis.com",
+          "https://*.googleusercontent.com",
         ],
         "frame-src": [
           "'self'",
