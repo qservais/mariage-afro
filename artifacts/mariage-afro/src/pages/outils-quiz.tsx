@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { SEO } from "@/components/SEO";
 
 type ProfileId = "elegance_senegalaise" | "fusion_caribeenne" | "afro_chic" | "tradi_revisitee" | "minimaliste_dore";
 
@@ -185,11 +186,6 @@ export default function OutilsQuiz() {
   const [submitted, setSubmitted] = useState(false);
   const [recommendedVendors, setRecommendedVendors] = useState<RecommendedVendor[]>([]);
 
-  useEffect(() => {
-    document.title = `${t("tools.quiz.meta_title")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", t("tools.quiz.meta_desc"));
-  }, [t]);
 
   const profile = useMemo(() => scoreProfile(answers), [answers]);
   const totalSteps = QUESTIONS.length + 1;
@@ -253,6 +249,7 @@ export default function OutilsQuiz() {
 
   return (
     <div className="w-full">
+      <SEO title="Quiz — Quel style de mariage ?" description="7 questions pour découvrir votre style de mariage afro ou mixte et obtenir des recommandations de prestataires adaptés." />
       <section className="relative bg-wine-deep text-cream pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden">
         <div className="container mx-auto px-6 md:px-12 max-w-4xl text-center">
           <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="section-eyebrow mb-8">

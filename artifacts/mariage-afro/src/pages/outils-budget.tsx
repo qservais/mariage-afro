@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { SEO } from "@/components/SEO";
 
 type Standing = "essentiel" | "premium" | "luxe";
 type Region = "bruxelles" | "wallonie" | "flandre";
@@ -100,11 +101,6 @@ export default function OutilsBudget() {
   const [submitted, setSubmitted] = useState(false);
   const [contact, setContact] = useState({ name: "", email: "", phone: "" });
 
-  useEffect(() => {
-    document.title = `${t("tools.budget.meta_title")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", t("tools.budget.meta_desc"));
-  }, [t]);
 
   const breakdown = useMemo(() => computeBreakdown(inputs), [inputs]);
   const totalMin = breakdown.reduce((s, b) => s + b.min, 0);
@@ -167,6 +163,7 @@ export default function OutilsBudget() {
 
   return (
     <div className="w-full">
+      <SEO title="Calculateur de budget mariage" description="Estimez en quelques clics le budget de votre mariage afro ou mixte en Belgique : nombre d'invités, standing, région, saison." />
       <section className="relative bg-wine-deep text-cream pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden">
         <div className="container mx-auto px-6 md:px-12 max-w-4xl text-center">
           <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="section-eyebrow mb-8">

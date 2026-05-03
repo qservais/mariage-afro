@@ -15,19 +15,13 @@ import {
 
 import heroImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import { Picture } from "@/components/Picture";
+import { SEO } from "@/components/SEO";
 
 const ICONS = [LayoutDashboard, Wallet, Users, CalendarClock, FolderOpen, Handshake, Sparkles];
 
 export default function Plateforme() {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    document.title = `${t("nav.platform")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", t("platform_page.subtitle"));
-    }
-  }, [t]);
 
   const modules = [1, 2, 3, 4, 5, 6, 7].map((i) => ({
     icon: ICONS[i - 1],
@@ -38,6 +32,7 @@ export default function Plateforme() {
 
   return (
     <div className="w-full">
+      <SEO title="La plateforme" description="Découvrez Mariage Afro : marketplace de prestataires vérifiés, espace client complet et outils pour organiser un mariage afro ou mixte en Belgique." />
       {/* Hero — wine-deep editorial */}
       <section className="relative pt-40 pb-28 md:pt-48 md:pb-36 overflow-hidden bg-wine-deep text-cream">
         <div className="absolute inset-0 z-0">

@@ -10,17 +10,11 @@ import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
 import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
 import servicesImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import videoSrc from "@assets/Trailer-de-dingue_1776614330311.mp4";
+import { SEO } from "@/components/SEO";
 
 export default function Home() {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    document.title = t("home.meta_title");
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", t("meta.home_description"));
-    }
-  }, [t]);
 
   const fadeIn = {
     initial: { opacity: 0, y: 30 },
@@ -117,6 +111,7 @@ export default function Home() {
 
   return (
     <div className="w-full">
+      <SEO title="Mariage Afro — Mariages Afro & Mixtes en Belgique" description="La première plateforme premium dédiée aux mariages afro et mixtes en Belgique. Trouvez vos prestataires et organisez votre grand jour." />
 
       {/* Hero Section — Style lamangue : fond wine, titre serif éditorial, vidéo offset droite */}
       <section className="relative min-h-screen bg-wine-deep text-cream overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:pl-16">

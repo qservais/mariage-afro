@@ -12,6 +12,7 @@ import img5 from "@assets/DSC05396.jpg_1776614313613.jpeg";
 import img6 from "@assets/New-Project-42.jpg_1776614313615.jpeg";
 import img7 from "@assets/MielmagMS-48of267.jpg_1776614313615.jpeg";
 import img8 from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
+import { SEO } from "@/components/SEO";
 
 const FALLBACK_IMAGES = [img1, img2, img3, img4, img5, img6, img7, img8];
 
@@ -221,11 +222,6 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
 export default function Realisations() {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    document.title = `${t("nav.realisations")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", t("realisations.subtitle"));
-  }, [t]);
 
   const { data: apiRealisations = [] } = useQuery({
     queryKey: ["marketplace-realisations"],
@@ -255,6 +251,7 @@ export default function Realisations() {
 
   return (
     <div className="w-full">
+      <SEO title="Nos réalisations" description="Galerie de mariages afro et mixtes célébrés en Belgique : inspirations, photos, témoignages de couples." />
       {/* Hero éditorial — wine-deep style lamangue */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"

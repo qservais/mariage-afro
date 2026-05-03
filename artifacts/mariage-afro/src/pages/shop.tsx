@@ -9,6 +9,7 @@ import img2 from "@assets/GM-00719.jpg_1776614313614.jpeg";
 import img3 from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import img4 from "@assets/New-Project-42.jpg_1776614313615.jpeg";
 import img5 from "@assets/DSC05396.jpg_1776614313613.jpeg";
+import { SEO } from "@/components/SEO";
 
 const CATEGORIES = [
   { icon: Mail, image: img1 },
@@ -21,13 +22,6 @@ const CATEGORIES = [
 export default function Shop() {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    document.title = `${t("nav.shop")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", t("shop.subtitle"));
-    }
-  }, [t]);
 
   const categories = CATEGORIES.map((cat, i) => {
     const idx = i + 1;
@@ -45,6 +39,7 @@ export default function Shop() {
 
   return (
     <div className="w-full">
+      <SEO title="Shop — Identité visuelle de votre mariage" description="Faire-part, papeterie, accessoires : créez l'identité visuelle de votre mariage afro ou mixte avec la boutique Mariage Afro." />
       {/* Hero éditorial */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"

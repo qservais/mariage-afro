@@ -16,6 +16,7 @@ import img5 from "@assets/pexels-is0-shot-2150184196-31518214_1776285262172.jpg"
 import img6 from "@assets/New-Project-12_1776614330308.png";
 import bannerImg from "@assets/Screenshot-2025-12-09-at-15.23.02_1776614330310.png";
 import { Picture } from "@/components/Picture";
+import { SEO } from "@/components/SEO";
 
 const VENUE_IMAGES = [img1, img2, img3, img4, img5, img6];
 
@@ -51,13 +52,6 @@ export default function Lieux() {
     navigate(`/contact?${params.toString()}`);
   };
 
-  useEffect(() => {
-    document.title = `${t("nav.venues")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", t("venues.subtitle"));
-    }
-  }, [t]);
 
   const apiQueryString = searchParams.toString();
   const { data: apiVenues = [] } = useQuery<VenueApi[]>({
@@ -90,6 +84,7 @@ export default function Lieux() {
 
   return (
     <div className="w-full">
+      <SEO title="Lieux de réception" description="Sélection de lieux de réception en Belgique adaptés aux mariages afro et mixtes : châteaux, salles de réception, domaines d'exception." />
       {/* Hero éditorial — wine-deep style lamangue */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"

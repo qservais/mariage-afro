@@ -6,5 +6,7 @@ Disallow: /sign-in
 Disallow: /sign-up
 Disallow: /admin/
 Disallow: /api/
+Disallow: /mood-board/shared/
+Disallow: /mariage/
 
-Sitemap: https://mariage-afro.com/sitemap.xml
+Sitemap: https://www.mariage-afro.com/sitemap.xml

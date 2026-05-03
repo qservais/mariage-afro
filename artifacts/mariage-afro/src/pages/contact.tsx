@@ -24,6 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
 import contactImg from "@assets/MielMagGM-156of162.jpg_1776614313614.jpeg";
+import { SEO } from "@/components/SEO";
 
 const SERVICE_OPTIONS = [
   "wedding_planning",
@@ -58,13 +59,6 @@ export default function Contact() {
   const prefillVenue = searchParams.get("venue") ?? "";
   const prefillDate = searchParams.get("date") ?? "";
 
-  useEffect(() => {
-    document.title = `${t("contact.title")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", t("contact.subtitle"));
-    }
-  }, [t]);
 
   const rdvModes = [
     {
@@ -148,6 +142,7 @@ export default function Contact() {
 
   return (
     <div className="w-full">
+      <SEO title="Contact" description="Contactez l'équipe Mariage Afro : conseils personnalisés, prise de rendez-vous, partenariats. Réponse sous 48h." />
       {/* Hero éditorial */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"

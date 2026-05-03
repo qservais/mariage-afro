@@ -1,10 +1,12 @@
 import { useEffect, useMemo } from "react";
+import type { BreadcrumbItem } from "@/components/SEO";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail } from "lucide-react";
 import ReviewsList from "@/components/marketplace/ReviewsList";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
+import { SEO } from "@/components/SEO";
 
 interface VendorDetail {
   id: number;
@@ -61,18 +63,35 @@ export default function PrestataireDetail() {
     }).catch(() => undefined);
   }, [id]);
 
-  useEffect(() => {
-    if (!vendor) return;
-    document.title = `${vendor.name} — ${vendor.category} ${vendor.city} — Mariage Afro`;
-    const desc = (vendor.tagline || vendor.description || "").slice(0, 158);
-    let meta = document.querySelector('meta[name="description"]');
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "description");
-      document.head.appendChild(meta);
-    }
-    meta.setAttribute("content", desc);
-  }, [vendor]);
+  const seoTitle = useMemo(
+    () =>
+      vendor
+        ? `${vendor.name} — ${vendor.category} ${vendor.city}`
+        : t("vendor_detail.title_fallback", { defaultValue: "Prestataire" }),
+    [vendor, t]
+  );
+
+  const seoDescription = useMemo(
+    () =>
+      vendor
+        ? (vendor.tagline || vendor.description || "").slice(0, 158)
+        : "Fiche détaillée d'un prestataire de mariage afro ou mixte en Belgique : services, galerie, avis, contact.",
+    [vendor]
+  );
+
+  const seoBreadcrumbs = useMemo<BreadcrumbItem[]>(
+    () => {
+      const trail: BreadcrumbItem[] = [
+        { name: "Accueil", url: "/" },
+        { name: "Prestataires", url: "/partenaires" },
+      ];
+      if (vendor) {
+        trail.push({ name: vendor.name, url: `/partenaires/${vendor.id}` });
+      }
+      return trail;
+    },
+    [vendor]
+  );
 
   const jsonLdString = useMemo(() => {
     if (!vendor) return "";
@@ -132,6 +151,7 @@ export default function PrestataireDetail() {
 
   return (
     <div className="bg-cream min-h-screen">
+      <SEO title={seoTitle} description={seoDescription} breadcrumbs={seoBreadcrumbs} />
       {jsonLdString && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
       )}

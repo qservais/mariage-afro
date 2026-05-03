@@ -9,6 +9,7 @@ import { Loader2, X, Check, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
 import { comparator } from "@/lib/comparator";
+import { SEO } from "@/components/SEO";
 
 interface Vendor {
   id: number;
@@ -59,11 +60,6 @@ export default function Comparateur() {
     return Array.from(new Set(source)).slice(0, 3);
   }, [sp]);
 
-  useEffect(() => {
-    document.title = t("comparateur.meta_title");
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", t("comparateur.meta_desc"));
-  }, [t]);
 
   // LOT 8 — track comparator views
   useEffect(() => {
@@ -157,6 +153,7 @@ export default function Comparateur() {
 
   return (
     <div className="w-full bg-cream min-h-screen">
+      <SEO title="Comparateur de prestataires" description="Comparez jusqu'à 4 prestataires côte à côte pour votre mariage afro ou mixte en Belgique : tarifs, services, avis." />
       <section className="bg-wine-deep text-cream py-20 md:py-28">
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
           <Link to="/partenaires" className="text-xs uppercase tracking-[0.3em] text-gold hover:text-cream inline-flex items-center gap-2 mb-6">

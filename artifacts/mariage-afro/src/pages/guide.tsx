@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import {
   Heart, Users, Briefcase, Shield, Sparkles, Calendar, Wallet,
   Mail, Image as ImageIcon, Gift, MessageSquare, MapPin, Globe,
@@ -25,7 +26,7 @@ const COUPLE_SECTIONS: Section[] = [
   {
     id: "site", icon: Globe, title: "2. Votre site mariage personnalisé",
     steps: [
-      { t: "Choisir un slug", d: "Votre URL sera mariage-afro.com/mariage/votre-slug, partageable avec vos invités." },
+      { t: "Choisir un slug", d: "Votre URL sera www.mariage-afro.com/mariage/votre-slug, partageable avec vos invités." },
       { t: "Personnaliser le contenu", d: "Photo de couverture, histoire, programme de la journée, infos pratiques, dress code." },
       { t: "Activer le RSVP", d: "Cochez « activer RSVP » pour permettre aux invités de confirmer leur présence." },
       { t: "Publier en 1 clic", d: "Le site devient visible immédiatement à l'URL choisie." },
@@ -241,6 +242,7 @@ function Toc({ sections, color }: { sections: Section[]; color: string }) {
 export default function GuidePage() {
   return (
     <div className="bg-[#faf9f7]">
+      <SEO title="Guide complet — Mariage Afro" description="Le guide complet pour utiliser Mariage Afro côté couple et côté prestataire : marketplace, espace client, site mariage, outils, abonnements." />
       {/* Hero */}
       <section className="bg-foreground text-cream py-20 px-6 text-center">
         <p className="uppercase tracking-[0.4em] text-xs text-gold mb-4">Guide pratique</p>

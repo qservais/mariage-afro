@@ -125,6 +125,15 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Lighthouse / axe-core capture**: Cannot be run from the agent environment (no headless browser CLI is available in this sandbox). Pipeline + assets are ready; the user / CI should run `lighthouse https://<deployed-url>/` after deploy. Follow-up #53 tracks the audit run.
 - **Deferred to follow-up #52**: Server-side `<picture>` AVIF/WebP via vite-imagetools (current `<Picture>` derives sibling URLs by extension swap; AVIF/WebP siblings are emitted to `attached_assets/` but Vite only bundles explicitly imported variants — graceful fallback to original works, but a build-time plugin would guarantee modern formats are served in production).
 
+### SEO technique #55 (mai 2026)
+- **Domaine canonique** : aligné sur `https://www.mariage-afro.com` (avec `www`) dans `index.html`, `public/sitemap.xml`, `public/robots.txt` et la mention `mariage-afro.com/mariage/...` du guide.
+- **Sitemap** : étendu à 13 URLs (vs 9 avant) — ajout de `/comparateur`, `/guide`, `/outils/budget`, `/outils/quiz`. Chaque URL porte ses 4 `xhtml:link rel="alternate" hreflang` (fr-BE, nl-BE, en-GB, x-default).
+- **robots.txt** : ajout de `Disallow: /mood-board/shared/` (liens privés par token) et `Disallow: /mariage/` (sites couples privés). Conserve les disallow Espaces / Auth / Admin / API.
+- **Composant SEO réutilisable** (`src/components/SEO.tsx`) : injecte `<title>`, `<meta description>`, `<link canonical>`, OG (type/site/title/description/url/image), Twitter card et 4 hreflang via `useEffect` qui mute `document.head` (pas de dépendance ajoutée). Supporte un prop `breadcrumbs` qui pose un JSON-LD `BreadcrumbList` (id `data-seo="breadcrumb"`) et un prop `jsonLd` libre.
+- **Intégration** : `<SEO>` posé dans 14 pages publiques (home, plateforme, services, prestations, prestataires-detail, lieux, realisations, shop, about, contact, guide, outils-budget, outils-quiz, comparateur). L'ancien pattern manuel `useEffect` qui mutait `document.title` + meta description a été retiré dans 13 pages (race condition évitée).
+- **Détail prestataire** : source SEO unifiée — `seoTitle`, `seoDescription`, `seoBreadcrumbs` mémoïsés via `useMemo` à partir des données vendor, passés à un seul `<SEO>` (pas de double effet sur head). Breadcrumb à 3 niveaux : Accueil > Prestataires > {vendor.name} avec URLs absolues. Le JSON-LD `LocalBusiness` (avec `aggregateRating` si disponible) reste injecté en `<script>` inline avec `escapeJsonLd`.
+- **Vérifs finales** : typecheck propre, console sans erreur, aucun `http://` en dur, aucune occurrence restante de l'apex `https://mariage-afro.com` (sans `www`) hors emails `info@`/`noreply@`.
+
 ### Audit fonctionnel #54 (mai 2026)
 - Typecheck web + API : ✅ propre.
 - Traductions FR/NL/EN : ✅ parité parfaite (63 clés communes).

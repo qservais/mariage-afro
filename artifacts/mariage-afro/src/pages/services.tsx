@@ -5,17 +5,11 @@ import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 
 import servicesBg from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
+import { SEO } from "@/components/SEO";
 
 export default function Services() {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    document.title = t("meta.services");
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", t("meta.services_description"));
-    }
-  }, [t]);
 
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -26,6 +20,7 @@ export default function Services() {
 
   return (
     <div className="w-full">
+      <SEO title="Nos services" description="Photographes, traiteurs, DJ, lieux, décoration : tous les services pour un mariage afro ou mixte en Belgique, sélectionnés et vérifiés." />
       {/* Hero éditorial */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"

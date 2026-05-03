@@ -2,17 +2,11 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import bannerImg from "@assets/MielmagMS-48of267.jpg_1776614313615.jpeg";
+import { SEO } from "@/components/SEO";
 
 export default function About() {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    document.title = `${t("about.title")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", t("about.text1"));
-    }
-  }, [t]);
 
   const team = [
     {
@@ -37,6 +31,7 @@ export default function About() {
 
   return (
     <div className="w-full pt-28">
+      <SEO title="À propos" description="Mariage Afro est née de la passion de célébrer les mariages afro et mixtes en Belgique avec excellence, élégance et authenticité." />
       {/* Header */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-6 md:px-12 text-center">

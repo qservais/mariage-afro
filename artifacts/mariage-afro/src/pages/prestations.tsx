@@ -62,6 +62,7 @@ import img7 from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
 import img8 from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
 import bannerImg from "@assets/New-Project-12_1776614330308.png";
 import { Picture } from "@/components/Picture";
+import { SEO } from "@/components/SEO";
 
 const VENDORS = [
   {
@@ -782,11 +783,6 @@ export default function Prestations() {
     [displayVendors],
   );
 
-  useEffect(() => {
-    document.title = `${t("prestations.title")} — Mariage Afro`;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", t("prestations.subtitle"));
-  }, [t]);
 
   // Quand on a l'API, le filtrage est server-side ; en fallback on filtre sur la catégorie locale.
   const filtered = usingApi
@@ -870,6 +866,7 @@ export default function Prestations() {
 
   return (
     <div className="w-full">
+      <SEO title="Prestataires de mariage" description="Annuaire de prestataires spécialisés mariages afro et mixtes en Belgique : photographes, traiteurs, DJ, fleuristes, beauté, transport, décoration." />
       {/* Hero éditorial — wine-deep style lamangue */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
