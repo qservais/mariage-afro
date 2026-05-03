@@ -248,10 +248,10 @@ export default function Home() {
       >
         <div className="max-w-6xl mx-auto px-6 md:px-10">
           <motion.div {...fadeIn} className="text-center mb-12 md:mb-16">
-            <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.4em] text-gold font-medium mb-5">
-              <span className="block w-8 h-px bg-gold" />
+            <span className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.4em] text-gold-deep font-semibold mb-5">
+              <span className="block w-8 h-px bg-gold-deep" />
               Vous êtes
-              <span className="block w-8 h-px bg-gold" />
+              <span className="block w-8 h-px bg-gold-deep" />
             </span>
             <h2 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl text-wine-deep tracking-tight leading-tight">
               Que recherchez-vous aujourd'hui&nbsp;?
@@ -271,10 +271,10 @@ export default function Home() {
                 data-testid="link-audience-b2c"
               >
                 <div className="flex items-start justify-between mb-10 md:mb-14">
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gold-deep group-hover:text-gold font-semibold transition-colors">
                     01 — Particulier
                   </span>
-                  <Heart className="w-5 h-5 text-gold transition-transform group-hover:scale-110" strokeWidth={1.5} />
+                  <Heart className="w-5 h-5 text-gold-deep group-hover:text-gold transition-all group-hover:scale-110" strokeWidth={1.5} />
                 </div>
                 <h3 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl text-wine-deep group-hover:text-cream transition-colors leading-[1.05] tracking-tight mb-5">
                   Je me marie
@@ -282,9 +282,9 @@ export default function Home() {
                 <p className="text-wine-deep/65 group-hover:text-cream/75 transition-colors text-sm md:text-base font-light leading-relaxed mb-10 max-w-md">
                   Découvrez nos formules d'accompagnement, accédez à un réseau de prestataires sélectionnés et organisez votre mariage afro ou mixte sur notre plateforme dédiée.
                 </p>
-                <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] font-medium text-gold">
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.25em] font-semibold text-gold-deep group-hover:text-gold transition-colors">
                   <span>Voir nos services</span>
-                  <span className="block w-8 h-px bg-gold transition-all group-hover:w-14" />
+                  <span className="block w-8 h-px bg-gold-deep group-hover:bg-gold transition-all group-hover:w-14" />
                 </div>
               </Link>
             </motion.div>
@@ -320,7 +320,7 @@ export default function Home() {
           <motion.div {...fadeIn} className="text-center mt-10 md:mt-14">
             <Link
               to="/espace-client/login"
-              className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-wine-deep/60 hover:text-gold font-medium transition-colors"
+              className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.25em] text-wine-deep hover:underline underline-offset-4 font-medium transition-colors"
               data-testid="link-audience-existing-client"
             >
               <span dangerouslySetInnerHTML={{ __html: t("home.already_client") }} />
@@ -446,7 +446,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="font-display text-5xl text-gold mb-4 leading-none">0{i}</div>
+                <div className="font-display text-5xl text-gold-deep mb-4 leading-none">0{i}</div>
                 <div className="w-8 h-px bg-gold/40 mx-auto mb-6"></div>
                 <h3 className="font-display uppercase text-xl tracking-tight text-wine-deep mb-4">{t(`value_props.item${i}_title`)}</h3>
                 <p className="text-wine-deep/65 leading-relaxed text-sm font-light">
@@ -478,7 +478,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: index * 0.12 }}
                 className="bg-white p-10 md:p-12 flex flex-col group"
               >
-                <span className="font-display text-6xl text-gold mb-6 leading-none">{card.num}</span>
+                <span className="font-display text-6xl text-gold-deep mb-6 leading-none">{card.num}</span>
                 <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{card.title}</h3>
                 <div className="w-8 h-px bg-gold mb-6"></div>
                 <p className="text-wine-deep/70 leading-relaxed flex-grow mb-10 font-light text-sm md:text-base">{card.desc}</p>
@@ -563,7 +563,7 @@ export default function Home() {
                 </p>
                 <div className="border-t border-wine-deep/10 pt-6">
                   <p className="font-display uppercase text-base tracking-tight text-wine-deep">{item.name}</p>
-                  <p className="text-[10px] text-gold mt-1 uppercase tracking-[0.3em] font-medium">{item.origin}</p>
+                  <p className="text-xs text-gold-deep mt-1 uppercase tracking-[0.3em] font-semibold">{item.origin}</p>
                 </div>
               </motion.div>
             ))}
@@ -624,8 +624,8 @@ export default function Home() {
                 className="w-full h-[500px] md:h-[680px] object-cover"
                 style={{ aspectRatio: "auto" }}
               />
-              <div className="absolute -bottom-6 -right-6 hidden md:flex w-32 h-32 border border-gold items-center justify-center bg-cream">
-                <span className="font-display text-5xl text-gold leading-none italic">M.A</span>
+              <div className="absolute -bottom-6 -right-6 hidden md:flex w-32 h-32 border border-gold-deep items-center justify-center bg-cream">
+                <span className="font-display text-5xl text-gold-deep leading-none italic">M.A</span>
               </div>
             </motion.div>
 

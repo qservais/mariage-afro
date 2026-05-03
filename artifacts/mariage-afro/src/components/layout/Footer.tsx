@@ -40,44 +40,44 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-gold mb-6">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-gold mb-6">
               {t("footer.nav_title")}
             </h4>
-            <ul className="space-y-3 text-sm text-cream/70 font-light">
-              <li><Link to="/" className="hover:text-gold transition-colors">{t("nav.home")}</Link></li>
-              <li><Link to="/plateforme" className="hover:text-gold transition-colors">{t("nav.platform")}</Link></li>
-              <li><Link to="/services" className="hover:text-gold transition-colors">{t("nav.services")}</Link></li>
-              <li><Link to="/partenaires" className="hover:text-gold transition-colors">{t("nav.partners")}</Link></li>
-              <li><Link to="/lieux" className="hover:text-gold transition-colors">{t("nav.venues")}</Link></li>
+            <ul className="space-y-3 text-sm text-cream/80 font-light">
+              <li><Link to="/" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.home")}</Link></li>
+              <li><Link to="/plateforme" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.platform")}</Link></li>
+              <li><Link to="/services" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.services")}</Link></li>
+              <li><Link to="/partenaires" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.partners")}</Link></li>
+              <li><Link to="/lieux" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.venues")}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-gold mb-6">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-gold mb-6">
               {t("footer.explore_title")}
             </h4>
-            <ul className="space-y-3 text-sm text-cream/70 font-light">
-              <li><Link to="/realisations" className="hover:text-gold transition-colors">{t("nav.realisations")}</Link></li>
-              <li><Link to="/shop" className="hover:text-gold transition-colors">{t("nav.shop")}</Link></li>
-              <li><Link to="/a-propos" className="hover:text-gold transition-colors">{t("nav.about")}</Link></li>
-              <li><Link to="/contact" className="hover:text-gold transition-colors">{t("nav.contact")}</Link></li>
-              <li><Link to="/espace-client" className="hover:text-gold transition-colors">{t("nav.client_area")}</Link></li>
-              <li><Link to="/guide" className="hover:text-gold transition-colors">{t("nav.guide")}</Link></li>
+            <ul className="space-y-3 text-sm text-cream/80 font-light">
+              <li><Link to="/realisations" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.realisations")}</Link></li>
+              <li><Link to="/shop" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.shop")}</Link></li>
+              <li><Link to="/a-propos" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.about")}</Link></li>
+              <li><Link to="/contact" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.contact")}</Link></li>
+              <li><Link to="/espace-client" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.client_area")}</Link></li>
+              <li><Link to="/guide" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("nav.guide")}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-gold mb-6">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-gold mb-6">
               {t("footer.contact_title")}
             </h4>
-            <ul className="space-y-3 text-sm text-cream/70 mb-8 font-light">
+            <ul className="space-y-3 text-sm text-cream/80 mb-8 font-light">
               <li>{t("footer.address")}</li>
-              <li><a href={`mailto:${t("footer.email")}`} className="hover:text-gold transition-colors">{t("footer.email")}</a></li>
+              <li><a href={`mailto:${t("footer.email")}`} className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("footer.email")}</a></li>
               {phoneAvailable && (
-                <li><a href={`tel:${phone.replace(/\s+/g, "")}`} className="hover:text-gold transition-colors">{phone}</a></li>
+                <li><a href={`tel:${phone.replace(/\s+/g, "")}`} className="hover:text-gold hover:underline underline-offset-4 transition-colors">{phone}</a></li>
               )}
             </ul>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-gold mb-4">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-gold mb-4">
               {t("footer.social_title")}
             </h4>
             <div className="flex space-x-3">
@@ -94,12 +94,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-cream/10 flex flex-col md:flex-row justify-between items-center text-[11px] text-cream/70 uppercase tracking-[0.2em] gap-4">
+        <div className="pt-8 border-t border-cream/10 flex flex-col md:flex-row justify-between items-center text-xs text-cream/80 uppercase tracking-[0.2em] gap-4">
           <p>&copy; {new Date().getFullYear()} Mariage Afro. {t("footer.rights")}</p>
           <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2">
-            <Link to="/mentions-legales" className="hover:text-gold transition-colors">{t("footer.legal")}</Link>
-            <Link to="/confidentialite" className="hover:text-gold transition-colors">{t("footer.privacy")}</Link>
-            <Link to="/cookies" className="hover:text-gold transition-colors">{t("footer.cookies")}</Link>
+            <Link to="/mentions-legales" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("footer.legal")}</Link>
+            <Link to="/confidentialite" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("footer.privacy")}</Link>
+            <Link to="/cookies" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("footer.cookies")}</Link>
           </div>
         </div>
       </div>

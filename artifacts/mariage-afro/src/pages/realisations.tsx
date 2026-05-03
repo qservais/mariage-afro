@@ -151,12 +151,12 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
               </span>
             )}
             {formattedDate && (
-              <span className="text-[10px] uppercase tracking-[0.3em] text-wine-deep/55 font-medium">
+              <span className="text-xs uppercase tracking-[0.3em] text-wine-deep/75 font-semibold">
                 {formattedDate}
               </span>
             )}
             {r.location && (
-              <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-wine-deep/55 font-medium">
+              <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-wine-deep/75 font-semibold">
                 <MapPin className="w-3 h-3" />
                 {r.location}
               </span>

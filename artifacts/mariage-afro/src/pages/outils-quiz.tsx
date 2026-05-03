@@ -345,7 +345,7 @@ export default function OutilsQuiz() {
                             </div>
                           )}
                           <div className="p-4">
-                            <div className="text-[10px] uppercase tracking-[0.2em] text-gold mb-1">{v.category}</div>
+                            <div className="text-xs uppercase tracking-[0.2em] text-gold-deep font-semibold mb-1">{v.category}</div>
                             <div className="font-display text-base text-wine-deep leading-tight">{v.name}</div>
                             {v.city && <div className="text-xs text-wine-deep/60 mt-1">{v.city}</div>}
                           </div>

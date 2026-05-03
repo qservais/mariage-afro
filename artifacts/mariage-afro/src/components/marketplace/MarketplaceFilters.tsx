@@ -76,7 +76,7 @@ function ChipGroup<T extends string | number>({
 }) {
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-2">{label}</p>
+      <p className="text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-2">{label}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => {
           const active = values.includes(o.value);
@@ -189,7 +189,7 @@ export default function MarketplaceFilters({
         <div className="container mx-auto px-4 md:px-12 pb-6 space-y-5 border-t border-wine-deep/10 pt-5 bg-cream/60">
           {showCategory && categoryOptions.length > 0 && (
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-2">{t("marketplace.category")}</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-2">{t("marketplace.category")}</p>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -223,7 +223,7 @@ export default function MarketplaceFilters({
 
           {showCapacity && (
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-2">{t("marketplace.capacity_min")}</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-2">{t("marketplace.capacity_min")}</p>
               <input
                 type="number"
                 min={0}

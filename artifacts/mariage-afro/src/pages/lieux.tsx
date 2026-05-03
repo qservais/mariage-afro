@@ -196,13 +196,13 @@ export default function Lieux() {
                 <div className="p-8 md:p-10 flex flex-col flex-grow">
                   <div className="flex flex-wrap gap-x-10 gap-y-4 mb-7 pb-7 border-b border-wine-deep/10">
                     <div>
-                      <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-1.5">
+                      <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-1.5">
                         <Users className="w-3 h-3" /> {t("venues.capacity_label")}
                       </span>
                       <span className="text-wine-deep font-display text-lg">{venue.capacity}</span>
                     </div>
                     <div>
-                      <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-1.5">
+                      <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-1.5">
                         <Sparkles className="w-3 h-3" /> {t("venues.style_label")}
                       </span>
                       <span className="text-wine-deep font-display text-lg">{venue.style}</span>
@@ -214,7 +214,7 @@ export default function Lieux() {
                   </p>
 
                   <div className="mb-8">
-                    <span className="block text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-3">
+                    <span className="block text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
                       {t("venues.options_label")}
                     </span>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">

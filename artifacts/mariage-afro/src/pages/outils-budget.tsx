@@ -318,7 +318,7 @@ export default function OutilsBudget() {
                 <div className="text-center">
                   <span className="section-eyebrow text-wine-deep/60 mb-3 block">{t("tools.budget.result_label")}</span>
                   <h2 className="font-display text-3xl md:text-5xl text-wine-deep mb-2">
-                    {fmt(totalMin)} <span className="text-gold">–</span> {fmt(totalMax)}
+                    {fmt(totalMin)} <span className="text-gold-deep">–</span> {fmt(totalMax)}
                   </h2>
                   <p className="text-sm text-wine-deep/60">
                     {t("tools.budget.result_for", { count: inputs.guestCount })}
@@ -353,7 +353,7 @@ export default function OutilsBudget() {
                               aria-hidden
                             />
                           </div>
-                          <div className="text-[10px] uppercase tracking-wider text-wine-deep/50 tabular-nums">
+                          <div className="text-xs uppercase tracking-wider text-wine-deep/70 tabular-nums font-medium">
                             {pctMin}% – {pctMax}% {t("tools.budget.of_total")}
                           </div>
                         </div>

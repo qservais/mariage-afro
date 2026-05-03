@@ -1098,7 +1098,7 @@ export default function Prestations() {
                     </p>
 
                     <div className="mb-8">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-3">
+                      <p className="text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
                         {t("partners.services_offered")}
                       </p>
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">

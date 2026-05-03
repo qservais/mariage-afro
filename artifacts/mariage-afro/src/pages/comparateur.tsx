@@ -186,7 +186,7 @@ export default function Comparateur() {
                     alt={v.name}
                     className="w-full h-40 object-cover mb-3"
                   />
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-1">{v.category}</p>
+                  <p className="text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-1">{v.category}</p>
                   <h3 className="font-display uppercase text-xl text-wine-deep leading-tight">{v.name}</h3>
                   <p className="text-xs text-wine-deep/60 mt-1">{v.city}</p>
                 </div>
@@ -346,7 +346,7 @@ export default function Comparateur() {
 
 function RowLabel({ label }: { label: string }) {
   return (
-    <div className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium border-t border-wine-deep/10 pt-4 self-start">
+    <div className="text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold border-t border-wine-deep/10 pt-4 self-start">
       {label}
     </div>
   );

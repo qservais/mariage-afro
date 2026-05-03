@@ -29,6 +29,7 @@
   --color-wine-mid: #2a1c1f;
   --color-gold: #c9a96e;
   --color-gold-light: #d9bc88;
+  --color-gold-deep: #8a6d3b;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -314,8 +315,11 @@ html {
   .bg-wine-deep { background-color: #1f1416; }
   .bg-wine-mid { background-color: #2a1c1f; }
   .text-gold { color: #c9a96e; }
+  .text-gold-deep { color: #8a6d3b; }
   .bg-gold { background-color: #c9a96e; }
+  .bg-gold-deep { background-color: #8a6d3b; }
   .border-gold { border-color: #c9a96e; }
+  .border-gold-deep { border-color: #8a6d3b; }
 
   /* Vertical rotated sidebar text (lamangue style) */
   .vertical-text-up {

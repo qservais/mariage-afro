@@ -112,7 +112,7 @@ export default function Shop() {
                         className="flex items-baseline justify-between gap-4 border-b border-wine-deep/15 py-4"
                       >
                         <span className="text-sm font-medium text-wine-deep tracking-tight">{item.name}</span>
-                        <span className="text-xs uppercase tracking-[0.2em] text-gold whitespace-nowrap font-medium">
+                        <span className="text-xs uppercase tracking-[0.2em] text-gold-deep whitespace-nowrap font-semibold">
                           {t("shop.from_label")} {item.price}
                         </span>
                       </li>

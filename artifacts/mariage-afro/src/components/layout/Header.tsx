@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Menu, X, User, ArrowUpRight, Briefcase } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoColor from "@assets/logo-mariage-affro-01.svg";
+import logoCreme from "@assets/logo-mariage-affro-02.svg";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -114,30 +115,28 @@ export default function Header() {
               <span className="block h-px w-7 bg-current transition-all" />
               <span className="block h-px w-5 bg-current transition-all" />
             </div>
-            <span className="text-[11px] uppercase tracking-[0.25em] font-medium hidden sm:inline">
+            <span className="text-xs uppercase tracking-[0.25em] font-semibold hidden sm:inline">
               {mobileMenuOpen ? t("header.menu_close") : t("header.menu_open")}
             </span>
           </button>
 
-          {/* Logo center */}
+          {/* Logo center — variante crème dès que le fond est sombre (scroll, menu, hero éditorial) */}
           <Link to="/" className="flex items-center" aria-label="Mariage Afro">
             <img
-              src={logoColor}
+              src={isScrolled || mobileMenuOpen || isOverDark ? logoCreme : logoColor}
               alt="Mariage Afro"
               width={180}
               height={48}
               fetchPriority="high"
-              className={`h-10 md:h-12 w-auto transition-all duration-500 ${
-                isOverDark && !isScrolled && !mobileMenuOpen ? "brightness-0 invert" : ""
-              }`}
+              className="h-10 md:h-12 w-auto transition-all duration-500"
             />
           </Link>
 
           {/* Right: language + client area */}
           <div className="flex items-center gap-4 md:gap-6">
             <div
-              className={`hidden sm:flex items-center gap-1.5 text-[10px] font-medium tracking-[0.2em] transition-colors ${
-                isOverDark || isScrolled || mobileMenuOpen ? "text-cream/80" : "text-wine-deep/70"
+              className={`hidden sm:flex items-center gap-2 text-xs font-medium tracking-[0.2em] transition-colors ${
+                isOverDark || isScrolled || mobileMenuOpen ? "text-cream/90" : "text-wine-deep"
               }`}
             >
               <button
@@ -170,10 +169,10 @@ export default function Header() {
 
             <Link
               to="/espace-client/login"
-              className={`hidden md:flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-medium transition-colors ${
+              className={`hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium transition-colors hover:underline underline-offset-4 ${
                 isOverDark || isScrolled || mobileMenuOpen
-                  ? "text-cream/90 hover:text-gold"
-                  : "text-wine-deep hover:text-gold"
+                  ? "text-cream"
+                  : "text-wine-deep"
               }`}
               aria-label={t("nav.client_area")}
             >
@@ -222,7 +221,7 @@ export default function Header() {
               transition={{ duration: 0.4, delay: 0.1 }}
               className="pt-24 pb-6 md:pb-8 px-6 md:px-16 lg:px-32 border-b border-cream/10"
             >
-              <p className="text-[10px] tracking-[0.3em] uppercase text-gold/70 mb-3">{t("header.you_are")}</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-gold mb-3 font-semibold">{t("header.you_are")}</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                 <Link
                   to="/services"
