@@ -32,6 +32,11 @@ const MentionsLegalesPage = lazy(() => import("@/pages/legal/mentions-legales"))
 const ConfidentialitePage = lazy(() => import("@/pages/legal/confidentialite"));
 const CookiesPage = lazy(() => import("@/pages/legal/cookies"));
 
+// Dev-only: forms kit demo (mounted only in development build)
+const FormsKitDemo = import.meta.env.DEV
+  ? lazy(() => import("@/pages/_dev/FormsKitDemo"))
+  : null;
+
 // Auth & Espace Client (lazy — never loaded for anonymous public visitors)
 const SignInPage = lazy(() => import("@/pages/sign-in"));
 const SignUpPage = lazy(() => import("@/pages/sign-up"));
@@ -263,6 +268,9 @@ function AppRoutes() {
           <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
           <Route path="/confidentialite" element={<ConfidentialitePage />} />
           <Route path="/cookies" element={<CookiesPage />} />
+          {FormsKitDemo && (
+            <Route path="/_dev/forms-kit" element={<FormsKitDemo />} />
+          )}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

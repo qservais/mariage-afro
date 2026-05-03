@@ -1,1 +1,57 @@
-{}
+{
+  "kit": {
+    "stepper": {
+      "next": "Next",
+      "previous": "Previous",
+      "submit": "Send",
+      "step": "Step",
+      "of": "of",
+      "optional": "optional"
+    },
+    "actions": {
+      "close": "Close",
+      "decrement": "Decrease",
+      "increment": "Increase"
+    },
+    "demo": {
+      "page_title": "Forms kit — Internal demo",
+      "intro": "Shared components used by every form on the site. This page is private (NODE_ENV=development).",
+      "shell_title": "FormShell — wrapper",
+      "shell_desc": "Responsive wrapper with eyebrow, title, description and optional footer.",
+      "fields_title": "Harmonized fields",
+      "fields_desc": "Input, Select, Textarea, Date, Phone, NumberStepper — touch-friendly sizes ≥44px.",
+      "cards_title": "SelectableCard (single)",
+      "cards_desc": "Single selection (radiogroup), keyboard accessible.",
+      "cards_multi_title": "SelectableCard (multi)",
+      "cards_multi_desc": "Multi selection (group of checkboxes).",
+      "stepper_title": "FormStepper — multi-step",
+      "stepper_desc": "Per-step Zod validation, sessionStorage persistence.",
+      "sheet_title": "MobileFormSheet",
+      "sheet_desc": "Full-screen bottom-sheet on mobile, centered modal on desktop.",
+      "open_sheet": "Open the sheet",
+      "step1_title": "Your contact details",
+      "step1_desc": "So we can reach you within 48h.",
+      "step2_title": "Your project",
+      "step2_desc": "A few facts about your wedding.",
+      "step3_title": "Summary",
+      "step3_desc": "Review before sending.",
+      "name_label": "Full name",
+      "email_label": "Email",
+      "phone_label": "Phone",
+      "wedding_type_label": "Wedding type",
+      "guests_label": "Estimated guests",
+      "summary_intro": "You entered:",
+      "card_intimate_title": "Intimate",
+      "card_intimate_desc": "Under 50 guests, cozy feel.",
+      "card_classic_title": "Classic",
+      "card_classic_desc": "50 to 150 guests, traditional format.",
+      "card_grand_title": "Grand wedding",
+      "card_grand_desc": "Over 150 guests, large-scale celebration."
+    },
+    "errors": {
+      "name_required": "Name required (min 2 chars)",
+      "email_invalid": "Invalid email",
+      "type_required": "Select a type"
+    }
+  }
+}

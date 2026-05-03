@@ -1,1 +1,57 @@
-{}
+{
+  "kit": {
+    "stepper": {
+      "next": "Suivant",
+      "previous": "Précédent",
+      "submit": "Envoyer",
+      "step": "Étape",
+      "of": "sur",
+      "optional": "optionnel"
+    },
+    "actions": {
+      "close": "Fermer",
+      "decrement": "Diminuer",
+      "increment": "Augmenter"
+    },
+    "demo": {
+      "page_title": "Kit formulaires — Démo interne",
+      "intro": "Composants partagés utilisés par tous les formulaires du site. Cette page est privée (NODE_ENV=development).",
+      "shell_title": "FormShell — wrapper",
+      "shell_desc": "Wrapper responsive avec eyebrow, titre, description et footer optionnel.",
+      "fields_title": "Champs harmonisés",
+      "fields_desc": "Input, Select, Textarea, Date, Téléphone, NumberStepper — tailles touch-friendly ≥44px.",
+      "cards_title": "SelectableCard (single)",
+      "cards_desc": "Sélection unique type radiogroup, accessible clavier.",
+      "cards_multi_title": "SelectableCard (multi)",
+      "cards_multi_desc": "Sélection multiple type group of checkboxes.",
+      "stepper_title": "FormStepper — multi-étapes",
+      "stepper_desc": "Validation Zod par étape, persistance sessionStorage.",
+      "sheet_title": "MobileFormSheet",
+      "sheet_desc": "Bottom-sheet plein écran sur mobile, modale centrée sur desktop.",
+      "open_sheet": "Ouvrir la feuille",
+      "step1_title": "Vos coordonnées",
+      "step1_desc": "Pour vous recontacter sous 48h.",
+      "step2_title": "Votre projet",
+      "step2_desc": "Quelques informations sur votre mariage.",
+      "step3_title": "Récapitulatif",
+      "step3_desc": "Vérifiez avant d'envoyer.",
+      "name_label": "Nom complet",
+      "email_label": "Email",
+      "phone_label": "Téléphone",
+      "wedding_type_label": "Type de mariage",
+      "guests_label": "Invités estimés",
+      "summary_intro": "Vous avez saisi :",
+      "card_intimate_title": "Intime",
+      "card_intimate_desc": "Moins de 50 invités, ambiance feutrée.",
+      "card_classic_title": "Classique",
+      "card_classic_desc": "50 à 150 invités, format traditionnel.",
+      "card_grand_title": "Grand mariage",
+      "card_grand_desc": "Plus de 150 invités, fête à grande échelle."
+    },
+    "errors": {
+      "name_required": "Nom requis (min. 2 caractères)",
+      "email_invalid": "Email invalide",
+      "type_required": "Sélectionnez un type"
+    }
+  }
+}

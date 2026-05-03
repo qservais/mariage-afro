@@ -12,7 +12,8 @@
     "check-i18n": "node scripts/check-i18n.mjs",
     "optimize-images": "node scripts/optimize-images.mjs",
     "audit-contrast": "node scripts/audit-contrast.mjs",
-    "audit-contrast-playwright": "node scripts/audit-contrast-playwright.mjs"
+    "audit-contrast-playwright": "node scripts/audit-contrast-playwright.mjs",
+    "test:forms-kit": "node scripts/test-forms-kit.mjs"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",

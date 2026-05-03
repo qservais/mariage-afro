@@ -1,1 +1,57 @@
-{}
+{
+  "kit": {
+    "stepper": {
+      "next": "Volgende",
+      "previous": "Vorige",
+      "submit": "Versturen",
+      "step": "Stap",
+      "of": "van",
+      "optional": "optioneel"
+    },
+    "actions": {
+      "close": "Sluiten",
+      "decrement": "Verlagen",
+      "increment": "Verhogen"
+    },
+    "demo": {
+      "page_title": "Formulierenkit — Interne demo",
+      "intro": "Gedeelde componenten gebruikt door alle formulieren van de site. Deze pagina is privé (NODE_ENV=development).",
+      "shell_title": "FormShell — wrapper",
+      "shell_desc": "Responsieve wrapper met eyebrow, titel, beschrijving en optionele footer.",
+      "fields_title": "Geharmoniseerde velden",
+      "fields_desc": "Input, Select, Textarea, Datum, Telefoon, NumberStepper — touch-vriendelijke maten ≥44px.",
+      "cards_title": "SelectableCard (enkel)",
+      "cards_desc": "Enkele selectie type radiogroup, toegankelijk via toetsenbord.",
+      "cards_multi_title": "SelectableCard (multi)",
+      "cards_multi_desc": "Meervoudige selectie type group of checkboxes.",
+      "stepper_title": "FormStepper — meerstaps",
+      "stepper_desc": "Zod-validatie per stap, sessionStorage persistentie.",
+      "sheet_title": "MobileFormSheet",
+      "sheet_desc": "Volledig scherm bottom-sheet op mobiel, gecentreerde modal op desktop.",
+      "open_sheet": "Open het paneel",
+      "step1_title": "Uw contactgegevens",
+      "step1_desc": "Om u binnen 48u te contacteren.",
+      "step2_title": "Uw project",
+      "step2_desc": "Wat informatie over uw bruiloft.",
+      "step3_title": "Samenvatting",
+      "step3_desc": "Controleer voor het versturen.",
+      "name_label": "Volledige naam",
+      "email_label": "E-mail",
+      "phone_label": "Telefoon",
+      "wedding_type_label": "Type bruiloft",
+      "guests_label": "Geschat aantal gasten",
+      "summary_intro": "U heeft ingevuld:",
+      "card_intimate_title": "Intiem",
+      "card_intimate_desc": "Minder dan 50 gasten, intieme sfeer.",
+      "card_classic_title": "Klassiek",
+      "card_classic_desc": "50 tot 150 gasten, traditioneel formaat.",
+      "card_grand_title": "Groot huwelijk",
+      "card_grand_desc": "Meer dan 150 gasten, groots feest."
+    },
+    "errors": {
+      "name_required": "Naam vereist (min. 2 tekens)",
+      "email_invalid": "Ongeldig e-mailadres",
+      "type_required": "Selecteer een type"
+    }
+  }
+}
