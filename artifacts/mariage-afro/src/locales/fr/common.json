@@ -41,6 +41,7 @@
     "phone": "+32 XXX XX XX XX",
     "legal": "Mentions légales",
     "privacy": "Politique de confidentialité",
+    "cookies": "Politique cookies",
     "rights": "Tous droits réservés.",
     "signature_eyebrow": "Mariage Afro",
     "signature": "Une célébration sur mesure, deux cultures réunies."
@@ -79,5 +80,198 @@
     "services": "Services — Mariage Afro",
     "home_description": "Wedding planning premium pour mariages afro et mixtes en Belgique. Organisation complète, coordination jour J, sélection de prestataires.",
     "services_description": "Découvrez nos services de wedding planning complet, coordination jour-J et sélection de prestataires pour votre mariage afro ou mixte en Belgique."
+  },
+  "legal": {
+    "common": {
+      "back_home": "Retour à l'accueil",
+      "last_updated": "Dernière mise à jour : mai 2026"
+    },
+    "mentions": {
+      "title": "Mentions légales",
+      "intro": "Les présentes mentions légales s'appliquent au site mariage-afro.com et sont fournies conformément à la législation belge en vigueur, notamment la loi du 11 mars 2003 sur certains aspects juridiques de la société de l'information et le Code de droit économique.",
+      "sections": [
+        {
+          "h": "Éditeur du site",
+          "p": [
+            "Mariage Afro — plateforme dédiée aux mariages afro et mixtes en Belgique.",
+            "Contact : info@mariage-afro.com"
+          ]
+        },
+        {
+          "h": "Hébergement",
+          "p": "Ce site est hébergé sur une infrastructure cloud sécurisée située dans l'Union européenne."
+        },
+        {
+          "h": "Propriété intellectuelle",
+          "p": [
+            "L'ensemble des contenus du site (textes, photographies, graphismes, logos, icônes, identité visuelle) est protégé par le droit d'auteur et reste la propriété exclusive de Mariage Afro ou de ses partenaires.",
+            "Toute reproduction, représentation, modification, publication, adaptation, totale ou partielle, par quelque procédé que ce soit, est interdite sans autorisation écrite préalable."
+          ]
+        },
+        {
+          "h": "Liens externes",
+          "p": "Le site peut contenir des liens vers des sites tiers (prestataires partenaires, plateformes de réseaux sociaux). Mariage Afro n'exerce aucun contrôle sur ces sites et décline toute responsabilité quant à leur contenu."
+        },
+        {
+          "h": "Médiation des litiges de consommation",
+          "p": [
+            "Conformément au Code de droit économique (livre XVI), en cas de litige le consommateur peut recourir au Service de Médiation pour le Consommateur (https://mediationconsommateur.be).",
+            "Une procédure en ligne est également accessible via la plateforme européenne de règlement des litiges (https://ec.europa.eu/consumers/odr)."
+          ]
+        },
+        {
+          "h": "Droit applicable et juridiction compétente",
+          "p": "Le présent site et son utilisation sont régis par le droit belge. En cas de litige, et à défaut de résolution amiable, les tribunaux de l'arrondissement de Bruxelles sont seuls compétents."
+        },
+        {
+          "h": "Contact",
+          "p": "Pour toute question relative aux présentes mentions, écrivez-nous à info@mariage-afro.com."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "intro": "Mariage Afro accorde une grande importance à la protection de vos données personnelles. La présente politique décrit comment nous collectons, utilisons et protégeons vos données conformément au Règlement (UE) 2016/679 (RGPD) et à la loi belge du 30 juillet 2018 relative à la protection des personnes physiques à l'égard des traitements de données à caractère personnel.",
+      "sections": [
+        {
+          "h": "Responsable du traitement",
+          "p": [
+            "Mariage Afro est responsable du traitement des données personnelles collectées via le site.",
+            "Contact : info@mariage-afro.com"
+          ]
+        },
+        {
+          "h": "Données collectées",
+          "p": "Selon votre utilisation du site, nous pouvons collecter :",
+          "ul": [
+            "Données d'identification : prénom, nom, adresse email (lors de l'inscription à l'Espace Client ou à l'Espace Pro)",
+            "Données de mariage : date, lieu, budget, liste d'invités, planning (saisies par vous dans l'Espace Client)",
+            "Communications : messages échangés via le formulaire de contact ou les outils de mise en relation avec les prestataires",
+            "Photos et documents que vous téléversez dans l'Espace Client ou l'Espace Pro",
+            "Données techniques limitées : préférence de langue, journaux de connexion à des fins de sécurité"
+          ]
+        },
+        {
+          "h": "Finalités du traitement",
+          "ul": [
+            "Création et gestion de votre compte couple ou prestataire",
+            "Mise en relation avec les prestataires sélectionnés (envoi de demandes de devis)",
+            "Envoi des notifications transactionnelles (confirmation, alerte d'un nouveau message ou d'un nouveau lead)",
+            "Réponse à vos demandes formulées via le formulaire de contact",
+            "Envoi de communications marketing uniquement avec votre consentement explicite (newsletter, guide gratuit)",
+            "Sécurité du site et prévention des abus"
+          ]
+        },
+        {
+          "h": "Base légale (RGPD)",
+          "ul": [
+            "Exécution du contrat (article 6.1.b RGPD) : gestion du compte et traitement de vos demandes",
+            "Consentement (article 6.1.a RGPD) : marketing, lead magnets, cookies non strictement nécessaires",
+            "Intérêt légitime (article 6.1.f RGPD) : sécurité du site, prévention de la fraude",
+            "Obligation légale (article 6.1.c RGPD) : conservation comptable et fiscale"
+          ]
+        },
+        {
+          "h": "Sous-traitants et destinataires",
+          "p": "Pour fournir le service, nous faisons appel aux prestataires techniques suivants :",
+          "ul": [
+            "Clerk Inc. (États-Unis, certifié EU-US Data Privacy Framework) : authentification et gestion de session de l'Espace Client et de l'Espace Pro",
+            "Resend Inc. (États-Unis, certifié EU-US Data Privacy Framework) : envoi des emails transactionnels et notifications",
+            "Service de stockage objet hébergé dans l'Union européenne : conservation des photos et documents que vous téléversez",
+            "Base de données PostgreSQL hébergée dans l'Union européenne",
+            "Aucune donnée n'est cédée ni vendue à des tiers à des fins commerciales."
+          ]
+        },
+        {
+          "h": "Durée de conservation",
+          "ul": [
+            "Comptes utilisateurs : pendant toute la durée d'utilisation, et supprimés sur demande ou après 3 ans d'inactivité",
+            "Demandes de devis et formulaires de contact : 3 ans à compter du dernier échange",
+            "Journaux de connexion et de sécurité : 12 mois",
+            "Données soumises à obligations comptables : 7 ans (durée légale belge)"
+          ]
+        },
+        {
+          "h": "Vos droits",
+          "p": "Conformément au RGPD, vous disposez à tout moment des droits suivants :",
+          "ul": [
+            "Droit d'accès à vos données",
+            "Droit de rectification",
+            "Droit à l'effacement (« droit à l'oubli »)",
+            "Droit à la limitation du traitement",
+            "Droit à la portabilité",
+            "Droit d'opposition",
+            "Droit de retirer votre consentement à tout moment (sans effet rétroactif)",
+            "Droit de définir des directives post-mortem concernant vos données"
+          ]
+        },
+        {
+          "h": "Exercer vos droits",
+          "p": "Pour exercer ces droits, écrivez-nous à info@mariage-afro.com. Une réponse vous sera apportée dans un délai d'un mois conformément au RGPD. Une preuve d'identité pourra vous être demandée en cas de doute."
+        },
+        {
+          "h": "Réclamation auprès de l'autorité de contrôle",
+          "p": [
+            "Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de l'Autorité de protection des données (APD) belge :",
+            "Rue de la Presse 35, 1000 Bruxelles — contact@apd-gba.be — https://www.autoriteprotectiondonnees.be"
+          ]
+        },
+        {
+          "h": "Sécurité",
+          "p": "Toutes les données transitent en HTTPS (TLS). Les mots de passe sont gérés par notre prestataire d'authentification (Clerk) et ne sont jamais stockés en clair par nos soins. Les fichiers que vous téléversez sont hébergés sur une infrastructure cloud sécurisée située dans l'Union européenne. Les serveurs et bases de données appliquent les bonnes pratiques de sécurité en vigueur."
+        },
+        {
+          "h": "Modifications",
+          "p": "La présente politique peut être modifiée pour refléter l'évolution du service ou de la réglementation. La date de dernière mise à jour figure en tête de page. Toute modification substantielle vous sera notifiée par email."
+        }
+      ]
+    },
+    "cookies": {
+      "title": "Politique cookies",
+      "intro": "Cette politique décrit l'utilisation des cookies et technologies similaires sur mariage-afro.com, conformément à la directive européenne ePrivacy et à l'article 129 de la loi belge du 13 juin 2005 relative aux communications électroniques.",
+      "sections": [
+        {
+          "h": "Qu'est-ce qu'un cookie ?",
+          "p": "Un cookie est un petit fichier texte déposé sur votre terminal par le site que vous visitez. Il permet de retenir certaines informations (par exemple votre langue ou votre session de connexion) entre deux visites."
+        },
+        {
+          "h": "Notre approche",
+          "p": "Mariage Afro n'utilise actuellement que des cookies et stockages locaux strictement nécessaires au fonctionnement du site. Aucun cookie de mesure d'audience, de publicité ou de tracking comportemental n'est posé."
+        },
+        {
+          "h": "Détail des cookies essentiels",
+          "ul": [
+            "Cookies de session Clerk : maintien de la connexion à l'Espace Client et à l'Espace Pro. Durée : session, ou jusqu'à 30 jours selon votre choix « Rester connecté ».",
+            "Préférence de langue : stockée localement (localStorage) pour conserver votre choix entre FR / NL / EN. Durée : jusqu'à effacement manuel par vos soins.",
+            "Cookies de protection anti-bot (Cloudflare Turnstile) : déposés ponctuellement sur les formulaires sensibles pour vérifier que vous n'êtes pas un robot."
+          ]
+        },
+        {
+          "h": "Pas de tracking ni de publicité",
+          "p": "Aucun outil de mesure d'audience type Google Analytics ou Tag Manager n'est actuellement déployé sur le site. Aucun cookie publicitaire n'est posé. Aucune donnée n'est partagée à des fins de retargeting."
+        },
+        {
+          "h": "Comment refuser ou supprimer les cookies",
+          "p": [
+            "Les cookies essentiels sont nécessaires au fonctionnement du site (notamment pour l'authentification) ; les désactiver empêche l'usage de l'Espace Client et de l'Espace Pro.",
+            "Vous pouvez gérer ou supprimer les cookies depuis les paramètres de votre navigateur :"
+          ],
+          "ul": [
+            "Chrome : Paramètres → Confidentialité et sécurité → Cookies et autres données des sites",
+            "Firefox : Paramètres → Vie privée et sécurité → Cookies et données de sites",
+            "Safari : Préférences → Confidentialité → Gérer les données des sites web",
+            "Edge : Paramètres → Cookies et autorisations de site"
+          ]
+        },
+        {
+          "h": "Évolution",
+          "p": "Si nous ajoutons à l'avenir des cookies non essentiels (mesure d'audience, marketing), un bandeau de consentement vous sera présenté avant tout dépôt et la présente politique sera mise à jour en conséquence."
+        },
+        {
+          "h": "Contact",
+          "p": "Pour toute question relative aux cookies : info@mariage-afro.com"
+        }
+      ]
+    }
   }
 }

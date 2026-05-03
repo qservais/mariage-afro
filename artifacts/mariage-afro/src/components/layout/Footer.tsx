@@ -96,9 +96,10 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-cream/10 flex flex-col md:flex-row justify-between items-center text-[11px] text-cream/70 uppercase tracking-[0.2em] gap-4">
           <p>&copy; {new Date().getFullYear()} Mariage Afro. {t("footer.rights")}</p>
-          <div className="flex space-x-6">
-            <Link to="#" className="hover:text-gold transition-colors">{t("footer.legal")}</Link>
-            <Link to="#" className="hover:text-gold transition-colors">{t("footer.privacy")}</Link>
+          <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2">
+            <Link to="/mentions-legales" className="hover:text-gold transition-colors">{t("footer.legal")}</Link>
+            <Link to="/confidentialite" className="hover:text-gold transition-colors">{t("footer.privacy")}</Link>
+            <Link to="/cookies" className="hover:text-gold transition-colors">{t("footer.cookies")}</Link>
           </div>
         </div>
       </div>

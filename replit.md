@@ -137,6 +137,32 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **robots.txt** : ajout `Disallow: /_replit` et `/__replco` (chemins internes plateforme) en plus de `/mood-board/shared/` et `/mariage/`.
 - **Vérifs finales** : typecheck propre, console sans erreur, aucun `http://` en dur, aucune occurrence restante de l'apex `https://mariage-afro.com` (sans `www`) hors emails `info@`/`noreply@`.
 
+### Pages légales BE #58 (mai 2026)
+- **3 pages publiques** servies en FR/NL/EN via i18n (clés `legal.{mentions,privacy,cookies}.{title,intro,sections}`) :
+  - `/mentions-legales` — éditeur, hébergement (UE), propriété intellectuelle, liens externes, médiation consommateur (Code de droit économique livre XVI), droit applicable (BE / Bruxelles), contact.
+  - `/confidentialite` — RGPD + loi belge 30/07/2018 : responsable de traitement, données collectées, finalités, bases légales (art 6 RGPD), sous-traitants (Clerk US-DPF, Resend US-DPF, object storage UE, PostgreSQL UE, **aucune cession à des tiers**), durées de conservation (3 ans / 12 mois / 7 ans comptables), droits + APD belge.
+  - `/cookies` — directive ePrivacy + art 129 loi BE 13/06/2005 : cookies essentiels uniquement (Clerk session, localStorage langue, Cloudflare Turnstile), **pas de GTM / Analytics / publicité**, comment refuser (paramètres navigateur), bandeau de consentement à venir si cookies non essentiels ajoutés.
+- **Layout partagé** `src/pages/legal/_layout.tsx` (composant `LegalPage`) : lit les sections via `t(..., {returnObjects:true})`, schéma `{h, p (string|string[]), ul?}`. Style sobre Cormorant + wine-deep + crème, `max-w-3xl`, lien retour, date de mise à jour.
+- **3 wrappers minces** `src/pages/legal/{mentions-legales,confidentialite,cookies}.tsx` (3 lignes chacun) — lazy-loaded dans `App.tsx` (ne pollue pas le bundle public initial).
+- **Footer** : `to="#"` remplacé par les 3 vrais liens + 3e lien Cookies, conteneur passé en `flex-wrap` pour mobile.
+- **sitemap.xml** : 3 URLs ajoutées (priority 0.3 / changefreq yearly) avec hreflang FR/NL/EN/x-default → 18 URLs au total.
+- **SEO** : utilise `<SEO path={...}>` du composant existant (génère canonical + OG + 4 hreflang automatiquement).
+- **Vérifs** : typecheck propre ; i18n parity ✅ (0 missing key, 0 placeholder mismatch sur les 3 locales) ; 11 sections privacy + 7 sections mentions/cookies en parité parfaite FR/NL/EN.
+
+#### Infos légales à compléter par le client (côté éditeur)
+À ce jour, les pages affichent uniquement ce que nous savons avec certitude. **Pour conformité complète, le client devra fournir** (puis modifier les blocs `legal.mentions.sections[0]` et `legal.privacy.sections[0]` dans les 3 locales) :
+- Raison sociale exacte (SRL / SA / personne physique indépendante…)
+- Forme juridique
+- Numéro BCE / d'entreprise (10 chiffres)
+- Numéro de TVA (BE0...)
+- Adresse du siège social
+- Téléphone professionnel (placeholder `+32 XXX XX XX XX` masqué tant que non renseigné — voir audit #54)
+- Email DPO (ou confirmer que `info@mariage-afro.com` fait office de point de contact RGPD)
+- Directeur de publication (nom + qualité)
+- Le cas échéant : assurance RC pro, autorisation administrative spécifique.
+
+**Hors scope #58** (tâches futures dédiées) : bandeau de consentement cookies (non requis tant que pas de cookies non essentiels), CGV/CGU (à rédiger quand un service payant sera lancé), revue par avocat belge avant publication officielle.
+
 ### Sécurité HTTP #57 (mai 2026)
 - **API server** (`artifacts/api-server/src/app.ts`) : middleware `helmet` global avec CSP stricte (default-src 'none', img-src self+data, connect-src self), HSTS 1 an avec `includeSubDomains; preload` (gated `NODE_ENV === "production"`), Referrer-Policy `strict-origin-when-cross-origin`, X-Frame-Options DENY, X-Content-Type-Options nosniff, Cross-Origin-Opener-Policy same-origin, Cross-Origin-Resource-Policy cross-origin (l'API est consommée par le SPA depuis un autre origin), Permissions-Policy custom (`camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()`). En dev, CSP en mode Report-Only pour ne pas bloquer le HMR ou Clerk dev keys.
 - **App web** (`artifacts/mariage-afro/server.mjs`) : mini-serveur Express + helmet (remplace l'ancien `serve = "static"` ; voir `.replit-artifact/artifact.toml` `[services.production.run]`). Émet de **vrais** headers HTTP (CSP, HSTS, X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy `strict-origin-when-cross-origin`, COOP same-origin, CORP same-origin, Permissions-Policy `camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()`). HSTS 1 an + `includeSubDomains; preload` gated `NODE_ENV === "production"`. Allowlist CSP : Clerk (`*.clerk.accounts.dev`, `*.clerk.com`, `clerk.mariage-afro.com`, `clerk-telemetry.com`, `images.clerk.dev`, `img.clerk.com`), Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`), object storage (`storage.googleapis.com`, `*.storage.googleapis.com`, `*.googleusercontent.com`), tuiles OSM (`*.tile.openstreetmap.org`, `nominatim.openstreetmap.org`), Cloudflare Turnstile, YouTube/Vimeo iframes. `frame-ancestors 'none'`, `object-src 'none'`, `upgrade-insecure-requests`. Inline styles/scripts autorisés (Tailwind v4 + Radix popovers + JSON-LD). `compression()` activé, assets hashés cachés 1 an immutable, `index.html` no-cache. **Pas de meta CSP** dans `index.html` — source de vérité unique = headers HTTP. En dev, vite n'émet pas de CSP (HMR non bloqué).

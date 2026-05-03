@@ -41,6 +41,7 @@
     "phone": "+32 XXX XX XX XX",
     "legal": "Legal Notice",
     "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
     "rights": "All rights reserved.",
     "signature_eyebrow": "Mariage Afro",
     "signature": "A bespoke celebration, two cultures united."
@@ -79,5 +80,198 @@
     "services": "Services — Mariage Afro",
     "home_description": "Premium wedding planning for Afro and mixed weddings in Belgium. Full planning, day-of coordination, vendor selection.",
     "services_description": "Discover our wedding planning services: full planning, day-of coordination and vendor selection for your Afro or mixed wedding in Belgium."
+  },
+  "legal": {
+    "common": {
+      "back_home": "Back to home",
+      "last_updated": "Last updated: May 2026"
+    },
+    "mentions": {
+      "title": "Legal Notice",
+      "intro": "This legal notice applies to the website mariage-afro.com and is provided in accordance with applicable Belgian law, in particular the Act of 11 March 2003 on certain legal aspects of the information society and the Code of Economic Law.",
+      "sections": [
+        {
+          "h": "Site publisher",
+          "p": [
+            "Mariage Afro — platform dedicated to Afro and mixed weddings in Belgium.",
+            "Contact: info@mariage-afro.com"
+          ]
+        },
+        {
+          "h": "Hosting",
+          "p": "This site is hosted on a secure cloud infrastructure located within the European Union."
+        },
+        {
+          "h": "Intellectual property",
+          "p": [
+            "All site content (text, photographs, graphics, logos, icons, visual identity) is protected by copyright and remains the exclusive property of Mariage Afro or its partners.",
+            "Any reproduction, representation, modification, publication or adaptation, in whole or in part, by any means whatsoever, is prohibited without prior written authorisation."
+          ]
+        },
+        {
+          "h": "External links",
+          "p": "The site may contain links to third-party websites (partner vendors, social platforms). Mariage Afro exercises no control over these sites and disclaims all responsibility for their content."
+        },
+        {
+          "h": "Consumer dispute mediation",
+          "p": [
+            "In accordance with Book XVI of the Belgian Code of Economic Law, in the event of a dispute the consumer may refer the matter to the Consumer Mediation Service (https://consumerombudsman.be).",
+            "An online procedure is also available via the European online dispute resolution platform (https://ec.europa.eu/consumers/odr)."
+          ]
+        },
+        {
+          "h": "Applicable law and jurisdiction",
+          "p": "This site and its use are governed by Belgian law. In the event of a dispute that cannot be resolved amicably, the courts of the district of Brussels shall have sole jurisdiction."
+        },
+        {
+          "h": "Contact",
+          "p": "For any question regarding this notice: info@mariage-afro.com"
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "Mariage Afro attaches great importance to the protection of your personal data. This policy describes how we collect, use and protect your data in accordance with Regulation (EU) 2016/679 (GDPR) and the Belgian Act of 30 July 2018 on the protection of natural persons with regard to the processing of personal data.",
+      "sections": [
+        {
+          "h": "Data controller",
+          "p": [
+            "Mariage Afro is the controller of personal data collected through the site.",
+            "Contact: info@mariage-afro.com"
+          ]
+        },
+        {
+          "h": "Data collected",
+          "p": "Depending on your use of the site, we may collect:",
+          "ul": [
+            "Identification data: first name, last name, email address (when registering for the Client Area or the Pro Space)",
+            "Wedding data: date, venue, budget, guest list, planning (entered by you in the Client Area)",
+            "Communications: messages exchanged via the contact form or vendor connection tools",
+            "Photos and documents you upload in the Client Area or the Pro Space",
+            "Limited technical data: language preference, connection logs for security purposes"
+          ]
+        },
+        {
+          "h": "Purposes of processing",
+          "ul": [
+            "Creation and management of your couple or vendor account",
+            "Putting you in touch with selected vendors (sending quote requests)",
+            "Sending transactional notifications (confirmation, alert for a new message or new lead)",
+            "Responding to your requests via the contact form",
+            "Sending marketing communications only with your explicit consent (newsletter, free guide)",
+            "Site security and prevention of abuse"
+          ]
+        },
+        {
+          "h": "Legal basis (GDPR)",
+          "ul": [
+            "Performance of the contract (article 6.1.b GDPR): account management and processing of your requests",
+            "Consent (article 6.1.a GDPR): marketing, lead magnets, non-essential cookies",
+            "Legitimate interest (article 6.1.f GDPR): site security, fraud prevention",
+            "Legal obligation (article 6.1.c GDPR): accounting and tax retention"
+          ]
+        },
+        {
+          "h": "Processors and recipients",
+          "p": "To provide the service, we rely on the following technical providers:",
+          "ul": [
+            "Clerk Inc. (United States, certified under the EU-US Data Privacy Framework): authentication and session management for the Client Area and Pro Space",
+            "Resend Inc. (United States, certified under the EU-US Data Privacy Framework): sending of transactional emails and notifications",
+            "Object storage hosted in the European Union: storage of photos and documents you upload",
+            "PostgreSQL database hosted in the European Union",
+            "No data is transferred or sold to third parties for commercial purposes."
+          ]
+        },
+        {
+          "h": "Retention period",
+          "ul": [
+            "User accounts: throughout the duration of use, and deleted on request or after 3 years of inactivity",
+            "Quote requests and contact forms: 3 years from the last exchange",
+            "Connection and security logs: 12 months",
+            "Data subject to accounting obligations: 7 years (Belgian legal period)"
+          ]
+        },
+        {
+          "h": "Your rights",
+          "p": "In accordance with the GDPR, you have the following rights at any time:",
+          "ul": [
+            "Right of access to your data",
+            "Right to rectification",
+            "Right to erasure (\"right to be forgotten\")",
+            "Right to restriction of processing",
+            "Right to data portability",
+            "Right to object",
+            "Right to withdraw your consent at any time (without retroactive effect)",
+            "Right to set post-mortem instructions concerning your data"
+          ]
+        },
+        {
+          "h": "Exercising your rights",
+          "p": "To exercise these rights, please write to info@mariage-afro.com. A response will be provided within one month in accordance with the GDPR. Proof of identity may be requested in case of doubt."
+        },
+        {
+          "h": "Complaint to the supervisory authority",
+          "p": [
+            "If you consider that your rights are not respected, you may lodge a complaint with the Belgian Data Protection Authority (DPA):",
+            "Rue de la Presse 35, 1000 Brussels — contact@apd-gba.be — https://www.dataprotectionauthority.be"
+          ]
+        },
+        {
+          "h": "Security",
+          "p": "All data is transmitted over HTTPS (TLS). Passwords are managed by our authentication provider (Clerk) and are never stored in clear text on our side. Files you upload are hosted on a secure cloud infrastructure within the European Union. Servers and databases follow current security best practices."
+        },
+        {
+          "h": "Changes",
+          "p": "This policy may be amended to reflect changes in the service or applicable regulations. The date of last update appears at the top of the page. You will be notified by email of any substantial change."
+        }
+      ]
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "intro": "This policy describes the use of cookies and similar technologies on mariage-afro.com, in accordance with the European ePrivacy Directive and article 129 of the Belgian Act of 13 June 2005 on electronic communications.",
+      "sections": [
+        {
+          "h": "What is a cookie?",
+          "p": "A cookie is a small text file placed on your device by the website you visit. It allows certain information (such as your language or login session) to be remembered between visits."
+        },
+        {
+          "h": "Our approach",
+          "p": "Mariage Afro currently uses only cookies and local storage strictly necessary for the operation of the site. No audience measurement, advertising or behavioural tracking cookies are placed."
+        },
+        {
+          "h": "Details of essential cookies",
+          "ul": [
+            "Clerk session cookies: maintain the connection to the Client Area and Pro Space. Duration: session, or up to 30 days if you select \"Stay signed in\".",
+            "Language preference: stored locally (localStorage) to keep your choice between FR / NL / EN. Duration: until you manually clear it.",
+            "Anti-bot protection cookies (Cloudflare Turnstile): occasionally placed on sensitive forms to verify that you are not a robot."
+          ]
+        },
+        {
+          "h": "No tracking, no advertising",
+          "p": "No audience measurement tool such as Google Analytics or Tag Manager is currently deployed on the site. No advertising cookies are placed. No data is shared for retargeting purposes."
+        },
+        {
+          "h": "How to refuse or delete cookies",
+          "p": [
+            "Essential cookies are required for the operation of the site (in particular for authentication); disabling them prevents the use of the Client Area and Pro Space.",
+            "You can manage or delete cookies from your browser settings:"
+          ],
+          "ul": [
+            "Chrome: Settings → Privacy and security → Cookies and other site data",
+            "Firefox: Settings → Privacy & Security → Cookies and Site Data",
+            "Safari: Preferences → Privacy → Manage Website Data",
+            "Edge: Settings → Cookies and site permissions"
+          ]
+        },
+        {
+          "h": "Evolution",
+          "p": "If we add non-essential cookies in the future (audience measurement, marketing), a consent banner will be displayed before any placement and this policy will be updated accordingly."
+        },
+        {
+          "h": "Contact",
+          "p": "For any question regarding cookies: info@mariage-afro.com"
+        }
+      ]
+    }
   }
 }

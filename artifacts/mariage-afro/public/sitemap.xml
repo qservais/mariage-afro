@@ -136,4 +136,31 @@
     <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/contact?lang=en" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/contact" />
   </url>
+  <url>
+    <loc>https://www.mariage-afro.com/mentions-legales</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/mentions-legales?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/mentions-legales?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/mentions-legales?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/mentions-legales" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/confidentialite</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/confidentialite?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/confidentialite?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/confidentialite?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/confidentialite" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/cookies</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/cookies?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/cookies?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/cookies?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/cookies" />
+  </url>
 </urlset>

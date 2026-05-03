@@ -41,6 +41,7 @@
     "phone": "+32 XXX XX XX XX",
     "legal": "Wettelijke vermeldingen",
     "privacy": "Privacybeleid",
+    "cookies": "Cookiebeleid",
     "rights": "Alle rechten voorbehouden.",
     "signature_eyebrow": "Mariage Afro",
     "signature": "Een viering op maat, twee culturen verenigd."
@@ -79,5 +80,198 @@
     "services": "Diensten — Mariage Afro",
     "home_description": "Premium wedding planning voor afro en mixed bruiloften in België. Volledige organisatie, day-of-coördinatie, selectie van leveranciers.",
     "services_description": "Ontdek onze diensten: volledige wedding planning, day-of-coördinatie en selectie van leveranciers voor uw afro of mixed bruiloft in België."
+  },
+  "legal": {
+    "common": {
+      "back_home": "Terug naar de startpagina",
+      "last_updated": "Laatst bijgewerkt: mei 2026"
+    },
+    "mentions": {
+      "title": "Wettelijke vermeldingen",
+      "intro": "Deze wettelijke vermeldingen zijn van toepassing op de site mariage-afro.com en worden verstrekt overeenkomstig de geldende Belgische wetgeving, in het bijzonder de wet van 11 maart 2003 betreffende bepaalde juridische aspecten van de informatiemaatschappij en het Wetboek van economisch recht.",
+      "sections": [
+        {
+          "h": "Uitgever van de site",
+          "p": [
+            "Mariage Afro — platform gewijd aan Afro en gemengde bruiloften in België.",
+            "Contact: info@mariage-afro.com"
+          ]
+        },
+        {
+          "h": "Hosting",
+          "p": "Deze site wordt gehost op een beveiligde cloudinfrastructuur gevestigd in de Europese Unie."
+        },
+        {
+          "h": "Intellectuele eigendom",
+          "p": [
+            "Alle inhoud van de site (teksten, foto's, grafische elementen, logo's, iconen, visuele identiteit) wordt beschermd door het auteursrecht en blijft de exclusieve eigendom van Mariage Afro of haar partners.",
+            "Elke reproductie, weergave, wijziging, publicatie of aanpassing, geheel of gedeeltelijk en op welke wijze dan ook, is verboden zonder voorafgaande schriftelijke toestemming."
+          ]
+        },
+        {
+          "h": "Externe links",
+          "p": "De site kan links bevatten naar websites van derden (partner-leveranciers, sociale media). Mariage Afro oefent geen controle uit over deze sites en wijst elke verantwoordelijkheid af voor hun inhoud."
+        },
+        {
+          "h": "Bemiddeling bij consumentengeschillen",
+          "p": [
+            "Overeenkomstig boek XVI van het Wetboek van economisch recht kan de consument bij een geschil een beroep doen op de Consumentenombudsdienst (https://consumentenombudsdienst.be).",
+            "Een online procedure is ook beschikbaar via het Europese platform voor onlinegeschillenbeslechting (https://ec.europa.eu/consumers/odr)."
+          ]
+        },
+        {
+          "h": "Toepasselijk recht en bevoegde rechtbank",
+          "p": "Deze site en het gebruik ervan worden beheerst door het Belgisch recht. Bij geschillen die niet minnelijk kunnen worden opgelost, zijn uitsluitend de rechtbanken van het arrondissement Brussel bevoegd."
+        },
+        {
+          "h": "Contact",
+          "p": "Voor vragen over deze vermeldingen: info@mariage-afro.com"
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacybeleid",
+      "intro": "Mariage Afro hecht groot belang aan de bescherming van uw persoonsgegevens. Dit beleid beschrijft hoe wij uw gegevens verzamelen, gebruiken en beschermen overeenkomstig Verordening (EU) 2016/679 (AVG) en de Belgische wet van 30 juli 2018 betreffende de bescherming van natuurlijke personen met betrekking tot de verwerking van persoonsgegevens.",
+      "sections": [
+        {
+          "h": "Verwerkingsverantwoordelijke",
+          "p": [
+            "Mariage Afro is verantwoordelijk voor de verwerking van persoonsgegevens die via de site worden verzameld.",
+            "Contact: info@mariage-afro.com"
+          ]
+        },
+        {
+          "h": "Verzamelde gegevens",
+          "p": "Afhankelijk van uw gebruik van de site kunnen wij verzamelen:",
+          "ul": [
+            "Identificatiegegevens: voornaam, naam, e-mailadres (bij registratie in de Klantenzone of de Pro-ruimte)",
+            "Bruiloftsgegevens: datum, locatie, budget, gastenlijst, planning (door uzelf ingevoerd in de Klantenzone)",
+            "Communicatie: berichten uitgewisseld via het contactformulier of de tools voor contact met leveranciers",
+            "Foto's en documenten die u uploadt in de Klantenzone of de Pro-ruimte",
+            "Beperkte technische gegevens: taalvoorkeur, verbindingslogs voor beveiligingsdoeleinden"
+          ]
+        },
+        {
+          "h": "Doeleinden van de verwerking",
+          "ul": [
+            "Aanmaken en beheer van uw koppel- of leveranciersaccount",
+            "Contact tot stand brengen met geselecteerde leveranciers (versturen van offerteaanvragen)",
+            "Versturen van transactionele meldingen (bevestiging, melding van een nieuw bericht of nieuwe lead)",
+            "Beantwoorden van uw vragen via het contactformulier",
+            "Versturen van marketingcommunicatie uitsluitend met uw uitdrukkelijke toestemming (nieuwsbrief, gratis gids)",
+            "Beveiliging van de site en preventie van misbruik"
+          ]
+        },
+        {
+          "h": "Rechtsgrond (AVG)",
+          "ul": [
+            "Uitvoering van de overeenkomst (artikel 6.1.b AVG): accountbeheer en behandeling van uw aanvragen",
+            "Toestemming (artikel 6.1.a AVG): marketing, lead magnets, niet strikt noodzakelijke cookies",
+            "Gerechtvaardigd belang (artikel 6.1.f AVG): beveiliging van de site, fraudepreventie",
+            "Wettelijke verplichting (artikel 6.1.c AVG): boekhoudkundige en fiscale bewaring"
+          ]
+        },
+        {
+          "h": "Verwerkers en ontvangers",
+          "p": "Voor de levering van de dienst doen wij een beroep op de volgende technische dienstverleners:",
+          "ul": [
+            "Clerk Inc. (Verenigde Staten, gecertificeerd onder het EU-US Data Privacy Framework): authenticatie en sessiebeheer van de Klantenzone en Pro-ruimte",
+            "Resend Inc. (Verenigde Staten, gecertificeerd onder het EU-US Data Privacy Framework): versturen van transactionele e-mails en meldingen",
+            "Object storage gehost in de Europese Unie: bewaring van foto's en documenten die u uploadt",
+            "PostgreSQL-database gehost in de Europese Unie",
+            "Geen enkele gegevens worden overgedragen of verkocht aan derden voor commerciële doeleinden."
+          ]
+        },
+        {
+          "h": "Bewaartermijn",
+          "ul": [
+            "Gebruikersaccounts: gedurende de volledige gebruiksduur, en verwijderd op verzoek of na 3 jaar inactiviteit",
+            "Offerteaanvragen en contactformulieren: 3 jaar na de laatste uitwisseling",
+            "Verbindings- en beveiligingslogs: 12 maanden",
+            "Gegevens onderworpen aan boekhoudkundige verplichtingen: 7 jaar (Belgische wettelijke termijn)"
+          ]
+        },
+        {
+          "h": "Uw rechten",
+          "p": "Overeenkomstig de AVG beschikt u op elk moment over de volgende rechten:",
+          "ul": [
+            "Recht op inzage van uw gegevens",
+            "Recht op rectificatie",
+            "Recht op gegevenswissing („recht op vergetelheid\")",
+            "Recht op beperking van de verwerking",
+            "Recht op overdraagbaarheid",
+            "Recht van bezwaar",
+            "Recht om uw toestemming op elk moment in te trekken (zonder terugwerkende kracht)",
+            "Recht om instructies vast te leggen voor wat met uw gegevens moet gebeuren na uw overlijden"
+          ]
+        },
+        {
+          "h": "Uw rechten uitoefenen",
+          "p": "Om deze rechten uit te oefenen kunt u contact met ons opnemen via info@mariage-afro.com. U ontvangt een antwoord binnen één maand, conform de AVG. In geval van twijfel kan een identiteitsbewijs worden gevraagd."
+        },
+        {
+          "h": "Klacht bij de toezichthoudende autoriteit",
+          "p": [
+            "Indien u van mening bent dat uw rechten niet worden gerespecteerd, kunt u een klacht indienen bij de Belgische Gegevensbeschermingsautoriteit (GBA):",
+            "Drukpersstraat 35, 1000 Brussel — contact@apd-gba.be — https://www.gegevensbeschermingsautoriteit.be"
+          ]
+        },
+        {
+          "h": "Beveiliging",
+          "p": "Alle gegevens worden via HTTPS (TLS) verzonden. Wachtwoorden worden beheerd door onze authenticatieleverancier (Clerk) en worden door ons nooit in leesbare vorm bewaard. Geüploade bestanden worden gehost op een beveiligde cloudinfrastructuur in de Europese Unie. De servers en databases passen de geldende beveiligingspraktijken toe."
+        },
+        {
+          "h": "Wijzigingen",
+          "p": "Dit beleid kan worden gewijzigd om de evolutie van de dienst of de regelgeving te weerspiegelen. De datum van laatste bijwerking staat bovenaan de pagina. U wordt per e-mail op de hoogte gebracht van elke wezenlijke wijziging."
+        }
+      ]
+    },
+    "cookies": {
+      "title": "Cookiebeleid",
+      "intro": "Dit beleid beschrijft het gebruik van cookies en vergelijkbare technologieën op mariage-afro.com, overeenkomstig de Europese ePrivacy-richtlijn en artikel 129 van de Belgische wet van 13 juni 2005 betreffende de elektronische communicatie.",
+      "sections": [
+        {
+          "h": "Wat is een cookie?",
+          "p": "Een cookie is een klein tekstbestand dat door de bezochte website op uw toestel wordt geplaatst. Het maakt het mogelijk om bepaalde informatie (zoals uw taal of uw inlogsessie) tussen bezoeken te onthouden."
+        },
+        {
+          "h": "Onze aanpak",
+          "p": "Mariage Afro gebruikt momenteel uitsluitend cookies en lokale opslag die strikt noodzakelijk zijn voor de werking van de site. Er worden geen cookies geplaatst voor publieksmeting, advertenties of gedragstracking."
+        },
+        {
+          "h": "Detail van de essentiële cookies",
+          "ul": [
+            "Clerk-sessiecookies: behoud van de verbinding met de Klantenzone en de Pro-ruimte. Duur: sessie, of tot 30 dagen indien u kiest voor „Ingelogd blijven\".",
+            "Taalvoorkeur: lokaal opgeslagen (localStorage) om uw keuze tussen FR / NL / EN te bewaren. Duur: tot u deze handmatig wist.",
+            "Anti-bot beveiligingscookies (Cloudflare Turnstile): af en toe geplaatst op gevoelige formulieren om te verifiëren dat u geen robot bent."
+          ]
+        },
+        {
+          "h": "Geen tracking, geen advertenties",
+          "p": "Er is momenteel geen meettool zoals Google Analytics of Tag Manager geïnstalleerd op de site. Er worden geen advertentiecookies geplaatst. Er worden geen gegevens gedeeld voor retargeting-doeleinden."
+        },
+        {
+          "h": "Cookies weigeren of verwijderen",
+          "p": [
+            "Essentiële cookies zijn noodzakelijk voor de werking van de site (met name voor de authenticatie); ze uitschakelen verhindert het gebruik van de Klantenzone en de Pro-ruimte.",
+            "U kunt cookies beheren of verwijderen via de instellingen van uw browser:"
+          ],
+          "ul": [
+            "Chrome: Instellingen → Privacy en beveiliging → Cookies en andere sitegegevens",
+            "Firefox: Instellingen → Privacy en beveiliging → Cookies en sitegegevens",
+            "Safari: Voorkeuren → Privacy → Websitegegevens beheren",
+            "Edge: Instellingen → Cookies en sitemachtigingen"
+          ]
+        },
+        {
+          "h": "Evolutie",
+          "p": "Indien wij in de toekomst niet-essentiële cookies toevoegen (publieksmeting, marketing), wordt voorafgaand aan elke plaatsing een toestemmingsbanner getoond en wordt dit beleid dienovereenkomstig bijgewerkt."
+        },
+        {
+          "h": "Contact",
+          "p": "Voor vragen over cookies: info@mariage-afro.com"
+        }
+      ]
+    }
   }
 }

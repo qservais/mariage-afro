@@ -28,6 +28,9 @@ const Contact = lazy(() => import("@/pages/contact"));
 const OutilsBudget = lazy(() => import("@/pages/outils-budget"));
 const OutilsQuiz = lazy(() => import("@/pages/outils-quiz"));
 const GuidePage = lazy(() => import("@/pages/guide"));
+const MentionsLegalesPage = lazy(() => import("@/pages/legal/mentions-legales"));
+const ConfidentialitePage = lazy(() => import("@/pages/legal/confidentialite"));
+const CookiesPage = lazy(() => import("@/pages/legal/cookies"));
 
 // Auth & Espace Client (lazy — never loaded for anonymous public visitors)
 const SignInPage = lazy(() => import("@/pages/sign-in"));
@@ -257,6 +260,9 @@ function AppRoutes() {
           <Route path="/outils/budget" element={<OutilsBudget />} />
           <Route path="/outils/quiz" element={<OutilsQuiz />} />
           <Route path="/guide" element={<GuidePage />} />
+          <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
+          <Route path="/confidentialite" element={<ConfidentialitePage />} />
+          <Route path="/cookies" element={<CookiesPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
