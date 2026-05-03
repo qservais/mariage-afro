@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown, ArrowRight, Heart, Briefcase } from "lucide-react";
 import { Picture } from "@/components/Picture";
@@ -11,6 +11,9 @@ import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
 import servicesImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import videoSrc from "@assets/Trailer-de-dingue_1776614330311.mp4";
 import { SEO } from "@/components/SEO";
+import { HeroCinematicOverlay, HeroMobileFadeOverlay } from "@/components/home/HeroCinematicIntro";
+
+type IntroMode = "skip" | "full" | "mobile-fade";
 
 const HOME_LOCAL_BUSINESS_JSONLD = {
   "@context": "https://schema.org",
@@ -46,6 +49,55 @@ const HOME_LOCAL_BUSINESS_JSONLD = {
 export default function Home() {
   const { t } = useTranslation();
 
+  // Intro cinématique : on détermine si on joue l'intro plein écran (desktop),
+  // une simple version fade (mobile), ou si on saute (reduced motion / déjà vue).
+  const [introMode, setIntroMode] = useState<IntroMode>("skip");
+  const [introReady, setIntroReady] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    let mode: IntroMode = "skip";
+    try {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const seen = sessionStorage.getItem("mariageAfroIntroSeen") === "true";
+      if (!reduced && !seen) {
+        mode = window.innerWidth < 768 ? "mobile-fade" : "full";
+      }
+    } catch {
+      mode = "skip";
+    }
+    setIntroMode(mode);
+    setIntroReady(true);
+  }, []);
+
+  // Marque l'intro comme vue dès que l'utilisateur a scrollé une demi-fenêtre.
+  useEffect(() => {
+    if (!introReady || introMode === "skip") return;
+    const onScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.5) {
+        try {
+          sessionStorage.setItem("mariageAfroIntroSeen", "true");
+        } catch {}
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [introReady, introMode]);
+
+  // Apparition synchronisée du texte du hero pour le mode "full".
+  const { scrollY } = useScroll();
+  const textProgress = useTransform(scrollY, (sy) => {
+    if (introMode !== "full" || !introReady) return 1;
+    const span = Math.max(window.innerHeight * 0.7, 320);
+    return Math.min(Math.max(sy / span, 0), 1);
+  });
+  const textOpacity = useTransform(textProgress, [0.25, 0.85], [0, 1]);
+  const textY = useTransform(textProgress, [0.25, 0.85], [40, 0]);
+  const indicatorOpacity = useTransform(textProgress, [0.7, 1], [0, 1]);
+
+  const showCinematic = introReady && introMode === "full";
+  const showMobileFade = introReady && introMode === "mobile-fade";
 
   const fadeIn = {
     initial: { opacity: 0, y: 30 },
@@ -145,7 +197,10 @@ export default function Home() {
       <SEO title="Mariage Afro — Mariages Afro & Mixtes en Belgique" description="La première plateforme premium dédiée aux mariages afro et mixtes en Belgique. Trouvez vos prestataires et organisez votre grand jour." jsonLd={HOME_LOCAL_BUSINESS_JSONLD} />
 
       {/* Hero Section — Style lamangue : fond wine, titre serif éditorial, vidéo offset droite */}
-      <section className="relative min-h-screen bg-wine-deep text-cream overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:pl-16">
+      <section
+        ref={heroRef}
+        className="relative min-h-screen bg-wine-deep text-cream overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:pl-16"
+      >
         {/* Texture grain subtile (effet papier ancien) */}
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
@@ -158,9 +213,10 @@ export default function Home() {
         <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center px-6 md:px-12 lg:pr-0">
           {/* Texte gauche */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={showCinematic ? false : { opacity: 0, y: 30 }}
+            animate={showCinematic ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 1.1, delay: 0.3 }}
+            style={showCinematic ? { opacity: textOpacity, y: textY } : undefined}
             className="lg:col-span-7 xl:col-span-6 lg:pl-4"
           >
             <span className="inline-flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.4em] mb-8 md:mb-12 text-gold font-medium">
@@ -192,25 +248,40 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Vidéo offset droite */}
+          {/* Vidéo offset droite — sert aussi de cadre cible pour l'intro cinématique */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={showCinematic ? false : { opacity: 0, scale: 0.96 }}
+            animate={showCinematic ? undefined : { opacity: 1, scale: 1 }}
             transition={{ duration: 1.4, delay: 0.5, ease: "easeOut" }}
             className="lg:col-span-5 xl:col-span-6 lg:-mr-6 xl:-mr-12 relative"
           >
-            <div className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[4/5] overflow-hidden shadow-2xl">
-              <video
-                src={videoSrc}
-                poster={heroImage}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                className="w-full h-full object-cover"
-                aria-hidden="true"
-              />
+            <div ref={slotRef} className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[4/5] overflow-hidden shadow-2xl bg-wine-deep">
+              {showCinematic ? (
+                /* En mode cinématique : aucune vidéo dans le slot. L'unique <video> vit
+                   dans HeroCinematicOverlay et reste positionnée en `fixed` glissant
+                   parfaitement sur ce slot (top = docTop - scrollY) pour toute la
+                   durée de la page. Une seule instance = un seul décodeur, pas de
+                   restart de lecture. Le poster derrière évite le flash si l'overlay
+                   tarde à mesurer le bbox. */
+                <img
+                  src={heroImage}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-full h-full object-cover opacity-0"
+                />
+              ) : (
+                <video
+                  src={videoSrc}
+                  poster={heroImage}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  className="w-full h-full object-cover"
+                  aria-hidden="true"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/40 via-transparent to-transparent pointer-events-none" />
             </div>
             {/* Petit accent gold flottant */}
@@ -224,9 +295,10 @@ export default function Home() {
 
         {/* Indicateur scroll en bas centré */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={showCinematic ? false : { opacity: 0 }}
+          animate={showCinematic ? undefined : { opacity: 1 }}
           transition={{ delay: 1.6, duration: 1 }}
+          style={showCinematic ? { opacity: indicatorOpacity } : undefined}
           className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden md:block"
         >
           <motion.div
@@ -239,6 +311,13 @@ export default function Home() {
           </motion.div>
         </motion.div>
       </section>
+
+      {showCinematic && (
+        <HeroCinematicOverlay videoSrc={videoSrc} posterSrc={heroImage} slotRef={slotRef} />
+      )}
+      {showMobileFade && (
+        <HeroMobileFadeOverlay videoSrc={videoSrc} posterSrc={heroImage} />
+      )}
 
       {/* Choix B2B / B2C — orientation immédiate du visiteur */}
       <section
