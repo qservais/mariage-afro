@@ -28,6 +28,7 @@ const Contact = lazy(() => import("@/pages/contact"));
 const OutilsBudget = lazy(() => import("@/pages/outils-budget"));
 const OutilsQuiz = lazy(() => import("@/pages/outils-quiz"));
 const GuidePage = lazy(() => import("@/pages/guide"));
+const GuideInternePage = lazy(() => import("@/pages/guide-interne"));
 const MentionsLegalesPage = lazy(() => import("@/pages/legal/mentions-legales"));
 const ConfidentialitePage = lazy(() => import("@/pages/legal/confidentialite"));
 const CookiesPage = lazy(() => import("@/pages/legal/cookies"));
@@ -168,6 +169,17 @@ function AppRoutes() {
   const isVendor = pathname.startsWith("/espace-pro");
   const isWeddingPage = pathname.startsWith("/mariage/");
   const isSharedBoard = pathname.startsWith("/mood-board/shared/");
+  const isInternalGuide = pathname.startsWith("/_interne/");
+
+  if (isInternalGuide) {
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route path="/_interne/guide" element={<GuideInternePage />} />
+        </Routes>
+      </Suspense>
+    );
+  }
 
   if (isSharedBoard) {
     return (
