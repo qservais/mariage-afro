@@ -100,7 +100,6 @@ export default function Footer() {
             <Link to="#" className="hover:text-gold transition-colors">{t("footer.legal")}</Link>
             <Link to="#" className="hover:text-gold transition-colors">{t("footer.privacy")}</Link>
           </div>
-          <p className="hover:text-gold transition-colors cursor-pointer">{t("footer.made_by")}</p>
         </div>
       </div>
     </footer>

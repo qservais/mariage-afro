@@ -8,7 +8,5 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /mood-board/shared/
 Disallow: /mariage/
-Disallow: /_replit
-Disallow: /__replco
 
 Sitemap: https://www.mariage-afro.com/sitemap.xml
