@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Guide Mariage Afro — Couples · Prestataires · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bordeaux: #68191e;
+    --bordeaux-light: #8a2329;
+    --cream: #fff4e4;
+    --cream-soft: #faf0dc;
+    --gold: #c9a96e;
+    --gold-soft: #e6d3a6;
+    --gold-deep: #8a6d3b;
+    --wine-deep: #1f1416;
+    --ink: #2b1a1c;
+    --muted: #6b5a4f;
+    --line: rgba(104, 25, 30, 0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Montserrat', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; line-height: 1.2; color: var(--bordeaux); }
+  h1 { font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: -0.01em; }
+  h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); margin-bottom: .4em; }
+  h3 { font-size: 1.5rem; margin-bottom: .3em; }
+  h4 { font-size: 1.15rem; font-weight: 600; color: var(--bordeaux-light); margin-bottom: .3em; }
+  p { margin-bottom: 1em; }
+  a { color: var(--bordeaux); text-decoration: none; border-bottom: 1px solid var(--gold); transition: opacity .2s; }
+  a:hover { opacity: .7; }
+  .eyebrow {
+    font-family: 'Montserrat', sans-serif;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--gold-deep);
+    margin-bottom: 1em;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--wine-deep) 0%, var(--bordeaux) 100%);
+    color: var(--cream);
+    padding: 5rem 2rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(201, 169, 110, 0.15) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero-inner { max-width: 980px; margin: 0 auto; position: relative; }
+  .hero h1 { color: var(--cream); margin-bottom: .3em; }
+  .hero h1 em { color: var(--gold); font-style: italic; }
+  .hero .lead { font-size: 1.15rem; max-width: 640px; opacity: .9; margin-bottom: 2rem; }
+  .hero .eyebrow { color: var(--gold); }
+  .hero-meta {
+    display: flex; gap: 2rem; flex-wrap: wrap;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(201, 169, 110, 0.3);
+    font-size: .85rem; opacity: .85;
+  }
+  .hero-meta strong { color: var(--gold); font-weight: 600; }
+
+  /* TOC */
+  .toc {
+    background: var(--cream-soft);
+    border-bottom: 1px solid var(--line);
+    padding: 2rem;
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(8px);
+    background: rgba(250, 240, 220, 0.95);
+  }
+  .toc-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+  }
+  .toc-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: var(--bordeaux);
+    font-weight: 600;
+  }
+  .toc nav { display: flex; gap: 1.5rem; flex-wrap: wrap; flex: 1; }
+  .toc nav a {
+    font-size: .78rem;
+    font-weight: 500;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border: none;
+    padding: .4rem 0;
+    border-bottom: 2px solid transparent;
+  }
+  .toc nav a:hover { border-bottom-color: var(--gold); }
+
+  /* SECTIONS */
+  section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+  section.alt { background: var(--cream-soft); max-width: 100%; }
+  section.alt > .inner { max-width: 1100px; margin: 0 auto; }
+  .section-head { margin-bottom: 3rem; max-width: 720px; }
+  .section-head p { color: var(--muted); font-size: 1.05rem; }
+
+  /* CARDS */
+  .grid { display: grid; gap: 1.5rem; }
+  .grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  .grid.cols-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.8rem;
+    transition: border-color .2s, transform .2s;
+    position: relative;
+  }
+  .card:hover { border-color: var(--gold); }
+  .card .num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1rem;
+    margin-bottom: .8rem;
+    display: block;
+  }
+  .card h3 { color: var(--bordeaux); margin-bottom: .6em; font-size: 1.3rem; }
+  .card p { color: var(--muted); font-size: .92rem; margin-bottom: 0; }
+  .card ul { list-style: none; margin-top: .8em; }
+  .card ul li {
+    padding: .35rem 0 .35rem 1.2rem;
+    position: relative;
+    font-size: .88rem;
+    color: var(--ink);
+  }
+  .card ul li::before {
+    content: "·";
+    color: var(--gold);
+    position: absolute;
+    left: 0;
+    font-size: 1.4rem;
+    line-height: 1;
+    top: .4rem;
+  }
+  .card .route {
+    display: inline-block;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .72rem;
+    background: var(--cream);
+    color: var(--bordeaux);
+    padding: .2rem .55rem;
+    border-radius: 2px;
+    margin-bottom: .8em;
+    border: 1px solid var(--line);
+  }
+
+  /* HIGHLIGHT BANNERS */
+  .banner {
+    background: linear-gradient(135deg, var(--bordeaux) 0%, var(--bordeaux-light) 100%);
+    color: var(--cream);
+    padding: 2.5rem 2rem;
+    border-radius: 6px;
+    margin: 3rem 0;
+    text-align: center;
+  }
+  .banner h3 { color: var(--gold); margin-bottom: .5em; }
+  .banner p { color: var(--cream); opacity: .9; margin: 0 auto; max-width: 600px; }
+
+  /* DIVIDER */
+  .divider {
+    text-align: center; margin: 4rem 0 3rem;
+    color: var(--gold);
+    font-size: 1.5rem;
+    letter-spacing: 1em;
+  }
+
+  /* FLOW */
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .flow-step {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    position: relative;
+  }
+  .flow-step .step-num {
+    display: inline-flex;
+    width: 32px; height: 32px;
+    background: var(--bordeaux);
+    color: var(--cream);
+    border-radius: 50%;
+    align-items: center; justify-content: center;
+    font-size: .85rem;
+    font-weight: 600;
+    margin-bottom: .8em;
+  }
+  .flow-step h4 { color: var(--bordeaux); font-size: 1rem; margin-bottom: .3em; }
+  .flow-step p { font-size: .82rem; color: var(--muted); margin: 0; }
+
+  /* TABLE */
+  .pill {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: .25rem .7rem;
+    border-radius: 999px;
+    background: var(--gold);
+    color: var(--wine-deep);
+    margin-left: .5em;
+    vertical-align: middle;
+  }
+  .pill.alt { background: var(--bordeaux); color: var(--cream); }
+  .pill.muted { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+
+  /* FOOTER */
+  footer {
+    background: var(--wine-deep);
+    color: var(--cream);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  footer .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    margin-bottom: .5rem;
+  }
+  footer p { opacity: .7; font-size: .85rem; margin: 0; }
+  footer .legal { margin-top: 1.5rem; font-size: .75rem; opacity: .5; letter-spacing: .1em; text-transform: uppercase; }
+
+  /* QUICK START */
+  .quickstart {
+    background: var(--wine-deep);
+    color: var(--cream);
+    padding: 4rem 2rem;
+  }
+  .quickstart .inner { max-width: 1100px; margin: 0 auto; }
+  .quickstart h2 { color: var(--cream); }
+  .quickstart h3 { color: var(--gold); }
+  .quickstart .grid { margin-top: 2rem; }
+  .quickstart .card {
+    background: rgba(255, 244, 228, 0.04);
+    border-color: rgba(201, 169, 110, 0.25);
+    color: var(--cream);
+  }
+  .quickstart .card h3 { color: var(--gold); }
+  .quickstart .card p, .quickstart .card ul li { color: var(--cream); opacity: .85; }
+  .quickstart .card .route { background: rgba(201, 169, 110, 0.15); color: var(--gold); border-color: rgba(201, 169, 110, 0.3); }
+  .quickstart .card ul li::before { color: var(--gold); }
+
+  @media (max-width: 600px) {
+    .toc { padding: 1rem; }
+    .toc-inner { gap: 1rem; }
+    .toc nav { gap: 1rem; }
+    section { padding: 3rem 1.2rem; }
+    .hero { padding: 3rem 1.2rem 4rem; }
+    .card { padding: 1.4rem; }
+  }
+
+  @media print {
+    .toc { position: static; }
+    section { page-break-inside: avoid; padding: 2rem 1rem; }
+    .hero { background: #fff; color: var(--ink); }
+    .hero h1, .quickstart h2 { color: var(--bordeaux); }
+    .quickstart, footer { background: #fff; color: var(--ink); }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">Guide d'utilisation · v1</span>
+    <h1>Mariage <em>Afro</em></h1>
+    <p class="lead">La plateforme premium des mariages afro et mixtes en Belgique. Tout ce que vous devez savoir pour comprendre, montrer et utiliser chaque fonctionnalité — du couple au prestataire, jusqu'à l'équipe d'administration.</p>
+    <div class="hero-meta">
+      <span><strong>3 espaces</strong> — Couples · Prestataires · Admin</span>
+      <span><strong>3 langues</strong> — Français · Néerlandais · Anglais</span>
+      <span><strong>Belgique</strong> — Bruxelles · Wallonie · Flandre · Luxembourg</span>
+    </div>
+  </div>
+</header>
+
+<div class="toc">
+  <div class="toc-inner">
+    <span class="toc-brand">Mariage Afro</span>
+    <nav>
+      <a href="#public">Site public</a>
+      <a href="#couples">Espace couples</a>
+      <a href="#pros">Espace prestataires</a>
+      <a href="#admin">Administration</a>
+      <a href="#parcours">Parcours type</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ===================== PUBLIC ===================== -->
+<section id="public">
+  <div class="section-head">
+    <span class="eyebrow">01 · Site public</span>
+    <h2>La vitrine et la marketplace</h2>
+    <p>Pages accessibles sans connexion. C'est là que les futurs mariés découvrent la plateforme, comparent les prestataires et entrent en contact.</p>
+  </div>
+
+  <div class="grid cols-3">
+    <div class="card">
+      <span class="route">/</span>
+      <h3>Accueil</h3>
+      <p>Intro cinématique, mise en avant des services, accès rapide à toutes les sections clés.</p>
+    </div>
+    <div class="card">
+      <span class="route">/plateforme</span>
+      <h3>La plateforme</h3>
+      <p>Présentation des outils mis à disposition des couples (planning, budget, invités, site mariage…).</p>
+    </div>
+    <div class="card">
+      <span class="route">/services</span>
+      <h3>Services d'accompagnement</h3>
+      <p>L'offre premium d'aide à l'organisation par l'équipe Mariage Afro.</p>
+    </div>
+    <div class="card">
+      <span class="route">/partenaires</span>
+      <h3>Annuaire prestataires</h3>
+      <p>La marketplace : photographes, traiteurs, DJ, fleuristes… Filtres par catégorie, région et style. Fiches publiques détaillées avec galerie, services et avis.</p>
+    </div>
+    <div class="card">
+      <span class="route">/lieux</span>
+      <h3>Lieux de réception</h3>
+      <p>Recherche dédiée aux salles, châteaux et domaines, avec critères de capacité et style.</p>
+    </div>
+    <div class="card">
+      <span class="route">/realisations</span>
+      <h3>Réalisations</h3>
+      <p>Storytelling et galeries de mariages réels organisés via la plateforme.</p>
+    </div>
+    <div class="card">
+      <span class="route">/comparateur</span>
+      <h3>Comparateur</h3>
+      <p>Outil pour comparer plusieurs prestataires ou devis côte à côte avant de décider.</p>
+    </div>
+    <div class="card">
+      <span class="route">/shop</span>
+      <h3>Boutique</h3>
+      <p>Accessoires et produits liés au mariage proposés par la marque.</p>
+    </div>
+    <div class="card">
+      <span class="route">/contact</span>
+      <h3>Contact</h3>
+      <p>Formulaire général multi-étapes : coordonnées, type de demande, détails, message. Génère un lead transmis à l'équipe.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Outils de génération de leads</h3>
+  <p style="color: var(--muted); margin-bottom: 1.5rem;">Trois outils gratuits qui apportent de la valeur immédiate aux visiteurs et capturent leurs coordonnées en échange.</p>
+  <div class="grid cols-3">
+    <div class="card">
+      <span class="route">/outils/budget</span>
+      <h4>Calculateur budget</h4>
+      <p>Estimation personnalisée du budget mariage selon le nombre d'invités, la région et le style souhaité.</p>
+    </div>
+    <div class="card">
+      <span class="route">/outils/quiz</span>
+      <h4>Quiz style</h4>
+      <p>Quelques questions pour révéler le style de mariage le plus adapté au couple, et suggérer les bons prestataires.</p>
+    </div>
+    <div class="card">
+      <span class="route">/guide</span>
+      <h4>Guide PDF</h4>
+      <p>Téléchargement gratuit du guide complet d'organisation, en échange de l'email.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Sites mariages publics</h3>
+  <div class="grid cols-3">
+    <div class="card">
+      <span class="route">/mariage/[slug]</span>
+      <h4>Site du couple</h4>
+      <p>Page personnalisée que chaque couple peut créer et partager à ses invités (image de couverture, programme, infos pratiques).</p>
+    </div>
+    <div class="card">
+      <span class="route">/mariage/[slug]/rsvp</span>
+      <h4>RSVP invités</h4>
+      <p>Formulaire de réponse pour les invités, avec questions personnalisables (allergies, navette, +1…).</p>
+    </div>
+    <div class="card">
+      <span class="route">/mariage/[slug]/cagnotte</span>
+      <h4>Cagnotte en ligne</h4>
+      <p>Page de participation financière des invités au voyage de noces ou autre projet du couple.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== COUPLES ===================== -->
+<section id="couples" class="alt">
+  <div class="inner">
+    <div class="section-head">
+      <span class="eyebrow">02 · Espace couples · B2C</span>
+      <h2>Le tableau de bord des futurs mariés</h2>
+      <p>Accessible après inscription via Clerk, sous <code style="background:var(--cream);padding:.1em .4em;border-radius:2px;">/espace-client</code>. Un onboarding en 5 étapes (Bienvenue · Vous · Partenaire · Date · Récapitulatif) accueille chaque nouveau couple. Ensuite, 13 modules pour piloter l'organisation de A à Z.</p>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <span class="num">i.</span>
+        <span class="route">/espace-client/dashboard</span>
+        <h3>Tableau de bord</h3>
+        <ul>
+          <li>Barre de progression globale du projet mariage</li>
+          <li>Modification rapide des noms et de la date du mariage</li>
+          <li>Rappel de la prochaine tâche urgente</li>
+          <li>Tuiles de navigation vers tous les modules</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">ii.</span>
+        <span class="route">/espace-client/budget</span>
+        <h3>Budget</h3>
+        <ul>
+          <li>Tableaux Budget prévu / réel / payé</li>
+          <li>Graphique en camembert par catégorie</li>
+          <li>Ajout/suppression de postes de dépense</li>
+          <li>Marquage "payé" et suivi des soldes</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">iii.</span>
+        <span class="route">/espace-client/invites</span>
+        <h3>Invités &amp; RSVP <span class="pill">Phare</span></h3>
+        <ul>
+          <li>Liste manuelle ou import CSV</li>
+          <li>Suivi par côté (partenaire 1, 2, commun) et table</li>
+          <li>Stats RSVP en temps réel (confirmés / en attente / déclinés)</li>
+          <li>Questions personnalisables (allergies, navette…)</li>
+          <li>Export CSV des réponses</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">iv.</span>
+        <span class="route">/espace-client/plan-de-table</span>
+        <h3>Plan de table</h3>
+        <ul>
+          <li>Création de tables (rondes, rectangulaires, carrées)</li>
+          <li>Drag &amp; drop des invités confirmés</li>
+          <li>Export PNG ou PDF du plan final</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">v.</span>
+        <span class="route">/espace-client/planning</span>
+        <h3>Planning &amp; tâches</h3>
+        <ul>
+          <li>Liste de tâches avec échéances et responsables</li>
+          <li>3 vues : liste · semaine · mois</li>
+          <li>Marquage des tâches complétées</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">vi.</span>
+        <span class="route">/espace-client/prestataires</span>
+        <h3>Mes prestataires</h3>
+        <ul>
+          <li>Annuaire personnel : contactés, en négociation, réservés, payés</li>
+          <li>Notes, montants et statuts</li>
+          <li>Avis post-mariage sur les prestataires de la marketplace</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">vii.</span>
+        <span class="route">/espace-client/site</span>
+        <h3>Site mariage <span class="pill">Phare</span></h3>
+        <ul>
+          <li>Slug personnalisable, titre, message d'accueil, programme</li>
+          <li>Choix d'un template parmi plusieurs (couleurs &amp; polices)</li>
+          <li>Image de couverture compressée automatiquement</li>
+          <li>Activation du module RSVP public</li>
+          <li>Lien partageable + génération QR code téléchargeable</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">viii.</span>
+        <span class="route">/espace-client/cagnotte</span>
+        <h3>Cagnotte</h3>
+        <p>Création et partage d'une cagnotte en ligne pour les invités souhaitant participer financièrement au projet du couple.</p>
+      </div>
+      <div class="card">
+        <span class="num">ix.</span>
+        <span class="route">/espace-client/communication</span>
+        <h3>Communication</h3>
+        <p>Centre de messages : échanges avec l'équipe Mariage Afro et avec les prestataires contactés depuis la plateforme.</p>
+      </div>
+      <div class="card">
+        <span class="num">x.</span>
+        <span class="route">/espace-client/inspiration</span>
+        <h3>Inspiration</h3>
+        <p>Moodboard personnel pour rassembler les images, ambiances et idées qui guident la décoration et le style.</p>
+      </div>
+      <div class="card">
+        <span class="num">xi.</span>
+        <span class="route">/espace-client/documents</span>
+        <h3>Documents</h3>
+        <p>Coffre-fort numérique pour stocker contrats, devis et factures liés au mariage.</p>
+      </div>
+      <div class="card">
+        <span class="num">xii.</span>
+        <span class="route">/espace-client/jour-j</span>
+        <h3>Jour J</h3>
+        <p>Déroulé technique heure par heure de la journée du mariage, partageable avec les prestataires et témoins.</p>
+      </div>
+    </div>
+
+    <div class="banner">
+      <h3>À retenir pour le couple</h3>
+      <p>Onboarding obligatoire en 5 étapes au premier login · Tous les uploads photo sont compressés dans le navigateur avant envoi (JPG/PNG/WebP uniquement) · Disponible en français, néerlandais et anglais.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROS ===================== -->
+<section id="pros">
+  <div class="section-head">
+    <span class="eyebrow">03 · Espace prestataires · B2B</span>
+    <h2>La vitrine pro et le mini-CRM</h2>
+    <p>Accessible sous <code style="background:var(--cream-soft);padding:.1em .4em;border-radius:2px;">/espace-pro</code> après inscription. Un onboarding en 6 étapes pose les bases (Entreprise · Contact · Catégorie · Lieu · Présence en ligne · Description). Ensuite, 9 modules pour gérer sa présence et convertir les leads.</p>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card">
+      <span class="num">i.</span>
+      <span class="route">/espace-pro</span>
+      <h3>Tableau de bord</h3>
+      <ul>
+        <li>Statut de la fiche : publiée ou en attente de modération</li>
+        <li>KPIs sur 30 jours : vues, leads, messages non lus, conversion</li>
+        <li>Graphiques d'historique sur 90 jours</li>
+        <li>Classement dans la catégorie</li>
+        <li>Checklist d'optimisation (logo, photos, descriptions multi-langues)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="num">ii.</span>
+      <span class="route">/espace-pro/leads</span>
+      <h3>Demandes de devis <span class="pill">Phare</span></h3>
+      <ul>
+        <li>Vue tableau ou Kanban</li>
+        <li>Types : devis, dispo, réservation, appel Zoom, RDV</li>
+        <li>Statuts : nouveau · vu · contacté · devis envoyé · gagné · perdu</li>
+        <li>CRM léger : notes privées, étiquettes (Hot, VIP, à relancer)</li>
+        <li>Badge de notification pour les nouveaux leads non lus</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="num">iii.</span>
+      <span class="route">/espace-pro/messages</span>
+      <h3>Messagerie</h3>
+      <ul>
+        <li>Chat temps réel avec les couples (polling 5s)</li>
+        <li>Conversations groupées par couple</li>
+        <li>Indicateur lus / non-lus</li>
+        <li>Échanges modérés et sécurisés sur la plateforme</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="num">iv.</span>
+      <span class="route">/espace-pro/profile</span>
+      <h3>Mon profil</h3>
+      <ul>
+        <li>Nom, slogan, description longue</li>
+        <li>Site web, téléphone, email de contact</li>
+        <li>Logo (compression et redimensionnement automatiques)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="num">v.</span>
+      <span class="route">/espace-pro/gallery</span>
+      <h3>Galerie photo <span class="pill">Phare</span></h3>
+      <ul>
+        <li>Upload multiple optimisé</li>
+        <li>Choix de la photo de couverture (mise en avant marketplace)</li>
+        <li>Suppression et réorganisation</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="num">vi.</span>
+      <span class="route">/espace-pro/services</span>
+      <h3>Services</h3>
+      <p>Liste des prestations proposées avec descriptions et tarifs (ex: « Reportage 8h », « Album photo », « Forfait demi-journée »).</p>
+    </div>
+    <div class="card">
+      <span class="num">vii.</span>
+      <span class="route">/espace-pro/agenda</span>
+      <h3>Agenda</h3>
+      <ul>
+        <li>Calendrier interactif des disponibilités</li>
+        <li>Blocage manuel de dates indisponibles</li>
+        <li>Réservations automatiques verrouillées dès qu'un mariage est confirmé via la plateforme</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="num">viii.</span>
+      <span class="route">/espace-pro/abonnement</span>
+      <h3>Abonnement</h3>
+      <ul>
+        <li><strong>Basic</strong> — Profil public, leads illimités, messagerie</li>
+        <li><strong>Premium</strong> — Mise en avant dans la liste, badge, support prioritaire</li>
+        <li><strong>Featured</strong> — Top de liste, mise en avant accueil, account manager</li>
+        <li>Activation par contact équipe (pas de paiement carte direct)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="num">ix.</span>
+      <span class="route">/espace-pro/settings</span>
+      <h3>Paramètres</h3>
+      <ul>
+        <li>Rappels automatiques par email pour les leads sans réponse</li>
+        <li>Configuration des étiquettes CRM personnalisées</li>
+        <li>Préférences de notifications</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="banner">
+    <h3>À retenir pour le prestataire</h3>
+    <p>Validation manuelle de la fiche par l'équipe avant publication · Tous les leads passent par la plateforme, jamais en direct · Les modèles d'abonnement se choisissent depuis le dashboard mais s'activent par échange humain.</p>
+  </div>
+</section>
+
+<!-- ===================== ADMIN ===================== -->
+<section id="admin" class="alt">
+  <div class="inner">
+    <div class="section-head">
+      <span class="eyebrow">04 · Administration</span>
+      <h2>Le back-office équipe Mariage Afro</h2>
+      <p>Espace réservé à l'équipe sous <code style="background:var(--cream);padding:.1em .4em;border-radius:2px;">/admin</code>. Pages générées en HTML côté serveur pour la sécurité et la rapidité. Pilote toute la modération, la validation et le suivi commercial.</p>
+    </div>
+
+    <h3 style="margin-bottom: 1rem;">Tableau de bord &amp; demandes</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <span class="route">/admin</span>
+        <h4>Dashboard global</h4>
+        <p>Centralisation de toutes les demandes entrantes, filtres par type et statut, compteurs de leads par source.</p>
+      </div>
+      <div class="card">
+        <span class="route">/admin/leads/:type/:id</span>
+        <h4>Gestion détaillée d'un lead</h4>
+        <p>Consultation complète et changement de statut pour les leads généraux, calculateur budget, quiz, téléchargement guide PDF, multi-devis.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Modération &amp; validation</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <span class="route">/admin/reviews</span>
+        <h4>Modération des avis</h4>
+        <p>Validation, rejet ou remise en modération des avis laissés par les couples sur les prestataires.</p>
+      </div>
+      <div class="card">
+        <span class="route">/admin/content/vendor-accounts</span>
+        <h4>Comptes prestataires <span class="pill alt">Clé</span></h4>
+        <p>Validation des nouveaux comptes pros inscrits avant publication de leur fiche.</p>
+      </div>
+      <div class="card">
+        <span class="route">/admin/content/wedding-websites</span>
+        <h4>Sites mariages</h4>
+        <p>Liste et modération des sites publics créés par les couples.</p>
+      </div>
+      <div class="card">
+        <span class="route">/admin/subscriptions</span>
+        <h4>Abonnements pros</h4>
+        <p>Suivi des paiements, activation des accès Premium et Featured pour les prestataires.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Gestion du contenu marketplace</h3>
+    <div class="grid cols-3">
+      <div class="card">
+        <span class="route">/admin/content/vendors</span>
+        <h4>Prestataires</h4>
+        <p>CRUD complet, marquage « Vérifié », activation/désactivation d'une fiche.</p>
+      </div>
+      <div class="card">
+        <span class="route">/admin/content/venues</span>
+        <h4>Lieux</h4>
+        <p>Gestion des fiches lieux de réception (salles, châteaux, domaines).</p>
+      </div>
+      <div class="card">
+        <span class="route">/admin/content/realisations</span>
+        <h4>Réalisations</h4>
+        <p>Publication de mariages réels avec storytelling et galeries photo.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Communication interne</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <span class="route">/admin/content/messages</span>
+        <h4>Messages avec couples</h4>
+        <p>Fil de discussion direct entre l'équipe Mariage Afro et chaque couple inscrit.</p>
+      </div>
+      <div class="card">
+        <span class="route">/admin/content/conversations</span>
+        <h4>Conversations pros (lecture seule) <span class="pill">Modération</span></h4>
+        <p>Surveillance des échanges entre couples et prestataires pour assurer la qualité et la sécurité.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Système</h3>
+    <div class="grid cols-2">
+      <div class="card">
+        <span class="route">/admin/status</span>
+        <h4>Statut serveur</h4>
+        <p>Vérification de la configuration : variables d'environnement, intégrations, santé des services.</p>
+      </div>
+      <div class="card">
+        <span class="route">/api/healthz</span>
+        <h4>Health check</h4>
+        <p>Endpoint de monitoring renvoyant l'état de l'API et de la base de données.</p>
+      </div>
+    </div>
+
+    <div class="banner">
+      <h3>À retenir pour l'admin</h3>
+      <p>Tout passe par la modération avant d'être publique : fiches pros, avis, sites mariages · Les emails transactionnels (notifications leads, validations) nécessitent les secrets Resend configurés · Les conversations pros/couples sont consultables en lecture seule pour garantir la qualité.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PARCOURS ===================== -->
+<section id="parcours">
+  <div class="section-head">
+    <span class="eyebrow">05 · Parcours type</span>
+    <h2>Comment tout s'enchaîne</h2>
+    <p>Trois scénarios concrets pour comprendre la valeur que reçoit chaque acteur, étape par étape.</p>
+  </div>
+
+  <h3 style="margin-bottom: 1rem;">Un couple qui prépare son mariage</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <span class="step-num">1</span>
+      <h4>Découverte</h4>
+      <p>Arrive via le calculateur de budget ou le quiz style.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">2</span>
+      <h4>Inscription</h4>
+      <p>Crée son compte (Clerk) et complète l'onboarding en 5 étapes.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">3</span>
+      <h4>Recherche</h4>
+      <p>Explore la marketplace, demande des devis groupés.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">4</span>
+      <h4>Organisation</h4>
+      <p>Pilote budget, invités, planning et plan de table dans son espace.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">5</span>
+      <h4>Site mariage</h4>
+      <p>Publie son site, active le RSVP, partage QR code et lien.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">6</span>
+      <h4>Jour J</h4>
+      <p>Suit le déroulé technique et laisse ses avis prestataires après.</p>
+    </div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <h3 style="margin-bottom: 1rem;">Un prestataire qui rejoint la plateforme</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <span class="step-num">1</span>
+      <h4>Inscription</h4>
+      <p>Crée son compte pro et passe l'onboarding 6 étapes.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">2</span>
+      <h4>Validation</h4>
+      <p>L'équipe admin valide la fiche depuis le back-office.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">3</span>
+      <h4>Vitrine</h4>
+      <p>Complète profil, galerie, services pour optimiser la conversion.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">4</span>
+      <h4>Réception leads</h4>
+      <p>Reçoit les demandes via email + dashboard, les qualifie en Kanban.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">5</span>
+      <h4>Conversion</h4>
+      <p>Échange via la messagerie, envoie des devis, gagne ou perd le lead.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">6</span>
+      <h4>Croissance</h4>
+      <p>Demande Premium ou Featured pour plus de visibilité.</p>
+    </div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <h3 style="margin-bottom: 1rem;">L'équipe Mariage Afro au quotidien</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <span class="step-num">1</span>
+      <h4>Triage leads</h4>
+      <p>Consulte le dashboard admin chaque matin, qualifie et redirige.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">2</span>
+      <h4>Validation pros</h4>
+      <p>Approuve ou rejette les nouveaux comptes prestataires.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">3</span>
+      <h4>Modération</h4>
+      <p>Valide les avis, surveille les conversations sensibles.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">4</span>
+      <h4>Contenu</h4>
+      <p>Publie réalisations, ajoute lieux, met à jour les fiches vérifiées.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">5</span>
+      <h4>Commercial</h4>
+      <p>Gère les abonnements pros et facture en direct.</p>
+    </div>
+    <div class="flow-step">
+      <span class="step-num">6</span>
+      <h4>Support</h4>
+      <p>Répond aux couples via la messagerie admin.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== QUICK FACTS ===================== -->
+<section class="quickstart">
+  <div class="inner">
+    <div class="section-head">
+      <span class="eyebrow" style="color: var(--gold);">Repères techniques</span>
+      <h2>L'essentiel à savoir</h2>
+    </div>
+
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>Authentification</h3>
+        <p>Gérée par Clerk. Comptes séparés couples / prestataires. Onboarding obligatoire au premier login.</p>
+      </div>
+      <div class="card">
+        <h3>Langues</h3>
+        <p>Français, néerlandais, anglais sur tout le site public et les espaces. Sélecteur dans l'en-tête.</p>
+      </div>
+      <div class="card">
+        <h3>Emails</h3>
+        <p>Transactionnels via Resend (notifications leads, confirmations devis, alertes admin).</p>
+      </div>
+      <div class="card">
+        <h3>Stockage photos</h3>
+        <p>Object storage avec compression navigateur avant envoi : JPG/PNG/WebP uniquement, redimensionnés et optimisés. Pas de doublon stocké.</p>
+      </div>
+      <div class="card">
+        <h3>Paiements</h3>
+        <p>Pas de paiement carte intégré côté prestataires : facturation directe par l'équipe après demande dans le dashboard.</p>
+      </div>
+      <div class="card">
+        <h3>Charte visuelle</h3>
+        <p>Cormorant Garamond pour les titres, Montserrat pour le corps. Bordeaux #68191e, crème #fff4e4, doré #c9a96e, lie de vin #1f1416.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="brand">Mariage Afro</div>
+  <p>Plateforme premium pour les mariages afro et mixtes en Belgique.</p>
+  <div class="legal">Guide d'utilisation · Document interne</div>
+</footer>
+
+</body>
+</html>
