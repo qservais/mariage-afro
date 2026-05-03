@@ -10,7 +10,8 @@
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check-i18n": "node scripts/check-i18n.mjs",
-    "optimize-images": "node scripts/optimize-images.mjs"
+    "optimize-images": "node scripts/optimize-images.mjs",
+    "audit-contrast": "node scripts/audit-contrast.mjs"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",

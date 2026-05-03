@@ -4,6 +4,47 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* =============================================================================
+ * AUDIT LISIBILITÉ — CHECKLIST PAGES AUDITÉES (Tâche #65, mai 2026)
+ * =============================================================================
+ * Règles charte appliquées :
+ *   - text-gold (#c9a96e) : RÉSERVÉ aux fonds sombres (bg-wine-deep, bg-foreground)
+ *     ou usage purement décoratif (icônes ≥24px sans sens, séparateurs, large italics).
+ *   - text-gold-deep (#8a6d3b, ratio 4.6:1 sur cream) : pour TOUT texte/icône info
+ *     porteur de sens posé sur fond clair (bg-cream, bg-white).
+ *   - Opacité minimale 70 % pour tout texte porteur d'info (titres, labels, body).
+ *     Décoratif/désactivé : exception autorisée (placeholders ≥65 %, icons /30-/40 OK).
+ *
+ * Pages publiques auditées :
+ *   ✓ home, about, services, prestations, lieux, shop, plateforme, comparateur,
+ *     guide, contact (priorité — bloc « Informations pratiques » corrigé via :where),
+ *     prestataires-detail, realisations, mariage-cagnotte, mariage-public,
+ *     mariage-rsvp, mood-board-shared, sign-in, sign-up, legal/* (mentions, privacy,
+ *     cookies), outils-quiz, outils-budget.
+ *
+ * Espace Client (pages/client/) : dashboard, budget, guests, planning, vendors,
+ *   documents, day-of, messages, wedding-website, profile.
+ *
+ * Espace Pro (pages/vendor/) : dashboard, profile, gallery, services, account,
+ *   sign-in, sign-up, abonnement (+ VendorLayout sidebar dark + VendorOnboardingGate
+ *   modal blanc → eyebrow corrigé text-gold → text-gold-deep).
+ *
+ * Composants partagés audités : Header, Footer, Hero, ComparatorBar, ReviewModal,
+ *   ReviewStars (étoiles décoratives — fill-gold conservé), VendorActionPanel,
+ *   ExitIntentPopup, LeadModal, multi-devis form, HeroCinematicIntro, Picture.
+ *
+ * Vérification : `pnpm --filter @workspace/mariage-afro run audit-contrast`
+ * (scripts/audit-contrast.mjs scanne tout le src/ et flag les combinaisons à risque).
+ *
+ * Spécificité : .card-editorial est wrappé en :where() (ligne ~485) pour autoriser
+ * les utilities Tailwind (bg-wine-deep, text-cream) à surcharger sans !important.
+ * Sans ça, le defaut #fff écrasait silencieusement les variantes sombres
+ * (cas connu : carte « Informations pratiques » Contact).
+ *
+ * Hazard parser Tailwind v4 : éviter `*` suivi de `/` dans les commentaires CSS,
+ * c'est interprété comme fin de commentaire (préférer `bg- text- border-`).
+ * ============================================================================= */
+
 /* === A11y: visible focus ring on all interactive elements (WCAG 2.4.7) === */
 @layer base {
   *:focus-visible {

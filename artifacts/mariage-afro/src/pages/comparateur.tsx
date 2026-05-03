@@ -223,7 +223,7 @@ export default function Comparateur() {
               <RowLabel label={t("comparateur.row_verified")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
-                  {v.verified ? <Check className="w-4 h-4 text-emerald-700" /> : <X className="w-4 h-4 text-wine-deep/30" />}
+                  {v.verified ? <Check className="w-4 h-4 text-emerald-700" /> : <X className="w-4 h-4 text-wine-deep/60" />}
                 </Cell>
               ))}
 
