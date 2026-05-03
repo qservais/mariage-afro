@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2 } from "lucide-react";
 import * as z from "zod";
@@ -330,29 +330,53 @@ function StickyCounterStepper({
 }) {
   const { t } = useTranslation();
   const [count, setCount] = useState(initialValues.selectedIds.length);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const handleValues = useCallback((v: MdValues) => {
     setCount(v.selectedIds.length);
   }, []);
 
+  const triggerStepperCta = useCallback(() => {
+    const root = wrapperRef.current;
+    if (!root) return;
+    const btn = root.querySelector<HTMLButtonElement>(
+      '[data-testid="stepper-submit"], [data-testid="stepper-next"]',
+    );
+    btn?.click();
+  }, []);
+
   return (
-    <div className="relative pb-16">
+    <div className="relative pb-20" ref={wrapperRef}>
       <FormStepper
         formId="public-multi-devis"
         steps={steps}
         initialValues={initialValues}
         onSubmit={onSubmit}
         submitting={submitting}
-        persist={false}
+        persist
         labels={labels}
         onValuesChange={handleValues}
         data-testid="multi-devis-stepper"
       />
       <div
-        className="sticky bottom-0 left-0 right-0 -mb-px bg-cream/95 backdrop-blur border-t border-wine-deep/10 px-4 py-3 text-center text-[11px] uppercase tracking-[0.18em] text-wine-deep font-medium"
+        className="sticky bottom-0 left-0 right-0 -mb-px bg-cream/95 backdrop-blur border-t border-wine-deep/10 px-4 py-3 flex items-center justify-between gap-3"
         data-testid="multi-devis-sticky-counter"
       >
-        {t("multi_devis.selected_count", { count })}
+        <span
+          className="text-[11px] uppercase tracking-[0.18em] text-wine-deep font-medium"
+          data-testid="multi-devis-sticky-count-label"
+        >
+          {t("multi_devis.selected_count", { count })}
+        </span>
+        <button
+          type="button"
+          onClick={triggerStepperCta}
+          disabled={submitting}
+          className="bg-wine-deep text-cream px-4 h-10 uppercase tracking-[0.18em] text-[11px] font-medium rounded-none hover:bg-wine-deep/90 disabled:opacity-60"
+          data-testid="multi-devis-sticky-cta"
+        >
+          {labels.next}
+        </button>
       </div>
     </div>
   );
