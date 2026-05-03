@@ -469,7 +469,7 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <span className="section-eyebrow section-eyebrow-left mb-6">{t("platform.label")}</span>
+              <span className="section-eyebrow section-eyebrow-left section-eyebrow-light mb-6">{t("platform.label")}</span>
               <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-8 leading-[0.95] tracking-tight">
                 {t("platform.title")}
               </h2>

@@ -362,6 +362,13 @@ html {
   .border-gold { border-color: #c9a96e; }
   .border-gold-deep { border-color: #8a6d3b; }
 
+  /* Utilitaire sémantique : « accent doré lisible sur fond clair (cream/blanc) ».
+     Alias de text-gold-deep, à privilégier dans les composants partagés pour
+     exprimer l'intention (« accent doré sur cream ») plutôt que la couleur brute.
+     Ratio 4.6:1 sur #fff4e4 → WCAG AA pour body et large text. */
+  .text-on-cream { color: #8a6d3b; }
+  .border-on-cream { border-color: #8a6d3b; }
+
   /* Vertical rotated sidebar text (lamangue style) */
   .vertical-text-up {
     writing-mode: vertical-rl;
@@ -572,8 +579,8 @@ html {
     align-items: center;
     gap: 0.375rem;
     padding: 0.375rem 0.625rem;
-    border: 1px solid rgba(201, 169, 110, 0.5);
-    color: #c9a96e;
+    border: 1px solid rgba(138, 109, 59, 0.55);
+    color: #8a6d3b;
     background: transparent;
     font-size: 0.625rem;
     font-weight: 500;

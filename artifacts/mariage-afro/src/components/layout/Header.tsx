@@ -144,7 +144,7 @@ export default function Header() {
                 onClick={() => changeLanguage("fr")}
                 aria-label="Français"
                 aria-current={i18n.language === "fr" ? "true" : undefined}
-                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "fr" ? "text-gold underline underline-offset-4 font-semibold" : ""}`}
+                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "fr" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
               >
                 FR
               </button>
@@ -153,7 +153,7 @@ export default function Header() {
                 onClick={() => changeLanguage("nl")}
                 aria-label="Nederlands"
                 aria-current={i18n.language === "nl" ? "true" : undefined}
-                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "nl" ? "text-gold underline underline-offset-4 font-semibold" : ""}`}
+                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "nl" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
               >
                 NL
               </button>
@@ -162,7 +162,7 @@ export default function Header() {
                 onClick={() => changeLanguage("en")}
                 aria-label="English"
                 aria-current={i18n.language === "en" ? "true" : undefined}
-                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "en" ? "text-gold underline underline-offset-4 font-semibold" : ""}`}
+                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "en" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
               >
                 EN
               </button>
