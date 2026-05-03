@@ -42,6 +42,7 @@ app.use(
           "https://*.tile.openstreetmap.org",
           "https://images.clerk.dev",
           "https://img.clerk.com",
+          "https://clerk.mariage-afro.com",
         ],
         "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
         "style-src": [
@@ -54,12 +55,14 @@ app.use(
           "'unsafe-inline'",
           "https://*.clerk.accounts.dev",
           "https://*.clerk.com",
+          "https://clerk.mariage-afro.com",
           "https://challenges.cloudflare.com",
         ],
         "connect-src": [
           "'self'",
           "https://*.clerk.accounts.dev",
           "https://*.clerk.com",
+          "https://clerk.mariage-afro.com",
           "https://clerk-telemetry.com",
           "https://*.tile.openstreetmap.org",
           "https://nominatim.openstreetmap.org",
@@ -67,6 +70,7 @@ app.use(
         "frame-src": [
           "'self'",
           "https://*.clerk.accounts.dev",
+          "https://clerk.mariage-afro.com",
           "https://challenges.cloudflare.com",
           "https://www.youtube.com",
           "https://www.youtube-nocookie.com",
