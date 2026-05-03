@@ -412,7 +412,9 @@
       "success_desc": "Wij bekijken uw profiel en nemen binnen 5 werkdagen contact op.",
       "new_request": "Nog een kandidatuur indienen"
     },
-    "add_to_project": "Toevoegen aan mijn project"
+    "add_to_project": "Toevoegen aan mijn project",
+    "in_my_project": "In mijn project",
+    "add_to_project_max": "Limiet bereikt (max. 3 leveranciers)"
   },
   "marketplace": {
     "availability": {
@@ -705,7 +707,8 @@
     "cultural_styles": "Culturele stijlen",
     "languages": "Talen",
     "reviews_title": "Geverifieerde beoordelingen",
-    "last_n": "— laatste {{count}}"
+    "last_n": "— laatste {{count}}",
+    "actions_title": "Contacteer deze leverancier"
   },
   "mariage_public": {
     "not_found_title": "Pagina niet gevonden",

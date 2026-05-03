@@ -412,7 +412,9 @@
       "success_desc": "We'll review your profile and get back to you within 5 business days.",
       "new_request": "Submit another application"
     },
-    "add_to_project": "Add to my project"
+    "add_to_project": "Add to my project",
+    "in_my_project": "In my project",
+    "add_to_project_max": "Limit reached (max 3 vendors)"
   },
   "marketplace": {
     "availability": {
@@ -705,7 +707,8 @@
     "cultural_styles": "Cultural styles",
     "languages": "Languages",
     "reviews_title": "Verified reviews",
-    "last_n": "— last {{count}}"
+    "last_n": "— last {{count}}",
+    "actions_title": "Contact this vendor"
   },
   "mariage_public": {
     "not_found_title": "Page not found",

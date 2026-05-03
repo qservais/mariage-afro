@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail } from "lucide-react";
 import ReviewsList from "@/components/marketplace/ReviewsList";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
+import VendorActionPanel from "@/components/marketplace/VendorActionPanel";
 import { SEO } from "@/components/SEO";
 
 interface VendorDetail {
@@ -253,7 +254,9 @@ export default function PrestataireDetail() {
           </div>
         </div>
 
-        <aside className="space-y-6">
+        <aside className="space-y-6 md:sticky md:top-24 md:self-start">
+          <VendorActionPanel vendor={{ id: vendor.id, name: vendor.name }} />
+
           <div className="bg-white p-6 border border-wine-deep/10 rounded-sm space-y-3">
             {vendor.website && (
               <a

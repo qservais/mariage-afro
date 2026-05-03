@@ -412,7 +412,9 @@
       "success_desc": "Nous étudions votre profil et revenons vers vous dans les 5 jours ouvrables.",
       "new_request": "Soumettre une autre candidature"
     },
-    "add_to_project": "Ajouter à mon projet"
+    "add_to_project": "Ajouter à mon projet",
+    "in_my_project": "Dans mon projet",
+    "add_to_project_max": "Limite atteinte (3 prestataires max)"
   },
   "marketplace": {
     "availability": {
@@ -705,7 +707,8 @@
     "cultural_styles": "Styles culturels",
     "languages": "Langues",
     "reviews_title": "Avis vérifiés",
-    "last_n": "— derniers {{count}}"
+    "last_n": "— derniers {{count}}",
+    "actions_title": "Contacter ce prestataire"
   },
   "mariage_public": {
     "not_found_title": "Page introuvable",
