@@ -12,6 +12,37 @@ import servicesImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import videoSrc from "@assets/Trailer-de-dingue_1776614330311.mp4";
 import { SEO } from "@/components/SEO";
 
+const HOME_LOCAL_BUSINESS_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://www.mariage-afro.com/#localbusiness",
+  name: "Mariage Afro",
+  url: "https://www.mariage-afro.com/",
+  image: "https://www.mariage-afro.com/opengraph.jpg",
+  logo: "https://www.mariage-afro.com/logo.svg",
+  description:
+    "Plateforme premium dédiée aux mariages afro et mixtes en Belgique : marketplace de prestataires vérifiés, espace client complet, outils d'organisation.",
+  priceRange: "€€-€€€€",
+  address: {
+    "@type": "PostalAddress",
+    addressCountry: "BE",
+    addressLocality: "Bruxelles",
+  },
+  areaServed: [
+    { "@type": "Country", name: "Belgique" },
+    { "@type": "AdministrativeArea", name: "Bruxelles" },
+    { "@type": "AdministrativeArea", name: "Wallonie" },
+    { "@type": "AdministrativeArea", name: "Flandre" },
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    email: "info@mariage-afro.com",
+    availableLanguage: ["French", "Dutch", "English"],
+  },
+  sameAs: [],
+} as const;
+
 export default function Home() {
   const { t } = useTranslation();
 
@@ -111,7 +142,7 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      <SEO title="Mariage Afro — Mariages Afro & Mixtes en Belgique" description="La première plateforme premium dédiée aux mariages afro et mixtes en Belgique. Trouvez vos prestataires et organisez votre grand jour." />
+      <SEO title="Mariage Afro — Mariages Afro & Mixtes en Belgique" description="La première plateforme premium dédiée aux mariages afro et mixtes en Belgique. Trouvez vos prestataires et organisez votre grand jour." jsonLd={HOME_LOCAL_BUSINESS_JSONLD} />
 
       {/* Hero Section — Style lamangue : fond wine, titre serif éditorial, vidéo offset droite */}
       <section className="relative min-h-screen bg-wine-deep text-cream overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:pl-16">

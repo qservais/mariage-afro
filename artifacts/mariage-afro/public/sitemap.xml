@@ -110,6 +110,24 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/a-propos" />
   </url>
   <url>
+    <loc>https://www.mariage-afro.com/prestations</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/prestations?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/prestations?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/prestations?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/prestations" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/about?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/about?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/about?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/about" />
+  </url>
+  <url>
     <loc>https://www.mariage-afro.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

@@ -7,6 +7,39 @@ import { MapPin } from "lucide-react";
 import servicesBg from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
 import { SEO } from "@/components/SEO";
 
+const SERVICES_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Services pour mariages afro et mixtes en Belgique",
+  itemListElement: [
+    "Photographie",
+    "Vidéographie",
+    "DJ & Animation musicale",
+    "Décoration florale",
+    "Traiteur",
+    "Coiffure & Maquillage",
+    "Lieux de réception",
+    "Transport",
+    "Wedding planning",
+    "Papeterie & Faire-part",
+  ].map((name, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    item: {
+      "@type": "Service",
+      name,
+      provider: {
+        "@type": "Organization",
+        name: "Mariage Afro",
+        url: "https://www.mariage-afro.com/",
+      },
+      areaServed: { "@type": "Country", name: "Belgique" },
+      serviceType: name,
+      url: "https://www.mariage-afro.com/partenaires",
+    },
+  })),
+} as const;
+
 export default function Services() {
   const { t } = useTranslation();
 
@@ -20,7 +53,7 @@ export default function Services() {
 
   return (
     <div className="w-full">
-      <SEO title="Nos services" description="Photographes, traiteurs, DJ, lieux, décoration : tous les services pour un mariage afro ou mixte en Belgique, sélectionnés et vérifiés." />
+      <SEO title="Nos services" description="Photographes, traiteurs, DJ, lieux, décoration : tous les services pour un mariage afro ou mixte en Belgique, sélectionnés et vérifiés." jsonLd={SERVICES_JSONLD} />
       {/* Hero éditorial */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
