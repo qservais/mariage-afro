@@ -8,7 +8,7 @@ export type PhoneFieldProps = Omit<TextFieldProps, "type">;
  * Pattern souple pour ne pas bloquer la saisie internationale.
  */
 export const PhoneField = forwardRef<HTMLInputElement, PhoneFieldProps>(function PhoneField(
-  { placeholder = "+32 4XX XX XX XX", inputMode = "tel", autoComplete = "tel", ...rest },
+  { placeholder, inputMode = "tel", autoComplete = "tel", ...rest },
   ref,
 ) {
   return (

@@ -110,6 +110,7 @@ export default function FormsKitDemo() {
           <PhoneField
             name="phone"
             label={t("kit.demo.phone_label")}
+            placeholder={t("kit.demo.phone_placeholder")}
             value={values.phone}
             onChange={(e) => setValue("phone", e.target.value)}
             className="md:col-span-2"
@@ -163,7 +164,7 @@ export default function FormsKitDemo() {
           </p>
           {(["name", "email", "phone", "weddingType", "guests"] as const).map((k) => (
             <div key={k} className="flex justify-between border-b border-wine-deep/10 py-1.5">
-              <dt className="text-wine-deep/60">{k}</dt>
+              <dt className="text-wine-deep/60">{t(`kit.demo.summary_label_${k}`)}</dt>
               <dd className="text-wine-deep font-medium">{String(values[k] ?? "—")}</dd>
             </div>
           ))}
@@ -220,7 +221,11 @@ export default function FormsKitDemo() {
               }))}
             />
             <DateField name="demo-date" label={t("kit.demo.date_label")} />
-            <PhoneField name="demo-phone" label={t("kit.demo.phone_label")} />
+            <PhoneField
+              name="demo-phone"
+              label={t("kit.demo.phone_label")}
+              placeholder={t("kit.demo.phone_placeholder")}
+            />
             <NumberStepperField
               name="demo-guests"
               label={t("kit.demo.guests_label")}
@@ -238,7 +243,7 @@ export default function FormsKitDemo() {
             <TextareaField
               name="demo-message"
               label={t("kit.demo.message_label")}
-              placeholder="…"
+              placeholder={t("kit.demo.message_placeholder")}
               hint={t("kit.demo.message_hint")}
             />
           </div>

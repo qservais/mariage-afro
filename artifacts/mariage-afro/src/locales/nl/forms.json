@@ -58,7 +58,14 @@
       "name_placeholder": "Jan Janssens",
       "email_placeholder": "jan@example.com",
       "select_placeholder": "—",
-      "hint_example": "Hulptip"
+      "hint_example": "Hulptip",
+      "phone_placeholder": "+32 4XX XX XX XX",
+      "message_placeholder": "Uw bericht…",
+      "summary_label_name": "Naam",
+      "summary_label_email": "E-mail",
+      "summary_label_phone": "Telefoon",
+      "summary_label_weddingType": "Type huwelijk",
+      "summary_label_guests": "Gasten"
     },
     "errors": {
       "name_required": "Naam vereist (min. 2 tekens)",

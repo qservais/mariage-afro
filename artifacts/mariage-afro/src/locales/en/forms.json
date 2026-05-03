@@ -58,7 +58,14 @@
       "name_placeholder": "John Doe",
       "email_placeholder": "john@example.com",
       "select_placeholder": "—",
-      "hint_example": "Helpful hint"
+      "hint_example": "Helpful hint",
+      "phone_placeholder": "+32 4XX XX XX XX",
+      "message_placeholder": "Your message…",
+      "summary_label_name": "Name",
+      "summary_label_email": "Email",
+      "summary_label_phone": "Phone",
+      "summary_label_weddingType": "Wedding type",
+      "summary_label_guests": "Guests"
     },
     "errors": {
       "name_required": "Name required (min 2 chars)",
