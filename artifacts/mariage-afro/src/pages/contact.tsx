@@ -152,7 +152,7 @@ export default function Contact() {
         <div className="relative z-10 container mx-auto px-6 md:px-12 max-w-5xl text-center">
           <motion.span
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            className="section-eyebrow mb-8"
+            className="section-eyebrow section-eyebrow-light mb-8"
           >
             Parlons de votre mariage
           </motion.span>
@@ -451,7 +451,7 @@ export default function Contact() {
                 </div>
               </div>
               <div className="card-editorial p-10 md:p-12 bg-wine-deep text-cream border-wine-deep">
-                <span className="section-eyebrow section-eyebrow-left mb-4">{t("contact.eyebrow_contact")}</span>
+                <span className="section-eyebrow section-eyebrow-light section-eyebrow-left mb-4">{t("contact.eyebrow_contact")}</span>
                 <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-cream mt-3 mb-8 leading-[1]">{t("contact.practical_title")}</h3>
                 <div className="space-y-5">
                   <div className="flex items-center gap-4">

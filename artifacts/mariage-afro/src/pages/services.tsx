@@ -62,7 +62,7 @@ export default function Services() {
         <div className="relative z-10 container mx-auto px-6 md:px-12 max-w-5xl text-center">
           <motion.span
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            className="section-eyebrow mb-8"
+            className="section-eyebrow section-eyebrow-light mb-8"
           >
             {t("services.label")}
           </motion.span>
@@ -120,7 +120,7 @@ export default function Services() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <span className="section-eyebrow section-eyebrow-left mb-6 inline-flex items-center gap-2">
+              <span className="section-eyebrow section-eyebrow-light section-eyebrow-left mb-6 inline-flex items-center gap-2">
                 <MapPin className="w-3 h-3" />
                 Service exclusif
               </span>

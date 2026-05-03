@@ -260,7 +260,7 @@ export default function Lieux() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="section-eyebrow mb-6">{t("venues.form_eyebrow") !== "venues.form_eyebrow" ? t("venues.form_eyebrow") : "Demande personnalisée"}</span>
+            <span className="section-eyebrow section-eyebrow-light mb-6">{t("venues.form_eyebrow") !== "venues.form_eyebrow" ? t("venues.form_eyebrow") : "Demande personnalisée"}</span>
             <h2 className="font-display uppercase text-cream text-3xl md:text-5xl mt-4 mb-6 leading-[0.95] tracking-tight">
               {t("venues.form_title")}
             </h2>

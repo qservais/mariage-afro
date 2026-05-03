@@ -52,7 +52,7 @@ export default function Plateforme() {
         <div className="container relative z-10 mx-auto px-6 md:px-12 text-center max-w-5xl">
           <motion.span
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            className="section-eyebrow mb-8"
+            className="section-eyebrow section-eyebrow-light mb-8"
           >
             {t("platform_page.tagline")}
           </motion.span>
@@ -142,7 +142,7 @@ export default function Plateforme() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="section-eyebrow mb-8">Lancement</span>
+            <span className="section-eyebrow section-eyebrow-light mb-8">Lancement</span>
             <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-10 leading-[0.95] tracking-tight">
               {t("platform_page.cta_section_title")}
             </h2>

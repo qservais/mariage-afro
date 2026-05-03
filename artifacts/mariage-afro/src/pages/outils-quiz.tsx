@@ -252,7 +252,7 @@ export default function OutilsQuiz() {
       <SEO title="Quiz — Quel style de mariage ?" description="7 questions pour découvrir votre style de mariage afro ou mixte et obtenir des recommandations de prestataires adaptés." />
       <section className="relative bg-wine-deep text-cream pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden">
         <div className="container mx-auto px-6 md:px-12 max-w-4xl text-center">
-          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="section-eyebrow mb-8">
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="section-eyebrow section-eyebrow-light mb-8">
             <Sparkles className="inline w-4 h-4 mr-2 -mt-1" />
             {t("tools.quiz.eyebrow")}
           </motion.span>

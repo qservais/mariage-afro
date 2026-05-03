@@ -49,7 +49,7 @@ export default function Shop() {
         <div className="relative z-10 container mx-auto px-6 md:px-12 max-w-5xl text-center">
           <motion.span
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            className="section-eyebrow mb-8"
+            className="section-eyebrow section-eyebrow-light mb-8"
           >
             {t("shop.tagline")}
           </motion.span>
@@ -140,7 +140,7 @@ export default function Shop() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="section-eyebrow mb-8">Sur mesure</span>
+            <span className="section-eyebrow section-eyebrow-light mb-8">Sur mesure</span>
             <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-10 leading-[0.95] tracking-tight">
               {t("shop.banner_title")}
             </h2>

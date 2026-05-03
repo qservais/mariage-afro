@@ -486,14 +486,15 @@ html {
     border-color: rgba(201, 169, 110, 0.6);
   }
 
-  /* Editorial section eyebrow — gold uppercase tracked tagline */
+  /* Editorial section eyebrow — accessible gold-deep on cream/white, lisible aussi sur wine-deep.
+     Pour conserver le gold lumineux sur fond sombre, ajouter la classe .section-eyebrow-light. */
   .section-eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
-    color: #c9a96e;
-    font-size: 0.6875rem;
-    font-weight: 500;
+    color: #8a6d3b;
+    font-size: 0.75rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.4em;
   }
@@ -503,7 +504,10 @@ html {
     display: block;
     width: 2rem;
     height: 1px;
-    background: #c9a96e;
+    background: currentColor;
+  }
+  .section-eyebrow.section-eyebrow-light {
+    color: #c9a96e;
   }
   .section-eyebrow.section-eyebrow-left::before { display: block; }
   .section-eyebrow.section-eyebrow-left::after { display: none; }

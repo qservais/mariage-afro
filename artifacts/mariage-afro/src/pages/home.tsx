@@ -519,7 +519,7 @@ export default function Home() {
             className="max-w-3xl"
           >
             <div className="mb-10">
-              <span className="section-eyebrow mb-8">{t("film_de_miel.label")}</span>
+              <span className="section-eyebrow section-eyebrow-light mb-8">{t("film_de_miel.label")}</span>
               <h3 className="font-display text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[0.9] mt-6 mb-3 text-gold italic">
                 Film de Miel
               </h3>
@@ -661,7 +661,7 @@ export default function Home() {
         />
         <div className="container relative z-10 mx-auto px-6 md:px-12 text-center max-w-4xl">
           <motion.div {...fadeIn}>
-            <span className="section-eyebrow mb-8">{t("home.cta_label")}</span>
+            <span className="section-eyebrow section-eyebrow-light mb-8">{t("home.cta_label")}</span>
             <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-8xl mt-4 mb-10 leading-[0.9] tracking-tight">
               {t("home.cta_title")}
             </h2>

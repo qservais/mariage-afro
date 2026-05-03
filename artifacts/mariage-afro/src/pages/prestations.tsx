@@ -1208,7 +1208,7 @@ export default function Prestations() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="section-eyebrow mb-8">{t("nav.partners")}</span>
+            <span className="section-eyebrow section-eyebrow-light mb-8">{t("nav.partners")}</span>
             <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mb-8 leading-[0.95] tracking-tight">
               {t("prestations.banner_title")}
             </h2>
