@@ -140,7 +140,7 @@ export default function ExitIntentPopup() {
         {!submitted ? (
           <div className="p-8 md:p-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 border border-gold/60 flex items-center justify-center text-gold">
+              <div className="w-10 h-10 border border-gold-deep flex items-center justify-center text-gold-deep">
                 <Download className="w-5 h-5" />
               </div>
               <span className="text-xs uppercase tracking-[0.2em] text-wine-deep/60 font-medium">
@@ -192,7 +192,7 @@ export default function ExitIntentPopup() {
                 {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t("tools.budget.email_submitting")}</> : t("popup.cta")}
               </Button>
             </form>
-            <p className="text-[11px] text-wine-deep/50 mt-4 text-center">
+            <p className="text-xs text-wine-deep/70 mt-4 text-center">
               {t("popup.privacy_note")}
             </p>
           </div>
