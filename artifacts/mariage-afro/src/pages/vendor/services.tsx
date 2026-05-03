@@ -85,9 +85,10 @@ export default function VendorServicesPage() {
                 type="button"
                 onClick={() => removeService(i)}
                 className="text-neutral-400 hover:text-red-600"
+                aria-label={t("vendor.services.remove", { defaultValue: "Supprimer" })}
                 data-testid={`button-service-remove-${i}`}
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </li>
           ))}

@@ -69,7 +69,7 @@ export default function JourJPage() {
               <p className={`text-sm ${ev.done ? "line-through text-neutral-400" : ""}`}>{ev.title}</p>
               {ev.responsible && <p className="text-xs text-neutral-500">{t("jour_j.responsible_label", { name: ev.responsible })}</p>}
             </div>
-            <button onClick={() => del.mutate(ev.id)} className="text-neutral-400 hover:text-primary"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={() => del.mutate(ev.id)} className="text-neutral-400 hover:text-primary" aria-label={t("jour_j.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
           </div>
         ))}
         {events.length === 0 && <p className="px-4 py-8 text-center text-neutral-400 text-sm">{t("jour_j.no_event")}</p>}

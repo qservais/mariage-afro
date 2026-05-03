@@ -235,7 +235,7 @@ export default function InspirationPage() {
                   <span className="font-medium">{c.name || c.email}</span>
                   <span className="text-neutral-500 ml-2 text-xs">{c.email} · {t(`inspiration.role_${c.role}`)}</span>
                 </div>
-                <button onClick={() => deleteCollab.mutate(c.id)} className="text-neutral-400 hover:text-primary"><Trash2 className="w-4 h-4" /></button>
+                <button onClick={() => deleteCollab.mutate(c.id)} className="text-neutral-400 hover:text-primary" aria-label={t("inspiration.delete_collab", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
               </li>
             ))}
           </ul>

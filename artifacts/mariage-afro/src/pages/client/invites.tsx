@@ -202,7 +202,7 @@ export default function GuestsPage() {
                   </select>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => del.mutate(g.id)} className="text-neutral-400 hover:text-primary"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => del.mutate(g.id)} className="text-neutral-400 hover:text-primary" aria-label={t("invites.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
                 </td>
               </tr>
             ))}
@@ -250,7 +250,7 @@ export default function GuestsPage() {
                   aria-label={t("invites.move_down")}
                   data-testid={`button-down-${q.id}`}
                 ><ArrowDown className="w-4 h-4" /></button>
-                <button onClick={() => delQ.mutate(q.id)} className="p-1 text-neutral-400 hover:text-primary"><Trash2 className="w-4 h-4" /></button>
+                <button onClick={() => delQ.mutate(q.id)} className="p-1 text-neutral-400 hover:text-primary" aria-label={t("invites.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
               </div>
             </li>
           ))}

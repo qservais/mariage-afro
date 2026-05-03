@@ -83,10 +83,10 @@ export default function MultiDevisForm({ open, onClose, vendors, onSuccess }: Mu
           type="button"
           onClick={handleClose}
           className="absolute top-3 right-3 text-wine-deep/60 hover:text-wine-deep p-1 z-10"
-          aria-label="Close"
+          aria-label={t("popup.close")}
           data-testid="multi-devis-close"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5" aria-hidden="true" />
         </button>
 
         {!submitted ? (

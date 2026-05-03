@@ -131,10 +131,10 @@ export default function ExitIntentPopup() {
           type="button"
           onClick={() => setOpen(false)}
           className="absolute top-3 right-3 text-wine-deep/60 hover:text-wine-deep p-1"
-          aria-label="Close"
+          aria-label={t("popup.close")}
           data-testid="popup-close"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5" aria-hidden="true" />
         </button>
 
         {!submitted ? (
@@ -160,6 +160,7 @@ export default function ExitIntentPopup() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t("tools.budget.form_name")}
+                  aria-label={t("tools.budget.form_name")}
                   className="bg-white border-wine-deep/15 rounded-none"
                   data-testid="popup-input-name"
                 />
@@ -168,6 +169,7 @@ export default function ExitIntentPopup() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t("tools.budget.form_email")}
+                  aria-label={t("tools.budget.form_email")}
                   className="bg-white border-wine-deep/15 rounded-none"
                   data-testid="popup-input-email"
                 />

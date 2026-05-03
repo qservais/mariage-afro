@@ -51,29 +51,31 @@ function GalleryModal({ images, startIndex, onClose }: { images: string[]; start
         className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
         onClick={onClose}
       >
-        <button onClick={onClose} className="absolute top-4 right-4 text-white/70 hover:text-white z-10">
-          <X className="w-8 h-8" />
+        <button onClick={onClose} aria-label="Fermer la galerie" className="absolute top-4 right-4 text-white/70 hover:text-white z-10">
+          <X className="w-8 h-8" aria-hidden="true" />
         </button>
         <button
           onClick={e => { e.stopPropagation(); setIdx(i => (i - 1 + images.length) % images.length); }}
+          aria-label="Image précédente"
           className="absolute left-4 text-white/70 hover:text-white"
         >
-          <ChevronLeft className="w-10 h-10" />
+          <ChevronLeft className="w-10 h-10" aria-hidden="true" />
         </button>
         <motion.img
           key={idx}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           src={images[idx]}
-          alt=""
+          alt={`Photo de mariage ${idx + 1} sur ${images.length}`}
           className="max-w-[90vw] max-h-[85vh] object-contain"
           onClick={e => e.stopPropagation()}
         />
         <button
           onClick={e => { e.stopPropagation(); setIdx(i => (i + 1) % images.length); }}
+          aria-label="Image suivante"
           className="absolute right-4 text-white/70 hover:text-white"
         >
-          <ChevronRight className="w-10 h-10" />
+          <ChevronRight className="w-10 h-10" aria-hidden="true" />
         </button>
         <p className="absolute bottom-5 text-white/50 text-sm">
           {idx + 1} / {images.length}
@@ -189,9 +191,10 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
                 <button
                   key={i}
                   onClick={() => openGallery(i)}
+                  aria-label={`Ouvrir la galerie — photo ${i + 1}`}
                   className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
                 >
-                  <Picture src={img} alt="" width={400} height={400} loading="lazy" className="w-full h-full object-cover" />
+                  <Picture src={img} alt="" role="presentation" width={400} height={400} loading="lazy" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

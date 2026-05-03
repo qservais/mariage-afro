@@ -421,8 +421,8 @@ export default function SeatingPage() {
       {error && (
         <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-2 text-sm flex justify-between">
           <span>{error}</span>
-          <button onClick={() => setError(null)}>
-            <X className="w-4 h-4" />
+          <button onClick={() => setError(null)} aria-label={t("seating.dismiss_error", { defaultValue: "Fermer" })}>
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       )}
@@ -473,8 +473,8 @@ export default function SeatingPage() {
                     {SHAPE_LABEL[tb.shape]} · {seated.length}/{tb.capacity}
                   </p>
                 </div>
-                <button onClick={() => deleteTable.mutate(tb.id)} className="text-neutral-400">
-                  <Trash2 className="w-4 h-4" />
+                <button onClick={() => deleteTable.mutate(tb.id)} className="text-neutral-400" aria-label={t("seating.delete_table")}>
+                  <Trash2 className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
               {seated.length === 0 ? (

@@ -221,7 +221,7 @@ export default function VendorsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => del.mutate(v.id)} className="text-neutral-400 hover:text-primary"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => del.mutate(v.id)} className="text-neutral-400 hover:text-primary" aria-label={t("prestataires.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
                   </td>
                 </tr>
               );

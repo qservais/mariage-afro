@@ -82,19 +82,19 @@ export default function Footer() {
             </h4>
             <div className="flex space-x-3">
               <span aria-label="Instagram (bientôt disponible)" aria-disabled="true" className="w-10 h-10 border border-cream/10 flex items-center justify-center text-cream/30 cursor-not-allowed">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
               </span>
               <span aria-label="Facebook (bientôt disponible)" aria-disabled="true" className="w-10 h-10 border border-cream/10 flex items-center justify-center text-cream/30 cursor-not-allowed">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
               </span>
               <span aria-label="TikTok (bientôt disponible)" aria-disabled="true" className="w-10 h-10 border border-cream/10 flex items-center justify-center text-cream/30 cursor-not-allowed">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+                <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
               </span>
             </div>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-cream/10 flex flex-col md:flex-row justify-between items-center text-[11px] text-cream/40 uppercase tracking-[0.2em] gap-4">
+        <div className="pt-8 border-t border-cream/10 flex flex-col md:flex-row justify-between items-center text-[11px] text-cream/70 uppercase tracking-[0.2em] gap-4">
           <p>&copy; {new Date().getFullYear()} Mariage Afro. {t("footer.rights")}</p>
           <div className="flex space-x-6">
             <Link to="#" className="hover:text-gold transition-colors">{t("footer.legal")}</Link>

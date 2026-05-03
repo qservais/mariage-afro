@@ -125,7 +125,7 @@ export default function BudgetPage() {
                   </button>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => del.mutate(it.id)} className="text-neutral-400 hover:text-primary"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => del.mutate(it.id)} className="text-neutral-400 hover:text-primary" aria-label={t("budget.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
                 </td>
               </tr>
             ))}

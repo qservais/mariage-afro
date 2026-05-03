@@ -320,10 +320,10 @@ export default function VendorLeadsPage() {
                 </div>
                 <button
                   onClick={() => setSelectedId(null)}
-                  aria-label="Close"
+                  aria-label={t("vendor.leads.close", { defaultValue: "Fermer" })}
                   className="p-1 text-neutral-400 hover:text-wine-deep"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 
