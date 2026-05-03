@@ -358,7 +358,7 @@ function StickyCounterStepper({
         initialValues={initialValues}
         onSubmit={onSubmit}
         submitting={submitting}
-        persist
+        persist={false}
         labels={labels}
         onValuesChange={handleValues}
         onStepChange={handleStep}

@@ -205,7 +205,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
           initialValues={INITIAL}
           onSubmit={(v) => submit.mutateAsync(v).then(() => undefined)}
           submitting={submit.isPending}
-          persist
+          persist={false}
           labels={stepperLabels}
           data-testid="lead-modal-stepper"
         />
