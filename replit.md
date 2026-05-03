@@ -125,6 +125,22 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Lighthouse / axe-core capture**: Cannot be run from the agent environment (no headless browser CLI is available in this sandbox). Pipeline + assets are ready; the user / CI should run `lighthouse https://<deployed-url>/` after deploy. Follow-up #53 tracks the audit run.
 - **Deferred to follow-up #52**: Server-side `<picture>` AVIF/WebP via vite-imagetools (current `<Picture>` derives sibling URLs by extension swap; AVIF/WebP siblings are emitted to `attached_assets/` but Vite only bundles explicitly imported variants — graceful fallback to original works, but a build-time plugin would guarantee modern formats are served in production).
 
+### Audit fonctionnel #54 (mai 2026)
+- Typecheck web + API : ✅ propre.
+- Traductions FR/NL/EN : ✅ parité parfaite (63 clés communes).
+- Auth : ✅ toutes routes `/admin` derrière `adminAuth`, `/api/client` derrière `requireCouple`, espaces client/pro derrière Clerk `<ProtectedClient>` / `<ProtectedVendor>`.
+- Console JS : ✅ aucune erreur runtime persistante (l'ancienne "Picture is not defined" sur home.tsx a été résolue par HMR avant l'audit).
+- Fixes appliqués (risque faible) :
+  - `Footer.tsx` : téléphone `+32 XXX XX XX XX` masqué tant que placeholder (regex `/X{2,}/`), n'apparaît que quand un vrai numéro sera renseigné dans les 3 locales.
+  - `Footer.tsx` : 3 liens sociaux (Instagram/Facebook/TikTok) `href="#"` → `<span aria-disabled="true">` désactivés visuellement (border + opacity réduites) en attendant les URLs.
+  - `Footer.tsx` : "Guide complet" en dur → `t("nav.guide")` ; clé ajoutée FR/NL/EN.
+- Différé (couvert par tâches dédiées, **non corrigé ici**) :
+  - Liens Footer "Mentions légales" / "Politique de confidentialité" `to="#"` → tâche #58.
+  - `footer.made_by` "Site réalisé par Done. — madebydone.be" → tâche #56 (whitelabel).
+  - Sitemap statique manque `/lieux /realisations /shop /outils-* /guide /comparateur` + URL canonique sans `www` → tâche #55.
+  - Headers HTTP de production (CSP/HSTS) → tâche #57.
+  - Route `/comparateur` orpheline (pas dans nav, accessible via guide.tsx + lien direct) — comportement intentionnel, pas un bug.
+
 ## Environment Variables
 
 - `RESEND_API_KEY` — Required for contact form emails

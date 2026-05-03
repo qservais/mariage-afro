@@ -4,6 +4,8 @@ import logoCreme from "@assets/logo-mariage-affro-02.svg";
 
 export default function Footer() {
   const { t } = useTranslation();
+  const phone = t("footer.phone");
+  const phoneAvailable = !/X{2,}/.test(phone);
 
   return (
     <footer className="bg-wine-deep text-cream pt-24 pb-10 relative overflow-hidden">
@@ -60,7 +62,7 @@ export default function Footer() {
               <li><Link to="/a-propos" className="hover:text-gold transition-colors">{t("nav.about")}</Link></li>
               <li><Link to="/contact" className="hover:text-gold transition-colors">{t("nav.contact")}</Link></li>
               <li><Link to="/espace-client" className="hover:text-gold transition-colors">{t("nav.client_area")}</Link></li>
-              <li><Link to="/guide" className="hover:text-gold transition-colors">Guide complet</Link></li>
+              <li><Link to="/guide" className="hover:text-gold transition-colors">{t("nav.guide")}</Link></li>
             </ul>
           </div>
 
@@ -71,21 +73,23 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-cream/70 mb-8 font-light">
               <li>{t("footer.address")}</li>
               <li><a href={`mailto:${t("footer.email")}`} className="hover:text-gold transition-colors">{t("footer.email")}</a></li>
-              <li><a href={`tel:${t("footer.phone")}`} className="hover:text-gold transition-colors">{t("footer.phone")}</a></li>
+              {phoneAvailable && (
+                <li><a href={`tel:${phone.replace(/\s+/g, "")}`} className="hover:text-gold transition-colors">{phone}</a></li>
+              )}
             </ul>
             <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-gold mb-4">
               {t("footer.social_title")}
             </h4>
             <div className="flex space-x-3">
-              <a href="#" aria-label="Instagram" className="w-10 h-10 border border-cream/20 flex items-center justify-center hover:border-gold hover:text-gold transition-all">
+              <span aria-label="Instagram (bientôt disponible)" aria-disabled="true" className="w-10 h-10 border border-cream/10 flex items-center justify-center text-cream/30 cursor-not-allowed">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-              </a>
-              <a href="#" aria-label="Facebook" className="w-10 h-10 border border-cream/20 flex items-center justify-center hover:border-gold hover:text-gold transition-all">
+              </span>
+              <span aria-label="Facebook (bientôt disponible)" aria-disabled="true" className="w-10 h-10 border border-cream/10 flex items-center justify-center text-cream/30 cursor-not-allowed">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-              </a>
-              <a href="#" aria-label="TikTok" className="w-10 h-10 border border-cream/20 flex items-center justify-center hover:border-gold hover:text-gold transition-all">
+              </span>
+              <span aria-label="TikTok (bientôt disponible)" aria-disabled="true" className="w-10 h-10 border border-cream/10 flex items-center justify-center text-cream/30 cursor-not-allowed">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
-              </a>
+              </span>
             </div>
           </div>
         </div>
