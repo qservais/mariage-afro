@@ -320,7 +320,7 @@ export default function Home() {
           <motion.div {...fadeIn} className="text-center mt-10 md:mt-14">
             <Link
               to="/espace-client/login"
-              className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.25em] text-wine-deep hover:underline underline-offset-4 font-medium transition-colors"
+              className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.25em] text-wine-deep hover:text-gold-deep hover:underline underline-offset-4 font-medium transition-colors"
               data-testid="link-audience-existing-client"
             >
               <span dangerouslySetInnerHTML={{ __html: t("home.already_client") }} />

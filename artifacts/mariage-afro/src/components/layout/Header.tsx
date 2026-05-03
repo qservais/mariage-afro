@@ -143,7 +143,7 @@ export default function Header() {
                 onClick={() => changeLanguage("fr")}
                 aria-label="Français"
                 aria-current={i18n.language === "fr" ? "true" : undefined}
-                className={`hover:underline underline-offset-4 transition-colors ${i18n.language === "fr" ? "underline underline-offset-4 font-semibold" : ""}`}
+                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "fr" ? "text-gold underline underline-offset-4 font-semibold" : ""}`}
               >
                 FR
               </button>
@@ -152,7 +152,7 @@ export default function Header() {
                 onClick={() => changeLanguage("nl")}
                 aria-label="Nederlands"
                 aria-current={i18n.language === "nl" ? "true" : undefined}
-                className={`hover:underline underline-offset-4 transition-colors ${i18n.language === "nl" ? "underline underline-offset-4 font-semibold" : ""}`}
+                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "nl" ? "text-gold underline underline-offset-4 font-semibold" : ""}`}
               >
                 NL
               </button>
@@ -161,7 +161,7 @@ export default function Header() {
                 onClick={() => changeLanguage("en")}
                 aria-label="English"
                 aria-current={i18n.language === "en" ? "true" : undefined}
-                className={`hover:underline underline-offset-4 transition-colors ${i18n.language === "en" ? "underline underline-offset-4 font-semibold" : ""}`}
+                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "en" ? "text-gold underline underline-offset-4 font-semibold" : ""}`}
               >
                 EN
               </button>
@@ -169,7 +169,7 @@ export default function Header() {
 
             <Link
               to="/espace-client/login"
-              className={`hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium transition-colors hover:underline underline-offset-4 ${
+              className={`hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium transition-colors hover:text-gold hover:underline underline-offset-4 ${
                 isOverDark || isScrolled || mobileMenuOpen
                   ? "text-cream"
                   : "text-wine-deep"
