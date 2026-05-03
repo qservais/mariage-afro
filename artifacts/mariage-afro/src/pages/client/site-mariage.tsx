@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Globe, Eye, EyeOff, Plus, Trash2, ExternalLink, Loader2, Check, Search, Upload, X, Copy, QrCode } from "lucide-react";
 import QRCode from "qrcode";
+import { prepareImageForUpload, ACCEPTED_IMAGE_ATTR } from "@/lib/image-compress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -186,11 +187,15 @@ export default function SiteMariagePage() {
   }
 
   async function pickCover(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const raw = e.target.files?.[0];
+    if (!raw) return;
     setCoverError(null);
     setCoverUploading(true);
     try {
+      const { file, error } = await prepareImageForUpload(raw, {
+        maxWidth: 1920, maxHeight: 1280, quality: 0.82, mimeType: "image/jpeg",
+      });
+      if (error) { setCoverError(error); return; }
       const intent = await fetch("/api/storage/uploads/request-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -670,7 +675,7 @@ export default function SiteMariagePage() {
             <input
               ref={coverFileRef}
               type="file"
-              accept="image/*"
+              accept={ACCEPTED_IMAGE_ATTR}
               onChange={pickCover}
               className="hidden"
               data-testid="input-cover-file"

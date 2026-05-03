@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Loader2, Upload, X } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
+import { prepareImageForUpload, ACCEPTED_IMAGE_ATTR } from "@/lib/image-compress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -73,11 +74,15 @@ export default function VendorProfilePage() {
   });
 
   async function pickLogo(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const raw = e.target.files?.[0];
+    if (!raw) return;
     setLogoError(null);
     setLogoUploading(true);
     try {
+      const { file, error } = await prepareImageForUpload(raw, {
+        maxWidth: 600, maxHeight: 600, quality: 0.88, mimeType: "image/jpeg",
+      });
+      if (error) { setLogoError(error); return; }
       const intent = await fetch("/api/storage/uploads/request-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -139,7 +144,7 @@ export default function VendorProfilePage() {
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/*"
+                accept={ACCEPTED_IMAGE_ATTR}
                 onChange={pickLogo}
                 className="hidden"
                 data-testid="input-logo-file"
