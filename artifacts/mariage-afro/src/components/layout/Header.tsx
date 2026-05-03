@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, User, ArrowUpRight, Briefcase } from "lucide-react";
+import { Menu, X, User, ArrowUpRight, Briefcase, CalendarCheck2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoColor from "@assets/logo-mariage-affro-01.svg";
 
@@ -169,6 +169,20 @@ export default function Header() {
             </div>
 
             <Link
+              to="/contact#contact-form"
+              className={`hidden md:inline-flex items-center gap-2 px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-semibold border transition-colors ${
+                isOverDark || isScrolled || mobileMenuOpen
+                  ? "bg-gold text-wine-deep border-gold hover:bg-cream hover:border-cream"
+                  : "bg-wine-deep text-cream border-wine-deep hover:bg-gold hover:text-wine-deep hover:border-gold"
+              }`}
+              aria-label={t("header.cta_rdv")}
+              data-testid="link-header-rdv"
+            >
+              <CalendarCheck2 className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>{t("header.cta_rdv")}</span>
+            </Link>
+
+            <Link
               to="/espace-client/login"
               className={`hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium transition-colors hover:text-gold hover:underline underline-offset-4 ${
                 isOverDark || isScrolled || mobileMenuOpen
@@ -249,6 +263,25 @@ export default function Header() {
                   <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </Link>
               </div>
+            </motion.div>
+
+            {/* CTA RDV global — prioritaire en haut du menu mobile */}
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.15 }}
+              className="px-6 md:px-16 lg:px-32 pt-6 pb-4 md:pt-8 md:pb-6 border-b border-cream/10"
+            >
+              <Link
+                to="/contact#contact-form"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gold text-wine-deep border border-gold hover:bg-cream hover:border-cream transition-colors text-sm uppercase tracking-[0.25em] font-semibold"
+                aria-label={t("header.cta_rdv")}
+                data-testid="link-mobile-rdv"
+              >
+                <CalendarCheck2 className="w-4 h-4" aria-hidden="true" />
+                <span>{t("header.cta_rdv")}</span>
+              </Link>
             </motion.div>
 
             {/* Menu en 3 colonnes catégorisées : tout visible, jamais de scroll */}
