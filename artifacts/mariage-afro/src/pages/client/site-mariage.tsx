@@ -1,12 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Globe, Eye, EyeOff, Plus, Trash2, ExternalLink, Loader2, Check } from "lucide-react";
+import { Globe, Eye, EyeOff, Plus, Trash2, ExternalLink, Loader2, Check, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { clientFetch } from "@/lib/clientApi";
 import {
@@ -17,6 +24,7 @@ import {
   type WeddingTemplateId,
   type WeddingFontHeading,
 } from "@/lib/wedding-templates";
+import { WeddingSiteRenderer } from "@/components/wedding-site-renderer";
 
 interface WeddingWebsite {
   id: number;
@@ -131,6 +139,21 @@ export default function SiteMariagePage() {
 
   const currentTemplate: WeddingTemplateId = normalizeTemplate(site?.template);
   const templateBtnsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const [previewTemplate, setPreviewTemplate] = useState<WeddingTemplateId | null>(null);
+
+  const previewSite = {
+    slug: form.slug || "preview",
+    title: form.title || t("site_mariage.page_title_ph"),
+    welcomeMessage: form.welcomeMessage,
+    weddingDate: form.weddingDate || null,
+    venue: form.venue || null,
+    city: form.city || null,
+    programme,
+    rsvpEnabled: form.rsvpEnabled,
+    colorPrimary: form.colorPrimary || null,
+    colorBackground: form.colorBackground || null,
+    fontHeading: form.fontHeading || null,
+  };
 
   function onTemplateKeyDown(e: React.KeyboardEvent<HTMLButtonElement>, index: number) {
     const last = WEDDING_TEMPLATE_IDS.length - 1;
@@ -216,22 +239,10 @@ export default function SiteMariagePage() {
             const isSelected = currentTemplate === id;
             const isPending = templateMutation.isPending && templateMutation.variables === id;
             return (
-              <button
+              <div
                 key={id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                tabIndex={isSelected ? 0 : -1}
-                ref={(el) => { templateBtnsRef.current[idx] = el; }}
-                onKeyDown={(e) => onTemplateKeyDown(e, idx)}
-                disabled={templateMutation.isPending}
-                onClick={() => {
-                  if (!isSelected) templateMutation.mutate(id);
-                }}
-                data-testid={`template-card-${id}`}
-                data-selected={isSelected ? "true" : "false"}
                 className={[
-                  "relative text-left border bg-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                  "relative border bg-white transition-all",
                   isSelected
                     ? "border-primary ring-2 ring-primary/20"
                     : "border-border hover:border-primary/40",
@@ -248,22 +259,49 @@ export default function SiteMariagePage() {
                   </span>
                 )}
                 {isPending && (
-                  <span className="absolute inset-0 z-10 flex items-center justify-center bg-white/70">
+                  <span className="absolute inset-0 z-20 flex items-center justify-center bg-white/70">
                     <Loader2 className="w-5 h-5 animate-spin text-primary" />
                   </span>
                 )}
-                <div className="aspect-[3/2] w-full overflow-hidden bg-muted">
-                  <TemplateThumbnail id={id} className="w-full h-full" />
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  tabIndex={isSelected ? 0 : -1}
+                  ref={(el) => { templateBtnsRef.current[idx] = el; }}
+                  onKeyDown={(e) => onTemplateKeyDown(e, idx)}
+                  disabled={templateMutation.isPending}
+                  onClick={() => {
+                    if (!isSelected) templateMutation.mutate(id);
+                  }}
+                  data-testid={`template-card-${id}`}
+                  data-selected={isSelected ? "true" : "false"}
+                  className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  <div className="aspect-[3/2] w-full overflow-hidden bg-muted">
+                    <TemplateThumbnail id={id} className="w-full h-full" />
+                  </div>
+                  <div className="px-3 pt-3">
+                    <p className="text-sm font-semibold text-foreground">
+                      {t(`site_mariage.template.items.${id}.name`)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 leading-snug">
+                      {t(`site_mariage.template.items.${id}.desc`)}
+                    </p>
+                  </div>
+                </button>
+                <div className="px-3 pb-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewTemplate(id)}
+                    data-testid={`template-preview-${id}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  >
+                    <Search className="w-3.5 h-3.5" />
+                    {t("site_mariage.template.preview")}
+                  </button>
                 </div>
-                <div className="p-3">
-                  <p className="text-sm font-semibold text-foreground">
-                    {t(`site_mariage.template.items.${id}.name`)}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-snug">
-                    {t(`site_mariage.template.items.${id}.desc`)}
-                  </p>
-                </div>
-              </button>
+              </div>
             );
           })}
         </div>
@@ -385,6 +423,70 @@ export default function SiteMariagePage() {
           </div>
         </div>
       </div>
+
+      <Dialog
+        open={previewTemplate !== null}
+        onOpenChange={(open) => {
+          if (!open) setPreviewTemplate(null);
+        }}
+      >
+        <DialogContent
+          className="max-w-5xl w-[95vw] h-[90vh] p-0 gap-0 overflow-hidden flex flex-col rounded-none"
+          data-testid="template-preview-dialog"
+        >
+          <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
+            <DialogTitle className="text-base font-bold uppercase tracking-wider">
+              {previewTemplate
+                ? t("site_mariage.template.preview_title", {
+                    name: t(`site_mariage.template.items.${previewTemplate}.name`),
+                  })
+                : ""}
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              {t("site_mariage.template.preview_desc")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto bg-muted/40">
+            {previewTemplate && (
+              <WeddingSiteRenderer
+                site={previewSite}
+                template={previewTemplate}
+                preview
+              />
+            )}
+          </div>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 px-6 py-4 border-t border-border bg-white flex-shrink-0">
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-none"
+              onClick={() => setPreviewTemplate(null)}
+              data-testid="button-preview-close"
+            >
+              {t("site_mariage.template.close")}
+            </Button>
+            {previewTemplate && previewTemplate !== currentTemplate && (
+              <Button
+                type="button"
+                className="rounded-none bg-primary hover:bg-primary/90"
+                disabled={templateMutation.isPending}
+                onClick={() => {
+                  const target = previewTemplate;
+                  templateMutation.mutate(target, {
+                    onSuccess: () => setPreviewTemplate(null),
+                  });
+                }}
+                data-testid="button-preview-apply"
+              >
+                {templateMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : null}
+                {t("site_mariage.template.apply_this")}
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Publication status */}
       <div className="bg-white border border-border p-5 flex items-center justify-between">

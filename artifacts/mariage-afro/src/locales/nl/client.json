@@ -312,6 +312,11 @@
       "help": "Kies de visuele sfeer van uw publieke site. De wijziging wordt onmiddellijk toegepast.",
       "selected_badge": "Geselecteerd",
       "selected_toast": "Ontwerp toegepast op uw site",
+      "preview": "Voorbeeld",
+      "preview_title": "Voorbeeld — {{name}}",
+      "preview_desc": "Bekijk de weergave met uw gegevens. Niets wordt opgeslagen totdat u dit ontwerp toepast.",
+      "apply_this": "Dit ontwerp toepassen",
+      "close": "Sluiten",
       "items": {
         "royal-afro": {
           "name": "Royal Afro",

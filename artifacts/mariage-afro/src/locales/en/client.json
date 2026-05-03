@@ -312,6 +312,11 @@
       "help": "Choose the visual mood of your public site. Changes apply instantly.",
       "selected_badge": "Selected",
       "selected_toast": "Template applied to your site",
+      "preview": "Preview",
+      "preview_title": "Preview — {{name}}",
+      "preview_desc": "See the rendering with your data. Nothing is saved until you apply this template.",
+      "apply_this": "Apply this template",
+      "close": "Close",
       "items": {
         "royal-afro": {
           "name": "Royal Afro",

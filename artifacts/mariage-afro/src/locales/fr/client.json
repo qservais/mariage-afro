@@ -312,6 +312,11 @@
       "help": "Choisissez l'ambiance visuelle de votre site public. Le changement est appliqué immédiatement.",
       "selected_badge": "Sélectionnée",
       "selected_toast": "Maquette appliquée à votre site",
+      "preview": "Aperçu",
+      "preview_title": "Aperçu — {{name}}",
+      "preview_desc": "Visualisez le rendu avec vos données. Aucune modification n'est enregistrée tant que vous n'avez pas appliqué cette maquette.",
+      "apply_this": "Appliquer cette maquette",
+      "close": "Fermer",
       "items": {
         "royal-afro": {
           "name": "Royal Afro",
