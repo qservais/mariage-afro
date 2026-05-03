@@ -330,6 +330,21 @@
           "desc": "Vert profond et corail, énergie festive et solaire."
         }
       }
+    },
+    "customize": {
+      "title": "Personnaliser",
+      "help": "Ajustez la couleur d'accent, le fond et la police de titre. Laissez vide pour conserver la maquette par défaut.",
+      "color_primary": "Couleur d'accent",
+      "color_background": "Couleur de fond",
+      "font_heading": "Police de titre",
+      "use_default": "Par défaut",
+      "reset": "Réinitialiser",
+      "fonts": {
+        "default": "Maquette",
+        "serif": "Serif élégant",
+        "sans": "Sans-serif moderne",
+        "display": "Display classique"
+      }
     }
   },
   "onboarding": {

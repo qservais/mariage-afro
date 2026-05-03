@@ -17,6 +17,60 @@ export function normalizeTemplate(value: unknown): WeddingTemplateId {
     : DEFAULT_TEMPLATE;
 }
 
+export type WeddingFontHeading = "serif" | "sans" | "display";
+
+export const WEDDING_FONT_HEADINGS: WeddingFontHeading[] = ["serif", "sans", "display"];
+
+export const WEDDING_HEADING_FONT_STACKS: Record<WeddingFontHeading, string> = {
+  serif: "'Cormorant Garamond', serif",
+  sans: "'Montserrat', sans-serif",
+  display: "'Playfair Display', serif",
+};
+
+function isHexColor(v: unknown): v is string {
+  return typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v);
+}
+
+export interface WeddingPaletteOverrides {
+  colorPrimary?: string | null;
+  colorBackground?: string | null;
+  fontHeading?: string | null;
+}
+
+export function applyPaletteOverrides(
+  base: WeddingTemplatePalette,
+  overrides: WeddingPaletteOverrides | null | undefined,
+): WeddingTemplatePalette {
+  if (!overrides) return base;
+  const out: WeddingTemplatePalette = {
+    ...base,
+    hero: { ...base.hero },
+  };
+  if (isHexColor(overrides.colorPrimary)) {
+    const c = overrides.colorPrimary;
+    out.accent = c;
+    out.accentSoft = hexToRgba(c, 0.18);
+    out.divider = hexToRgba(c, 0.22);
+  }
+  if (isHexColor(overrides.colorBackground)) {
+    out.bg = overrides.colorBackground;
+  }
+  if (
+    typeof overrides.fontHeading === "string" &&
+    (WEDDING_FONT_HEADINGS as string[]).includes(overrides.fontHeading)
+  ) {
+    out.fontHeading = WEDDING_HEADING_FONT_STACKS[overrides.fontHeading as WeddingFontHeading];
+  }
+  return out;
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 export interface WeddingTemplatePalette {
   bg: string;
   surface: string;

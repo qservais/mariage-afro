@@ -6,6 +6,7 @@ import { MapPin, CalendarDays, Heart, Loader2, Clock } from "lucide-react";
 import {
   WEDDING_TEMPLATES,
   normalizeTemplate,
+  applyPaletteOverrides,
   type WeddingTemplateId,
   type WeddingTemplatePalette,
 } from "@/lib/wedding-templates";
@@ -20,6 +21,9 @@ interface WeddingWebsite {
   city: string | null;
   programme: { time: string; event: string }[];
   template?: string | null;
+  colorPrimary?: string | null;
+  colorBackground?: string | null;
+  fontHeading?: string | null;
   active: boolean;
   rsvpEnabled: boolean;
 }
@@ -89,7 +93,11 @@ export default function MariagePublicPage() {
     : null;
 
   const templateId: WeddingTemplateId = normalizeTemplate(site.template);
-  const palette = WEDDING_TEMPLATES[templateId];
+  const palette = applyPaletteOverrides(WEDDING_TEMPLATES[templateId], {
+    colorPrimary: site.colorPrimary,
+    colorBackground: site.colorBackground,
+    fontHeading: site.fontHeading,
+  });
   const layoutProps: LayoutProps = { site, slug: slug!, formattedDate, palette, t };
 
   const Layout =

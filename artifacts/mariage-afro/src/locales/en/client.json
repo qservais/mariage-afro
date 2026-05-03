@@ -330,6 +330,21 @@
           "desc": "Deep green and coral, festive sunny energy."
         }
       }
+    },
+    "customize": {
+      "title": "Customize",
+      "help": "Tweak the accent colour, background and heading font. Leave blank to keep the template default.",
+      "color_primary": "Accent colour",
+      "color_background": "Background colour",
+      "font_heading": "Heading font",
+      "use_default": "Default",
+      "reset": "Reset",
+      "fonts": {
+        "default": "Template",
+        "serif": "Elegant serif",
+        "sans": "Modern sans-serif",
+        "display": "Classic display"
+      }
     }
   },
   "onboarding": {

@@ -11,9 +11,11 @@ import { useToast } from "@/hooks/use-toast";
 import { clientFetch } from "@/lib/clientApi";
 import {
   WEDDING_TEMPLATE_IDS,
+  WEDDING_FONT_HEADINGS,
   TemplateThumbnail,
   normalizeTemplate,
   type WeddingTemplateId,
+  type WeddingFontHeading,
 } from "@/lib/wedding-templates";
 
 interface WeddingWebsite {
@@ -28,6 +30,9 @@ interface WeddingWebsite {
   programme: { time: string; event: string }[];
   coverImage: string | null;
   template: WeddingTemplateId | null;
+  colorPrimary: string | null;
+  colorBackground: string | null;
+  fontHeading: WeddingFontHeading | null;
   active: boolean;
   rsvpEnabled: boolean;
 }
@@ -53,6 +58,9 @@ export default function SiteMariagePage() {
     city: "",
     active: false,
     rsvpEnabled: true,
+    colorPrimary: "" as string,
+    colorBackground: "" as string,
+    fontHeading: "" as "" | WeddingFontHeading,
   });
   const [programme, setProgramme] = useState<{ time: string; event: string }[]>([]);
 
@@ -67,6 +75,9 @@ export default function SiteMariagePage() {
         city: site.city ?? "",
         active: site.active ?? false,
         rsvpEnabled: site.rsvpEnabled ?? true,
+        colorPrimary: site.colorPrimary ?? "",
+        colorBackground: site.colorBackground ?? "",
+        fontHeading: (site.fontHeading ?? "") as "" | WeddingFontHeading,
       });
       setProgramme(site.programme ?? []);
     }
@@ -76,7 +87,13 @@ export default function SiteMariagePage() {
     mutationFn: () =>
       clientFetch("/api/client/wedding-website", {
         method: "PATCH",
-        body: JSON.stringify({ ...form, programme }),
+        body: JSON.stringify({
+          ...form,
+          programme,
+          colorPrimary: form.colorPrimary || null,
+          colorBackground: form.colorBackground || null,
+          fontHeading: form.fontHeading || null,
+        }),
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["wedding-website"] });
@@ -249,6 +266,123 @@ export default function SiteMariagePage() {
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* Personnaliser */}
+      <div
+        className="bg-white border border-border p-6 space-y-5"
+        data-testid="customize-block"
+      >
+        <div>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
+            {t("site_mariage.customize.title")}
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            {t("site_mariage.customize.help")}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="colorPrimary">{t("site_mariage.customize.color_primary")}</Label>
+            <div className="flex items-center gap-2">
+              <input
+                id="colorPrimary"
+                type="color"
+                value={form.colorPrimary || "#68191e"}
+                onChange={(e) => setForm({ ...form, colorPrimary: e.target.value })}
+                className="h-10 w-14 border border-border bg-white cursor-pointer p-1"
+                data-testid="input-color-primary"
+              />
+              <Input
+                value={form.colorPrimary}
+                onChange={(e) => setForm({ ...form, colorPrimary: e.target.value })}
+                placeholder={t("site_mariage.customize.use_default")}
+                className="rounded-none flex-1"
+              />
+              {form.colorPrimary && (
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, colorPrimary: "" })}
+                  className="text-xs text-muted-foreground hover:text-foreground underline"
+                  data-testid="reset-color-primary"
+                >
+                  {t("site_mariage.customize.reset")}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="colorBackground">{t("site_mariage.customize.color_background")}</Label>
+            <div className="flex items-center gap-2">
+              <input
+                id="colorBackground"
+                type="color"
+                value={form.colorBackground || "#faf9f7"}
+                onChange={(e) => setForm({ ...form, colorBackground: e.target.value })}
+                className="h-10 w-14 border border-border bg-white cursor-pointer p-1"
+                data-testid="input-color-background"
+              />
+              <Input
+                value={form.colorBackground}
+                onChange={(e) => setForm({ ...form, colorBackground: e.target.value })}
+                placeholder={t("site_mariage.customize.use_default")}
+                className="rounded-none flex-1"
+              />
+              {form.colorBackground && (
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, colorBackground: "" })}
+                  className="text-xs text-muted-foreground hover:text-foreground underline"
+                  data-testid="reset-color-background"
+                >
+                  {t("site_mariage.customize.reset")}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{t("site_mariage.customize.font_heading")}</Label>
+          <div className="grid grid-cols-3 gap-2" role="radiogroup">
+            {(["", ...WEDDING_FONT_HEADINGS] as Array<"" | WeddingFontHeading>).map((font) => {
+              const isSelected = form.fontHeading === font;
+              const fontStack =
+                font === "serif"
+                  ? "'Cormorant Garamond', serif"
+                  : font === "sans"
+                    ? "'Montserrat', sans-serif"
+                    : font === "display"
+                      ? "'Playfair Display', serif"
+                      : undefined;
+              return (
+                <button
+                  key={font || "default"}
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  onClick={() => setForm({ ...form, fontHeading: font })}
+                  data-testid={`font-heading-${font || "default"}`}
+                  className={[
+                    "border p-3 text-left transition-colors",
+                    isSelected
+                      ? "border-primary ring-2 ring-primary/20"
+                      : "border-border hover:border-primary/40",
+                  ].join(" ")}
+                >
+                  <p className="text-lg" style={{ fontFamily: fontStack }}>
+                    Aa
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t(`site_mariage.customize.fonts.${font || "default"}`)}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 

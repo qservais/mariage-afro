@@ -330,6 +330,21 @@
           "desc": "Diep groen en koraal, feestelijke en zonnige energie."
         }
       }
+    },
+    "customize": {
+      "title": "Personaliseren",
+      "help": "Pas de accentkleur, achtergrond en titellettertype aan. Laat leeg om de standaard sjabloon te behouden.",
+      "color_primary": "Accentkleur",
+      "color_background": "Achtergrondkleur",
+      "font_heading": "Titellettertype",
+      "use_default": "Standaard",
+      "reset": "Resetten",
+      "fonts": {
+        "default": "Sjabloon",
+        "serif": "Elegante serif",
+        "sans": "Moderne sans-serif",
+        "display": "Klassieke display"
+      }
     }
   },
   "onboarding": {

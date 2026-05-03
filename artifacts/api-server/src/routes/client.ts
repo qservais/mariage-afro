@@ -796,6 +796,9 @@ const websiteSchema = z.object({
   city: z.string().max(100).optional(),
   programme: z.array(z.object({ time: z.string(), event: z.string() })).optional(),
   template: z.enum(["royal-afro", "boheme", "moderne", "tropical"]).optional(),
+  colorPrimary: z.string().regex(/^#[0-9a-fA-F]{6}$/).nullable().optional(),
+  colorBackground: z.string().regex(/^#[0-9a-fA-F]{6}$/).nullable().optional(),
+  fontHeading: z.enum(["serif", "sans", "display"]).nullable().optional(),
   active: z.boolean().optional(),
   rsvpEnabled: z.boolean().optional(),
 });
