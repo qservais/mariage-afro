@@ -137,6 +137,12 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **robots.txt** : ajout `Disallow: /_replit` et `/__replco` (chemins internes plateforme) en plus de `/mood-board/shared/` et `/mariage/`.
 - **Vérifs finales** : typecheck propre, console sans erreur, aucun `http://` en dur, aucune occurrence restante de l'apex `https://mariage-afro.com` (sans `www`) hors emails `info@`/`noreply@`.
 
+### Sécurité HTTP #57 (mai 2026)
+- **API server** (`artifacts/api-server/src/app.ts`) : middleware `helmet` global avec CSP stricte (default-src 'none', img-src self+data, connect-src self), HSTS 1 an avec `includeSubDomains; preload` (gated `NODE_ENV === "production"`), Referrer-Policy `strict-origin-when-cross-origin`, X-Frame-Options DENY, X-Content-Type-Options nosniff, Cross-Origin-Opener-Policy same-origin, Cross-Origin-Resource-Policy cross-origin (l'API est consommée par le SPA depuis un autre origin), Permissions-Policy custom (`camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()`). En dev, CSP en mode Report-Only pour ne pas bloquer le HMR ou Clerk dev keys.
+- **App web** (`artifacts/mariage-afro/index.html`) : meta `Content-Security-Policy` (servie en statique, pas d'Express devant). Allowlist : Clerk (`*.clerk.accounts.dev`, `*.clerk.com`, `clerk-telemetry.com`, `images.clerk.dev`, `img.clerk.com`), Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`), object storage (`storage.googleapis.com`, `*.googleusercontent.com`), tuiles OSM (`*.tile.openstreetmap.org`, `nominatim.openstreetmap.org`), Cloudflare Turnstile (`challenges.cloudflare.com`), YouTube/Vimeo iframes, jsdelivr (Tailwind v4 CDN dev). Inline styles autorisés (Tailwind v4 + Radix popovers). Inline scripts autorisés (JSON-LD blocks). Meta `X-Content-Type-Options: nosniff` et `referrer: strict-origin-when-cross-origin` également posés. `frame-ancestors` ne fonctionne pas en meta — la protection clickjacking est appliquée par le proxy Replit edge en prod.
+- **Vérifié** : `curl -I http://localhost:8080/api/healthz` retourne tous les headers helmet attendus. Pages publiques (home, plateforme), Espace Client login Clerk : zéro violation CSP en console.
+- **Hors scope** : rate limiting (à traiter séparément), CSRF (Clerk gère pour les routes protégées), audit XSS profond.
+
 ### Audit fonctionnel #54 (mai 2026)
 - Typecheck web + API : ✅ propre.
 - Traductions FR/NL/EN : ✅ parité parfaite (63 clés communes).
