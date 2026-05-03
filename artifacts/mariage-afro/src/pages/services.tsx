@@ -92,6 +92,7 @@ export default function Services() {
               { num: 5, to: "/plateforme" },
               { num: 6, to: "/espace-client" },
               { num: 7, to: "/shop" },
+              { num: 4, to: "#destination-wedding", spanFull: true },
             ].map((item, idx) => {
               const benefits = t(`services.item${item.num}_benefits`, { returnObjects: true, defaultValue: [] }) as string[];
               return (
@@ -99,7 +100,7 @@ export default function Services() {
                   key={item.num}
                   {...fadeIn}
                   transition={{ delay: idx * 0.08 }}
-                  className="bg-cream p-10 md:p-12 flex flex-col items-start"
+                  className={`bg-cream p-10 md:p-12 flex flex-col items-start ${item.spanFull ? "md:col-span-2 lg:col-span-3" : ""}`}
                 >
                   <span className="font-display text-6xl text-gold-deep mb-6 leading-none">{String(idx + 1).padStart(2, "0")}</span>
                   <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{t(`services.item${item.num}_title`)}</h3>
@@ -118,9 +119,15 @@ export default function Services() {
                     </ul>
                   )}
                   {!(Array.isArray(benefits) && benefits.length > 0) && <div className="flex-grow"></div>}
-                  <Link to={item.to} className="btn-editorial-compact w-full justify-center" data-testid={`link-service-${item.num}`}>
-                    {t(`services.item${item.num}_cta`)}
-                  </Link>
+                  {item.to.startsWith("#") ? (
+                    <a href={item.to} className="btn-editorial-compact w-full justify-center" data-testid={`link-service-${item.num}`}>
+                      {t(`services.item${item.num}_cta`)}
+                    </a>
+                  ) : (
+                    <Link to={item.to} className="btn-editorial-compact w-full justify-center" data-testid={`link-service-${item.num}`}>
+                      {t(`services.item${item.num}_cta`)}
+                    </Link>
+                  )}
                 </motion.div>
               );
             })}
@@ -129,7 +136,7 @@ export default function Services() {
       </section>
 
       {/* Destination Wedding — Featured 4th Service */}
-      <section className="py-28 md:py-40 bg-wine-deep text-cream relative overflow-hidden">
+      <section id="destination-wedding" className="py-28 md:py-40 bg-wine-deep text-cream relative overflow-hidden scroll-mt-24">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
           style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
         />

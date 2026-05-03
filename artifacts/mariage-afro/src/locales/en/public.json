@@ -65,7 +65,12 @@
     "item3_cta": "Learn more",
     "item4_title": "Destination Wedding",
     "item4_desc": "Your dream wedding has no borders. We organize exceptional Afro and mixed weddings internationally: Morocco, Senegal, Ivory Coast, Portugal and beyond.",
-    "item4_cta": "Learn more",
+    "item4_cta": "Discover the destinations",
+    "item4_benefits": [
+      "Morocco, Senegal, Ivory Coast, Portugal",
+      "Local coordination & guest logistics",
+      "Traditional & modern ceremonies"
+    ],
     "item5_title": "Wedding Platform",
     "item5_desc": "Pilot every detail of your wedding from your dashboard: budget, guests, planning, vendors and day-of coordination — all in one secure space.",
     "item5_cta": "Discover the platform",

@@ -65,7 +65,12 @@
     "item3_cta": "Meer weten",
     "item4_title": "Destination Wedding",
     "item4_desc": "Jullie droombruiloft kent geen grenzen. Wij organiseren uitzonderlijke Afro en gemengde bruiloften internationaal: Marokko, Senegal, Ivoorkust, Portugal en nog veel meer.",
-    "item4_cta": "Meer weten",
+    "item4_cta": "Ontdek de bestemmingen",
+    "item4_benefits": [
+      "Marokko, Senegal, Ivoorkust, Portugal",
+      "Lokale coördinatie en gastenlogistiek",
+      "Traditionele & moderne ceremonies"
+    ],
     "item5_title": "Wedding Platform",
     "item5_desc": "Stuur elk detail van jullie bruiloft vanuit jullie dashboard: budget, gasten, planning, leveranciers en coördinatie van de Dag Zelf, samengebracht in één beveiligde ruimte.",
     "item5_cta": "Ontdek het platform",

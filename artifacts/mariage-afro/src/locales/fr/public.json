@@ -65,7 +65,12 @@
     "item3_cta": "En savoir plus",
     "item4_title": "Destination Wedding",
     "item4_desc": "Votre mariage de rêve n'a pas de frontières. Nous organisons des mariages afro et mixtes d'exception à l'international : Maroc, Sénégal, Côte d'Ivoire, Portugal et bien plus encore.",
-    "item4_cta": "En savoir plus",
+    "item4_cta": "Découvrir les destinations",
+    "item4_benefits": [
+      "Maroc, Sénégal, Côte d'Ivoire, Portugal",
+      "Coordination locale et logistique invités",
+      "Cérémonies traditionnelles & modernes"
+    ],
     "item5_title": "Wedding Platform",
     "item5_desc": "Pilotez chaque détail de votre mariage depuis votre tableau de bord : budget, invités, planning, prestataires et coordination du Jour J réunis dans un seul espace sécurisé.",
     "item5_cta": "Découvrir la plateforme",
