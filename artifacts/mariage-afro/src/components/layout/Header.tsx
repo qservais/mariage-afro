@@ -88,6 +88,12 @@ export default function Header() {
     return location === to || location.startsWith(to + "/");
   };
 
+  // Hover gold accessible : sur header dark/scrolled/menu, gold clair (#c9a96e
+  // contraste ≥ 7 sur wine-deep). Sur header cream-translucide, gold clair
+  // tombe à 2.06 — on bascule sur gold-deep (#8a6d3b, ratio 4.6 sur cream).
+  const goldHover =
+    isOverDark || isScrolled || mobileMenuOpen ? "hover:text-gold" : "hover:text-gold-deep";
+
   return (
     <>
       {/* Top Header — minimal, logo centered, hamburger top-left */}
@@ -144,7 +150,7 @@ export default function Header() {
                 onClick={() => changeLanguage("fr")}
                 aria-label="Français"
                 aria-current={i18n.language === "fr" ? "true" : undefined}
-                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "fr" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
+                className={`${goldHover} hover:underline underline-offset-4 transition-colors ${i18n.language === "fr" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
               >
                 FR
               </button>
@@ -153,7 +159,7 @@ export default function Header() {
                 onClick={() => changeLanguage("nl")}
                 aria-label="Nederlands"
                 aria-current={i18n.language === "nl" ? "true" : undefined}
-                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "nl" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
+                className={`${goldHover} hover:underline underline-offset-4 transition-colors ${i18n.language === "nl" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
               >
                 NL
               </button>
@@ -162,7 +168,7 @@ export default function Header() {
                 onClick={() => changeLanguage("en")}
                 aria-label="English"
                 aria-current={i18n.language === "en" ? "true" : undefined}
-                className={`hover:text-gold hover:underline underline-offset-4 transition-colors ${i18n.language === "en" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
+                className={`${goldHover} hover:underline underline-offset-4 transition-colors ${i18n.language === "en" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
               >
                 EN
               </button>
@@ -184,7 +190,7 @@ export default function Header() {
 
             <Link
               to="/espace-client/login"
-              className={`hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium transition-colors hover:text-gold hover:underline underline-offset-4 ${
+              className={`hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium transition-colors ${goldHover} hover:underline underline-offset-4 ${
                 isOverDark || isScrolled || mobileMenuOpen
                   ? "text-cream"
                   : "text-wine-deep"
@@ -209,8 +215,8 @@ export default function Header() {
             <Link
               key={link.to}
               to={link.to}
-              className={`vertical-text-up transition-colors hover:text-gold ${
-                isOverDark ? "text-cream/70" : "text-wine-deep/70"
+              className={`vertical-text-up transition-colors ${
+                isOverDark ? "text-cream/70 hover:text-gold" : "text-wine-deep/70 hover:text-gold-deep"
               }`}
             >
               {link.label}
