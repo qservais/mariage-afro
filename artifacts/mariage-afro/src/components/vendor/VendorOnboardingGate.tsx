@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/react";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
-import { Briefcase } from "lucide-react";
+import { Briefcase, Upload } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import {
   FormShell,
@@ -48,13 +48,29 @@ const CATEGORY_VALUES = [
   "Autre",
 ] as const;
 
+const REGION_KEYS = ["bruxelles", "wallonie", "flandre", "luxembourg"] as const;
+const PRICE_KEYS = ["tier_1", "tier_2", "tier_3", "tier_4"] as const;
+const SPECIALTY_KEYS = [
+  "afro",
+  "mixte",
+  "traditionnel",
+  "religieux",
+  "destination",
+  "luxe",
+  "intime",
+  "grand_format",
+] as const;
+
 interface VendorValues extends Record<string, unknown> {
   businessName: string;
   contactName: string;
   email: string;
   phone: string;
   category: string;
-  city: string;
+  regions: string[];
+  priceRange: string;
+  specialties: string[];
+  photoPath: string;
   website: string;
   description: string;
 }
@@ -72,7 +88,10 @@ export default function VendorOnboardingGate({ account, children }: Props) {
     email: "",
     phone: "",
     category: CATEGORY_VALUES[0],
-    city: "",
+    regions: [],
+    priceRange: "",
+    specialties: [],
+    photoPath: "",
     website: "",
     description: "",
   });
@@ -80,16 +99,17 @@ export default function VendorOnboardingGate({ account, children }: Props) {
 
   useEffect(() => {
     if (!account) return;
-    setInitialValues({
+    setInitialValues((prev) => ({
+      ...prev,
       businessName: account.businessName || "",
       contactName: account.contactName || user?.fullName || "",
       email: account.email || user?.primaryEmailAddress?.emailAddress || "",
       phone: account.phone || "",
       category: account.category || CATEGORY_VALUES[0],
-      city: account.city || "",
+      regions: account.city ? account.city.split(",").map((s) => s.trim()).filter(Boolean) : [],
       website: account.website || "",
       description: account.description || "",
-    });
+    }));
     setReady(true);
   }, [account, user]);
 
@@ -108,6 +128,18 @@ export default function VendorOnboardingGate({ account, children }: Props) {
     value: v,
     label: t(`vendor.onboarding.categories.${v}`, { defaultValue: v }),
   }));
+  const regionOptions = REGION_KEYS.map((k) => ({
+    value: k,
+    label: t(`vendor.onboarding.regions.${k}`),
+  }));
+  const priceOptions = PRICE_KEYS.map((k) => ({
+    value: k,
+    label: t(`vendor.onboarding.price_options.${k}`),
+  }));
+  const specialtyOptions = SPECIALTY_KEYS.map((k) => ({
+    value: k,
+    label: t(`vendor.onboarding.specialty_options.${k}`),
+  }));
 
   const steps = useMemo<StepDefinition<VendorValues>[]>(
     () => [
@@ -116,34 +148,21 @@ export default function VendorOnboardingGate({ account, children }: Props) {
         title: t("vendor.onboarding.steps.s1_title"),
         description: t("vendor.onboarding.steps.s1_desc"),
         schema: z.object({
-          businessName: z
-            .string()
-            .min(2, t("kit.errors.name_required", { ns: "forms" })),
-        }),
-        content: ({ values, setValue, errors }) => (
-          <TextField
-            name="businessName"
-            label={t("vendor.onboarding.business_name")}
-            required
-            value={values.businessName}
-            onChange={(e) => setValue("businessName", e.target.value)}
-            error={errors.businessName}
-            data-testid="input-vendor-business-name"
-          />
-        ),
-      },
-      {
-        id: "contact",
-        title: t("vendor.onboarding.steps.s2_title"),
-        description: t("vendor.onboarding.steps.s2_desc"),
-        schema: z.object({
-          contactName: z
-            .string()
-            .min(2, t("kit.errors.name_required", { ns: "forms" })),
+          businessName: z.string().min(2, t("kit.errors.name_required", { ns: "forms" })),
+          contactName: z.string().min(2, t("kit.errors.name_required", { ns: "forms" })),
           email: z.string().email(t("kit.errors.email_invalid", { ns: "forms" })),
         }),
         content: ({ values, setValue, errors }) => (
           <FormFieldGroup columns={2}>
+            <TextField
+              name="businessName"
+              label={t("vendor.onboarding.business_name")}
+              required
+              value={values.businessName}
+              onChange={(e) => setValue("businessName", e.target.value)}
+              error={errors.businessName}
+              data-testid="input-vendor-business-name"
+            />
             <TextField
               name="contactName"
               label={t("vendor.onboarding.contact_name")}
@@ -163,17 +182,22 @@ export default function VendorOnboardingGate({ account, children }: Props) {
               error={errors.email}
               data-testid="input-vendor-email"
             />
+            <PhoneField
+              name="phone"
+              label={t("vendor.onboarding.phone")}
+              value={values.phone}
+              onChange={(e) => setValue("phone", e.target.value)}
+              data-testid="input-vendor-phone"
+            />
           </FormFieldGroup>
         ),
       },
       {
         id: "category",
-        title: t("vendor.onboarding.steps.s3_title"),
-        description: t("vendor.onboarding.steps.s3_desc"),
+        title: t("vendor.onboarding.steps.s2_title"),
+        description: t("vendor.onboarding.steps.s2_desc"),
         schema: z.object({
-          category: z
-            .string()
-            .min(1, t("kit.errors.type_required", { ns: "forms" })),
+          category: z.string().min(1, t("kit.errors.type_required", { ns: "forms" })),
         }),
         content: ({ values, setValue, errors }) => (
           <SelectableCardGroup
@@ -190,46 +214,59 @@ export default function VendorOnboardingGate({ account, children }: Props) {
         ),
       },
       {
-        id: "location",
-        title: t("vendor.onboarding.steps.s4_title"),
-        description: t("vendor.onboarding.steps.s4_desc"),
+        id: "regions",
+        title: t("vendor.onboarding.steps.s3_title"),
+        description: t("vendor.onboarding.steps.s3_desc"),
         schema: z.object({
-          city: z.string().min(2, t("kit.errors.name_required", { ns: "forms" })),
+          regions: z.array(z.string()).min(1, t("kit.errors.type_required", { ns: "forms" })),
         }),
         content: ({ values, setValue, errors }) => (
-          <FormFieldGroup columns={2}>
-            <TextField
-              name="city"
-              label={t("vendor.onboarding.city")}
-              required
-              value={values.city}
-              onChange={(e) => setValue("city", e.target.value)}
-              error={errors.city}
-              data-testid="input-vendor-city"
-            />
-            <PhoneField
-              name="phone"
-              label={t("vendor.onboarding.phone")}
-              value={values.phone}
-              onChange={(e) => setValue("phone", e.target.value)}
-              data-testid="input-vendor-phone"
-            />
-          </FormFieldGroup>
+          <SelectableCardGroup
+            name="regions"
+            multiple
+            value={values.regions}
+            onChange={(v) => setValue("regions", v as string[])}
+            options={regionOptions}
+            columns={2}
+            label={t("vendor.onboarding.regions_label")}
+            required
+            error={errors.regions as string | undefined}
+            data-testid="cards-vendor-regions"
+          />
         ),
       },
       {
-        id: "online",
+        id: "price",
+        title: t("vendor.onboarding.steps.s4_title"),
+        description: t("vendor.onboarding.steps.s4_desc"),
+        optional: true,
+        content: ({ values, setValue }) => (
+          <SelectableCardGroup
+            name="priceRange"
+            value={values.priceRange || null}
+            onChange={(v) => setValue("priceRange", v as string)}
+            options={priceOptions}
+            columns={2}
+            label={t("vendor.onboarding.price_range_label")}
+            data-testid="cards-vendor-price"
+          />
+        ),
+      },
+      {
+        id: "specialties",
         title: t("vendor.onboarding.steps.s5_title"),
         description: t("vendor.onboarding.steps.s5_desc"),
         optional: true,
         content: ({ values, setValue }) => (
-          <TextField
-            name="website"
-            label={t("vendor.onboarding.website")}
-            placeholder="https://"
-            value={values.website}
-            onChange={(e) => setValue("website", e.target.value)}
-            data-testid="input-vendor-website"
+          <SelectableCardGroup
+            name="specialties"
+            multiple
+            value={values.specialties}
+            onChange={(v) => setValue("specialties", v as string[])}
+            options={specialtyOptions}
+            columns={2}
+            label={t("vendor.onboarding.specialties_label")}
+            data-testid="cards-vendor-specialties"
           />
         ),
       },
@@ -238,15 +275,28 @@ export default function VendorOnboardingGate({ account, children }: Props) {
         title: t("vendor.onboarding.steps.s6_title"),
         description: t("vendor.onboarding.steps.s6_desc"),
         content: ({ values, setValue }) => (
-          <div className="space-y-5">
+          <div className="space-y-6">
+            <PhotoUploadField
+              value={values.photoPath}
+              onChange={(p) => setValue("photoPath", p)}
+            />
+            <TextField
+              name="website"
+              label={t("vendor.onboarding.website")}
+              placeholder="https://"
+              value={values.website}
+              onChange={(e) => setValue("website", e.target.value)}
+              data-testid="input-vendor-website"
+            />
             <TextareaField
               name="description"
               label={t("vendor.onboarding.description")}
-              rows={6}
+              rows={5}
               value={values.description}
               onChange={(e) => setValue("description", e.target.value)}
               data-testid="textarea-vendor-description"
             />
+            <SummaryBlock values={values} options={{ categoryOptions, regionOptions, priceOptions, specialtyOptions }} />
             <div className="bg-cream border border-gold/30 px-4 py-3 text-xs text-wine-deep/75 font-light leading-relaxed">
               {t("vendor.onboarding.review_notice")}
             </div>
@@ -254,7 +304,7 @@ export default function VendorOnboardingGate({ account, children }: Props) {
         ),
       },
     ],
-    [t, categoryOptions],
+    [t, categoryOptions, regionOptions, priceOptions, specialtyOptions],
   );
 
   if (!needsOnboarding) return <>{children}</>;
@@ -290,6 +340,18 @@ export default function VendorOnboardingGate({ account, children }: Props) {
             }}
             onSubmit={(v) =>
               new Promise<void>((resolve, reject) => {
+                const cityField = v.regions.length > 0
+                  ? v.regions
+                      .map((r) => t(`vendor.onboarding.regions.${r}`, { defaultValue: r }))
+                      .join(", ")
+                  : "Belgique";
+                const enrichedDescription = [
+                  v.description,
+                  v.priceRange ? `\n\n${t("vendor.onboarding.summary_price")}: ${t(`vendor.onboarding.price_options.${v.priceRange}`)}` : "",
+                  v.specialties.length > 0
+                    ? `\n${t("vendor.onboarding.summary_specialties")}: ${v.specialties.map((s) => t(`vendor.onboarding.specialty_options.${s}`)).join(", ")}`
+                    : "",
+                ].join("");
                 save.mutate(
                   {
                     businessName: v.businessName,
@@ -297,13 +359,18 @@ export default function VendorOnboardingGate({ account, children }: Props) {
                     email: v.email,
                     phone: v.phone || null,
                     category: v.category,
-                    city: v.city,
+                    city: cityField,
                     website: v.website || null,
-                    description: v.description,
+                    description: enrichedDescription,
                     locale,
                   },
                   { onSuccess: () => resolve(), onError: (err) => reject(err) },
                 );
+                try {
+                  if (v.photoPath) {
+                    localStorage.setItem("vendor:pending_photo", v.photoPath);
+                  }
+                } catch {}
               })
             }
             data-testid="vendor-onboarding-stepper"
@@ -318,6 +385,136 @@ export default function VendorOnboardingGate({ account, children }: Props) {
           )}
         </FormShell>
       </div>
+    </div>
+  );
+}
+
+function PhotoUploadField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (path: string) => void;
+}) {
+  const { t } = useTranslation();
+  const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function pick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setErr(null);
+    try {
+      const intent = await fetch("/api/storage/uploads/request-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, contentType: file.type }),
+      });
+      if (!intent.ok) throw new Error(`HTTP ${intent.status}`);
+      const { uploadURL, objectPath } = await intent.json();
+      const put = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!put.ok) throw new Error("Upload failed");
+      onChange(objectPath);
+      setPreviewUrl(URL.createObjectURL(file));
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-3" data-testid="vendor-photo-upload">
+      <label className="block text-[11px] uppercase tracking-[0.18em] text-wine-deep/60 font-medium">
+        {t("vendor.onboarding.photo_label")}
+      </label>
+      <div className="flex items-center gap-4">
+        {previewUrl ? (
+          <img
+            src={previewUrl}
+            alt=""
+            className="w-20 h-20 object-cover border border-wine-deep/15"
+            data-testid="vendor-photo-preview"
+          />
+        ) : (
+          <div className="w-20 h-20 bg-cream border border-dashed border-wine-deep/20 flex items-center justify-center">
+            <Upload className="w-5 h-5 text-wine-deep/40" />
+          </div>
+        )}
+        <label className="inline-flex items-center gap-2 px-4 h-10 border border-wine-deep text-wine-deep cursor-pointer hover:bg-wine-deep hover:text-cream transition-colors uppercase tracking-[0.18em] text-[11px] font-medium">
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={pick}
+            className="sr-only"
+            data-testid="vendor-photo-input"
+          />
+          {value ? t("vendor.onboarding.photo_change") : t("vendor.onboarding.photo_choose")}
+        </label>
+        {uploading && (
+          <span className="text-xs text-wine-deep/60" data-testid="vendor-photo-uploading">
+            {t("vendor.onboarding.photo_uploading")}
+          </span>
+        )}
+        {value && !uploading && (
+          <span className="text-xs text-gold-deep" data-testid="vendor-photo-uploaded">
+            {t("vendor.onboarding.photo_uploaded")}
+          </span>
+        )}
+      </div>
+      {err && <p className="text-xs text-red-700">{err}</p>}
+      <p className="text-[11px] text-wine-deep/55 font-light">
+        {t("vendor.onboarding.photo_help")} · {t("vendor.onboarding.photo_skip")}
+      </p>
+    </div>
+  );
+}
+
+function SummaryBlock({
+  values,
+  options,
+}: {
+  values: VendorValues;
+  options: {
+    categoryOptions: { value: string; label: string }[];
+    regionOptions: { value: string; label: string }[];
+    priceOptions: { value: string; label: string }[];
+    specialtyOptions: { value: string; label: string }[];
+  };
+}) {
+  const { t } = useTranslation();
+  const find = (opts: { value: string; label: string }[], v: string) =>
+    opts.find((o) => o.value === v)?.label ?? "—";
+  const findMulti = (opts: { value: string; label: string }[], arr: string[]) =>
+    arr.length === 0 ? "—" : arr.map((v) => find(opts, v)).join(" · ");
+
+  return (
+    <dl
+      className="bg-cream border border-wine-deep/10 p-5 space-y-2 text-sm"
+      data-testid="vendor-onboarding-summary"
+    >
+      <Row label={t("vendor.onboarding.summary_business")} value={values.businessName} />
+      <Row label={t("vendor.onboarding.summary_category")} value={find(options.categoryOptions, values.category)} />
+      <Row label={t("vendor.onboarding.summary_regions")} value={findMulti(options.regionOptions, values.regions)} />
+      <Row label={t("vendor.onboarding.summary_price")} value={values.priceRange ? find(options.priceOptions, values.priceRange) : "—"} />
+      <Row label={t("vendor.onboarding.summary_specialties")} value={findMulti(options.specialtyOptions, values.specialties)} />
+    </dl>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col">
+      <dt className="text-[11px] uppercase tracking-[0.18em] text-wine-deep/55 font-medium">
+        {label}
+      </dt>
+      <dd className="text-wine-deep font-light">{value || "—"}</dd>
     </div>
   );
 }

@@ -319,23 +319,50 @@
     "saving": "Saving…",
     "submit": "Get started",
     "steps": {
-      "s1_title": "Welcome",
-      "s1_desc": "A few quick questions to personalize your space.",
-      "s2_title": "You",
-      "s2_desc": "How would you like to be addressed?",
-      "s3_title": "Your partner",
-      "s3_desc": "Optional — you can complete this later.",
-      "s4_title": "Your date",
-      "s4_desc": "Estimated — adjustable anytime.",
-      "s5_title": "Summary",
-      "s5_desc": "Almost there, let's review together."
+      "s1_title": "Your first names",
+      "s1_desc": "To personalize your private space.",
+      "s2_title": "Wedding date",
+      "s2_desc": "Estimated — adjustable anytime.",
+      "s3_title": "Type & ambiance",
+      "s3_desc": "Help us understand your vision.",
+      "s4_title": "Where are you at?",
+      "s4_desc": "Current stage of your planning.",
+      "s5_title": "Target budget",
+      "s5_desc": "Indicative — guides our recommendations."
     },
     "welcome_lead": "Welcome to your private space.",
     "welcome_body": "In 5 steps we personalize your dashboard so everything is ready for the big day.",
     "summary_partner1": "You",
     "summary_partner2": "Partner",
     "summary_partner2_empty": "To be completed later",
-    "summary_date": "Estimated date"
+    "summary_date": "Estimated date",
+    "wedding_type_label": "Wedding type",
+    "ambiance_label": "Desired ambiance",
+    "stage_label": "Current stage",
+    "budget_label": "Budget range",
+    "skip": "Skip this step",
+    "summary_type": "Type & ambiance",
+    "summary_stage": "Stage",
+    "summary_budget": "Budget",
+    "ambiance_options": {
+      "chic_intime": "Chic & intimate",
+      "grand_celebration": "Grand celebration",
+      "traditionnel": "Traditional & authentic",
+      "moderne_mixte": "Modern & mixed",
+      "non_decide": "Not decided yet"
+    },
+    "stage_options": {
+      "tres_debut": "Just starting — exploring",
+      "en_cours": "Actively planning",
+      "finalisation": "Wrapping up — final details"
+    },
+    "budget_options": {
+      "under_15k": "< €15,000",
+      "15k_30k": "€15,000 – €30,000",
+      "30k_50k": "€30,000 – €50,000",
+      "over_50k": "> €50,000",
+      "undecided": "Not decided yet"
+    }
   },
   "mariage_public": {
     "cagnotte_link": "See our wedding fund"

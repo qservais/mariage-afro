@@ -54,22 +54,22 @@
       "city": "Ville",
       "website": "Site web",
       "description": "Présentation",
-      "review_notice": "Votre fiche sera examinée par notre équipe avant publication. Vous pouvez compléter votre profil et galerie en attendant.",
+      "review_notice": "Votre fiche sera examinée par notre équipe avant publication.",
       "submit": "Créer ma fiche",
       "saving": "Enregistrement…",
       "steps": {
         "s1_title": "Votre entreprise",
-        "s1_desc": "Le nom qui apparaîtra dans la marketplace.",
-        "s2_title": "Contact principal",
-        "s2_desc": "Pour échanger avec notre équipe et les couples.",
-        "s3_title": "Catégorie",
-        "s3_desc": "Choisissez votre spécialité principale.",
-        "s4_title": "Localisation",
-        "s4_desc": "Où êtes-vous basé(e) ?",
-        "s5_title": "Présence en ligne",
-        "s5_desc": "Optionnel mais fortement recommandé.",
-        "s6_title": "Présentation",
-        "s6_desc": "Quelques lignes pour séduire les couples."
+        "s1_desc": "Identité et contact principal.",
+        "s2_title": "Catégorie",
+        "s2_desc": "Choisissez votre spécialité principale.",
+        "s3_title": "Zone d'intervention",
+        "s3_desc": "Régions où vous opérez (multi-sélection).",
+        "s4_title": "Gamme de prix",
+        "s4_desc": "Aidez les couples à se situer.",
+        "s5_title": "Spécialités",
+        "s5_desc": "Quels univers/styles maîtrisez-vous ?",
+        "s6_title": "Photo & présentation",
+        "s6_desc": "Une photo et quelques lignes pour séduire."
       },
       "categories": {
         "Photographie": "Photographie",
@@ -83,6 +83,43 @@
         "Invitations": "Invitations",
         "Lieu de réception": "Lieu de réception",
         "Autre": "Autre"
+      },
+      "regions_label": "Régions Belgique",
+      "price_range_label": "Gamme tarifaire",
+      "specialties_label": "Spécialités (multi-sélection)",
+      "photo_label": "Photo de profil",
+      "photo_help": "Format JPG/PNG, idéalement 800×800 px.",
+      "photo_choose": "Choisir une photo",
+      "photo_change": "Changer la photo",
+      "photo_uploading": "Téléversement…",
+      "photo_uploaded": "Photo téléversée ✓",
+      "photo_skip": "Vous pourrez ajouter votre galerie plus tard.",
+      "summary_category": "Catégorie",
+      "summary_regions": "Régions",
+      "summary_price": "Gamme",
+      "summary_specialties": "Spécialités",
+      "summary_business": "Entreprise",
+      "regions": {
+        "bruxelles": "Bruxelles",
+        "wallonie": "Wallonie",
+        "flandre": "Flandre",
+        "luxembourg": "Luxembourg"
+      },
+      "price_options": {
+        "tier_1": "€ — économique",
+        "tier_2": "€€ — milieu de gamme",
+        "tier_3": "€€€ — premium",
+        "tier_4": "€€€€ — luxe"
+      },
+      "specialty_options": {
+        "afro": "Mariages afro",
+        "mixte": "Mariages mixtes",
+        "traditionnel": "Cérémonies traditionnelles",
+        "religieux": "Cérémonies religieuses",
+        "destination": "Destination Belgique",
+        "luxe": "Événements luxe",
+        "intime": "Mariages intimes (<50)",
+        "grand_format": "Grands formats (200+)"
       }
     },
     "dashboard": {

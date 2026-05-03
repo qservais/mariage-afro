@@ -593,14 +593,14 @@
     "eyebrow_form": "Formulaire détaillé",
     "eyebrow_contact": "Coordonnées",
     "steps": {
-      "s1_title": "Vos coordonnées",
-      "s1_desc": "Pour vous recontacter sous 48h ouvrées.",
-      "s2_title": "Type de mariage",
-      "s2_desc": "Choisissez le format qui correspond à votre vision.",
-      "s3_title": "Détails du projet",
-      "s3_desc": "Aidez-nous à mieux préparer votre devis.",
+      "s1_title": "Votre projet",
+      "s1_desc": "Quel mariage rêvez-vous ?",
+      "s2_title": "Vos besoins",
+      "s2_desc": "Sélectionnez les prestations souhaitées et votre budget.",
+      "s3_title": "Vos coordonnées",
+      "s3_desc": "Pour vous recontacter sous 48h ouvrées.",
       "s4_title": "Votre message",
-      "s4_desc": "Quelques mots sur ce qui compte pour vous."
+      "s4_desc": "Quelques mots et un dernier coup d'œil au récap."
     },
     "summary": {
       "title": "Récapitulatif",
@@ -612,8 +612,15 @@
       "guest_count": "Invités",
       "budget": "Budget",
       "services": "Services",
-      "message": "Message"
-    }
+      "message": "Message",
+      "modify": "Modifier",
+      "no_services": "Aucun service sélectionné",
+      "no_value": "—"
+    },
+    "hero_title": "Contactez-nous",
+    "hero_subtitle": "Une équipe dédiée pour répondre à vos questions et vous accompagner dans la préparation de votre mariage.",
+    "info_title": "Coordonnées",
+    "info_address": "Bruxelles, Belgique — sur rendez-vous uniquement."
   },
   "contact_extra": {
     "detailed_form": "Formulaire détaillé",
@@ -779,27 +786,31 @@
     "no_vendors": "Aucun prestataire sélectionné",
     "error": "Échec de l'envoi. Réessayez svp.",
     "steps": {
-      "s1_title": "Vos coordonnées",
-      "s1_desc": "Pour que les prestataires puissent vous recontacter.",
+      "s1_title": "Vos prestataires",
+      "s1_desc": "Décochez ceux que vous ne souhaitez pas contacter.",
       "s2_title": "Votre projet",
-      "s2_desc": "Date envisagée et message à transmettre.",
-      "s3_title": "Récapitulatif",
-      "s3_desc": "Vérifiez les destinataires avant l'envoi."
+      "s2_desc": "Vos coordonnées et la date envisagée.",
+      "s3_title": "Votre message",
+      "s3_desc": "Personnalisez votre demande puis envoyez."
     },
     "recipients_count": "Destinataires ({{count}})",
     "name": "Nom complet",
     "email": "Email",
-    "summary_message_empty": "Aucun message."
+    "summary_message_empty": "Aucun message.",
+    "selected_count": "{{count}} sélectionné(s)",
+    "selection_required": "Sélectionnez au moins un prestataire",
+    "vendor_remove": "Retirer",
+    "vendor_keep": "Inclure"
   },
   "lead_modal": {
     "eyebrow": "Demande de contact",
     "title": "Parlez-nous de votre projet",
     "desc": "Notre équipe vous répond sous 48h.",
     "steps": {
-      "s1_title": "Vos coordonnées",
-      "s1_desc": "Comment vous joindre.",
-      "s2_title": "Votre projet",
-      "s2_desc": "Type de cérémonie et message."
+      "s1_title": "Votre projet",
+      "s1_desc": "Type de cérémonie et message.",
+      "s2_title": "Vos coordonnées",
+      "s2_desc": "Comment vous joindre."
     }
   },
   "tools": {

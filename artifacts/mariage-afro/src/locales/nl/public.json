@@ -593,14 +593,14 @@
     "eyebrow_form": "Gedetailleerd formulier",
     "eyebrow_contact": "Contactgegevens",
     "steps": {
-      "s1_title": "Uw contactgegevens",
-      "s1_desc": "Om u binnen 48 werkuren te bereiken.",
-      "s2_title": "Type huwelijk",
-      "s2_desc": "Kies het formaat dat bij uw visie past.",
-      "s3_title": "Projectdetails",
-      "s3_desc": "Help ons uw offerte beter voor te bereiden.",
+      "s1_title": "Uw project",
+      "s1_desc": "Welke huwelijksstijl droomt u?",
+      "s2_title": "Uw wensen",
+      "s2_desc": "Kies de gewenste diensten en uw budget.",
+      "s3_title": "Uw contactgegevens",
+      "s3_desc": "Om u binnen 48 werkuren te bereiken.",
       "s4_title": "Uw bericht",
-      "s4_desc": "Een paar woorden over wat voor u telt."
+      "s4_desc": "Een paar woorden en een laatste blik op het overzicht."
     },
     "summary": {
       "title": "Overzicht",
@@ -612,8 +612,15 @@
       "guest_count": "Gasten",
       "budget": "Budget",
       "services": "Diensten",
-      "message": "Bericht"
-    }
+      "message": "Bericht",
+      "modify": "Wijzigen",
+      "no_services": "Geen diensten geselecteerd",
+      "no_value": "—"
+    },
+    "hero_title": "Neem contact op",
+    "hero_subtitle": "Een toegewijd team om uw vragen te beantwoorden en u te begeleiden bij de voorbereiding van uw huwelijk.",
+    "info_title": "Contactgegevens",
+    "info_address": "Brussel, België — alleen op afspraak."
   },
   "contact_extra": {
     "detailed_form": "Gedetailleerd formulier",
@@ -779,27 +786,31 @@
     "no_vendors": "Geen leveranciers geselecteerd",
     "error": "Verzenden mislukt. Probeer het opnieuw.",
     "steps": {
-      "s1_title": "Uw contactgegevens",
-      "s1_desc": "Zodat de leveranciers u kunnen bereiken.",
+      "s1_title": "Uw leveranciers",
+      "s1_desc": "Vink degenen uit die u niet wilt contacteren.",
       "s2_title": "Uw project",
-      "s2_desc": "Geplande datum en bericht.",
-      "s3_title": "Overzicht",
-      "s3_desc": "Controleer de ontvangers voor verzending."
+      "s2_desc": "Uw contactgegevens en de geplande datum.",
+      "s3_title": "Uw bericht",
+      "s3_desc": "Personaliseer uw aanvraag en verzend."
     },
     "recipients_count": "Ontvangers ({{count}})",
     "name": "Volledige naam",
     "email": "E-mail",
-    "summary_message_empty": "Geen bericht."
+    "summary_message_empty": "Geen bericht.",
+    "selected_count": "{{count}} geselecteerd",
+    "selection_required": "Selecteer minstens één leverancier",
+    "vendor_remove": "Verwijderen",
+    "vendor_keep": "Insluiten"
   },
   "lead_modal": {
     "eyebrow": "Contactaanvraag",
     "title": "Vertel ons over uw project",
-    "desc": "Ons team antwoordt binnen 48 uur.",
+    "desc": "Ons team antwoordt binnen 48u.",
     "steps": {
-      "s1_title": "Uw contactgegevens",
-      "s1_desc": "Hoe wij u kunnen bereiken.",
-      "s2_title": "Uw project",
-      "s2_desc": "Type ceremonie en bericht."
+      "s1_title": "Uw project",
+      "s1_desc": "Type ceremonie en bericht.",
+      "s2_title": "Uw contactgegevens",
+      "s2_desc": "Hoe wij u kunnen bereiken."
     }
   },
   "tools": {

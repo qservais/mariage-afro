@@ -8,8 +8,10 @@ import { clientApi } from "@/lib/clientApi";
 import {
   FormShell,
   FormStepper,
+  FormFieldGroup,
   TextField,
   DateField,
+  SelectableCardGroup,
   type StepDefinition,
   type StepperLocale,
 } from "@/components/forms";
@@ -18,6 +20,7 @@ interface CoupleLike {
   partner1Name?: string;
   partner2Name?: string;
   weddingDate?: string | null;
+  budget?: number | null;
   onboardedAt?: string | null;
 }
 
@@ -30,7 +33,24 @@ interface CoupleValues extends Record<string, unknown> {
   partner1Name: string;
   partner2Name: string;
   weddingDate: string;
+  weddingType: string;
+  ambiance: string;
+  stage: string;
+  budgetTier: string;
 }
+
+const WEDDING_TYPE_KEYS = ["afro", "mixte", "traditional", "religious", "other"] as const;
+const AMBIANCE_KEYS = ["chic_intime", "grand_celebration", "traditionnel", "moderne_mixte", "non_decide"] as const;
+const STAGE_KEYS = ["tres_debut", "en_cours", "finalisation"] as const;
+const BUDGET_KEYS = ["under_15k", "15k_30k", "30k_50k", "over_50k", "undecided"] as const;
+
+const BUDGET_TO_NUMBER: Record<string, number | null> = {
+  under_15k: 12000,
+  "15k_30k": 22000,
+  "30k_50k": 40000,
+  over_50k: 60000,
+  undecided: null,
+};
 
 export default function OnboardingGate({ couple, children }: Props) {
   const { t } = useTranslation();
@@ -43,16 +63,21 @@ export default function OnboardingGate({ couple, children }: Props) {
     partner1Name: "",
     partner2Name: "",
     weddingDate: "",
+    weddingType: "",
+    ambiance: "",
+    stage: "",
+    budgetTier: "",
   });
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!couple) return;
-    setInitialValues({
+    setInitialValues((prev) => ({
+      ...prev,
       partner1Name: couple.partner1Name || user?.firstName || "",
       partner2Name: couple.partner2Name || "",
       weddingDate: couple.weddingDate ? couple.weddingDate.slice(0, 10) : "",
-    });
+    }));
     setReady(true);
   }, [couple, user]);
 
@@ -61,6 +86,7 @@ export default function OnboardingGate({ couple, children }: Props) {
       partner1Name: string;
       partner2Name: string;
       weddingDate: string | null;
+      budget: number | null;
       onboarded: true;
     }) => clientApi.patch("/api/client/me", b),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "me"] }),
@@ -71,65 +97,61 @@ export default function OnboardingGate({ couple, children }: Props) {
     [t],
   );
 
+  const weddingTypeOptions = WEDDING_TYPE_KEYS.map((k) => ({
+    value: k,
+    label: t(`contact.form.wedding_type_options.${k}`, { ns: "public" }),
+  }));
+  const ambianceOptions = AMBIANCE_KEYS.map((k) => ({
+    value: k,
+    label: t(`onboarding.ambiance_options.${k}`),
+  }));
+  const stageOptions = STAGE_KEYS.map((k) => ({
+    value: k,
+    label: t(`onboarding.stage_options.${k}`),
+  }));
+  const budgetOptions = BUDGET_KEYS.map((k) => ({
+    value: k,
+    label: t(`onboarding.budget_options.${k}`),
+  }));
+
   const steps = useMemo<StepDefinition<CoupleValues>[]>(
     () => [
       {
-        id: "welcome",
+        id: "names",
         title: t("onboarding.steps.s1_title"),
         description: t("onboarding.steps.s1_desc"),
-        content: () => (
-          <div className="space-y-3">
-            <p className="text-sm text-wine-deep font-light leading-relaxed">
-              {t("onboarding.welcome_lead")}
-            </p>
-            <p className="text-sm text-wine-deep/70 font-light leading-relaxed">
-              {t("onboarding.welcome_body")}
-            </p>
-          </div>
-        ),
-      },
-      {
-        id: "you",
-        title: t("onboarding.steps.s2_title"),
-        description: t("onboarding.steps.s2_desc"),
         schema: z.object({
           partner1Name: z
             .string()
             .min(1, t("kit.errors.name_required", { ns: "forms" })),
         }),
         content: ({ values, setValue, errors }) => (
-          <TextField
-            name="partner1Name"
-            label={t("onboarding.your_name")}
-            required
-            placeholder={t("onboarding.name_placeholder")}
-            value={values.partner1Name}
-            onChange={(e) => setValue("partner1Name", e.target.value)}
-            error={errors.partner1Name}
-            data-testid="input-onboarding-partner1"
-          />
-        ),
-      },
-      {
-        id: "partner",
-        title: t("onboarding.steps.s3_title"),
-        description: t("onboarding.steps.s3_desc"),
-        optional: true,
-        content: ({ values, setValue }) => (
-          <TextField
-            name="partner2Name"
-            label={t("onboarding.partner_name")}
-            placeholder={t("onboarding.name_placeholder")}
-            value={values.partner2Name}
-            onChange={(e) => setValue("partner2Name", e.target.value)}
-            data-testid="input-onboarding-partner2"
-          />
+          <FormFieldGroup columns={2}>
+            <TextField
+              name="partner1Name"
+              label={t("onboarding.your_name")}
+              required
+              placeholder={t("onboarding.name_placeholder")}
+              value={values.partner1Name}
+              onChange={(e) => setValue("partner1Name", e.target.value)}
+              error={errors.partner1Name}
+              data-testid="input-onboarding-partner1"
+            />
+            <TextField
+              name="partner2Name"
+              label={t("onboarding.partner_name")}
+              placeholder={t("onboarding.name_placeholder")}
+              value={values.partner2Name}
+              onChange={(e) => setValue("partner2Name", e.target.value)}
+              data-testid="input-onboarding-partner2"
+            />
+          </FormFieldGroup>
         ),
       },
       {
         id: "date",
-        title: t("onboarding.steps.s4_title"),
-        description: t("onboarding.steps.s4_desc"),
+        title: t("onboarding.steps.s2_title"),
+        description: t("onboarding.steps.s2_desc"),
         schema: z.object({
           weddingDate: z.string().min(1, t("onboarding.date_help")),
         }),
@@ -147,22 +169,69 @@ export default function OnboardingGate({ couple, children }: Props) {
         ),
       },
       {
-        id: "summary",
+        id: "type",
+        title: t("onboarding.steps.s3_title"),
+        description: t("onboarding.steps.s3_desc"),
+        optional: true,
+        content: ({ values, setValue }) => (
+          <div className="space-y-6">
+            <SelectableCardGroup
+              name="weddingType"
+              value={values.weddingType || null}
+              onChange={(v) => setValue("weddingType", v as string)}
+              options={weddingTypeOptions}
+              columns={2}
+              label={t("onboarding.wedding_type_label")}
+              data-testid="cards-onboarding-type"
+            />
+            <SelectableCardGroup
+              name="ambiance"
+              value={values.ambiance || null}
+              onChange={(v) => setValue("ambiance", v as string)}
+              options={ambianceOptions}
+              columns={2}
+              label={t("onboarding.ambiance_label")}
+              data-testid="cards-onboarding-ambiance"
+            />
+          </div>
+        ),
+      },
+      {
+        id: "stage",
+        title: t("onboarding.steps.s4_title"),
+        description: t("onboarding.steps.s4_desc"),
+        optional: true,
+        content: ({ values, setValue }) => (
+          <SelectableCardGroup
+            name="stage"
+            value={values.stage || null}
+            onChange={(v) => setValue("stage", v as string)}
+            options={stageOptions}
+            columns={1}
+            label={t("onboarding.stage_label")}
+            data-testid="cards-onboarding-stage"
+          />
+        ),
+      },
+      {
+        id: "budget",
         title: t("onboarding.steps.s5_title"),
         description: t("onboarding.steps.s5_desc"),
-        content: ({ values }) => (
-          <dl className="bg-cream border border-wine-deep/10 p-5 space-y-3 text-sm">
-            <Row label={t("onboarding.summary_partner1")} value={values.partner1Name} />
-            <Row
-              label={t("onboarding.summary_partner2")}
-              value={values.partner2Name || t("onboarding.summary_partner2_empty")}
-            />
-            <Row label={t("onboarding.summary_date")} value={values.weddingDate} />
-          </dl>
+        optional: true,
+        content: ({ values, setValue }) => (
+          <SelectableCardGroup
+            name="budgetTier"
+            value={values.budgetTier || null}
+            onChange={(v) => setValue("budgetTier", v as string)}
+            options={budgetOptions}
+            columns={2}
+            label={t("onboarding.budget_label")}
+            data-testid="cards-onboarding-budget"
+          />
         ),
       },
     ],
-    [t],
+    [t, weddingTypeOptions, ambianceOptions, stageOptions, budgetOptions],
   );
 
   if (!needsOnboarding) return <>{children}</>;
@@ -197,28 +266,30 @@ export default function OnboardingGate({ couple, children }: Props) {
                   {
                     partner1Name: v.partner1Name,
                     partner2Name: v.partner2Name,
-                    weddingDate: v.weddingDate,
+                    weddingDate: v.weddingDate || null,
+                    budget: v.budgetTier ? BUDGET_TO_NUMBER[v.budgetTier] ?? null : null,
                     onboarded: true,
                   },
                   { onSuccess: () => resolve(), onError: (err) => reject(err) },
                 );
+                try {
+                  if (v.weddingType || v.ambiance || v.stage) {
+                    localStorage.setItem(
+                      "couple:preferences",
+                      JSON.stringify({
+                        weddingType: v.weddingType || null,
+                        ambiance: v.ambiance || null,
+                        stage: v.stage || null,
+                      }),
+                    );
+                  }
+                } catch {}
               })
             }
             data-testid="onboarding-stepper"
           />
         </FormShell>
       </div>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col">
-      <dt className="text-[11px] uppercase tracking-[0.18em] text-wine-deep/55 font-medium">
-        {label}
-      </dt>
-      <dd className="text-wine-deep font-light">{value || "—"}</dd>
     </div>
   );
 }

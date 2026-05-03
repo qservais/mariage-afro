@@ -593,14 +593,14 @@
     "eyebrow_form": "Detailed form",
     "eyebrow_contact": "Contact details",
     "steps": {
-      "s1_title": "Your contact details",
-      "s1_desc": "So we can reach you within 48 business hours.",
-      "s2_title": "Wedding type",
-      "s2_desc": "Pick the format that matches your vision.",
-      "s3_title": "Project details",
-      "s3_desc": "Help us prepare a tailored quote.",
+      "s1_title": "Your project",
+      "s1_desc": "What kind of wedding are you dreaming of?",
+      "s2_title": "Your needs",
+      "s2_desc": "Pick the services you'd like and your budget.",
+      "s3_title": "Your contact details",
+      "s3_desc": "So we can reach you within 48 business hours.",
       "s4_title": "Your message",
-      "s4_desc": "A few words about what matters most to you."
+      "s4_desc": "A few words and a last glance at the summary."
     },
     "summary": {
       "title": "Summary",
@@ -612,8 +612,15 @@
       "guest_count": "Guests",
       "budget": "Budget",
       "services": "Services",
-      "message": "Message"
-    }
+      "message": "Message",
+      "modify": "Edit",
+      "no_services": "No services selected",
+      "no_value": "—"
+    },
+    "hero_title": "Contact us",
+    "hero_subtitle": "A dedicated team to answer your questions and guide you through your wedding preparation.",
+    "info_title": "Contact details",
+    "info_address": "Brussels, Belgium — by appointment only."
   },
   "contact_extra": {
     "detailed_form": "Detailed form",
@@ -779,27 +786,31 @@
     "no_vendors": "No vendors selected",
     "error": "Send failed. Please try again.",
     "steps": {
-      "s1_title": "Your contact details",
-      "s1_desc": "So vendors can reach back out to you.",
+      "s1_title": "Your vendors",
+      "s1_desc": "Untick the ones you'd rather skip.",
       "s2_title": "Your project",
-      "s2_desc": "Planned date and message to share.",
-      "s3_title": "Summary",
-      "s3_desc": "Review the recipients before sending."
+      "s2_desc": "Your contact details and planned date.",
+      "s3_title": "Your message",
+      "s3_desc": "Personalize your request then send."
     },
     "recipients_count": "Recipients ({{count}})",
     "name": "Full name",
     "email": "Email",
-    "summary_message_empty": "No message."
+    "summary_message_empty": "No message.",
+    "selected_count": "{{count}} selected",
+    "selection_required": "Select at least one vendor",
+    "vendor_remove": "Remove",
+    "vendor_keep": "Include"
   },
   "lead_modal": {
     "eyebrow": "Contact request",
     "title": "Tell us about your project",
-    "desc": "Our team gets back to you within 48h.",
+    "desc": "Our team will reply within 48h.",
     "steps": {
-      "s1_title": "Your contact details",
-      "s1_desc": "How we can reach you.",
-      "s2_title": "Your project",
-      "s2_desc": "Ceremony type and message."
+      "s1_title": "Your project",
+      "s1_desc": "Ceremony type and message.",
+      "s2_title": "Your contact details",
+      "s2_desc": "How we can reach you."
     }
   },
   "tools": {

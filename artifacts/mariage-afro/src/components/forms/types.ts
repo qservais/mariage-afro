@@ -32,6 +32,7 @@ export interface StepContentContext<TValues extends Record<string, unknown> = Re
   errors: Partial<Record<keyof TValues, string>>;
   goNext: () => void;
   goPrev: () => void;
+  goTo: (index: number) => void;
   stepIndex: number;
   totalSteps: number;
 }

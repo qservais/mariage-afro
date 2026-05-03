@@ -54,22 +54,22 @@
       "city": "Stad",
       "website": "Website",
       "description": "Beschrijving",
-      "review_notice": "Uw profiel wordt door ons team gecontroleerd vóór publicatie. U kunt ondertussen uw profiel en galerij aanvullen.",
+      "review_notice": "Uw fiche wordt door ons team beoordeeld vóór publicatie.",
       "submit": "Mijn profiel aanmaken",
       "saving": "Opslaan…",
       "steps": {
         "s1_title": "Uw bedrijf",
-        "s1_desc": "De naam die in de marketplace verschijnt.",
-        "s2_title": "Hoofdcontact",
-        "s2_desc": "Om met ons team en de koppels uit te wisselen.",
-        "s3_title": "Categorie",
-        "s3_desc": "Kies uw hoofdspecialiteit.",
-        "s4_title": "Locatie",
-        "s4_desc": "Waar bent u gevestigd?",
-        "s5_title": "Online aanwezigheid",
-        "s5_desc": "Optioneel maar sterk aanbevolen.",
-        "s6_title": "Voorstelling",
-        "s6_desc": "Enkele regels om koppels te overtuigen."
+        "s1_desc": "Identiteit en hoofdcontact.",
+        "s2_title": "Categorie",
+        "s2_desc": "Kies uw hoofdspecialiteit.",
+        "s3_title": "Werkgebied",
+        "s3_desc": "Regio's waar u werkt (meervoudige selectie).",
+        "s4_title": "Prijsklasse",
+        "s4_desc": "Help koppels zich te oriënteren.",
+        "s5_title": "Specialiteiten",
+        "s5_desc": "Welke stijlen beheerst u?",
+        "s6_title": "Foto & presentatie",
+        "s6_desc": "Een foto en enkele regels om te overtuigen."
       },
       "categories": {
         "Photographie": "Fotografie",
@@ -83,6 +83,43 @@
         "Invitations": "Uitnodigingen",
         "Lieu de réception": "Trouwlocatie",
         "Autre": "Andere"
+      },
+      "regions_label": "Belgische regio's",
+      "price_range_label": "Prijsklasse",
+      "specialties_label": "Specialiteiten (meervoud)",
+      "photo_label": "Profielfoto",
+      "photo_help": "JPG/PNG-formaat, ideaal 800×800 px.",
+      "photo_choose": "Een foto kiezen",
+      "photo_change": "Foto wijzigen",
+      "photo_uploading": "Uploaden…",
+      "photo_uploaded": "Foto geüpload ✓",
+      "photo_skip": "U kunt uw galerij later toevoegen.",
+      "summary_category": "Categorie",
+      "summary_regions": "Regio's",
+      "summary_price": "Klasse",
+      "summary_specialties": "Specialiteiten",
+      "summary_business": "Bedrijf",
+      "regions": {
+        "bruxelles": "Brussel",
+        "wallonie": "Wallonië",
+        "flandre": "Vlaanderen",
+        "luxembourg": "Luxemburg"
+      },
+      "price_options": {
+        "tier_1": "€ — budget",
+        "tier_2": "€€ — middensegment",
+        "tier_3": "€€€ — premium",
+        "tier_4": "€€€€ — luxe"
+      },
+      "specialty_options": {
+        "afro": "Afrikaanse huwelijken",
+        "mixte": "Gemengde huwelijken",
+        "traditionnel": "Traditionele ceremonies",
+        "religieux": "Religieuze ceremonies",
+        "destination": "Bestemming België",
+        "luxe": "Luxe-evenementen",
+        "intime": "Intieme huwelijken (<50)",
+        "grand_format": "Grote formaten (200+)"
       }
     },
     "dashboard": {

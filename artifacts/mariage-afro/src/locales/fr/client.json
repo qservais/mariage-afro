@@ -319,23 +319,50 @@
     "saving": "Enregistrement…",
     "submit": "Commencer",
     "steps": {
-      "s1_title": "Bienvenue",
-      "s1_desc": "Quelques infos rapides pour personnaliser votre espace.",
-      "s2_title": "Vous",
-      "s2_desc": "Comment souhaitez-vous être appelé(e) ?",
-      "s3_title": "Votre partenaire",
-      "s3_desc": "Optionnel — vous pourrez le compléter plus tard.",
-      "s4_title": "Votre date",
-      "s4_desc": "Estimative — ajustable à tout moment.",
-      "s5_title": "Récapitulatif",
-      "s5_desc": "On y est presque, vérifions ensemble."
+      "s1_title": "Vos prénoms",
+      "s1_desc": "Pour personnaliser votre espace privé.",
+      "s2_title": "Date du mariage",
+      "s2_desc": "Estimative — ajustable à tout moment.",
+      "s3_title": "Type & ambiance",
+      "s3_desc": "Aidez-nous à comprendre votre vision.",
+      "s4_title": "Où en êtes-vous ?",
+      "s4_desc": "Stade actuel de votre organisation.",
+      "s5_title": "Budget cible",
+      "s5_desc": "Indicatif — sert à orienter nos recommandations."
     },
     "welcome_lead": "Bienvenue dans votre espace privé.",
     "welcome_body": "En 5 étapes, nous personnalisons votre tableau de bord pour que tout soit prêt le jour J.",
     "summary_partner1": "Vous",
     "summary_partner2": "Partenaire",
     "summary_partner2_empty": "À compléter plus tard",
-    "summary_date": "Date estimée"
+    "summary_date": "Date estimée",
+    "wedding_type_label": "Type de mariage",
+    "ambiance_label": "Ambiance souhaitée",
+    "stage_label": "Stade actuel",
+    "budget_label": "Fourchette budgétaire",
+    "skip": "Passer cette étape",
+    "summary_type": "Type & ambiance",
+    "summary_stage": "Stade",
+    "summary_budget": "Budget",
+    "ambiance_options": {
+      "chic_intime": "Chic & intime",
+      "grand_celebration": "Grande célébration",
+      "traditionnel": "Traditionnel & authentique",
+      "moderne_mixte": "Moderne & mixte",
+      "non_decide": "Pas encore décidé"
+    },
+    "stage_options": {
+      "tres_debut": "Tout début — exploration",
+      "en_cours": "En cours d'organisation",
+      "finalisation": "Finalisation — derniers détails"
+    },
+    "budget_options": {
+      "under_15k": "< 15 000 €",
+      "15k_30k": "15 000 € – 30 000 €",
+      "30k_50k": "30 000 € – 50 000 €",
+      "over_50k": "> 50 000 €",
+      "undecided": "Pas encore défini"
+    }
   },
   "mariage_public": {
     "cagnotte_link": "Voir notre cagnotte de mariage"

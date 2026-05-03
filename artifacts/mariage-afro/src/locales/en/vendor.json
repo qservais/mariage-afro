@@ -54,22 +54,22 @@
       "city": "City",
       "website": "Website",
       "description": "About you",
-      "review_notice": "Your profile will be reviewed by our team before publication. You can complete your profile and gallery while you wait.",
+      "review_notice": "Your profile will be reviewed by our team before publication.",
       "submit": "Create my profile",
       "saving": "Saving…",
       "steps": {
         "s1_title": "Your business",
-        "s1_desc": "The name shown in the marketplace.",
-        "s2_title": "Main contact",
-        "s2_desc": "To exchange with our team and couples.",
-        "s3_title": "Category",
-        "s3_desc": "Pick your main specialty.",
-        "s4_title": "Location",
-        "s4_desc": "Where are you based?",
-        "s5_title": "Online presence",
-        "s5_desc": "Optional but highly recommended.",
-        "s6_title": "About you",
-        "s6_desc": "A few lines to win couples over."
+        "s1_desc": "Identity and main contact.",
+        "s2_title": "Category",
+        "s2_desc": "Pick your main specialty.",
+        "s3_title": "Service area",
+        "s3_desc": "Regions you cover (multi-select).",
+        "s4_title": "Price range",
+        "s4_desc": "Help couples get a feel for your pricing.",
+        "s5_title": "Specialties",
+        "s5_desc": "Which styles do you master?",
+        "s6_title": "Photo & presentation",
+        "s6_desc": "A photo and a few lines to win them over."
       },
       "categories": {
         "Photographie": "Photography",
@@ -83,6 +83,43 @@
         "Invitations": "Invitations",
         "Lieu de réception": "Venue",
         "Autre": "Other"
+      },
+      "regions_label": "Belgian regions",
+      "price_range_label": "Price tier",
+      "specialties_label": "Specialties (multi-select)",
+      "photo_label": "Profile photo",
+      "photo_help": "JPG/PNG format, ideally 800×800 px.",
+      "photo_choose": "Choose a photo",
+      "photo_change": "Change photo",
+      "photo_uploading": "Uploading…",
+      "photo_uploaded": "Photo uploaded ✓",
+      "photo_skip": "You can add your gallery later.",
+      "summary_category": "Category",
+      "summary_regions": "Regions",
+      "summary_price": "Tier",
+      "summary_specialties": "Specialties",
+      "summary_business": "Business",
+      "regions": {
+        "bruxelles": "Brussels",
+        "wallonie": "Wallonia",
+        "flandre": "Flanders",
+        "luxembourg": "Luxembourg"
+      },
+      "price_options": {
+        "tier_1": "€ — budget",
+        "tier_2": "€€ — mid-range",
+        "tier_3": "€€€ — premium",
+        "tier_4": "€€€€ — luxury"
+      },
+      "specialty_options": {
+        "afro": "Afro weddings",
+        "mixte": "Mixed weddings",
+        "traditionnel": "Traditional ceremonies",
+        "religieux": "Religious ceremonies",
+        "destination": "Belgium destination",
+        "luxe": "Luxury events",
+        "intime": "Intimate weddings (<50)",
+        "grand_format": "Large weddings (200+)"
       }
     },
     "dashboard": {

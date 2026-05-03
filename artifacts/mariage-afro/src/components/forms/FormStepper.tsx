@@ -1,6 +1,7 @@
 import {
   type ReactNode,
   useCallback,
+  useEffect,
   useId,
   useMemo,
   useState,
@@ -21,6 +22,8 @@ export interface FormStepperProps<TValues extends Record<string, unknown>> {
   persist?: boolean;
   labels: StepperLocale;
   className?: string;
+  /** Optional observer fired whenever values change (debounced by React batching). */
+  onValuesChange?: (values: TValues) => void;
   "data-testid"?: string;
 }
 
@@ -51,6 +54,7 @@ export function FormStepper<TValues extends Record<string, unknown>>({
   persist = true,
   labels,
   className,
+  onValuesChange,
   "data-testid": testId,
 }: FormStepperProps<TValues>) {
   const titleId = useId();
@@ -62,6 +66,10 @@ export function FormStepper<TValues extends Record<string, unknown>>({
     initial: initialValues,
     enabled: persist,
   });
+
+  useEffect(() => {
+    onValuesChange?.(values);
+  }, [values, onValuesChange]);
 
   const totalSteps = steps.length;
   const isLast = stepIndex === totalSteps - 1;
@@ -92,6 +100,14 @@ export function FormStepper<TValues extends Record<string, unknown>>({
     setStepIndex((i) => Math.max(0, i - 1));
   }, []);
 
+  const goTo = useCallback(
+    (i: number) => {
+      setErrors({});
+      setStepIndex(Math.max(0, Math.min(totalSteps - 1, i)));
+    },
+    [totalSteps],
+  );
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -114,10 +130,11 @@ export function FormStepper<TValues extends Record<string, unknown>>({
       errors,
       goNext,
       goPrev,
+      goTo,
       stepIndex,
       totalSteps,
     }),
-    [values, setValue, setValues, errors, goNext, goPrev, stepIndex, totalSteps],
+    [values, setValue, setValues, errors, goNext, goPrev, goTo, stepIndex, totalSteps],
   );
 
   const progressPct = ((stepIndex + 1) / totalSteps) * 100;

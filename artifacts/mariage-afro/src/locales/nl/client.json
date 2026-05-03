@@ -319,23 +319,50 @@
     "saving": "Bezig met opslaan…",
     "submit": "Beginnen",
     "steps": {
-      "s1_title": "Welkom",
-      "s1_desc": "Een paar snelle vragen om uw ruimte te personaliseren.",
-      "s2_title": "U",
-      "s2_desc": "Hoe wilt u aangesproken worden?",
-      "s3_title": "Uw partner",
-      "s3_desc": "Optioneel — u kunt dit later aanvullen.",
-      "s4_title": "Uw datum",
-      "s4_desc": "Geschat — altijd aanpasbaar.",
-      "s5_title": "Overzicht",
-      "s5_desc": "Bijna klaar, laten we het samen nakijken."
+      "s1_title": "Uw voornamen",
+      "s1_desc": "Om uw privéruimte te personaliseren.",
+      "s2_title": "Trouwdatum",
+      "s2_desc": "Geschat — altijd aanpasbaar.",
+      "s3_title": "Type & sfeer",
+      "s3_desc": "Help ons uw visie te begrijpen.",
+      "s4_title": "Waar staat u?",
+      "s4_desc": "Huidige fase van uw planning.",
+      "s5_title": "Doelbudget",
+      "s5_desc": "Indicatief — helpt onze aanbevelingen."
     },
     "welcome_lead": "Welkom in uw persoonlijke ruimte.",
     "welcome_body": "In 5 stappen personaliseren we uw dashboard zodat alles klaar is op de grote dag.",
     "summary_partner1": "U",
     "summary_partner2": "Partner",
     "summary_partner2_empty": "Later aan te vullen",
-    "summary_date": "Geschatte datum"
+    "summary_date": "Geschatte datum",
+    "wedding_type_label": "Type huwelijk",
+    "ambiance_label": "Gewenste sfeer",
+    "stage_label": "Huidige fase",
+    "budget_label": "Budgetrange",
+    "skip": "Deze stap overslaan",
+    "summary_type": "Type & sfeer",
+    "summary_stage": "Fase",
+    "summary_budget": "Budget",
+    "ambiance_options": {
+      "chic_intime": "Chic & intiem",
+      "grand_celebration": "Grote viering",
+      "traditionnel": "Traditioneel & authentiek",
+      "moderne_mixte": "Modern & gemengd",
+      "non_decide": "Nog niet beslist"
+    },
+    "stage_options": {
+      "tres_debut": "Helemaal in het begin — verkenning",
+      "en_cours": "Bezig met organiseren",
+      "finalisation": "Afronding — laatste details"
+    },
+    "budget_options": {
+      "under_15k": "< € 15.000",
+      "15k_30k": "€ 15.000 – € 30.000",
+      "30k_50k": "€ 30.000 – € 50.000",
+      "over_50k": "> € 50.000",
+      "undecided": "Nog niet bepaald"
+    }
   },
   "mariage_public": {
     "cagnotte_link": "Bekijk onze trouwgeldpot"

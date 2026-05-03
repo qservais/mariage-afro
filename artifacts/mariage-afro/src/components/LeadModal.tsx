@@ -23,21 +23,21 @@ interface LeadModalProps {
 }
 
 interface LeadValues extends Record<string, unknown> {
+  weddingType: string;
+  message: string;
   name: string;
   email: string;
   phone: string;
   date: string;
-  weddingType: string;
-  message: string;
 }
 
 const INITIAL: LeadValues = {
+  weddingType: "",
+  message: "",
   name: "",
   email: "",
   phone: "",
   date: "",
-  weddingType: "",
-  message: "",
 };
 
 const WEDDING_TYPES = ["afro", "mixte", "traditional", "religious", "other"] as const;
@@ -86,9 +86,43 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
 
   const steps: StepDefinition<LeadValues>[] = [
     {
-      id: "coords",
+      id: "project",
       title: t("lead_modal.steps.s1_title"),
       description: t("lead_modal.steps.s1_desc"),
+      schema: z.object({
+        weddingType: z.string().min(1, t("kit.errors.type_required", { ns: "forms" })),
+        message: z.string().min(10, t("contact.form.error")),
+      }),
+      content: ({ values, setValue, errors }) => (
+        <div className="space-y-6">
+          <SelectableCardGroup
+            name="weddingType"
+            value={values.weddingType || null}
+            onChange={(v) => setValue("weddingType", v as string)}
+            options={weddingTypeOptions}
+            columns={2}
+            label={t("contact.form.wedding_type")}
+            required
+            error={errors.weddingType}
+            data-testid="lead-modal-cards-type"
+          />
+          <TextareaField
+            name="message"
+            label={t("contact.form.message")}
+            required
+            rows={5}
+            value={values.message}
+            onChange={(e) => setValue("message", e.target.value)}
+            error={errors.message}
+            data-testid="lead-modal-message"
+          />
+        </div>
+      ),
+    },
+    {
+      id: "coords",
+      title: t("lead_modal.steps.s2_title"),
+      description: t("lead_modal.steps.s2_desc"),
       schema: z.object({
         name: z.string().min(2, t("kit.errors.name_required", { ns: "forms" })),
         email: z.string().email(t("kit.errors.email_invalid", { ns: "forms" })),
@@ -120,48 +154,16 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
             placeholder="+32 4XX XX XX XX"
             value={values.phone}
             onChange={(e) => setValue("phone", e.target.value)}
+            data-testid="lead-modal-phone"
           />
           <DateField
             name="date"
             label={t("contact.form.date")}
             value={values.date}
             onChange={(e) => setValue("date", e.target.value)}
+            data-testid="lead-modal-date"
           />
         </FormFieldGroup>
-      ),
-    },
-    {
-      id: "project",
-      title: t("lead_modal.steps.s2_title"),
-      description: t("lead_modal.steps.s2_desc"),
-      schema: z.object({
-        weddingType: z.string().min(1, t("kit.errors.type_required", { ns: "forms" })),
-        message: z.string().min(10, t("contact.form.error")),
-      }),
-      content: ({ values, setValue, errors }) => (
-        <div className="space-y-5">
-          <SelectableCardGroup
-            name="weddingType"
-            value={values.weddingType || null}
-            onChange={(v) => setValue("weddingType", v as string)}
-            options={weddingTypeOptions}
-            columns={2}
-            label={t("contact.form.wedding_type")}
-            required
-            error={errors.weddingType}
-            data-testid="lead-modal-cards-type"
-          />
-          <TextareaField
-            name="message"
-            label={t("contact.form.message")}
-            required
-            rows={5}
-            value={values.message}
-            onChange={(e) => setValue("message", e.target.value)}
-            error={errors.message}
-            data-testid="lead-modal-message"
-          />
-        </div>
       ),
     },
   ];
@@ -191,6 +193,7 @@ export default function LeadModal({ open, onClose }: LeadModalProps) {
             type="button"
             onClick={() => handleClose(false)}
             className="bg-wine-deep text-cream px-6 h-12 uppercase tracking-[0.18em] text-xs font-medium rounded-none hover:bg-wine-deep/90"
+            data-testid="lead-modal-success-close"
           >
             {closeLabel}
           </button>
