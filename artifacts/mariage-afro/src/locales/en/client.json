@@ -305,6 +305,23 @@
     "event_ph": "Civil ceremony",
     "rsvp_form": "RSVP form",
     "rsvp_form_desc": "Your guests can confirm their attendance directly on your site.",
+    "cover": {
+      "title": "Cover image",
+      "help": "The main image shown at the top of your wedding site.",
+      "empty": "No image",
+      "upload": "Upload an image",
+      "replace": "Replace image",
+      "remove": "Remove",
+      "format": "Recommended: 1600×1067 px, JPG or PNG, under 5 MB."
+    },
+    "share": {
+      "title": "Share your site",
+      "help": "Copy the link or download the QR code for your guests.",
+      "link_label": "Public link",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "download_qr": "Download QR code"
+    },
     "save": "Save changes",
     "slug_prefix": "…/mariage/",
     "template": {

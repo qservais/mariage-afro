@@ -236,6 +236,12 @@
       "email": "Contact-e-mail",
       "phone": "Telefoon",
       "website": "Website",
+      "logo": "Logo",
+      "logo_help": "Getoond op uw aanbiederpagina en in de marketplace.",
+      "logo_empty": "Geen logo",
+      "logo_upload": "Logo uploaden",
+      "logo_replace": "Logo vervangen",
+      "logo_remove": "Verwijderen",
       "save": "Opslaan",
       "saving": "Opslaan…",
       "saved": "Wijzigingen opgeslagen."

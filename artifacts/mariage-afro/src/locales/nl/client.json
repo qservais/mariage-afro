@@ -305,6 +305,23 @@
     "event_ph": "Burgerlijke ceremonie",
     "rsvp_form": "RSVP-formulier",
     "rsvp_form_desc": "Uw gasten kunnen hun aanwezigheid direct op uw site bevestigen.",
+    "cover": {
+      "title": "Omslagafbeelding",
+      "help": "De hoofdafbeelding bovenaan uw trouwsite.",
+      "empty": "Geen afbeelding",
+      "upload": "Afbeelding uploaden",
+      "replace": "Afbeelding vervangen",
+      "remove": "Verwijderen",
+      "format": "Aanbevolen formaat: 1600×1067 px, JPG of PNG, minder dan 5 MB."
+    },
+    "share": {
+      "title": "Uw site delen",
+      "help": "Kopieer de link of download de QR-code voor uw gasten.",
+      "link_label": "Openbare link",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd!",
+      "download_qr": "QR-code downloaden"
+    },
     "save": "Wijzigingen opslaan",
     "slug_prefix": "…/mariage/",
     "template": {

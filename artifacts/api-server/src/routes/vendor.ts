@@ -191,6 +191,7 @@ const profileSchema = z.object({
   website: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
   email: z.string().email().optional(),
+  logoUrl: z.string().max(2000).optional().nullable(),
 });
 
 router.patch("/vendor/profile", async (req, res) => {
@@ -205,9 +206,31 @@ router.patch("/vendor/profile", async (req, res) => {
     res.status(404).json({ error: "Vendor profile not found — complete onboarding first" });
     return;
   }
+
+  const data = { ...parsed.data };
+  if (typeof data.logoUrl === "string" && data.logoUrl.startsWith("/objects/")) {
+    if (!consumeUploadIntent(data.logoUrl, r.userId)) {
+      res.status(403).json({ error: "Upload intent expired or unauthorized" });
+      return;
+    }
+    try {
+      data.logoUrl = await storageService.trySetObjectEntityAclPolicy(data.logoUrl, {
+        owner: r.userId,
+        visibility: "public",
+      });
+    } catch (err) {
+      req.log?.error?.({ err }, "Failed to set logo ACL");
+      res.status(400).json({ error: "Invalid uploaded object path" });
+      return;
+    }
+  } else if (typeof data.logoUrl === "string" && data.logoUrl.includes("/.private/")) {
+    res.status(400).json({ error: "Invalid url" });
+    return;
+  }
+
   const [updated] = await db
     .update(marketplaceVendorsTable)
-    .set(parsed.data)
+    .set(data)
     .where(eq(marketplaceVendorsTable.id, vendor.id))
     .returning();
   res.json(updated);

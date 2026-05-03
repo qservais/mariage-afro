@@ -236,6 +236,12 @@
       "email": "Contact email",
       "phone": "Phone",
       "website": "Website",
+      "logo": "Logo",
+      "logo_help": "Shown on your vendor page and in the marketplace.",
+      "logo_empty": "No logo",
+      "logo_upload": "Upload a logo",
+      "logo_replace": "Replace logo",
+      "logo_remove": "Remove",
       "save": "Save",
       "saving": "Saving…",
       "saved": "Changes saved."

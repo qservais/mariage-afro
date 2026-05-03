@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { Loader2, Upload, X } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ interface VendorProfile {
   website: string | null;
   phone: string | null;
   email: string | null;
+  logoUrl: string | null;
   services: string[];
 }
 
@@ -41,7 +43,11 @@ export default function VendorProfilePage() {
   const [website, setWebsite] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoError, setLogoError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!vendor) return;
@@ -53,6 +59,7 @@ export default function VendorProfilePage() {
     setWebsite(vendor.website || "");
     setPhone(vendor.phone || "");
     setEmail(vendor.email || "");
+    setLogoUrl(vendor.logoUrl || null);
   }, [vendor]);
 
   const save = useMutation({
@@ -64,6 +71,34 @@ export default function VendorProfilePage() {
       setTimeout(() => setSaved(false), 3000);
     },
   });
+
+  async function pickLogo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoError(null);
+    setLogoUploading(true);
+    try {
+      const intent = await fetch("/api/storage/uploads/request-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+      });
+      if (!intent.ok) throw new Error(`HTTP ${intent.status}`);
+      const { uploadURL, objectPath } = await intent.json();
+      const put = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!put.ok) throw new Error("Upload failed");
+      setLogoUrl(objectPath);
+    } catch (err) {
+      setLogoError((err as Error).message);
+    } finally {
+      setLogoUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -81,9 +116,65 @@ export default function VendorProfilePage() {
             website: website || null,
             phone: phone || null,
             email: email || undefined,
+            logoUrl: logoUrl || null,
           });
         }}
       >
+        {/* Logo */}
+        <div className="space-y-2">
+          <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
+            {t("vendor.profile.logo")}
+          </label>
+          <p className="text-xs text-neutral-500 -mt-1">{t("vendor.profile.logo_help")}</p>
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 border border-neutral-200 bg-neutral-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="logo" className="w-full h-full object-cover" data-testid="logo-preview" />
+              ) : (
+                <span className="text-[10px] uppercase tracking-wider text-neutral-400">{t("vendor.profile.logo_empty")}</span>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                onChange={pickLogo}
+                className="hidden"
+                data-testid="input-logo-file"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-none uppercase tracking-wider text-xs"
+                disabled={logoUploading}
+                onClick={() => fileRef.current?.click()}
+                data-testid="button-logo-upload"
+              >
+                {logoUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Upload className="w-4 h-4 mr-2" />
+                )}
+                {logoUrl ? t("vendor.profile.logo_replace") : t("vendor.profile.logo_upload")}
+              </Button>
+              {logoUrl && (
+                <button
+                  type="button"
+                  onClick={() => setLogoUrl(null)}
+                  className="text-xs text-neutral-500 hover:text-red-600 flex items-center gap-1 self-start"
+                  data-testid="button-logo-remove"
+                >
+                  <X className="w-3 h-3" /> {t("vendor.profile.logo_remove")}
+                </button>
+              )}
+              {logoError && <p className="text-xs text-red-600">{logoError}</p>}
+            </div>
+          </div>
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.name")}</label>

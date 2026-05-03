@@ -795,6 +795,7 @@ const websiteSchema = z.object({
   venue: z.string().max(200).optional(),
   city: z.string().max(100).optional(),
   programme: z.array(z.object({ time: z.string(), event: z.string() })).optional(),
+  coverImage: z.string().max(2000).nullable().optional(),
   template: z.enum(["royal-afro", "boheme", "moderne", "tropical"]).optional(),
   colorPrimary: z.string().regex(/^#[0-9a-fA-F]{6}$/).nullable().optional(),
   colorBackground: z.string().regex(/^#[0-9a-fA-F]{6}$/).nullable().optional(),
@@ -831,17 +832,38 @@ router.patch("/client/wedding-website", async (req, res) => {
   const [current] = await db.select().from(weddingWebsitesTable)
     .where(eq(weddingWebsitesTable.coupleId, r.coupleId));
 
+  const data = { ...parsed.data };
+  if (typeof data.coverImage === "string" && data.coverImage.startsWith("/objects/")) {
+    if (!consumeUploadIntent(data.coverImage, r.userId)) {
+      res.status(403).json({ error: "Upload intent expired or unauthorized" });
+      return;
+    }
+    try {
+      data.coverImage = await storageService.trySetObjectEntityAclPolicy(data.coverImage, {
+        owner: r.userId,
+        visibility: "public",
+      });
+    } catch (err) {
+      req.log?.error?.({ err }, "Failed to set cover image ACL");
+      res.status(400).json({ error: "Invalid uploaded object path" });
+      return;
+    }
+  } else if (typeof data.coverImage === "string" && data.coverImage.includes("/.private/")) {
+    res.status(400).json({ error: "Invalid url" });
+    return;
+  }
+
   if (!current) {
-    const slug = parsed.data.slug ?? `mariage-${r.coupleId}`;
+    const slug = data.slug ?? `mariage-${r.coupleId}`;
     const [row] = await db.insert(weddingWebsitesTable).values({
       coupleId: r.coupleId,
       slug,
-      ...parsed.data,
+      ...data,
     }).returning();
     res.status(201).json(row);
   } else {
     const [row] = await db.update(weddingWebsitesTable)
-      .set(parsed.data)
+      .set(data)
       .where(eq(weddingWebsitesTable.coupleId, r.coupleId))
       .returning();
     res.json(row);

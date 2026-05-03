@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Globe, Eye, EyeOff, Plus, Trash2, ExternalLink, Loader2, Check, Search } from "lucide-react";
+import { Globe, Eye, EyeOff, Plus, Trash2, ExternalLink, Loader2, Check, Search, Upload, X, Copy, QrCode } from "lucide-react";
+import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -69,8 +70,14 @@ export default function SiteMariagePage() {
     colorPrimary: "" as string,
     colorBackground: "" as string,
     fontHeading: "" as "" | WeddingFontHeading,
+    coverImage: null as string | null,
   });
   const [programme, setProgramme] = useState<{ time: string; event: string }[]>([]);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
+  const coverFileRef = useRef<HTMLInputElement>(null);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     if (site) {
@@ -86,6 +93,7 @@ export default function SiteMariagePage() {
         colorPrimary: site.colorPrimary ?? "",
         colorBackground: site.colorBackground ?? "",
         fontHeading: (site.fontHeading ?? "") as "" | WeddingFontHeading,
+        coverImage: site.coverImage ?? null,
       });
       setProgramme(site.programme ?? []);
     }
@@ -101,6 +109,7 @@ export default function SiteMariagePage() {
           colorPrimary: form.colorPrimary || null,
           colorBackground: form.colorBackground || null,
           fontHeading: form.fontHeading || null,
+          coverImage: form.coverImage || null,
         }),
       }),
     onSuccess: () => {
@@ -153,7 +162,56 @@ export default function SiteMariagePage() {
     colorPrimary: form.colorPrimary || null,
     colorBackground: form.colorBackground || null,
     fontHeading: form.fontHeading || null,
+    coverImage: form.coverImage || null,
   };
+
+  useEffect(() => {
+    if (!publicUrl) { setQrDataUrl(null); return; }
+    let cancelled = false;
+    QRCode.toDataURL(publicUrl, { margin: 1, width: 240, color: { dark: "#68191e", light: "#fff4e4" } })
+      .then((url) => { if (!cancelled) setQrDataUrl(url); })
+      .catch(() => { if (!cancelled) setQrDataUrl(null); });
+    return () => { cancelled = true; };
+  }, [publicUrl]);
+
+  async function copyPublicUrl() {
+    if (!publicUrl) return;
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }
+
+  async function pickCover(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCoverError(null);
+    setCoverUploading(true);
+    try {
+      const intent = await fetch("/api/storage/uploads/request-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+      });
+      if (!intent.ok) throw new Error(`HTTP ${intent.status}`);
+      const { uploadURL, objectPath } = await intent.json();
+      const put = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!put.ok) throw new Error("Upload failed");
+      setForm((f) => ({ ...f, coverImage: objectPath }));
+    } catch (err) {
+      setCoverError((err as Error).message);
+    } finally {
+      setCoverUploading(false);
+      if (coverFileRef.current) coverFileRef.current.value = "";
+    }
+  }
 
   function onTemplateKeyDown(e: React.KeyboardEvent<HTMLButtonElement>, index: number) {
     const last = WEDDING_TEMPLATE_IDS.length - 1;
@@ -215,6 +273,72 @@ export default function SiteMariagePage() {
           </a>
         )}
       </div>
+
+      {/* Share link + QR code */}
+      {publicUrl && (
+        <div
+          className="bg-white border border-border p-6 space-y-4"
+          data-testid="share-block"
+        >
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
+              {t("site_mariage.share.title")}
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t("site_mariage.share.help")}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4 items-start">
+            <div className="flex-1 space-y-2 min-w-0 w-full">
+              <Label className="text-xs uppercase tracking-wider">
+                {t("site_mariage.share.link_label")}
+              </Label>
+              <div className="flex items-stretch border border-border bg-muted/40">
+                <input
+                  readOnly
+                  value={publicUrl}
+                  className="flex-1 px-3 py-2 text-sm bg-transparent text-foreground truncate focus:outline-none"
+                  data-testid="share-link-input"
+                  onFocus={(e) => e.currentTarget.select()}
+                />
+                <button
+                  type="button"
+                  onClick={copyPublicUrl}
+                  className="px-4 border-l border-border bg-white hover:bg-muted/50 text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2"
+                  data-testid="button-copy-link"
+                >
+                  {linkCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {linkCopied ? t("site_mariage.share.copied") : t("site_mariage.share.copy")}
+                </button>
+              </div>
+            </div>
+            {qrDataUrl && (
+              <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                <div className="border border-border p-2 bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={qrDataUrl}
+                    alt="QR code"
+                    width={120}
+                    height={120}
+                    className="block"
+                    data-testid="qr-code-image"
+                  />
+                </div>
+                <a
+                  href={qrDataUrl}
+                  download={`mariage-${site?.slug ?? "qr"}.png`}
+                  className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+                  data-testid="qr-download"
+                >
+                  <QrCode className="w-3 h-3" />
+                  {t("site_mariage.share.download_qr")}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Template gallery */}
       <div
@@ -511,6 +635,78 @@ export default function SiteMariagePage() {
           checked={form.active}
           onCheckedChange={(v) => setForm({ ...form, active: v })}
         />
+      </div>
+
+      {/* Cover image */}
+      <div
+        className="bg-white border border-border p-6 space-y-4"
+        data-testid="cover-image-block"
+      >
+        <div>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
+            {t("site_mariage.cover.title")}
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            {t("site_mariage.cover.help")}
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 items-start">
+          <div className="w-full sm:w-64 aspect-[3/2] border border-border bg-muted/40 flex items-center justify-center overflow-hidden flex-shrink-0">
+            {form.coverImage ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={form.coverImage}
+                alt="cover"
+                className="w-full h-full object-cover"
+                data-testid="cover-preview"
+              />
+            ) : (
+              <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                {t("site_mariage.cover.empty")}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <input
+              ref={coverFileRef}
+              type="file"
+              accept="image/*"
+              onChange={pickCover}
+              className="hidden"
+              data-testid="input-cover-file"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-none"
+              disabled={coverUploading}
+              onClick={() => coverFileRef.current?.click()}
+              data-testid="button-cover-upload"
+            >
+              {coverUploading ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Upload className="w-4 h-4 mr-2" />
+              )}
+              {form.coverImage ? t("site_mariage.cover.replace") : t("site_mariage.cover.upload")}
+            </Button>
+            {form.coverImage && (
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, coverImage: null })}
+                className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1 self-start"
+                data-testid="button-cover-remove"
+              >
+                <X className="w-3 h-3" /> {t("site_mariage.cover.remove")}
+              </button>
+            )}
+            {coverError && <p className="text-xs text-red-600">{coverError}</p>}
+            <p className="text-xs text-muted-foreground max-w-xs">
+              {t("site_mariage.cover.format")}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* General info */}

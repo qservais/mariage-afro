@@ -236,6 +236,12 @@
       "email": "Email de contact",
       "phone": "Téléphone",
       "website": "Site web",
+      "logo": "Logo",
+      "logo_help": "Affiché sur votre fiche prestataire et dans la marketplace.",
+      "logo_empty": "Aucun logo",
+      "logo_upload": "Téléverser un logo",
+      "logo_replace": "Remplacer le logo",
+      "logo_remove": "Retirer",
       "save": "Enregistrer",
       "saving": "Enregistrement…",
       "saved": "Modifications enregistrées."
