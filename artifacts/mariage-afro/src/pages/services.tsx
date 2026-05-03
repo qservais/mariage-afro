@@ -81,25 +81,32 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Services List — 3 main services */}
+      {/* Services List — 6 services (Organisation Complète, Partielle, Coord Jour J, Wedding Platform, Wedding Website, Design & Print) */}
       <section className="py-24 md:py-32 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10">
-            {[1, 2, 3].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10">
+            {[
+              { num: 1, to: "/contact" },
+              { num: 2, to: "/contact" },
+              { num: 3, to: "/contact" },
+              { num: 5, to: "/plateforme" },
+              { num: 6, to: "/shop" },
+              { num: 7, to: "/shop" },
+            ].map((item, idx) => (
               <motion.div
-                key={i}
+                key={item.num}
                 {...fadeIn}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: idx * 0.08 }}
                 className="bg-cream p-10 md:p-12 flex flex-col items-start"
               >
-                <span className="font-display text-6xl text-gold-deep mb-6 leading-none">0{i}</span>
-                <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{t(`services.item${i}_title`)}</h3>
+                <span className="font-display text-6xl text-gold-deep mb-6 leading-none">{String(idx + 1).padStart(2, "0")}</span>
+                <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{t(`services.item${item.num}_title`)}</h3>
                 <div className="w-8 h-px bg-gold-deep mb-6"></div>
                 <p className="text-wine-deep/70 leading-relaxed mb-10 flex-grow font-light text-sm md:text-base">
-                  {t(`services.item${i}_desc`)}
+                  {t(`services.item${item.num}_desc`)}
                 </p>
-                <Link to="/contact" className="btn-editorial-compact w-full justify-center">
-                  {t(`services.item${i}_cta`)}
+                <Link to={item.to} className="btn-editorial-compact w-full justify-center" data-testid={`link-service-${item.num}`}>
+                  {t(`services.item${item.num}_cta`)}
                 </Link>
               </motion.div>
             ))}
