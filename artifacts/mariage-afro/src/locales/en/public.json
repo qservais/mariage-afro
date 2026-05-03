@@ -69,12 +69,27 @@
     "item5_title": "Wedding Platform",
     "item5_desc": "Pilot every detail of your wedding from your dashboard: budget, guests, planning, vendors and day-of coordination — all in one secure space.",
     "item5_cta": "Discover the platform",
+    "item5_benefits": [
+      "Real-time dashboard",
+      "Budget, guests & RSVP centralized",
+      "Built-in day-of coordination"
+    ],
     "item6_title": "Wedding Website",
     "item6_desc": "A personalized wedding site to share your story, your schedule and collect RSVPs from your guests. Digital elegance, effortless management.",
-    "item6_cta": "See the packages",
+    "item6_cta": "Access my space",
+    "item6_benefits": [
+      "Personalized multilingual site",
+      "RSVP, menu & gift management",
+      "Schedule, directions & gallery"
+    ],
     "item7_title": "Design & Print",
     "item7_desc": "Visual identity, premium invitations, ceremony stationery and signage: perfect graphic coherence, from save-the-date to seating chart.",
     "item7_cta": "Discover the shop",
+    "item7_benefits": [
+      "Complete visual identity",
+      "Premium invitations & stationery",
+      "Signage and printed seating plans"
+    ],
     "label": "Our offering"
   },
   "platform": {

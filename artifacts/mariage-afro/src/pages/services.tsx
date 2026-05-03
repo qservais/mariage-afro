@@ -90,26 +90,40 @@ export default function Services() {
               { num: 2, to: "/contact" },
               { num: 3, to: "/contact" },
               { num: 5, to: "/plateforme" },
-              { num: 6, to: "/shop" },
+              { num: 6, to: "/espace-client" },
               { num: 7, to: "/shop" },
-            ].map((item, idx) => (
-              <motion.div
-                key={item.num}
-                {...fadeIn}
-                transition={{ delay: idx * 0.08 }}
-                className="bg-cream p-10 md:p-12 flex flex-col items-start"
-              >
-                <span className="font-display text-6xl text-gold-deep mb-6 leading-none">{String(idx + 1).padStart(2, "0")}</span>
-                <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{t(`services.item${item.num}_title`)}</h3>
-                <div className="w-8 h-px bg-gold-deep mb-6"></div>
-                <p className="text-wine-deep/70 leading-relaxed mb-10 flex-grow font-light text-sm md:text-base">
-                  {t(`services.item${item.num}_desc`)}
-                </p>
-                <Link to={item.to} className="btn-editorial-compact w-full justify-center" data-testid={`link-service-${item.num}`}>
-                  {t(`services.item${item.num}_cta`)}
-                </Link>
-              </motion.div>
-            ))}
+            ].map((item, idx) => {
+              const benefits = t(`services.item${item.num}_benefits`, { returnObjects: true, defaultValue: [] }) as string[];
+              return (
+                <motion.div
+                  key={item.num}
+                  {...fadeIn}
+                  transition={{ delay: idx * 0.08 }}
+                  className="bg-cream p-10 md:p-12 flex flex-col items-start"
+                >
+                  <span className="font-display text-6xl text-gold-deep mb-6 leading-none">{String(idx + 1).padStart(2, "0")}</span>
+                  <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{t(`services.item${item.num}_title`)}</h3>
+                  <div className="w-8 h-px bg-gold-deep mb-6"></div>
+                  <p className="text-wine-deep/70 leading-relaxed mb-6 font-light text-sm md:text-base">
+                    {t(`services.item${item.num}_desc`)}
+                  </p>
+                  {Array.isArray(benefits) && benefits.length > 0 && (
+                    <ul className="space-y-2 mb-10 flex-grow w-full" data-testid={`list-benefits-${item.num}`}>
+                      {benefits.map((b, bi) => (
+                        <li key={bi} className="flex items-start gap-3 text-wine-deep/80 font-light text-sm">
+                          <span className="mt-[0.6em] inline-block w-3 h-px bg-gold-deep flex-shrink-0"></span>
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {!(Array.isArray(benefits) && benefits.length > 0) && <div className="flex-grow"></div>}
+                  <Link to={item.to} className="btn-editorial-compact w-full justify-center" data-testid={`link-service-${item.num}`}>
+                    {t(`services.item${item.num}_cta`)}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -69,12 +69,27 @@
     "item5_title": "Wedding Platform",
     "item5_desc": "Pilotez chaque détail de votre mariage depuis votre tableau de bord : budget, invités, planning, prestataires et coordination du Jour J réunis dans un seul espace sécurisé.",
     "item5_cta": "Découvrir la plateforme",
+    "item5_benefits": [
+      "Tableau de bord temps réel",
+      "Budget, invités & RSVP centralisés",
+      "Coordination Jour J intégrée"
+    ],
     "item6_title": "Wedding Website",
     "item6_desc": "Un site mariage personnalisé pour partager votre histoire, votre programme et collecter les RSVP de vos invités. Élégance digitale, gestion sans effort.",
-    "item6_cta": "Voir les formules",
+    "item6_cta": "Accéder à mon espace",
+    "item6_benefits": [
+      "Site personnalisé multilingue",
+      "Gestion RSVP, menu & cadeaux",
+      "Programme, plan d'accès & galerie"
+    ],
     "item7_title": "Design & Print",
     "item7_desc": "Identité visuelle, faire-part premium, papeterie de cérémonie et signalétique : une cohérence graphique parfaite, du save-the-date au plan de table.",
     "item7_cta": "Découvrir la boutique",
+    "item7_benefits": [
+      "Identité visuelle complète",
+      "Faire-part & papeterie premium",
+      "Signalétique et plans imprimés"
+    ],
     "label": "Notre offre"
   },
   "platform": {

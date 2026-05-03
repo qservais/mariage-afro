@@ -69,12 +69,27 @@
     "item5_title": "Wedding Platform",
     "item5_desc": "Stuur elk detail van jullie bruiloft vanuit jullie dashboard: budget, gasten, planning, leveranciers en coördinatie van de Dag Zelf, samengebracht in één beveiligde ruimte.",
     "item5_cta": "Ontdek het platform",
+    "item5_benefits": [
+      "Realtime dashboard",
+      "Budget, gasten & RSVP gecentraliseerd",
+      "Geïntegreerde Dag Zelf-coördinatie"
+    ],
     "item6_title": "Wedding Website",
     "item6_desc": "Een gepersonaliseerde bruiloftssite om jullie verhaal, jullie programma te delen en RSVP's van jullie gasten te verzamelen. Digitale elegantie, moeiteloos beheer.",
-    "item6_cta": "Bekijk de formules",
+    "item6_cta": "Naar mijn ruimte",
+    "item6_benefits": [
+      "Meertalige gepersonaliseerde site",
+      "RSVP-, menu- en cadeaubeheer",
+      "Programma, routebeschrijving & galerij"
+    ],
     "item7_title": "Design & Print",
     "item7_desc": "Visuele identiteit, premium uitnodigingen, ceremoniepapier en bewegwijzering: een perfecte grafische samenhang, van save-the-date tot tafelschikking.",
     "item7_cta": "Ontdek de boutique",
+    "item7_benefits": [
+      "Volledige visuele identiteit",
+      "Premium uitnodigingen & papierwaren",
+      "Bewegwijzering en gedrukte plannen"
+    ],
     "label": "Ons aanbod"
   },
   "platform": {
