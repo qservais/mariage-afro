@@ -199,7 +199,7 @@ export default function Home() {
       {/* Hero Section — Style lamangue : fond wine, titre serif éditorial, vidéo offset droite */}
       <section
         ref={heroRef}
-        className="relative min-h-screen bg-wine-deep text-cream overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:pl-16"
+        className="relative min-h-screen lg:h-[100svh] lg:min-h-[640px] bg-wine-deep text-cream overflow-hidden flex items-center pt-24 pb-10 lg:pt-28 lg:pb-14 lg:pl-16"
       >
         {/* Texture grain subtile (effet papier ancien) */}
         <div
@@ -210,7 +210,7 @@ export default function Home() {
           }}
         />
 
-        <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center px-6 md:px-12 lg:pr-0">
+        <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center px-6 md:px-12 lg:pr-0">
           {/* Texte gauche */}
           <motion.div
             initial={showCinematic ? false : { opacity: 0, y: 30 }}
@@ -219,21 +219,21 @@ export default function Home() {
             style={showCinematic ? { opacity: textOpacity, y: textY } : undefined}
             className="lg:col-span-7 xl:col-span-6 lg:pl-4"
           >
-            <span className="inline-flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.4em] mb-8 md:mb-12 text-gold font-medium">
+            <span className="inline-flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.4em] mb-5 md:mb-7 text-gold font-medium">
               <span className="block w-8 h-px bg-gold"></span>
               {t("hero.tagline")}
             </span>
 
-            <h1 className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] text-cream mb-10 md:mb-14 text-[2.6rem] sm:text-5xl md:text-6xl lg:text-[5.2rem] xl:text-[6.2rem]">
+            <h1 className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] text-cream mb-6 md:mb-8 text-[2.2rem] sm:text-4xl md:text-5xl lg:text-[4.2rem] xl:text-[5.2rem]">
               {t("hero.title")}
             </h1>
 
-            <p className="text-base md:text-lg text-cream/70 max-w-xl leading-relaxed mb-10 md:mb-14 font-light">
+            <p className="text-sm md:text-base text-cream/70 max-w-xl leading-relaxed mb-6 md:mb-9 font-light">
               {t("hero.subtitle")}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-5 sm:items-center">
-              <Link to="/contact" className="group inline-flex items-center gap-3 border border-gold/60 hover:border-gold px-7 py-4 transition-all hover:bg-gold/10">
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+              <Link to="/contact" className="group inline-flex items-center gap-3 border border-gold/60 hover:border-gold px-7 py-3.5 transition-all hover:bg-gold/10">
                 <span className="text-[11px] uppercase tracking-[0.25em] text-gold font-medium">
                   {t("hero.cta_primary")}
                 </span>
@@ -255,7 +255,7 @@ export default function Home() {
             transition={{ duration: 1.4, delay: 0.5, ease: "easeOut" }}
             className="lg:col-span-5 xl:col-span-6 lg:-mr-6 xl:-mr-12 relative"
           >
-            <div ref={slotRef} className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[4/5] overflow-hidden shadow-2xl bg-wine-deep">
+            <div ref={slotRef} className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[4/5] lg:max-h-[68vh] xl:max-h-[72vh] mx-auto w-full overflow-hidden shadow-2xl bg-wine-deep">
               {showCinematic ? (
                 /* En mode cinématique : aucune vidéo dans le slot. L'unique <video> vit
                    dans HeroCinematicOverlay et reste positionnée en `fixed` glissant
