@@ -18,6 +18,12 @@ The project is structured as a pnpm monorepo.
 
 The "Mariage Afro" web application (`artifacts/mariage-afro`) is a React + Vite app styled with Tailwind CSS and Framer Motion for animations.
 
+**Audit lisibilité (Tâche #65) — règles clair-sur-clair :**
+- `text-gold` (#c9a96e) est réservé aux fonds sombres (`bg-wine-deep`, `bg-foreground`). Sur fond clair (`bg-cream`, `bg-white`), utiliser `text-gold-deep` (#8a6d3b, ratio 4.6:1 sur cream — passe WCAG AA).
+- Les classes globales custom `.card-editorial`, `.section-eyebrow`, etc. sont écrites en `:where(.card-editorial)` (spécificité 0) pour qu'une utility Tailwind (`bg-wine-deep`, `text-cream`) puisse toujours surcharger sans `!important`. Sans ça, `card-editorial { background: #fff }` écrasait silencieusement les variantes sombres (cas connu : carte « Informations pratiques » de la page Contact).
+- Texte porteur d'information sur fond sombre : opacité minimale `/70`. Décoratif/désactivé : exception autorisée.
+- Commentaires CSS : éviter `*/` au milieu (ex. `bg-*/text-*`) — interprété comme fin de commentaire par le parser Tailwind v4.
+
 **Branding (charte hybride officielle):**
 - **Primary Font**: Montserrat (300, 400, 500, 600, 700) for general text.
 - **Secondary Font**: Cormorant Garamond for editorial titles (`.font-display`, `.font-serif`).

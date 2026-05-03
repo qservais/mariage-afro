@@ -602,7 +602,7 @@ export default function Home() {
               <h3 className="font-display text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[0.9] mt-6 mb-3 text-gold italic">
                 Film de Miel
               </h3>
-              <span className="text-[10px] uppercase tracking-[0.4em] text-cream/50 font-medium">
+              <span className="text-[10px] uppercase tracking-[0.4em] text-cream/75 font-medium">
                 by Mariage Afro
               </span>
             </div>

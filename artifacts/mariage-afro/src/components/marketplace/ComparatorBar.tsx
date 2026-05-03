@@ -86,7 +86,7 @@ export default function ComparatorBar({
           <button
             type="button"
             onClick={() => comparator.clear(kind)}
-            className="text-xs text-cream/60 hover:text-cream uppercase tracking-[0.2em] underline-offset-2 hover:underline"
+            className="text-xs text-cream/80 hover:text-cream uppercase tracking-[0.2em] underline-offset-2 hover:underline"
           >
             {t("comparator_bar.clear")}
           </button>

@@ -476,13 +476,16 @@ html {
     cursor: not-allowed;
   }
 
-  /* Editorial card — flat, no shadow, subtle border */
-  .card-editorial {
+  /* Editorial card — flat, no shadow, subtle border.
+     Wrapped in :where() to keep specificity 0 so any Tailwind bg- text- border-
+     utility wins (fixes clair-sur-clair on dark variants like contact info card
+     where bg-wine-deep was being silently overridden). */
+  :where(.card-editorial) {
     background: #fff;
     border: 1px solid rgba(31, 20, 22, 0.08);
     transition: border-color 0.3s ease;
   }
-  .card-editorial:hover {
+  :where(.card-editorial):hover {
     border-color: rgba(201, 169, 110, 0.6);
   }
 

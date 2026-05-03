@@ -71,7 +71,7 @@ export default function VendorActionPanel({ vendor }: VendorActionPanelProps) {
         className="bg-white p-5 border border-wine-deep/10 rounded-sm space-y-2"
         data-testid="vendor-action-panel"
       >
-        <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-3">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
           {t("vendor_detail.actions_title", { defaultValue: "Contacter ce prestataire" })}
         </p>
         <div className="grid grid-cols-1 gap-2">

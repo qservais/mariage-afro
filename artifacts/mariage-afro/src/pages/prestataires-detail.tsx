@@ -124,7 +124,7 @@ export default function PrestataireDetail() {
     return (
       <section className="container mx-auto px-6 py-32 text-center">
         <p className="text-wine-deep">{t("vendor_detail.invalid_id")}</p>
-        <Link to="/partenaires" className="text-gold underline mt-4 inline-block">
+        <Link to="/partenaires" className="text-gold-deep underline mt-4 inline-block font-semibold">
           {t("vendor_detail.back")}
         </Link>
       </section>
@@ -143,7 +143,7 @@ export default function PrestataireDetail() {
     return (
       <section className="container mx-auto px-6 py-32 text-center">
         <p className="text-wine-deep">{t("vendor_detail.not_found")}</p>
-        <Link to="/partenaires" className="text-gold underline mt-4 inline-block">
+        <Link to="/partenaires" className="text-gold-deep underline mt-4 inline-block font-semibold">
           {t("vendor_detail.back")}
         </Link>
       </section>
@@ -213,7 +213,7 @@ export default function PrestataireDetail() {
 
           {vendor.services?.length > 0 && (
             <div>
-              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold mb-3">{t("vendor_detail.services")}</h3>
+              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">{t("vendor_detail.services")}</h3>
               <ul className="flex flex-wrap gap-2">
                 {vendor.services.map((s) => (
                   <li
@@ -293,7 +293,7 @@ export default function PrestataireDetail() {
             <div className="bg-white p-6 border border-wine-deep/10 rounded-sm space-y-4 text-sm">
               {vendor.culturalStyles && vendor.culturalStyles.length > 0 && (
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-2">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-2">
                     {t("vendor_detail.cultural_styles")}
                   </p>
                   <div className="flex flex-wrap gap-1.5">

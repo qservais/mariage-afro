@@ -203,7 +203,7 @@ export default function Comparateur() {
                       </span>
                     </div>
                   ) : (
-                    <span className="text-wine-deep/40 text-sm">{t("comparateur.no_rating")}</span>
+                    <span className="text-wine-deep/70 text-sm">{t("comparateur.no_rating")}</span>
                   )}
                 </Cell>
               ))}

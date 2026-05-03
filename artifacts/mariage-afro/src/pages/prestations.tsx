@@ -923,7 +923,7 @@ export default function Prestations() {
                 ? t("prestations.multi_devis_cta_count", { count: compareVendors.length })
                 : t("prestations.multi_devis_cta")}
             </button>
-            <span className="text-cream/50 text-[11px] uppercase tracking-[0.2em]">
+            <span className="text-cream/75 text-[11px] uppercase tracking-[0.2em]">
               {t("prestations.multi_devis_hint")}
             </span>
           </motion.div>

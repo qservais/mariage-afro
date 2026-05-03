@@ -52,7 +52,7 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
       >
         <div className="px-6 py-4 border-b border-wine-deep/10 flex items-center justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">{t("review_modal.eyebrow")}</p>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold">{t("review_modal.eyebrow")}</p>
             <h3 id="review-modal-title" className="font-display uppercase text-xl text-wine-deep">{vendor.name}</h3>
           </div>
           <button type="button" onClick={onClose} aria-label={t("review_modal.close_aria")} className="p-2 text-wine-deep/60 hover:text-wine-deep">
@@ -71,11 +71,11 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
           className="px-6 py-5 space-y-5"
         >
           <div>
-            <label className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">{t("review_modal.rating")}</label>
+            <label className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold block mb-2">{t("review_modal.rating")}</label>
             <StarPicker value={rating} onChange={setRating} />
           </div>
           <div>
-            <label htmlFor="review-title" className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">{t("review_modal.title_label")}</label>
+            <label htmlFor="review-title" className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold block mb-2">{t("review_modal.title_label")}</label>
             <input
               id="review-title"
               type="text"
@@ -88,7 +88,7 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
             />
           </div>
           <div>
-            <label htmlFor="review-comment" className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium block mb-2">{t("review_modal.comment_label")}</label>
+            <label htmlFor="review-comment" className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold block mb-2">{t("review_modal.comment_label")}</label>
             <textarea
               id="review-comment"
               required
@@ -101,7 +101,7 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
               className="w-full px-3 py-2.5 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
               data-testid="review-comment"
             />
-            <p className="text-[11px] text-wine-deep/50 mt-1">{t("review_modal.char_count", { current: comment.length, max: 4000, min: 10 })}</p>
+            <p className="text-[11px] text-wine-deep/70 mt-1">{t("review_modal.char_count", { current: comment.length, max: 4000, min: 10 })}</p>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2.5 text-xs uppercase tracking-[0.2em] border border-wine-deep/20 text-wine-deep/70 hover:border-wine-deep">
