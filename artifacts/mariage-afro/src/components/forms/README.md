@@ -211,9 +211,18 @@ indexée et inaccessible en production.
 
 ## Tests
 
-Suite Playwright basique : `tests/forms-kit.spec.ts` (navigation stepper
-clavier, sélection cards, validation par étape, persistance après reload).
+Smoke test Playwright (core runner, sans `@playwright/test` ajouté en
+dépendance — même pattern que `scripts/audit-contrast-playwright.mjs`) :
+`scripts/test-forms-kit.mjs`. Couvre :
+- validation du stepper (Next bloqué si schema invalide),
+- persistance sessionStorage après reload (valeurs + sélection card),
+- soumission finale,
+- ouverture / fermeture (Escape) du `MobileFormSheet`,
+- clamp / increment du `NumberStepperField`,
+- activation au click de `SelectableCard` (data-selected=true).
 
 ```bash
-pnpm --filter @workspace/mariage-afro exec playwright test tests/forms-kit.spec.ts
+pnpm --filter @workspace/mariage-afro run test:forms-kit
+# Override base URL if needed:
+FORMS_KIT_BASE_URL="http://localhost:80" pnpm --filter @workspace/mariage-afro run test:forms-kit
 ```

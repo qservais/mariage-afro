@@ -46,7 +46,19 @@
       "card_classic_title": "Klassiek",
       "card_classic_desc": "50 tot 150 gasten, traditioneel formaat.",
       "card_grand_title": "Groot huwelijk",
-      "card_grand_desc": "Meer dan 150 gasten, groots feest."
+      "card_grand_desc": "Meer dan 150 gasten, groots feest.",
+      "services_label": "Diensten",
+      "service_photo": "Foto / Video",
+      "service_dj": "DJ",
+      "service_cake": "Patisserie",
+      "service_flowers": "Bloemendecoratie",
+      "date_label": "Datum",
+      "message_label": "Bericht",
+      "message_hint": "Markdown niet ondersteund",
+      "name_placeholder": "Jan Janssens",
+      "email_placeholder": "jan@example.com",
+      "select_placeholder": "—",
+      "hint_example": "Hulptip"
     },
     "errors": {
       "name_required": "Naam vereist (min. 2 tekens)",

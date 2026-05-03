@@ -69,10 +69,10 @@ export default function FormsKitDemo() {
   ];
 
   const multiOptions = [
-    { value: "photo", label: "Photo / Vidéo", icon: <Camera className="w-4 h-4" /> },
-    { value: "dj", label: "DJ", icon: <Music className="w-4 h-4" /> },
-    { value: "cake", label: "Pâtisserie", icon: <Cake className="w-4 h-4" /> },
-    { value: "flowers", label: "Décor floral", icon: <Flower2 className="w-4 h-4" /> },
+    { value: "photo", label: t("kit.demo.service_photo"), icon: <Camera className="w-4 h-4" /> },
+    { value: "dj", label: t("kit.demo.service_dj"), icon: <Music className="w-4 h-4" /> },
+    { value: "cake", label: t("kit.demo.service_cake"), icon: <Cake className="w-4 h-4" /> },
+    { value: "flowers", label: t("kit.demo.service_flowers"), icon: <Flower2 className="w-4 h-4" /> },
   ];
 
   const steps: StepDefinition<DemoValues>[] = [
@@ -197,29 +197,29 @@ export default function FormsKitDemo() {
             <TextField
               name="demo-text"
               label={t("kit.demo.name_label")}
-              placeholder="John Doe"
+              placeholder={t("kit.demo.name_placeholder")}
               required
             />
             <TextField
               name="demo-email"
               type="email"
               label={t("kit.demo.email_label")}
-              placeholder="john@example.com"
-              hint="hello@hint"
+              placeholder={t("kit.demo.email_placeholder")}
+              hint={t("kit.demo.hint_example")}
             />
             <SelectField
               name="demo-select"
               label={t("kit.demo.wedding_type_label")}
               value={select}
               onChange={(e) => setSelect(e.target.value)}
-              placeholder="—"
+              placeholder={t("kit.demo.select_placeholder")}
               options={cardOptions.map((c) => ({
                 value: c.value,
                 label:
                   typeof c.label === "string" ? c.label : String(c.label),
               }))}
             />
-            <DateField name="demo-date" label="Date" />
+            <DateField name="demo-date" label={t("kit.demo.date_label")} />
             <PhoneField name="demo-phone" label={t("kit.demo.phone_label")} />
             <NumberStepperField
               name="demo-guests"
@@ -237,9 +237,9 @@ export default function FormsKitDemo() {
           <div className="mt-6">
             <TextareaField
               name="demo-message"
-              label="Message"
+              label={t("kit.demo.message_label")}
               placeholder="…"
-              hint="Markdown not supported"
+              hint={t("kit.demo.message_hint")}
             />
           </div>
         </FormShell>
@@ -273,7 +273,7 @@ export default function FormsKitDemo() {
             multiple
             options={multiOptions}
             columns={2}
-            label="Services"
+            label={t("kit.demo.services_label")}
           />
         </FormShell>
 

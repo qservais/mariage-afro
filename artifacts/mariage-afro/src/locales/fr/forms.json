@@ -46,7 +46,19 @@
       "card_classic_title": "Classique",
       "card_classic_desc": "50 à 150 invités, format traditionnel.",
       "card_grand_title": "Grand mariage",
-      "card_grand_desc": "Plus de 150 invités, fête à grande échelle."
+      "card_grand_desc": "Plus de 150 invités, fête à grande échelle.",
+      "services_label": "Services",
+      "service_photo": "Photo / Vidéo",
+      "service_dj": "DJ",
+      "service_cake": "Pâtisserie",
+      "service_flowers": "Décor floral",
+      "date_label": "Date",
+      "message_label": "Message",
+      "message_hint": "Markdown non supporté",
+      "name_placeholder": "John Doe",
+      "email_placeholder": "john@example.com",
+      "select_placeholder": "—",
+      "hint_example": "Astuce d'aide"
     },
     "errors": {
       "name_required": "Nom requis (min. 2 caractères)",
