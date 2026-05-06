@@ -41,11 +41,11 @@ const HOME_LOCAL_BUSINESS_JSONLD = {
   },
   areaServed: [
     { "@type": "Place", name: "Monde" },
-    { "@type": "Country", name: "Belgique" },
     { "@type": "Country", name: "France" },
     { "@type": "Country", name: "Maroc" },
     { "@type": "Country", name: "Sénégal" },
     { "@type": "Country", name: "Côte d'Ivoire" },
+    { "@type": "Country", name: "Portugal" },
   ],
   contactPoint: {
     "@type": "ContactPoint",
