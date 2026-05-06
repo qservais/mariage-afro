@@ -50,7 +50,25 @@
     "intro_skip": "Passer l'intro",
     "already_client": "Déjà client&nbsp;? Accédez à votre espace",
     "you_are": "Vous êtes",
-    "meta_title": "Mariage Afro — La Plateforme des Mariages Afro & Mixtes"
+    "meta_title": "Mariage Afro — La Plateforme des Mariages Afro & Mixtes",
+    "partner1": "Location de salle",
+    "partner2": "Traiteur",
+    "partner3": "Boissons",
+    "partner4": "Cocktail bar",
+    "partner5": "Serveurs",
+    "partner6": "Hôtesses",
+    "partner7": "Wedding Planner"
+  },
+  "destination": {
+    "section_label": "Destination Wedding",
+    "afrique_name": "Afrique",
+    "afrique_countries": "Maroc · Sénégal · Côte d'Ivoire",
+    "europe_name": "Europe",
+    "europe_countries": "Portugal · Grèce",
+    "asie_name": "Asie",
+    "asie_countries": "Île Maurice · Sri Lanka",
+    "amerique_name": "Amérique",
+    "amerique_countries": "Martinique · Guadeloupe"
   },
   "services": {
     "title": "Nos Services",
@@ -96,6 +114,22 @@
       "Faire-part & papeterie premium",
       "Signalétique et plans imprimés"
     ],
+    "item8_title": "Conseil & Direction Artistique",
+    "item8_desc": "Définissez l'identité visuelle et artistique de votre mariage : ambiance, moodboard, palette de couleurs, scénographie. Nous transformons vos inspirations en une direction cohérente et unique.",
+    "item8_cta": "En savoir plus",
+    "item8_benefits": [
+      "Moodboard & identité visuelle",
+      "Direction artistique personnalisée",
+      "Cohérence décoration & scénographie"
+    ],
+    "item9_title": "Gestion Logistique & Transport Invités",
+    "item9_desc": "Coordination complète du transport de vos invités : navettes, hôtel, accueil aéroport. Nous gérons chaque détail pour que vos proches arrivent sereinement à votre grand jour.",
+    "item9_cta": "En savoir plus",
+    "item9_benefits": [
+      "Navettes & transferts coordonnés",
+      "Partenariats hôtels & hébergements",
+      "Accueil VIP aéroport & gare"
+    ],
     "label": "Notre offre"
   },
   "platform": {
@@ -105,9 +139,9 @@
     "point1_num": "50+",
     "point1_title": "Prestataires vérifiés",
     "point1_desc": "Photographes, vidéastes, traiteurs, DJs — tous spécialisés et sélectionnés pour les mariages afro et mixtes.",
-    "point2_num": "12+",
-    "point2_title": "Cultures maîtrisées",
-    "point2_desc": "Nous connaissons vos traditions, vos rituels et les codes d'un mariage mixte réussi.",
+    "point2_num": "55",
+    "point2_title": "Pays maîtrisés",
+    "point2_desc": "Une couverture Pan-Africaine unique : les 55 pays et îles du continent africain, leurs traditions, leurs rituels et les codes d'un mariage mixte réussi.",
     "point3_num": "1",
     "point3_title": "Interlocuteur dédié",
     "point3_desc": "Un seul contact, de la première consultation jusqu'au lendemain de votre mariage.",
@@ -116,7 +150,7 @@
   "platform_page": {
     "tagline": "La plateforme Mariage Afro",
     "title": "Pilotez votre mariage depuis votre tableau de bord",
-    "subtitle": "Sept modules intégrés pour centraliser l'organisation de votre mariage. Le client pilote, nous orchestrons.",
+    "subtitle": "Neuf modules intégrés pour centraliser l'organisation de votre mariage. Le client pilote, nous orchestrons.",
     "cta_primary": "Demander un accès",
     "cta_secondary": "Voir nos services",
     "modules_label": "Les modules de la plateforme",
@@ -142,6 +176,12 @@
     "module7_title": "Coordination Jour J",
     "module7_desc": "Mode spécial activé le grand jour : timeline minute par minute, contacts d'urgence, checklist en temps réel.",
     "module7_benefit": "Profitez de l'instant, on s'occupe du reste",
+    "module8_title": "Espace Invités",
+    "module8_desc": "RSVP en ligne, plan de table interactif et cagnotte mariage centralisés. Vos invités accèdent à un espace dédié pour confirmer leur présence et transmettre leurs préférences.",
+    "module8_benefit": "Vos invités, parfaitement organisés",
+    "module9_title": "Tableau de Bord Couple",
+    "module9_desc": "Suivi temps réel de votre budget, de votre planning et de vos prestataires confirmés. Une vue d'ensemble complète de votre mariage, accessible depuis n'importe quel appareil.",
+    "module9_benefit": "Pilotez votre mariage en toute sérénité",
     "cta_section_title": "Prêts à piloter votre mariage avec sérénité ?",
     "cta_section_desc": "Réservez une consultation gratuite pour découvrir votre future plateforme et discuter de votre projet."
   },
@@ -507,8 +547,8 @@
     "stat1_label": "Mariages Célébrés",
     "stat2_value": "50+",
     "stat2_label": "Prestataires Premium",
-    "stat3_value": "12",
-    "stat3_label": "Cultures Représentées",
+    "stat3_value": "55",
+    "stat3_label": "Pays & Cultures",
     "stat4_value": "100%",
     "stat4_label": "Clients Satisfaits",
     "team_label": "Notre Équipe",

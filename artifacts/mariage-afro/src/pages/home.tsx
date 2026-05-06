@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Camera, Video, Music, Flower2, Utensils, Scissors, MapPin, Car, Quote, ChevronDown, ArrowRight, Heart, Briefcase } from "lucide-react";
+import { Quote, ChevronDown, ArrowRight, Heart, Briefcase, Building2, ChefHat, Wine, GlassWater, Users, UserCheck, Sparkles as SparklesIcon } from "lucide-react";
 import { Picture } from "@/components/Picture";
 
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
@@ -150,14 +150,13 @@ export default function Home() {
   ];
 
   const prestationsItems = [
-    { icon: <Camera className="w-7 h-7" />, label: t("prestations.items.0") },
-    { icon: <Video className="w-7 h-7" />, label: t("prestations.items.1") },
-    { icon: <Music className="w-7 h-7" />, label: t("prestations.items.2") },
-    { icon: <Flower2 className="w-7 h-7" />, label: t("prestations.items.3") },
-    { icon: <Utensils className="w-7 h-7" />, label: t("prestations.items.4") },
-    { icon: <Scissors className="w-7 h-7" />, label: t("prestations.items.5") },
-    { icon: <MapPin className="w-7 h-7" />, label: t("prestations.items.6") },
-    { icon: <Car className="w-7 h-7" />, label: t("prestations.items.7") }
+    { icon: <Building2 className="w-7 h-7" />, label: t("home.partner1") },
+    { icon: <ChefHat className="w-7 h-7" />, label: t("home.partner2") },
+    { icon: <Wine className="w-7 h-7" />, label: t("home.partner3") },
+    { icon: <GlassWater className="w-7 h-7" />, label: t("home.partner4") },
+    { icon: <Users className="w-7 h-7" />, label: t("home.partner5") },
+    { icon: <UserCheck className="w-7 h-7" />, label: t("home.partner6") },
+    { icon: <SparklesIcon className="w-7 h-7" />, label: t("home.partner7") },
   ];
 
   const platformPoints = [
@@ -664,7 +663,7 @@ export default function Home() {
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-wine-deep/10 border border-wine-deep/10">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10">
             {prestationsItems.map((item, i) => (
               <motion.div
                 key={i}

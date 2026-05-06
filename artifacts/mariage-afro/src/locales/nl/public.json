@@ -50,7 +50,25 @@
     "intro_skip": "Intro overslaan",
     "already_client": "Al klant? Ga naar uw ruimte",
     "you_are": "U bent",
-    "meta_title": "Mariage Afro — Het Platform voor Afro & Gemengde Bruiloften"
+    "meta_title": "Mariage Afro — Het Platform voor Afro & Gemengde Bruiloften",
+    "partner1": "Zaalverhuur",
+    "partner2": "Traiteur",
+    "partner3": "Dranken",
+    "partner4": "Cocktailbar",
+    "partner5": "Bediening",
+    "partner6": "Hostesses",
+    "partner7": "Wedding Planner"
+  },
+  "destination": {
+    "section_label": "Destination Wedding",
+    "afrique_name": "Afrika",
+    "afrique_countries": "Marokko · Senegal · Ivoorkust",
+    "europe_name": "Europa",
+    "europe_countries": "Portugal · Griekenland",
+    "asie_name": "Azië",
+    "asie_countries": "Mauritius · Sri Lanka",
+    "amerique_name": "Amerika",
+    "amerique_countries": "Martinique · Guadeloupe"
   },
   "services": {
     "title": "Onze Diensten",
@@ -96,6 +114,22 @@
       "Premium uitnodigingen & papierwaren",
       "Bewegwijzering en gedrukte plannen"
     ],
+    "item8_title": "Advies & Artistieke Regie",
+    "item8_desc": "Bepaal de visuele en artistieke identiteit van uw bruiloft: sfeer, moodboard, kleurenpalet, scenografie. Wij transformeren uw inspiraties naar een coherente en unieke richting.",
+    "item8_cta": "Meer weten",
+    "item8_benefits": [
+      "Moodboard & visuele identiteit",
+      "Gepersonaliseerde artistieke regie",
+      "Coherentie decoratie & scenografie"
+    ],
+    "item9_title": "Logistiek & Gastenvervoer",
+    "item9_desc": "Volledige coördinatie van het vervoer van uw gasten: shuttles, hotel, ontvangst luchthaven. Wij regelen elk detail zodat uw naasten sereen aankomen op uw grote dag.",
+    "item9_cta": "Meer weten",
+    "item9_benefits": [
+      "Shuttles & gecoördineerde transfers",
+      "Hotel- & verblijfspartnerschappen",
+      "VIP-ontvangst luchthaven & station"
+    ],
     "label": "Ons aanbod"
   },
   "platform": {
@@ -105,9 +139,9 @@
     "point1_num": "50+",
     "point1_title": "Geverifieerde leveranciers",
     "point1_desc": "Fotografen, videografen, cateraars, DJ's — allemaal gespecialiseerd en geselecteerd voor Afro en gemengde bruiloften.",
-    "point2_num": "12+",
-    "point2_title": "Culturen beheerst",
-    "point2_desc": "Wij kennen jullie tradities, jullie rituelen en de codes van een geslaagd gemengd huwelijk.",
+    "point2_num": "55",
+    "point2_title": "Landen beheerst",
+    "point2_desc": "Een unieke Pan-Afrikaanse dekking: de 55 landen en eilanden van het Afrikaanse continent, hun tradities, rituelen en de codes van een geslaagd gemengd huwelijk.",
     "point3_num": "1",
     "point3_title": "Toegewijde contactpersoon",
     "point3_desc": "Één enkel aanspreekpunt, van het eerste consult tot de dag na jullie bruiloft.",
@@ -116,7 +150,7 @@
   "platform_page": {
     "tagline": "Het Mariage Afro platform",
     "title": "Stuur jullie bruiloft vanuit jullie dashboard",
-    "subtitle": "Zeven geïntegreerde modules om de organisatie van jullie bruiloft te centraliseren. De klant stuurt, wij orkestreren.",
+    "subtitle": "Negen geïntegreerde modules om de organisatie van jullie bruiloft te centraliseren. De klant stuurt, wij orkestreren.",
     "cta_primary": "Toegang aanvragen",
     "cta_secondary": "Bekijk onze diensten",
     "modules_label": "Platform modules",
@@ -142,6 +176,12 @@
     "module7_title": "Coördinatie Dag Zelf",
     "module7_desc": "Speciale modus geactiveerd op de grote dag: minuut-per-minuut tijdlijn, noodcontacten, realtime checklist.",
     "module7_benefit": "Geniet van het moment, wij regelen de rest",
+    "module8_title": "Gastenruimte",
+    "module8_desc": "Online RSVP, interactieve tafelindeling en bruiloftspotje gecentraliseerd. Uw gasten hebben toegang tot een speciale ruimte om aanwezigheid te bevestigen en voorkeuren door te geven.",
+    "module8_benefit": "Uw gasten, perfect georganiseerd",
+    "module9_title": "Koppel Dashboard",
+    "module9_desc": "Realtime opvolging van uw budget, planning en bevestigde leveranciers. Een volledig overzicht van uw bruiloft, toegankelijk vanaf elk apparaat.",
+    "module9_benefit": "Stuur uw bruiloft met volledige gemoedsrust",
     "cta_section_title": "Klaar om jullie bruiloft met rust te sturen?",
     "cta_section_desc": "Boek een gratis consult om jullie toekomstige platform te ontdekken en jullie project te bespreken."
   },
@@ -381,7 +421,7 @@
       "services_label": "Welke leveranciers heeft u nodig?",
       "services": {
         "dj": "DJ",
-        "catering": "Catering",
+        "catering": "Traiteur",
         "photo": "Fotograaf",
         "decoration": "Decoratie",
         "flowers": "Bloemen",
@@ -507,8 +547,8 @@
     "stat1_label": "Gevierde Bruiloften",
     "stat2_value": "50+",
     "stat2_label": "Premium Leveranciers",
-    "stat3_value": "12",
-    "stat3_label": "Vertegenwoordigde Culturen",
+    "stat3_value": "55",
+    "stat3_label": "Landen & Culturen",
     "stat4_value": "100%",
     "stat4_label": "Tevreden Klanten",
     "team_label": "Ons Team",
@@ -577,7 +617,7 @@
       "services_options": {
         "wedding_planning": "Wedding Planning",
         "decoration": "Decoratie & Scenografie",
-        "catering": "Catering",
+        "catering": "Traiteur",
         "photo_video": "Foto & Video",
         "dj_music": "DJ & Muziek",
         "venue_search": "Locatie zoeken",

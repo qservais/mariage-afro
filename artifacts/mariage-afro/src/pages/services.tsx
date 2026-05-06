@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin } from "lucide-react";
+import { MapPin, Globe } from "lucide-react";
 
 import servicesBg from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
 import { SEO } from "@/components/SEO";
@@ -81,7 +81,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Services List — 6 services (Organisation Complète, Partielle, Coord Jour J, Wedding Platform, Wedding Website, Design & Print) */}
+      {/* Services Grid — 9 services in 3×3 */}
       <section className="py-24 md:py-32 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-wine-deep/10 border border-wine-deep/10">
@@ -92,7 +92,9 @@ export default function Services() {
               { num: 5, to: "/plateforme" },
               { num: 6, to: "/espace-client" },
               { num: 7, to: "/shop" },
-              { num: 4, to: "#destination-wedding", spanFull: true },
+              { num: 4, to: "#destination-wedding" },
+              { num: 8, to: "/contact" },
+              { num: 9, to: "/contact" },
             ].map((item, idx) => {
               const benefits = t(`services.item${item.num}_benefits`, { returnObjects: true, defaultValue: [] }) as string[];
               return (
@@ -100,7 +102,7 @@ export default function Services() {
                   key={item.num}
                   {...fadeIn}
                   transition={{ delay: idx * 0.08 }}
-                  className={`bg-cream p-10 md:p-12 flex flex-col items-start ${item.spanFull ? "md:col-span-2 lg:col-span-3" : ""}`}
+                  className="bg-cream p-10 md:p-12 flex flex-col items-start"
                 >
                   <span className="font-display text-6xl text-gold-deep mb-6 leading-none">{String(idx + 1).padStart(2, "0")}</span>
                   <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{t(`services.item${item.num}_title`)}</h3>
@@ -135,51 +137,60 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Destination Wedding — Featured 4th Service */}
+      {/* Destination Wedding — 4 Continents */}
       <section id="destination-wedding" className="py-28 md:py-40 bg-wine-deep text-cream relative overflow-hidden scroll-mt-24">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
           style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
         />
         <div className="container relative z-10 mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <span className="section-eyebrow section-eyebrow-light section-eyebrow-left mb-6 inline-flex items-center gap-2">
-                <MapPin className="w-3 h-3" />
-                Service exclusif
-              </span>
-              <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-8 leading-[0.95] tracking-tight">
-                {t("services.item4_title")}
-              </h2>
-              <p className="text-lg text-cream/70 leading-relaxed mb-12 font-light">
-                {t("services.item4_desc")}
-              </p>
-              <Link to="/contact" className="btn-editorial">
-                {t("services.item4_cta")}
-              </Link>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16 md:mb-20"
+          >
+            <span className="section-eyebrow section-eyebrow-light mb-6 inline-flex items-center gap-2">
+              <Globe className="w-3 h-3" />
+              {t("destination.section_label")}
+            </span>
+            <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-8 leading-[0.95] tracking-tight">
+              {t("services.item4_title")}
+            </h2>
+            <p className="text-lg text-cream/70 leading-relaxed mb-10 font-light max-w-2xl mx-auto">
+              {t("services.item4_desc")}
+            </p>
+            <Link to="/contact" className="btn-editorial">
+              {t("services.item4_cta")}
+            </Link>
+          </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="grid grid-cols-2 gap-px bg-cream/10 border border-cream/10"
-            >
-              {["Maroc", "Sénégal", "Côte d'Ivoire", "Portugal"].map((dest) => (
-                <div
-                  key={dest}
-                  className="bg-wine-deep p-12 flex flex-col items-center justify-center text-center hover:bg-wine-mid transition-colors min-h-[180px]"
-                >
-                  <MapPin className="w-4 h-4 text-gold mb-4" />
-                  <span className="font-display uppercase text-xl tracking-tight text-cream">{dest}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-cream/10 border border-cream/10 mt-16">
+            {[
+              { nameKey: "destination.afrique_name", countriesKey: "destination.afrique_countries", gradient: "from-amber-900/60 to-wine-deep" },
+              { nameKey: "destination.europe_name", countriesKey: "destination.europe_countries", gradient: "from-blue-900/60 to-wine-deep" },
+              { nameKey: "destination.asie_name", countriesKey: "destination.asie_countries", gradient: "from-emerald-900/60 to-wine-deep" },
+              { nameKey: "destination.amerique_name", countriesKey: "destination.amerique_countries", gradient: "from-purple-900/60 to-wine-deep" },
+            ].map((continent, idx) => (
+              <motion.div
+                key={continent.nameKey}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="relative bg-wine-deep hover:bg-wine-mid transition-colors min-h-[220px] p-10 flex flex-col justify-between group overflow-hidden"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${continent.gradient} opacity-30 group-hover:opacity-40 transition-opacity`} />
+                <div className="relative z-10">
+                  <MapPin className="w-4 h-4 text-gold mb-5" />
+                  <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-cream mb-3 leading-[1]">
+                    {t(continent.nameKey)}
+                  </h3>
                 </div>
-              ))}
-            </motion.div>
+                <p className="relative z-10 text-[11px] uppercase tracking-[0.3em] text-gold/80 font-medium leading-relaxed">
+                  {t(continent.countriesKey)}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

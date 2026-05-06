@@ -11,19 +11,21 @@ import {
   Handshake,
   Sparkles,
   CheckCircle2,
+  PartyPopper,
+  BarChart3,
 } from "lucide-react";
 
 import heroImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 
-const ICONS = [LayoutDashboard, Wallet, Users, CalendarClock, FolderOpen, Handshake, Sparkles];
+const ICONS = [LayoutDashboard, Wallet, Users, CalendarClock, FolderOpen, Handshake, Sparkles, PartyPopper, BarChart3];
 
 export default function Plateforme() {
   const { t } = useTranslation();
 
 
-  const modules = [1, 2, 3, 4, 5, 6, 7].map((i) => ({
+  const modules = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => ({
     icon: ICONS[i - 1],
     title: t(`platform_page.module${i}_title`),
     desc: t(`platform_page.module${i}_desc`),

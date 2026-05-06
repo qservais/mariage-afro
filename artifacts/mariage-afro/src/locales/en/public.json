@@ -50,7 +50,25 @@
     "intro_skip": "Skip intro",
     "already_client": "Already a client? Access your area",
     "you_are": "You are",
-    "meta_title": "Mariage Afro — The Platform for Afro & Mixed Weddings"
+    "meta_title": "Mariage Afro — The Platform for Afro & Mixed Weddings",
+    "partner1": "Venue Rental",
+    "partner2": "Caterer",
+    "partner3": "Beverages",
+    "partner4": "Cocktail Bar",
+    "partner5": "Waitstaff",
+    "partner6": "Hostesses",
+    "partner7": "Wedding Planner"
+  },
+  "destination": {
+    "section_label": "Destination Wedding",
+    "afrique_name": "Africa",
+    "afrique_countries": "Morocco · Senegal · Ivory Coast",
+    "europe_name": "Europe",
+    "europe_countries": "Portugal · Greece",
+    "asie_name": "Asia",
+    "asie_countries": "Mauritius · Sri Lanka",
+    "amerique_name": "Americas",
+    "amerique_countries": "Martinique · Guadeloupe"
   },
   "services": {
     "title": "Our Services",
@@ -96,6 +114,22 @@
       "Premium invitations & stationery",
       "Signage and printed seating plans"
     ],
+    "item8_title": "Creative Consulting & Artistic Direction",
+    "item8_desc": "Define the visual and artistic identity of your wedding: atmosphere, moodboard, color palette, scenography. We transform your inspirations into a coherent, unique creative direction.",
+    "item8_cta": "Learn more",
+    "item8_benefits": [
+      "Moodboard & visual identity",
+      "Personalized artistic direction",
+      "Coherent décor & scenography"
+    ],
+    "item9_title": "Logistics & Guest Transport",
+    "item9_desc": "Full coordination of your guests' transportation: shuttles, hotels, airport transfers. We handle every detail so your loved ones arrive serenely on your big day.",
+    "item9_cta": "Learn more",
+    "item9_benefits": [
+      "Coordinated shuttles & transfers",
+      "Hotel & accommodation partnerships",
+      "VIP airport & station reception"
+    ],
     "label": "Our offering"
   },
   "platform": {
@@ -105,9 +139,9 @@
     "point1_num": "50+",
     "point1_title": "Verified vendors",
     "point1_desc": "Photographers, videographers, caterers, DJs — all specialized and selected for Afro and mixed weddings.",
-    "point2_num": "12+",
-    "point2_title": "Cultures mastered",
-    "point2_desc": "We know your traditions, your rituals, and the codes of a successful mixed wedding.",
+    "point2_num": "55",
+    "point2_title": "Countries mastered",
+    "point2_desc": "Unique Pan-African coverage: all 55 countries and islands of the African continent, their traditions, rituals, and the codes of a successful mixed wedding.",
     "point3_num": "1",
     "point3_title": "Dedicated contact",
     "point3_desc": "One single point of contact, from the first consultation to the day after your wedding.",
@@ -116,7 +150,7 @@
   "platform_page": {
     "tagline": "The Mariage Afro platform",
     "title": "Pilot your wedding from your dashboard",
-    "subtitle": "Seven integrated modules to centralize your wedding planning. The client pilots, we orchestrate.",
+    "subtitle": "Nine integrated modules to centralize your wedding planning. The client pilots, we orchestrate.",
     "cta_primary": "Request access",
     "cta_secondary": "View our services",
     "modules_label": "Platform modules",
@@ -142,6 +176,12 @@
     "module7_title": "Day-of Coordination",
     "module7_desc": "Special mode activated on the big day: minute-by-minute timeline, emergency contacts, real-time checklist.",
     "module7_benefit": "Enjoy the moment, we handle the rest",
+    "module8_title": "Guest Area",
+    "module8_desc": "Online RSVP, interactive seating plan and wedding gift fund centralized. Your guests access a dedicated space to confirm attendance and share their preferences.",
+    "module8_benefit": "Your guests, perfectly organized",
+    "module9_title": "Couple Dashboard",
+    "module9_desc": "Real-time tracking of your budget, planning and confirmed vendors. A complete overview of your wedding, accessible from any device.",
+    "module9_benefit": "Pilot your wedding with full peace of mind",
     "cta_section_title": "Ready to pilot your wedding with serenity?",
     "cta_section_desc": "Book a free consultation to discover your future platform and discuss your project."
   },
@@ -381,7 +421,7 @@
       "services_label": "Which vendors do you need?",
       "services": {
         "dj": "DJ",
-        "catering": "Catering",
+        "catering": "Traiteur",
         "photo": "Photographer",
         "decoration": "Decoration",
         "flowers": "Flowers",
@@ -507,8 +547,8 @@
     "stat1_label": "Weddings Celebrated",
     "stat2_value": "50+",
     "stat2_label": "Premium Vendors",
-    "stat3_value": "12",
-    "stat3_label": "Cultures Represented",
+    "stat3_value": "55",
+    "stat3_label": "Countries & Cultures",
     "stat4_value": "100%",
     "stat4_label": "Satisfied Clients",
     "team_label": "Our Team",
@@ -577,7 +617,7 @@
       "services_options": {
         "wedding_planning": "Wedding Planning",
         "decoration": "Decoration & Scenography",
-        "catering": "Catering",
+        "catering": "Traiteur",
         "photo_video": "Photo & Video",
         "dj_music": "DJ & Music",
         "venue_search": "Venue search",
