@@ -48,10 +48,19 @@ export default function Lieux() {
 
 
   const apiQueryString = searchParams.toString();
+
+  function resolveVenueImage(src: string | null | undefined): string | undefined {
+    if (!src) return undefined;
+    if (/^https?:/i.test(src)) return src;
+    const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
+    const rel = src.startsWith("/") ? src.slice(1) : src;
+    return `${window.location.origin}${base}/${rel}`;
+  }
+
   const { data: apiVenues = [] } = useQuery<VenueApi[]>({
     queryKey: ["marketplace-venues", apiQueryString],
     queryFn: async () => {
-      const res = await fetch(`/api/marketplace/venues${apiQueryString ? `?${apiQueryString}` : ""}`);
+      const res = await fetch(`/api/marketplace/venues${apiQueryString ? `?${apiQueryString}` : ""}`, { cache: "no-store" });
       if (!res.ok) return [];
       const rows = await res.json();
       return rows.map((v: Record<string, unknown>) => ({
@@ -62,7 +71,7 @@ export default function Lieux() {
         style: v.style as string,
         desc: v.description as string,
         options: (v.options as string[]) ?? [],
-        image: (v.coverImage as string | null) ?? ((v.images as string[]) ?? [])[0],
+        image: resolveVenueImage((v.coverImage as string | null) ?? ((v.images as string[]) ?? [])[0]),
         latitude: (v.latitude as string | null) ?? null,
         longitude: (v.longitude as string | null) ?? null,
       }));
