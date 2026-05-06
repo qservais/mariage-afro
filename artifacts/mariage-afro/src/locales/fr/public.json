@@ -187,8 +187,8 @@
   },
   "venues": {
     "tagline": "Lieux de réception",
-    "title": "Des lieux d'exception en Belgique",
-    "subtitle": "Une sélection de salles, domaines et lieux atypiques adaptés aux mariages afro et mixtes, pour des réceptions inoubliables.",
+    "title": "Des lieux d'exception pour votre mariage",
+    "subtitle": "Une sélection de salles, domaines et lieux atypiques adaptés aux mariages afro et mixtes, pour des réceptions inoubliables partout dans le monde.",
     "capacity_label": "Capacité",
     "style_label": "Style",
     "options_label": "Options incluses",
@@ -209,6 +209,7 @@
         "capacity": "100 — 350 invités",
         "style": "Domaine champêtre chic",
         "desc": "Un domaine d'exception entouré de jardins paysagers, idéal pour des mariages mixant tradition et élégance contemporaine. Salle modulable, terrasse panoramique et chapelle attenante.",
+        "image": "https://images.unsplash.com/photo-1549224174-8c0e61705985?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Espace cérémonie extérieur",
           "Cuisine professionnelle",
@@ -222,6 +223,7 @@
         "capacity": "80 — 250 invités",
         "style": "Château historique",
         "desc": "Un château du 18ème siècle avec parc à l'anglaise. Cadre prestigieux pour des mariages afro élégants alliant traditions et grandeur.",
+        "image": "https://images.unsplash.com/photo-1576874217775-f5811be3a02a?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Salons d'apparat",
           "Parc 5 hectares",
@@ -235,6 +237,7 @@
         "capacity": "60 — 180 invités",
         "style": "Loft industriel",
         "desc": "Espace urbain lumineux avec verrière d'origine. Parfait pour des mariages contemporains et des cérémonies fusion afro-européennes.",
+        "image": "https://images.unsplash.com/photo-1510076857177-7470076d4098?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Lumière naturelle exceptionnelle",
           "Mobilier design inclus",
@@ -248,6 +251,7 @@
         "capacity": "120 — 400 invités",
         "style": "Salle moderne tropicale",
         "desc": "Vaste salle de réception avec décoration aux accents tropicaux. Idéale pour des mariages afro festifs avec piste de danse XXL.",
+        "image": "https://images.unsplash.com/photo-1545928380-68f3756865b2?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Piste de danse 100m²",
           "Bar sur mesure",
@@ -261,6 +265,7 @@
         "capacity": "50 — 200 invités",
         "style": "Mas provençal",
         "desc": "Authentique mas en pierre avec cour intérieure et oliviers centenaires. Une bulle méditerranéenne pour des mariages intimistes.",
+        "image": "https://cdn.prod.website-files.com/68cc1412cf649e7feaaa9b7f/691d884f84b257d10d89b792_le%20mas.jpg",
         "options": [
           "Cour intérieure 300m²",
           "Piscine accessible",
@@ -274,6 +279,7 @@
         "capacity": "200 — 500 invités",
         "style": "Salle multiculturelle",
         "desc": "Grande salle pensée pour les célébrations multiculturelles. Espace neutre et modulable pour personnaliser entièrement votre décor.",
+        "image": "https://images.unsplash.com/photo-1761114905078-163aa92141c8?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "500 invités assis",
           "Scène professionnelle",

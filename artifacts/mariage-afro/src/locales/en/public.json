@@ -187,8 +187,8 @@
   },
   "venues": {
     "tagline": "Reception venues",
-    "title": "Exceptional venues in Belgium",
-    "subtitle": "A selection of halls, estates and unique venues suited to Afro and mixed weddings, for unforgettable receptions.",
+    "title": "Exceptional venues for your wedding",
+    "subtitle": "A curated selection of halls, estates and unique venues for Afro and mixed weddings, across Europe and beyond.",
     "capacity_label": "Capacity",
     "style_label": "Style",
     "options_label": "Included options",
@@ -209,6 +209,7 @@
         "capacity": "100 — 350 guests",
         "style": "Chic country estate",
         "desc": "An exceptional estate surrounded by landscaped gardens, ideal for weddings mixing tradition and contemporary elegance. Modular hall, panoramic terrace and adjoining chapel.",
+        "image": "https://images.unsplash.com/photo-1549224174-8c0e61705985?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Outdoor ceremony space",
           "Professional kitchen",
@@ -222,6 +223,7 @@
         "capacity": "80 — 250 guests",
         "style": "Historic château",
         "desc": "An 18th-century château with English-style park. A prestigious setting for elegant Afro weddings combining tradition and grandeur.",
+        "image": "https://images.unsplash.com/photo-1576874217775-f5811be3a02a?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "State rooms",
           "5-hectare park",
@@ -235,6 +237,7 @@
         "capacity": "60 — 180 guests",
         "style": "Industrial loft",
         "desc": "A bright urban space with original glass roof. Perfect for contemporary weddings and Afro-European fusion ceremonies.",
+        "image": "https://images.unsplash.com/photo-1510076857177-7470076d4098?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Exceptional natural light",
           "Designer furniture included",
@@ -248,6 +251,7 @@
         "capacity": "120 — 400 guests",
         "style": "Tropical modern hall",
         "desc": "Vast reception hall with tropical accents. Ideal for festive Afro weddings with XXL dance floor.",
+        "image": "https://images.unsplash.com/photo-1545928380-68f3756865b2?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "100m² dance floor",
           "Custom bar",
@@ -261,6 +265,7 @@
         "capacity": "50 — 200 guests",
         "style": "Provençal mas",
         "desc": "Authentic stone mas with inner courtyard and centuries-old olive trees. A Mediterranean bubble for intimate weddings.",
+        "image": "https://cdn.prod.website-files.com/68cc1412cf649e7feaaa9b7f/691d884f84b257d10d89b792_le%20mas.jpg",
         "options": [
           "300m² inner courtyard",
           "Accessible pool",
@@ -274,6 +279,7 @@
         "capacity": "200 — 500 guests",
         "style": "Multicultural hall",
         "desc": "Large hall designed for multicultural celebrations. Neutral and modular space to fully personalize your decor.",
+        "image": "https://images.unsplash.com/photo-1761114905078-163aa92141c8?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "500 seated guests",
           "Professional stage",

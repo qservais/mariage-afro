@@ -1,4 +1,4 @@
-import { useEffect, useState, FormEvent, useMemo } from "react";
+import { useState, FormEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -8,17 +8,10 @@ import { MapPin, Users, Sparkles, List as ListIcon, Map as MapIcon } from "lucid
 import MarketplaceFilters from "@/components/marketplace/MarketplaceFilters";
 import MarketplaceMap from "@/components/marketplace/MarketplaceMap";
 
-import img1 from "@assets/pexels-innocent-kapesa-760824113-18751317_1776285262172.jpg";
-import img2 from "@assets/GM-00679.jpg_1776614313614.jpeg";
-import img3 from "@assets/DSC05396.jpg_1776614313613.jpeg";
-import img4 from "@assets/GM-00719.jpg_1776614313614.jpeg";
-import img5 from "@assets/pexels-is0-shot-2150184196-31518214_1776285262172.jpg";
-import img6 from "@assets/New-Project-12_1776614330308.png";
-import bannerImg from "@assets/Screenshot-2025-12-09-at-15.23.02_1776614330310.png";
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 
-const VENUE_IMAGES = [img1, img2, img3, img4, img5, img6];
+const BANNER_URL = "https://images.unsplash.com/photo-1637749713740-1cd07067c4fd?auto=format&fit=crop&w=1920&q=80";
 
 interface Venue {
   name: string;
@@ -26,6 +19,7 @@ interface Venue {
   capacity: string;
   style: string;
   desc: string;
+  image?: string;
   options: string[];
 }
 
@@ -84,7 +78,7 @@ export default function Lieux() {
 
   return (
     <div className="w-full">
-      <SEO title="Lieux de réception" description="Sélection de lieux de réception en Belgique adaptés aux mariages afro et mixtes : châteaux, salles de réception, domaines d'exception." />
+      <SEO title="Lieux de réception" description="Sélection de lieux d'exception pour mariages afro et mixtes : châteaux, domaines champêtres, salles de réception premium, en Europe et au-delà." />
       {/* Hero éditorial — wine-deep style lamangue */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
@@ -173,7 +167,7 @@ export default function Lieux() {
                 {/* Image */}
                 <div className="relative h-80 overflow-hidden flex-shrink-0">
                   <Picture
-                    src={venue.image || VENUE_IMAGES[i % VENUE_IMAGES.length]}
+                    src={venue.image || ""}
                     alt={venue.name}
                     width={1200}
                     height={900}
@@ -336,8 +330,8 @@ export default function Lieux() {
       {/* Banner */}
       <section className="h-[300px] md:h-[400px] relative overflow-hidden">
         <Picture
-          src={bannerImg}
-          alt="Lieu de réception de mariage"
+          src={BANNER_URL}
+          alt="Lieu de réception de mariage premium"
           width={1920}
           height={1080}
           className="w-full h-full object-cover"

@@ -187,8 +187,8 @@
   },
   "venues": {
     "tagline": "Receptielocaties",
-    "title": "Uitzonderlijke locaties in België",
-    "subtitle": "Een selectie van zalen, domeinen en unieke locaties geschikt voor Afro en gemengde bruiloften, voor onvergetelijke recepties.",
+    "title": "Uitzonderlijke locaties voor uw bruiloft",
+    "subtitle": "Een zorgvuldige selectie van zalen, domeinen en unieke locaties voor Afro en gemengde bruiloften, door heel Europa en daarbuiten.",
     "capacity_label": "Capaciteit",
     "style_label": "Stijl",
     "options_label": "Inbegrepen opties",
@@ -209,6 +209,7 @@
         "capacity": "100 — 350 gasten",
         "style": "Chic landgoed",
         "desc": "Een uitzonderlijk domein omringd door aangelegde tuinen, ideaal voor bruiloften die traditie en hedendaagse elegantie combineren. Modulaire zaal, panoramisch terras en aangrenzende kapel.",
+        "image": "https://images.unsplash.com/photo-1549224174-8c0e61705985?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Buitenceremoneruimte",
           "Professionele keuken",
@@ -222,6 +223,7 @@
         "capacity": "80 — 250 gasten",
         "style": "Historisch kasteel",
         "desc": "Een 18e-eeuws kasteel met Engelse tuin. Een prestigieuze setting voor elegante Afro bruiloften die traditie en grandeur combineren.",
+        "image": "https://images.unsplash.com/photo-1576874217775-f5811be3a02a?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Staatsiezalen",
           "5-hectare park",
@@ -235,6 +237,7 @@
         "capacity": "60 — 180 gasten",
         "style": "Industriële loft",
         "desc": "Lichte stedelijke ruimte met originele glazen dak. Perfect voor hedendaagse bruiloften en Afro-Europese fusieceremonies.",
+        "image": "https://images.unsplash.com/photo-1510076857177-7470076d4098?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "Uitzonderlijk natuurlijk licht",
           "Designermeubilair inbegrepen",
@@ -248,6 +251,7 @@
         "capacity": "120 — 400 gasten",
         "style": "Tropische moderne zaal",
         "desc": "Ruime ontvangstzaal met tropische accenten. Ideaal voor feestelijke Afro bruiloften met XXL dansvloer.",
+        "image": "https://images.unsplash.com/photo-1545928380-68f3756865b2?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "100m² dansvloer",
           "Bar op maat",
@@ -261,6 +265,7 @@
         "capacity": "50 — 200 gasten",
         "style": "Provençaalse mas",
         "desc": "Authentieke stenen mas met binnenplaats en eeuwenoude olijfbomen. Een mediterrane bubbel voor intieme bruiloften.",
+        "image": "https://cdn.prod.website-files.com/68cc1412cf649e7feaaa9b7f/691d884f84b257d10d89b792_le%20mas.jpg",
         "options": [
           "300m² binnenplaats",
           "Toegankelijk zwembad",
@@ -274,6 +279,7 @@
         "capacity": "200 — 500 gasten",
         "style": "Multiculturele zaal",
         "desc": "Grote zaal ontworpen voor multiculturele vieringen. Neutrale en modulaire ruimte om jullie decor volledig te personaliseren.",
+        "image": "https://images.unsplash.com/photo-1761114905078-163aa92141c8?auto=format&fit=crop&w=1200&q=80",
         "options": [
           "500 zittende gasten",
           "Professionele scène",
