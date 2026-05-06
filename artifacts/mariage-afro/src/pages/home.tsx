@@ -13,6 +13,9 @@ import videoSrc from "@assets/Trailer-de-dingue_1776614330311.mp4";
 import { SEO } from "@/components/SEO";
 import { HeroCinematicOverlay, HeroMobileFadeOverlay } from "@/components/home/HeroCinematicIntro";
 
+const filmVideo1 = "/film-de-miel-2.mp4";
+const filmVideo2 = "/film-de-miel-1.mp4";
+
 type IntroMode = "skip" | "full" | "mobile-fade";
 
 const HOME_LOCAL_BUSINESS_JSONLD = {
@@ -181,17 +184,44 @@ export default function Home() {
     {
       quote: t("testimonials.item1_quote"),
       name: t("testimonials.item1_name"),
-      origin: t("testimonials.item1_origin")
+      origin: t("testimonials.item1_origin"),
+      date: t("testimonials.item1_date"),
+      source: "google" as const
     },
     {
       quote: t("testimonials.item2_quote"),
       name: t("testimonials.item2_name"),
-      origin: t("testimonials.item2_origin")
+      origin: t("testimonials.item2_origin"),
+      date: t("testimonials.item2_date"),
+      source: "google" as const
     },
     {
       quote: t("testimonials.item3_quote"),
       name: t("testimonials.item3_name"),
-      origin: t("testimonials.item3_origin")
+      origin: t("testimonials.item3_origin"),
+      date: t("testimonials.item3_date"),
+      source: "google" as const
+    },
+    {
+      quote: t("testimonials.item4_quote"),
+      name: t("testimonials.item4_name"),
+      origin: t("testimonials.item4_origin"),
+      date: t("testimonials.item4_date"),
+      source: "google" as const
+    },
+    {
+      quote: t("testimonials.item5_quote"),
+      name: t("testimonials.item5_name"),
+      origin: t("testimonials.item5_origin"),
+      date: t("testimonials.item5_date"),
+      source: "instagram" as const
+    },
+    {
+      quote: t("testimonials.item6_quote"),
+      name: t("testimonials.item6_name"),
+      origin: t("testimonials.item6_origin"),
+      date: t("testimonials.item6_date"),
+      source: "google" as const
     }
   ];
 
@@ -591,14 +621,14 @@ export default function Home() {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="absolute inset-0 bg-wine-deep/40" />
-        <div className="container relative z-10 mx-auto px-6 md:px-12 flex justify-center text-center">
+        <div className="absolute inset-0 bg-wine-deep/60" />
+        <div className="container relative z-10 mx-auto px-6 md:px-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl"
+            className="max-w-4xl mx-auto text-center"
           >
             <div className="mb-10">
               <span className="section-eyebrow section-eyebrow-light mb-8">{t("film_de_miel.label")}</span>
@@ -609,9 +639,31 @@ export default function Home() {
                 by Mariage Afro
               </span>
             </div>
-            <p className="text-lg md:text-xl text-cream/80 leading-relaxed mb-12 font-light max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-cream/80 leading-relaxed mb-10 font-light max-w-2xl mx-auto">
               {t("film_de_miel.desc")}
             </p>
+
+            {/* Foreground video player grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+              {[filmVideo1, filmVideo2].map((src, idx) => (
+                <div key={idx} className="relative overflow-hidden bg-black/30 border border-gold/20">
+                  <video
+                    src={src}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full aspect-[9/16] sm:aspect-video object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/40 via-transparent to-transparent pointer-events-none" />
+                </div>
+              ))}
+            </div>
+
+            <p className="text-[10px] uppercase tracking-[0.3em] text-cream/50 font-medium mb-8">
+              {t("film_de_miel.credit")}
+            </p>
+
             <Link to="/realisations" className="btn-editorial">
               {t("film_de_miel.cta")}
             </Link>
@@ -636,16 +688,56 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
                 className="bg-cream p-10 md:p-12 flex flex-col relative"
               >
-                <Quote className="w-10 h-10 text-gold/40 mb-6 flex-shrink-0" />
-                <p className="font-display text-xl md:text-2xl text-wine-deep leading-relaxed italic flex-grow mb-10">
+                {/* Source badge */}
+                <div className="flex items-center gap-2 mb-5">
+                  {item.source === "google" ? (
+                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" aria-label="Google">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" aria-label="Instagram">
+                      <defs>
+                        <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#f09433"/>
+                          <stop offset="25%" stopColor="#e6683c"/>
+                          <stop offset="50%" stopColor="#dc2743"/>
+                          <stop offset="75%" stopColor="#cc2366"/>
+                          <stop offset="100%" stopColor="#bc1888"/>
+                        </linearGradient>
+                      </defs>
+                      <rect width="24" height="24" rx="6" fill="url(#ig-grad)"/>
+                      <circle cx="12" cy="12" r="4.5" fill="none" stroke="white" strokeWidth="1.5"/>
+                      <circle cx="17.5" cy="6.5" r="1" fill="white"/>
+                    </svg>
+                  )}
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-wine-deep/50 font-medium">
+                    {item.source === "google" ? t("testimonials.source_google") : t("testimonials.source_instagram")}
+                  </span>
+                  <span className="ml-auto text-[10px] text-wine-deep/40">{item.date}</span>
+                </div>
+
+                {/* 5 stars */}
+                <div className="flex gap-0.5 mb-5" aria-label="5 étoiles sur 5">
+                  {[...Array(5)].map((_, s) => (
+                    <svg key={s} className="w-4 h-4 text-gold-deep" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                  ))}
+                </div>
+
+                <Quote className="w-8 h-8 text-gold/30 mb-4 flex-shrink-0" />
+                <p className="text-base text-wine-deep/80 leading-relaxed italic flex-grow mb-8 font-light">
                   "{item.quote}"
                 </p>
-                <div className="border-t border-wine-deep/10 pt-6">
-                  <p className="font-display uppercase text-base tracking-tight text-wine-deep">{item.name}</p>
-                  <p className="text-xs text-gold-deep mt-1 uppercase tracking-[0.3em] font-semibold">{item.origin}</p>
+                <div className="border-t border-wine-deep/10 pt-5">
+                  <p className="font-display uppercase text-sm tracking-tight text-wine-deep font-semibold">{item.name}</p>
+                  <p className="text-xs text-gold-deep mt-1 uppercase tracking-[0.25em] font-medium">{item.origin}</p>
                 </div>
               </motion.div>
             ))}
