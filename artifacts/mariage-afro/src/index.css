@@ -67,7 +67,7 @@
   --color-cream: #fff4e4;
   --color-cream-soft: #faf9f7;
   --color-charcoal: #3b3632;
-  --color-wine-deep: #1f1416;
+  --color-wine-deep: #141414;
   --color-wine-mid: #2a1c1f;
   --color-gold: #c9a96e;
   --color-gold-light: #d9bc88;
@@ -152,13 +152,13 @@
   /* ── Semantic brand tokens ───────────────────────────────────────────────
    * These override the shadcn defaults so bg-primary / text-accent / etc.
    * always resolve to the Mariage Afro brand palette.
-   *   primary     = wine-deep  #1f1416   (darkest background / headline)
+   *   primary     = wine-deep  #141414   (darkest background / headline)
    *   secondary   = bordeaux   #68191e   (brand red)
    *   accent      = gold       #c9a96e   (gold highlight — dark surfaces)
    *   accent-deep = gold-deep  #8a6d3b   (gold on light surfaces, WCAG AA)
    *   surface     = cream      #fff4e4   (warm off-white background)
    * ──────────────────────────────────────────────────────────────────────── */
-  --color-primary:     #1f1416;
+  --color-primary:     #141414;
   --color-secondary:   #68191e;
   --color-accent:      #c9a96e;
   --color-accent-deep: #8a6d3b;
@@ -410,8 +410,8 @@ html {
     font-weight: 500;
     letter-spacing: -0.01em;
   }
-  .text-wine-deep { color: #1f1416; }
-  .bg-wine-deep { background-color: #1f1416; }
+  .text-wine-deep { color: #141414; }
+  .bg-wine-deep { background-color: #141414; }
   .bg-wine-mid { background-color: #2a1c1f; }
   .text-gold { color: #c9a96e; }
   .text-gold-deep { color: #8a6d3b; }
@@ -478,14 +478,14 @@ html {
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 1.75rem;
-    background: #1f1416;
+    background: #141414;
     color: #fff4e4;
     font-size: 0.6875rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.25em;
     transition: all 0.3s ease;
-    border: 1px solid #1f1416;
+    border: 1px solid #141414;
     cursor: pointer;
     text-decoration: none;
   }
@@ -534,7 +534,7 @@ html {
     gap: 0.5rem;
     padding: 0.625rem 0.5rem;
     border: 1px solid rgba(201, 169, 110, 0.45);
-    color: #1f1416;
+    color: #141414;
     font-size: 0.6875rem;
     font-weight: 500;
     text-transform: uppercase;
@@ -561,20 +561,20 @@ html {
     justify-content: center;
     gap: 0.5rem;
     padding: 0.75rem 0.75rem;
-    background: #1f1416;
+    background: #141414;
     color: #fff4e4;
     font-size: 0.6875rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     transition: all 0.25s ease;
-    border: 1px solid #1f1416;
+    border: 1px solid #141414;
     cursor: pointer;
     text-decoration: none;
   }
   .btn-editorial-compact-solid:hover {
     background: transparent;
-    color: #1f1416;
+    color: #141414;
     border-color: #c9a96e;
   }
   .btn-editorial-compact-solid:disabled {
@@ -588,7 +588,7 @@ html {
      where bg-wine-deep was being silently overridden). */
   :where(.card-editorial) {
     background: #fff;
-    border: 1px solid rgba(31, 20, 22, 0.08);
+    border: 1px solid rgba(20, 20, 20, 0.08);
     transition: border-color 0.3s ease;
   }
   :where(.card-editorial):hover {
@@ -628,7 +628,7 @@ html {
     text-transform: uppercase;
     letter-spacing: -0.01em;
     line-height: 0.95;
-    color: #1f1416;
+    color: #141414;
   }
 
   /* Editorial badge — gold-bordered small uppercase tag */
@@ -650,7 +650,7 @@ html {
     align-items: center;
     gap: 0.375rem;
     padding: 0.375rem 0.625rem;
-    background: #1f1416;
+    background: #141414;
     color: #fff4e4;
     font-size: 0.625rem;
     font-weight: 500;
@@ -668,16 +668,16 @@ html {
     letter-spacing: 0.2em;
     transition: all 0.25s ease;
     background: transparent;
-    color: rgba(31, 20, 22, 0.65);
+    color: rgba(20, 20, 20, 0.65);
     border-bottom: 1px solid transparent;
     white-space: nowrap;
     cursor: pointer;
   }
   .tab-editorial:hover {
-    color: #1f1416;
+    color: #141414;
   }
   .tab-editorial.tab-editorial-active {
-    color: #1f1416;
+    color: #141414;
     border-bottom-color: #c9a96e;
   }
 
