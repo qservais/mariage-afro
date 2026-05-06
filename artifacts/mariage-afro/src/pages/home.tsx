@@ -230,7 +230,7 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      <SEO title="Mariage Afro — Mariages Afro & Mixtes en Belgique" description="La première plateforme premium dédiée aux mariages afro et mixtes en Belgique. Trouvez vos prestataires et organisez votre grand jour." jsonLd={HOME_LOCAL_BUSINESS_JSONLD} />
+      <SEO title="Mariage Afro — Mariages Afro & Mixtes" description="La première plateforme premium dédiée aux mariages afro et mixtes. Trouvez vos prestataires vérifiés et organisez votre grand jour, partout en Europe et en Afrique." jsonLd={HOME_LOCAL_BUSINESS_JSONLD} />
 
       {/* Hero Section — Style lamangue : fond wine, titre serif éditorial, vidéo offset droite */}
       <section
@@ -323,7 +323,7 @@ export default function Home() {
             {/* Petit accent gold flottant */}
             <div className="hidden lg:block absolute -bottom-6 -left-6 bg-wine-deep border border-gold/40 px-5 py-3 backdrop-blur-sm">
               <span className="text-[10px] uppercase tracking-[0.3em] text-gold/80 font-medium block">
-                Belgique · 2026
+                Europe · Afrique · 2026
               </span>
             </div>
           </motion.div>
@@ -427,7 +427,7 @@ export default function Home() {
                   Je suis prestataire
                 </h3>
                 <p className="text-cream/70 text-sm md:text-base font-light leading-relaxed mb-10 max-w-md">
-                  Photographes, traiteurs, lieux, DJs, fleuristes... Rejoignez le réseau Mariage Afro pour proposer vos services et recevoir des leads qualifiés de couples afro et mixtes en Belgique.
+                  Photographes, traiteurs, lieux, DJs, fleuristes... Rejoignez le réseau Mariage Afro pour proposer vos services et recevoir des leads qualifiés de couples afro et mixtes à travers l'Europe et l'Afrique.
                 </p>
                 <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] font-medium text-gold">
                   <span>Devenir partenaire</span>

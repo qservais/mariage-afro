@@ -34,7 +34,7 @@ export default function Plateforme() {
 
   return (
     <div className="w-full">
-      <SEO title="La plateforme" description="Découvrez Mariage Afro : marketplace de prestataires vérifiés, espace client complet et outils pour organiser un mariage afro ou mixte en Belgique." />
+      <SEO title="La plateforme" description="Découvrez Mariage Afro : marketplace de prestataires vérifiés, espace client complet et outils pour organiser un mariage afro ou mixte partout en Europe et en Afrique." />
       {/* Hero — wine-deep editorial */}
       <section className="relative pt-40 pb-28 md:pt-48 md:pb-36 overflow-hidden bg-wine-deep text-cream">
         <div className="absolute inset-0 z-0">

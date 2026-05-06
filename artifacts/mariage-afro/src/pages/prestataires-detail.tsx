@@ -76,7 +76,7 @@ export default function PrestataireDetail() {
     () =>
       vendor
         ? (vendor.tagline || vendor.description || "").slice(0, 158)
-        : "Fiche détaillée d'un prestataire de mariage afro ou mixte en Belgique : services, galerie, avis, contact.",
+        : "Fiche détaillée d'un prestataire de mariage afro ou mixte : services, galerie, avis, contact — Europe et Afrique.",
     [vendor]
   );
 

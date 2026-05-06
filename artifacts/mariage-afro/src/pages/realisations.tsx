@@ -336,7 +336,7 @@ export default function Realisations() {
 
   return (
     <div className="w-full">
-      <SEO title="Nos réalisations" description="Galerie de mariages afro et mixtes célébrés en Belgique : inspirations, photos, témoignages de couples." />
+      <SEO title="Nos réalisations" description="Galerie de mariages afro et mixtes célébrés à travers le monde : inspirations, photos, témoignages de couples." />
       {/* Hero éditorial — wine-deep style lamangue */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"

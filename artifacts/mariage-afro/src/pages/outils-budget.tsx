@@ -163,7 +163,7 @@ export default function OutilsBudget() {
 
   return (
     <div className="w-full">
-      <SEO title="Calculateur de budget mariage" description="Estimez en quelques clics le budget de votre mariage afro ou mixte en Belgique : nombre d'invités, standing, région, saison." />
+      <SEO title="Calculateur de budget mariage" description="Estimez en quelques clics le budget de votre mariage afro ou mixte : nombre d'invités, standing, région, saison — outil gratuit disponible partout." />
       <section className="relative bg-wine-deep text-cream pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden">
         <div className="container mx-auto px-6 md:px-12 max-w-4xl text-center">
           <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="section-eyebrow section-eyebrow-light mb-8">

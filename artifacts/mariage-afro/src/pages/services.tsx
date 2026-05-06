@@ -10,7 +10,7 @@ import { SEO } from "@/components/SEO";
 const SERVICES_JSONLD = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  name: "Services pour mariages afro et mixtes en Belgique",
+  name: "Services pour mariages afro et mixtes — Europe & Afrique",
   itemListElement: [
     "Photographie",
     "Vidéographie",
@@ -33,7 +33,7 @@ const SERVICES_JSONLD = {
         name: "Mariage Afro",
         url: "https://www.mariage-afro.com/",
       },
-      areaServed: { "@type": "Country", name: "Belgique" },
+      areaServed: { "@type": "Place", name: "World" },
       serviceType: name,
       url: "https://www.mariage-afro.com/partenaires",
     },
@@ -53,7 +53,7 @@ export default function Services() {
 
   return (
     <div className="w-full">
-      <SEO title="Nos services" description="Photographes, traiteurs, DJ, lieux, décoration : tous les services pour un mariage afro ou mixte en Belgique, sélectionnés et vérifiés." jsonLd={SERVICES_JSONLD} />
+      <SEO title="Nos services" description="Photographes, traiteurs, DJ, lieux, décoration : tous les services pour un mariage afro ou mixte, sélectionnés et vérifiés à travers l'Europe et l'Afrique." jsonLd={SERVICES_JSONLD} />
       {/* Hero éditorial */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"

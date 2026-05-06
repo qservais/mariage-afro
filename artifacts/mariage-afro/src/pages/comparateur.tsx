@@ -153,7 +153,7 @@ export default function Comparateur() {
 
   return (
     <div className="w-full bg-cream min-h-screen">
-      <SEO title="Comparateur de prestataires" description="Comparez jusqu'à 4 prestataires côte à côte pour votre mariage afro ou mixte en Belgique : tarifs, services, avis." />
+      <SEO title="Comparateur de prestataires" description="Comparez jusqu'à 4 prestataires côte à côte pour votre mariage afro ou mixte : tarifs, services, avis — partout en Europe et en Afrique." />
       <section className="bg-wine-deep text-cream py-20 md:py-28">
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
           <Link to="/partenaires" className="text-xs uppercase tracking-[0.3em] text-gold hover:text-cream inline-flex items-center gap-2 mb-6">

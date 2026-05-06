@@ -32,7 +32,7 @@ export default function About() {
 
   return (
     <div className="w-full pt-28">
-      <SEO title="À propos" description="Mariage Afro est née de la passion de célébrer les mariages afro et mixtes en Belgique avec excellence, élégance et authenticité." />
+      <SEO title="À propos" description="Mariage Afro est née de la passion de célébrer les mariages afro et mixtes avec excellence, élégance et authenticité, partout en Europe et en Afrique." />
       {/* Header */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-6 md:px-12 text-center">

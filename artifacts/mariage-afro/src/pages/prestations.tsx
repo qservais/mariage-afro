@@ -866,7 +866,7 @@ export default function Prestations() {
 
   return (
     <div className="w-full">
-      <SEO title="Prestataires de mariage" description="Annuaire de prestataires spécialisés mariages afro et mixtes en Belgique : photographes, traiteurs, DJ, fleuristes, beauté, transport, décoration." />
+      <SEO title="Prestataires de mariage" description="Annuaire de prestataires spécialisés mariages afro et mixtes : photographes, traiteurs, DJ, fleuristes, beauté, transport, décoration — vérifiés à travers l'Europe." />
       {/* Hero éditorial — wine-deep style lamangue */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
