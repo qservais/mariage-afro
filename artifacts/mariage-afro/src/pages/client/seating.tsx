@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { resolveColor } from "@/lib/brand-colors";
 import {
   DndContext,
   PointerSensor,
@@ -291,7 +292,7 @@ export default function SeatingPage() {
 
   const handleExportPng = async () => {
     if (!canvasRef.current) return;
-    const canvas = await html2canvas(canvasRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const canvas = await html2canvas(canvasRef.current, { backgroundColor: resolveColor("--color-white"), scale: 2 });
     const link = document.createElement("a");
     link.download = `plan-de-table-${new Date().toISOString().slice(0, 10)}.png`;
     link.href = canvas.toDataURL("image/png");
@@ -300,7 +301,7 @@ export default function SeatingPage() {
 
   const handleExportPdf = async () => {
     if (!canvasRef.current) return;
-    const canvas = await html2canvas(canvasRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    const canvas = await html2canvas(canvasRef.current, { backgroundColor: resolveColor("--color-white"), scale: 2 });
     const imgData = canvas.toDataURL("image/png");
     const orientation = canvas.width >= canvas.height ? "landscape" : "portrait";
     const pdf = new jsPDF({ orientation, unit: "pt", format: "a4" });

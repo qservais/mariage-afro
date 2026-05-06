@@ -18,6 +18,12 @@ The project is structured as a pnpm monorepo.
 
 The "Mariage Afro" web application (`artifacts/mariage-afro`) is a React + Vite app styled with Tailwind CSS and Framer Motion for animations.
 
+**Semantic colour tokens (Tâche #76):**
+- This repo uses **Tailwind v4** (`@tailwindcss/vite`) — there is **no `tailwind.config.ts`**. All semantic tokens are declared in `src/index.css` under `@theme inline` as CSS custom properties (`--color-*`). No hex values live in any `.ts`/`.tsx` file.
+- `src/lib/brand-colors.ts` exports: `BRAND` (CSS var strings e.g. `"var(--color-secondary)"`), `resolveColor()` (runtime resolver via `getComputedStyle` for canvas/SDK calls), `getBudgetChartColors()` and `getClerkVariables()` factory functions.
+- External brand SVG colours (Google logo, Instagram gradient, WhatsApp) are also tokenised as `--color-google-*`, `--color-ig-*`, `--color-whatsapp` in `index.css`.
+- Known exception: `chart.tsx` uses `[stroke='#ccc']`/`[stroke='#fff']` — these are CSS *selector strings* targeting hardcoded Recharts SVG output attributes, not colour values.
+
 **Audit lisibilité (Tâche #65) — règles clair-sur-clair :**
 - `text-gold` (#c9a96e) est réservé aux fonds sombres (`bg-wine-deep`, `bg-foreground`). Sur fond clair (`bg-cream`, `bg-white`), utiliser `text-gold-deep` (#8a6d3b, ratio 4.6:1 sur cream — passe WCAG AA).
 - Les classes globales custom `.card-editorial`, `.section-eyebrow`, etc. sont écrites en `:where(.card-editorial)` (spécificité 0) pour qu'une utility Tailwind (`bg-wine-deep`, `text-cream`) puisse toujours surcharger sans `!important`. Sans ça, `card-editorial { background: #fff }` écrasait silencieusement les variantes sombres (cas connu : carte « Informations pratiques » de la page Contact).

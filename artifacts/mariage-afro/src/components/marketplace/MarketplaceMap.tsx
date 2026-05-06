@@ -19,7 +19,7 @@ export interface MapPoint {
 
 const wineIcon = L.divIcon({
   className: "marker-wine",
-  html: `<svg viewBox="0 0 32 40" width="32" height="40" xmlns="http://www.w3.org/2000/svg"><path d="M16 0C7.2 0 0 7.2 0 16c0 11 16 24 16 24s16-13 16-24C32 7.2 24.8 0 16 0z" fill="#68191e"/><circle cx="16" cy="15" r="6" fill="#fff4e4"/><circle cx="16" cy="15" r="3" fill="#c9a96e"/></svg>`,
+  html: `<svg viewBox="0 0 32 40" width="32" height="40" xmlns="http://www.w3.org/2000/svg"><path d="M16 0C7.2 0 0 7.2 0 16c0 11 16 24 16 24s16-13 16-24C32 7.2 24.8 0 16 0z" fill="var(--color-secondary)"/><circle cx="16" cy="15" r="6" fill="var(--color-surface)"/><circle cx="16" cy="15" r="3" fill="var(--color-accent)"/></svg>`,
   iconSize: [32, 40],
   iconAnchor: [16, 40],
   popupAnchor: [0, -36],
@@ -75,20 +75,20 @@ export default function MarketplaceMap({ points, height = 560 }: { points: MapPo
                 {p.image && (
                   <img src={p.image} alt={p.name} width={240} height={90} loading="lazy" decoding="async" style={{ width: "100%", height: 90, objectFit: "cover", marginBottom: 8, aspectRatio: "8 / 3" }} />
                 )}
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#68191e", marginBottom: 2 }}>{p.name}</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "var(--color-secondary)", marginBottom: 2 }}>{p.name}</div>
                 {p.category && (
-                  <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em", color: "#c9a96e", marginBottom: 4 }}>
+                  <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em", color: "var(--color-accent)", marginBottom: 4 }}>
                     {p.category}
                   </div>
                 )}
-                {p.city && <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>{p.city}</div>}
+                {p.city && <div style={{ fontSize: 12, color: "var(--color-charcoal)", marginBottom: 4 }}>{p.city}</div>}
                 {typeof p.averageRating === "number" && p.averageRating > 0 && (
-                  <div style={{ fontSize: 12, color: "#c9a96e", marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: "var(--color-accent)", marginBottom: 4 }}>
                     ★ {p.averageRating.toFixed(1)} ({t("marketplace.map.reviews_short", { count: p.reviewCount ?? 0 })})
                   </div>
                 )}
                 {p.href && (
-                  <a href={p.href} style={{ display: "inline-block", marginTop: 4, padding: "6px 12px", background: "#68191e", color: "#fff4e4", textDecoration: "none", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em" }}>
+                  <a href={p.href} style={{ display: "inline-block", marginTop: 4, padding: "6px 12px", background: "var(--color-secondary)", color: "var(--color-surface)", textDecoration: "none", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em" }}>
                     {t("marketplace.map.view_card")}
                   </a>
                 )}

@@ -60,7 +60,7 @@ export async function compressImage(file: File, opts: CompressOptions = {}): Pro
   canvas.height = h;
   const ctx = canvas.getContext("2d");
   if (!ctx) return file;
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "white";
   ctx.fillRect(0, 0, w, h);
   ctx.drawImage(src as CanvasImageSource, 0, 0, w, h);
   if ("close" in src && typeof (src as ImageBitmap).close === "function") {

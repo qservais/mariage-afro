@@ -241,7 +241,7 @@ function Toc({ sections, color }: { sections: Section[]; color: string }) {
 
 export default function GuidePage() {
   return (
-    <div className="bg-[#faf9f7]">
+    <div className="bg-cream-soft">
       <SEO title="Guide complet — Mariage Afro" description="Le guide complet pour utiliser Mariage Afro côté couple et côté prestataire : marketplace, espace client, site mariage, outils, abonnements." />
       {/* Hero */}
       <section className="bg-foreground text-cream py-20 px-6 text-center">

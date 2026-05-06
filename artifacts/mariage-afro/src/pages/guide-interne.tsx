@@ -3,16 +3,16 @@ import { useEffect } from "react";
 const SCREENS_BASE = `${import.meta.env.BASE_URL}guide-screens/`;
 
 const COLORS = {
-  bordeaux: "#68191e",
-  bordeauxLight: "#8a2329",
-  cream: "#fff4e4",
-  creamSoft: "#faf0dc",
-  gold: "#c9a96e",
-  goldDeep: "#8a6d3b",
-  wineDeep: "#1f1416",
-  ink: "#2b1a1c",
-  muted: "#6b5a4f",
-  line: "rgba(104, 25, 30, 0.12)",
+  bordeaux:     "var(--color-secondary)",
+  bordeauxLight:"var(--color-secondary)",
+  cream:        "var(--color-surface)",
+  creamSoft:    "var(--color-cream-soft)",
+  gold:         "var(--color-accent)",
+  goldDeep:     "var(--color-accent-deep)",
+  wineDeep:     "var(--color-primary)",
+  ink:          "var(--color-ink)",
+  muted:        "var(--color-muted-warm)",
+  line:         "rgba(104, 25, 30, 0.12)",
 };
 
 interface FeatureCardProps {
@@ -31,7 +31,7 @@ function FeatureCard({ num, route, title, pill, pillVariant = "gold", bullets, t
   return (
     <article
       style={{
-        background: "#fff",
+        background: "var(--color-white)",
         border: `1px solid ${COLORS.line}`,
         borderRadius: 4,
         overflow: "hidden",
@@ -228,7 +228,7 @@ function FlowGrid({ steps }: { steps: FlowStep[] }) {
           style={{
             textAlign: "center",
             padding: "1.5rem 1rem",
-            background: "#fff",
+            background: "var(--color-white)",
             border: `1px solid ${COLORS.line}`,
             borderRadius: 4,
           }}
@@ -752,7 +752,7 @@ export default function GuideInternePage() {
               { t: "Emails", d: "Transactionnels via Resend (notifications leads, confirmations devis, alertes admin)." },
               { t: "Stockage photos", d: "Object storage avec compression navigateur avant envoi : JPG/PNG/WebP uniquement, redimensionnés. Pas de doublon." },
               { t: "Paiements", d: "Pas de paiement carte intégré côté prestataires : facturation directe par l'équipe après demande." },
-              { t: "Charte visuelle", d: "Cormorant Garamond pour les titres, Montserrat pour le corps. Bordeaux #68191e, crème #fff4e4, doré #c9a96e." },
+              { t: "Charte visuelle", d: "Cormorant Garamond pour les titres, Montserrat pour le corps. Bordeaux (primary), crème (surface), doré (accent)." },
             ].map((it) => (
               <div key={it.t} style={{ background: "rgba(255, 244, 228, 0.04)", border: "1px solid rgba(201, 169, 110, 0.25)", padding: "1.6rem", borderRadius: 4 }}>
                 <h3 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: COLORS.gold, fontSize: "1.3rem", marginBottom: ".4em", fontWeight: 500 }}>{it.t}</h3>

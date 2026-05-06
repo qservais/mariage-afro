@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { ClerkProvider, useClerk } from "@clerk/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { getClerkVariables } from "@/lib/brand-colors";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
@@ -21,18 +22,14 @@ export const clerkAppearance = {
       ? `${window.location.origin}${basePath}/logo.svg`
       : "/logo.svg",
   },
-  variables: {
-    colorPrimary: "#68191e",
-    colorBackground: "#ffffff",
-    colorInputBackground: "#fff4e4",
-    colorText: "#1a1a1a",
-    colorTextSecondary: "#6b6b6b",
-    colorInputText: "#1a1a1a",
-    colorNeutral: "#1a1a1a",
-    borderRadius: "0px",
-    fontFamily: "Montserrat, sans-serif",
-    fontFamilyButtons: "Montserrat, sans-serif",
-    fontSize: "14px",
+  get variables() {
+    return {
+      ...getClerkVariables(),
+      borderRadius: "0px",
+      fontFamily: "Montserrat, sans-serif",
+      fontFamilyButtons: "Montserrat, sans-serif",
+      fontSize: "14px",
+    };
   },
   elements: {
     rootBox: "w-full",

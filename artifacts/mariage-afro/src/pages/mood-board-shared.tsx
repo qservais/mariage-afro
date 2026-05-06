@@ -73,7 +73,7 @@ export default function MoodBoardSharedPage() {
   }
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf9f7] p-8">
+      <div className="min-h-screen flex items-center justify-center bg-cream-soft p-8">
         <p className="text-lg text-foreground">{t("shared_board.invalid_link")}</p>
       </div>
     );
@@ -82,9 +82,9 @@ export default function MoodBoardSharedPage() {
   const isEditor = data.role === "editor";
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-cream-soft">
       <header className="bg-foreground text-cream py-10 text-center">
-        <p className="uppercase tracking-[0.3em] text-xs text-[#c9a96e]">{data.couple.name}</p>
+        <p className="uppercase tracking-[0.3em] text-xs text-gold">{data.couple.name}</p>
         <h1 className="font-serif text-4xl mt-3" data-testid="text-shared-title">{t("shared_board.title")}</h1>
         <p className="mt-3 text-cream/80">
           {isEditor ? t("shared_board.subtitle_editor") : t("shared_board.subtitle_viewer")}

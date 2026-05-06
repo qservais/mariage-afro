@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { resolveColor } from "@/lib/brand-colors";
 import { Globe, Eye, EyeOff, Plus, Trash2, ExternalLink, Loader2, Check, Search, Upload, X, Copy, QrCode } from "lucide-react";
 import QRCode from "qrcode";
 import { prepareImageForUpload, ACCEPTED_IMAGE_ATTR } from "@/lib/image-compress";
@@ -169,7 +170,7 @@ export default function SiteMariagePage() {
   useEffect(() => {
     if (!publicUrl) { setQrDataUrl(null); return; }
     let cancelled = false;
-    QRCode.toDataURL(publicUrl, { margin: 1, width: 240, color: { dark: "#68191e", light: "#fff4e4" } })
+    QRCode.toDataURL(publicUrl, { margin: 1, width: 240, color: { dark: resolveColor("--color-secondary"), light: resolveColor("--color-surface") } })
       .then((url) => { if (!cancelled) setQrDataUrl(url); })
       .catch(() => { if (!cancelled) setQrDataUrl(null); });
     return () => { cancelled = true; };
@@ -457,7 +458,7 @@ export default function SiteMariagePage() {
               <input
                 id="colorPrimary"
                 type="color"
-                value={form.colorPrimary || "#68191e"}
+                value={form.colorPrimary || resolveColor("--color-secondary")}
                 onChange={(e) => setForm({ ...form, colorPrimary: e.target.value })}
                 className="h-10 w-14 border border-border bg-white cursor-pointer p-1"
                 data-testid="input-color-primary"
@@ -487,7 +488,7 @@ export default function SiteMariagePage() {
               <input
                 id="colorBackground"
                 type="color"
-                value={form.colorBackground || "#faf9f7"}
+                value={form.colorBackground || resolveColor("--color-cream-soft")}
                 onChange={(e) => setForm({ ...form, colorBackground: e.target.value })}
                 className="h-10 w-14 border border-border bg-white cursor-pointer p-1"
                 data-testid="input-color-background"

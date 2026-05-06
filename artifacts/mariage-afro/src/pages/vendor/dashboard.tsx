@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
+import { resolveColor } from "@/lib/brand-colors";
 import {
   Briefcase, Image as ImageIcon, ListChecks, Settings, ExternalLink,
   CalendarDays, Eye, Inbox, MessageCircle, Sparkles, Crown,
@@ -303,7 +304,7 @@ function ViewsChart({ series, title, totalLabel }: { series: { date: string; vie
               y={40 - h}
               width={0.8}
               height={Math.max(0.5, h)}
-              fill="#c9a96e"
+              fill={resolveColor("--color-accent")}
               opacity={0.85}
             >
               <title>{`${p.date}: ${p.views}`}</title>
@@ -353,7 +354,7 @@ function MiniLeadsBars({ data }: { data: { date: string; leads: number }[] }) {
       <svg viewBox={`0 0 ${Math.max(1, data.length)} 24`} preserveAspectRatio="none" className="w-full h-12">
         {data.map((p, i) => {
           const h = (p.leads / max) * 22;
-          return <rect key={p.date} x={i + 0.1} y={24 - h} width={0.8} height={Math.max(0.5, h)} fill="#68191e" opacity={0.85}><title>{`${p.date}: ${p.leads}`}</title></rect>;
+          return <rect key={p.date} x={i + 0.1} y={24 - h} width={0.8} height={Math.max(0.5, h)} fill={resolveColor("--color-secondary")} opacity={0.85}><title>{`${p.date}: ${p.leads}`}</title></rect>;
         })}
       </svg>
     </div>

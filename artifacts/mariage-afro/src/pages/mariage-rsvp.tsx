@@ -56,7 +56,7 @@ export default function MariageRsvpPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center px-6">
+      <div className="min-h-screen bg-cream-soft flex items-center justify-center px-6">
         <div className="bg-white border border-border p-10 text-center max-w-md">
           <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-4" />
           <h1 className="text-2xl font-bold font-serif mb-2">{t("mariage_public.rsvp_done_title")}</h1>
@@ -72,7 +72,7 @@ export default function MariageRsvpPage() {
   const canSubmit = !!form.name.trim() && emailValid && !customMissing && !submit.isPending;
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-cream-soft">
       <section className="py-12 text-center bg-foreground">
         <Heart className="w-10 h-10 text-primary mx-auto mb-3" />
         <h1 className="text-3xl md:text-4xl font-bold font-serif text-white">{t("mariage_public.rsvp_title")}</h1>

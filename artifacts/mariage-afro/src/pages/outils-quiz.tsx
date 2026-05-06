@@ -27,7 +27,7 @@ const PROFILES: Record<ProfileId, Profile> = {
     description: "Tonalité raffinée, palette dorée et bordeaux, drapés de bazin et ambiance feutrée. Une cérémonie qui célèbre l'héritage avec sobriété.",
     recommendedTags: ["bazin", "wedding-planner", "calligraphie"],
     image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80",
-    gradient: "from-[#68191e] via-[#8b3038] to-[#c9a96e]",
+    gradient: "from-secondary via-bordeaux-light to-accent",
   },
   fusion_caribeenne: {
     id: "fusion_caribeenne",
@@ -35,7 +35,7 @@ const PROFILES: Record<ProfileId, Profile> = {
     description: "Couleurs vibrantes, rythmes soca/zouk, fleurs tropicales et énergie festive. L'art de mélanger les traditions sans rien renier.",
     recommendedTags: ["dj-zouk", "tropical-deco", "rhum"],
     image: "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=900&q=80",
-    gradient: "from-[#a44a2c] via-[#c9a96e] to-[#fff4e4]",
+    gradient: "from-sienna via-accent to-surface",
   },
   afro_chic: {
     id: "afro_chic",
@@ -43,7 +43,7 @@ const PROFILES: Record<ProfileId, Profile> = {
     description: "Architecture contemporaine, matériaux nobles (laiton, terracotta), prints minimalistes. Pour les couples ancrés dans la modernité.",
     recommendedTags: ["lieu-loft", "deco-minimal", "photo-editorial"],
     image: "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=900&q=80",
-    gradient: "from-[#1f1416] via-[#68191e] to-[#c9a96e]",
+    gradient: "from-primary via-secondary to-accent",
   },
   tradi_revisitee: {
     id: "tradi_revisitee",
@@ -51,7 +51,7 @@ const PROFILES: Record<ProfileId, Profile> = {
     description: "Cérémonie coutumière complète (dot, libations) suivie d'une réception épurée. L'authenticité au premier plan.",
     recommendedTags: ["ceremonie-coutumiere", "tenues-traditionnelles", "videaste-documentaire"],
     image: "https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=900&q=80",
-    gradient: "from-[#68191e] via-[#a44a2c] to-[#c9a96e]",
+    gradient: "from-secondary via-sienna to-accent",
   },
   minimaliste_dore: {
     id: "minimaliste_dore",
@@ -59,7 +59,7 @@ const PROFILES: Record<ProfileId, Profile> = {
     description: "Lignes pures, ivoire & gold uniquement, scénographie épurée. La sophistication par la retenue.",
     recommendedTags: ["fleuriste-japonisant", "calligraphie", "lieu-blanc"],
     image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=80",
-    gradient: "from-[#fff4e4] via-[#c9a96e] to-[#68191e]",
+    gradient: "from-surface via-accent to-secondary",
   },
 };
 

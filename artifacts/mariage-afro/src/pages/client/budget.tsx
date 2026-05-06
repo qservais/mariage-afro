@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { BudgetItem as Item, BudgetItemCreate, BudgetItemPatch } from "@/lib/clientTypes";
 
-const COLORS = ["#68191e", "#a04144", "#c97679", "#e0a3a6", "#f1c5c8", "#8b3a3e", "#5a1518"];
+import { getBudgetChartColors } from "@/lib/brand-colors";
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
 
 export default function BudgetPage() {
+  const COLORS = getBudgetChartColors();
   const { t, i18n } = useTranslation();
   const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
   const locale = LOCALE_MAP[lang] || "fr-BE";

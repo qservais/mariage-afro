@@ -48,7 +48,7 @@
 /* === A11y: visible focus ring on all interactive elements (WCAG 2.4.7) === */
 @layer base {
   *:focus-visible {
-    outline: 2px solid #c9a96e; /* gold */
+    outline: 2px solid var(--color-gold);
     outline-offset: 2px;
     border-radius: 2px;
   }
@@ -65,12 +65,38 @@
 
 @theme inline {
   --color-cream: #fff4e4;
+  --color-cream-soft: #faf9f7;
   --color-charcoal: #3b3632;
   --color-wine-deep: #1f1416;
   --color-wine-mid: #2a1c1f;
   --color-gold: #c9a96e;
   --color-gold-light: #d9bc88;
   --color-gold-deep: #8a6d3b;
+  --color-bordeaux-light: #8b3038;
+  --color-sienna: #a44a2c;
+  --color-white: #ffffff;
+  --color-ink: #2b1a1c;
+  --color-muted-warm: #6b5a4f;
+  --color-neutral-text: #1a1a1a;
+  --color-neutral-text-soft: #6b6b6b;
+
+  /* Budget pie-chart colour ramp (bordeaux-to-rose) */
+  --color-budget-1: #a04144;
+  --color-budget-2: #c97679;
+  --color-budget-3: #e0a3a6;
+  --color-budget-4: #f1c5c8;
+  --color-budget-5: #8b3a3e;
+  --color-budget-6: #5a1518;
+
+  /* Wedding template palette tokens */
+  --color-tmpl-boheme-surface: #fffaf1;
+  --color-tmpl-boheme-ink: #3b2a1d;
+  --color-tmpl-moderne-surface: #f7f7f5;
+  --color-tmpl-moderne-ink: #101010;
+  --color-tmpl-tropical-bg: #f4f8f3;
+  --color-tmpl-tropical-ink: #0f2e22;
+  --color-tmpl-tropical-accent: #1e5b3a;
+  --color-tmpl-tropical-eyebrow: #ff8a65;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -122,6 +148,38 @@
   --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
   --color-sidebar-accent-border: var(--sidebar-accent-border);
   --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  /* ── Semantic brand tokens ───────────────────────────────────────────────
+   * These override the shadcn defaults so bg-primary / text-accent / etc.
+   * always resolve to the Mariage Afro brand palette.
+   *   primary     = wine-deep  #1f1416   (darkest background / headline)
+   *   secondary   = bordeaux   #68191e   (brand red)
+   *   accent      = gold       #c9a96e   (gold highlight — dark surfaces)
+   *   accent-deep = gold-deep  #8a6d3b   (gold on light surfaces, WCAG AA)
+   *   surface     = cream      #fff4e4   (warm off-white background)
+   * ──────────────────────────────────────────────────────────────────────── */
+  --color-primary:     #1f1416;
+  --color-secondary:   #68191e;
+  --color-accent:      #c9a96e;
+  --color-accent-deep: #8a6d3b;
+  --color-surface:     #fff4e4;
+
+  /* External-brand utility: WhatsApp green — only used in StickyCTA */
+  --color-whatsapp:       #25d366;
+  --color-whatsapp-hover: #1eb85a;
+
+  /* External-brand: Google logo colours (mandated by Google brand guidelines) */
+  --color-google-blue:   #4285F4;
+  --color-google-green:  #34A853;
+  --color-google-yellow: #FBBC05;
+  --color-google-red:    #EA4335;
+
+  /* External-brand: Instagram gradient (mandated by Meta brand guidelines) */
+  --color-ig-1: #f09433;
+  --color-ig-2: #e6683c;
+  --color-ig-3: #dc2743;
+  --color-ig-4: #cc2366;
+  --color-ig-5: #bc1888;
 
   --font-sans: var(--app-font-sans);
   --font-serif: var(--app-font-serif);

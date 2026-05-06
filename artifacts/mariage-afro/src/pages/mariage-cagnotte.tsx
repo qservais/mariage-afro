@@ -46,7 +46,7 @@ export default function MariageCagnottePage() {
   if (isLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-cream-soft">
       <section className="py-16 text-center bg-foreground">
         <Gift className="w-10 h-10 text-primary mx-auto mb-3" />
         <h1 className="text-3xl md:text-4xl font-bold font-serif text-white">{t("mariage_cagnotte.title")}</h1>
