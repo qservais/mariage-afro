@@ -153,13 +153,15 @@
    * These override the shadcn defaults so bg-primary / text-accent / etc.
    * always resolve to the Mariage Afro brand palette.
    *   primary     = wine-deep  #141414   (darkest background / headline)
-   *   secondary   = bordeaux   #68191e   (brand red)
+   *   secondary   = bordeaux   #68191e   (brand red — PRIMARY brand color)
+   *   bordeaux    = #68191e    explicit alias → use bg-bordeaux / text-bordeaux
    *   accent      = gold       #c9a96e   (gold highlight — dark surfaces)
    *   accent-deep = gold-deep  #8a6d3b   (gold on light surfaces, WCAG AA)
    *   surface     = cream      #fff4e4   (warm off-white background)
    * ──────────────────────────────────────────────────────────────────────── */
   --color-primary:     #141414;
   --color-secondary:   #68191e;
+  --color-bordeaux:    #68191e;
   --color-accent:      #c9a96e;
   --color-accent-deep: #8a6d3b;
   --color-surface:     #fff4e4;
@@ -472,20 +474,20 @@ html {
     width: 3rem;
   }
 
-  /* Filled wine-deep editorial primary button — when on cream backgrounds */
+  /* Bordeaux editorial primary button — brand CTA on cream/white backgrounds */
   .btn-editorial-solid {
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 1.75rem;
-    background: #141414;
+    background: #68191e;
     color: #fff4e4;
     font-size: 0.6875rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.25em;
     transition: all 0.3s ease;
-    border: 1px solid #141414;
+    border: 1px solid #68191e;
     cursor: pointer;
     text-decoration: none;
   }
@@ -494,11 +496,12 @@ html {
     display: block;
     width: 2rem;
     height: 1px;
-    background: #c9a96e;
+    background: #fff4e4;
     transition: width 0.3s ease;
   }
   .btn-editorial-solid:hover {
-    background: #2a1c1f;
+    background: #8b3038;
+    border-color: #8b3038;
   }
   .btn-editorial-solid:hover::after {
     width: 3rem;
@@ -554,28 +557,28 @@ html {
     cursor: not-allowed;
   }
 
-  /* Compact wine-deep filled — primary action in cards */
+  /* Compact bordeaux filled — primary action in cards */
   .btn-editorial-compact-solid {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     padding: 0.75rem 0.75rem;
-    background: #141414;
+    background: #68191e;
     color: #fff4e4;
     font-size: 0.6875rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     transition: all 0.25s ease;
-    border: 1px solid #141414;
+    border: 1px solid #68191e;
     cursor: pointer;
     text-decoration: none;
   }
   .btn-editorial-compact-solid:hover {
     background: transparent;
-    color: #141414;
-    border-color: #c9a96e;
+    color: #68191e;
+    border-color: #68191e;
   }
   .btn-editorial-compact-solid:disabled {
     opacity: 0.5;

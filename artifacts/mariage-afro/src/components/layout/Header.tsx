@@ -176,11 +176,7 @@ export default function Header() {
 
             <Link
               to="/contact#contact-form"
-              className={`hidden md:inline-flex items-center gap-2 px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-semibold border transition-colors ${
-                isOverDark || isScrolled || mobileMenuOpen
-                  ? "bg-gold text-wine-deep border-gold hover:bg-cream hover:border-cream"
-                  : "bg-wine-deep text-cream border-wine-deep hover:bg-gold hover:text-wine-deep hover:border-gold"
-              }`}
+              className="hidden md:inline-flex items-center gap-2 px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-semibold border transition-colors bg-bordeaux text-cream border-bordeaux hover:bg-bordeaux-light hover:border-bordeaux-light"
               aria-label={t("header.cta_rdv")}
               data-testid="link-header-rdv"
             >
@@ -281,7 +277,7 @@ export default function Header() {
               <Link
                 to="/contact#contact-form"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gold text-wine-deep border border-gold hover:bg-cream hover:border-cream transition-colors text-sm uppercase tracking-[0.25em] font-semibold"
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-bordeaux text-cream border border-bordeaux hover:bg-bordeaux-light hover:border-bordeaux-light transition-colors text-sm uppercase tracking-[0.25em] font-semibold"
                 aria-label={t("header.cta_rdv")}
                 data-testid="link-mobile-rdv"
               >

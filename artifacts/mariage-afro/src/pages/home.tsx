@@ -269,11 +269,11 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-              <Link to="/contact" className="group inline-flex items-center gap-3 border border-gold/60 hover:border-gold px-7 py-3.5 transition-all hover:bg-gold/10">
-                <span className="text-[11px] uppercase tracking-[0.25em] text-gold font-medium">
+              <Link to="/contact" className="group inline-flex items-center gap-3 bg-bordeaux hover:bg-bordeaux-light border border-bordeaux hover:border-bordeaux-light px-7 py-3.5 transition-all">
+                <span className="text-[11px] uppercase tracking-[0.25em] text-cream font-medium">
                   {t("hero.cta_primary")}
                 </span>
-                <span className="block w-8 h-px bg-gold transition-all group-hover:w-12"></span>
+                <span className="block w-8 h-px bg-cream/60 transition-all group-hover:w-12"></span>
               </Link>
               <Link to="/plateforme" className="group inline-flex items-center gap-3 px-2 py-4 transition-all">
                 <span className="text-[11px] uppercase tracking-[0.25em] text-cream/80 group-hover:text-gold font-medium transition-colors">
@@ -414,7 +414,7 @@ export default function Home() {
             <motion.div {...fadeIn} transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}>
               <Link
                 to="/partenaires#become-partner"
-                className="group relative block bg-wine-deep text-cream hover:bg-wine-deep/95 transition-colors duration-500 p-8 md:p-12 lg:p-14 h-full"
+                className="group relative block bg-bordeaux text-cream hover:bg-bordeaux-light transition-colors duration-500 p-8 md:p-12 lg:p-14 h-full"
                 data-testid="link-audience-b2b"
               >
                 <div className="flex items-start justify-between mb-10 md:mb-14">
@@ -475,10 +475,10 @@ export default function Home() {
                 className="relative bg-cream p-10 md:p-12 flex flex-col"
               >
                 <div className="flex items-baseline gap-4 mb-8">
-                  <span className="font-display text-6xl md:text-7xl text-gold-deep leading-none">
+                  <span className="font-display text-6xl md:text-7xl text-bordeaux leading-none">
                     {step.num}
                   </span>
-                  <div className="h-px flex-grow bg-gold/40"></div>
+                  <div className="h-px flex-grow bg-bordeaux/20"></div>
                 </div>
                 <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">
                   {step.title}
