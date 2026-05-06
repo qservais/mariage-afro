@@ -2,9 +2,7 @@
 
 ## Overview
 
-This project is a pnpm workspace monorepo utilizing TypeScript to develop "Mariage Afro," a premium platform for Afro & mixed weddings in Belgium. It includes a React-based web application and an Express.js API server. The platform aims to connect couples with vendors, manage wedding planning, and provide tools for a seamless wedding experience.
-
-The core business vision is to become the leading platform for Afro and mixed heritage weddings in Belgium, offering a tailored experience for couples and a dedicated marketplace for vendors. Key capabilities include vendor discovery, wedding planning tools (budget, guest list, planning tasks), a personalized wedding website builder, and integrated communication features.
+Mariage Afro — plateforme premium internationale pour mariages afro & mixtes. Connecte les couples à des prestataires vérifiés, fournit des outils d'organisation complets (budget, invités, planning, site de mariage) et coordonne chaque aspect du Jour J. Portée : 55 pays africains + destinations monde (Europe, Asie, Amérique). Siège : Avenue Louise 231, 1050 Bruxelles.
 
 ## User Preferences
 
