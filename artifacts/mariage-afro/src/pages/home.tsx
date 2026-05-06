@@ -24,18 +24,22 @@ const HOME_LOCAL_BUSINESS_JSONLD = {
   image: "https://www.mariage-afro.com/opengraph.jpg",
   logo: "https://www.mariage-afro.com/logo.svg",
   description:
-    "Plateforme premium dédiée aux mariages afro et mixtes en Belgique : marketplace de prestataires vérifiés, espace client complet, outils d'organisation.",
+    "Plateforme premium internationale dédiée aux mariages afro et mixtes : marketplace de prestataires vérifiés, espace client complet, coordination sur le Jour J.",
   priceRange: "€€-€€€€",
   address: {
     "@type": "PostalAddress",
     addressCountry: "BE",
     addressLocality: "Bruxelles",
+    streetAddress: "Avenue Louise 231",
+    postalCode: "1050",
   },
   areaServed: [
+    { "@type": "Place", name: "Monde" },
     { "@type": "Country", name: "Belgique" },
-    { "@type": "AdministrativeArea", name: "Bruxelles" },
-    { "@type": "AdministrativeArea", name: "Wallonie" },
-    { "@type": "AdministrativeArea", name: "Flandre" },
+    { "@type": "Country", name: "France" },
+    { "@type": "Country", name: "Maroc" },
+    { "@type": "Country", name: "Sénégal" },
+    { "@type": "Country", name: "Côte d'Ivoire" },
   ],
   contactPoint: {
     "@type": "ContactPoint",

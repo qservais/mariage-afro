@@ -70,13 +70,17 @@ export default function Footer() {
             <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-gold mb-6">
               {t("footer.contact_title")}
             </h4>
-            <ul className="space-y-3 text-sm text-cream/80 mb-8 font-light">
+            <ul className="space-y-3 text-sm text-cream/80 mb-6 font-light">
               <li>{t("footer.address")}</li>
               <li><a href={`mailto:${t("footer.email")}`} className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("footer.email")}</a></li>
               {phoneAvailable && (
                 <li><a href={`tel:${phone.replace(/\s+/g, "")}`} className="hover:text-gold hover:underline underline-offset-4 transition-colors">{phone}</a></li>
               )}
             </ul>
+            <div className="mb-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cream/40 mb-1">{t("footer.hq_label")}</p>
+              <address className="not-italic text-sm text-cream/50 font-light leading-relaxed whitespace-pre-line">{t("footer.hq_address")}</address>
+            </div>
             <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-gold mb-4">
               {t("footer.social_title")}
             </h4>

@@ -32,12 +32,14 @@
     "cta_rdv": "Book a call"
   },
   "footer": {
-    "tagline": "Belgium's first premium platform dedicated to Afro and mixed weddings.",
+    "tagline": "The international premium platform dedicated to Afro and mixed weddings.",
     "nav_title": "Navigation",
     "explore_title": "Explore",
     "contact_title": "Contact",
     "social_title": "Social",
     "address": "Brussels, Belgium",
+    "hq_address": "Avenue Louise 231\n1050 Brussels\nBelgium",
+    "hq_label": "Registered office",
     "email": "info@mariage-afro.com",
     "phone": "+32 XXX XX XX XX",
     "legal": "Legal Notice",
@@ -77,10 +79,10 @@
     "back_home": "Back to home"
   },
   "meta": {
-    "home": "Mariage Afro — Afro & Mixed Weddings in Belgium",
+    "home": "Mariage Afro — The Platform for Afro & Mixed Weddings",
     "services": "Services — Mariage Afro",
-    "home_description": "Premium wedding planning for Afro and mixed weddings in Belgium. Full planning, day-of coordination, vendor selection.",
-    "services_description": "Discover our wedding planning services: full planning, day-of coordination and vendor selection for your Afro or mixed wedding in Belgium."
+    "home_description": "A platform that centralizes and coordinates the best vendors for your Afro or mixed wedding. Full planning, day-of coordination, international vendor selection.",
+    "services_description": "Discover our services: full coordination, day-of coordination and vendor selection for your Afro or mixed wedding, anywhere in the world."
   },
   "legal": {
     "common": {

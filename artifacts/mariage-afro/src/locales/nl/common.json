@@ -32,12 +32,14 @@
     "cta_rdv": "Afspraak maken"
   },
   "footer": {
-    "tagline": "Het eerste premium platform gewijd aan Afro en gemengde bruiloften in België.",
+    "tagline": "Het internationale premium platform gewijd aan Afro en gemengde bruiloften.",
     "nav_title": "Navigatie",
     "explore_title": "Ontdek",
     "contact_title": "Contact",
     "social_title": "Sociaal",
     "address": "Brussel, België",
+    "hq_address": "Avenue Louise 231\n1050 Brussel\nBelgië",
+    "hq_label": "Hoofdkantoor",
     "email": "info@mariage-afro.com",
     "phone": "+32 XXX XX XX XX",
     "legal": "Wettelijke vermeldingen",
@@ -77,10 +79,10 @@
     "back_home": "Terug naar de startpagina"
   },
   "meta": {
-    "home": "Mariage Afro — Afro & Gemengde Bruiloften in België",
+    "home": "Mariage Afro — Het Platform voor Afro & Gemengde Bruiloften",
     "services": "Diensten — Mariage Afro",
-    "home_description": "Premium wedding planning voor afro en mixed bruiloften in België. Volledige organisatie, day-of-coördinatie, selectie van leveranciers.",
-    "services_description": "Ontdek onze diensten: volledige wedding planning, day-of-coördinatie en selectie van leveranciers voor uw afro of mixed bruiloft in België."
+    "home_description": "Een platform dat de beste leveranciers centraliseert en coördineert voor uw Afro of gemengde bruiloft. Volledige organisatie, day-of-coördinatie, internationale leveranciersselectie.",
+    "services_description": "Ontdek onze diensten: volledige coördinatie, day-of-coördinatie en selectie van leveranciers voor uw Afro of gemengde bruiloft, wereldwijd."
   },
   "legal": {
     "common": {

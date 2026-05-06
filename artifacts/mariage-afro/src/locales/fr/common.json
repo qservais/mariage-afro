@@ -32,12 +32,14 @@
     "cta_rdv": "Prendre RDV"
   },
   "footer": {
-    "tagline": "La première plateforme premium dédiée aux mariages afro et mixtes en Belgique.",
+    "tagline": "La plateforme premium internationale dédiée aux mariages afro et mixtes.",
     "nav_title": "Navigation",
     "explore_title": "Explorer",
     "contact_title": "Contact",
     "social_title": "Social",
     "address": "Bruxelles, Belgique",
+    "hq_address": "Avenue Louise 231\n1050 Bruxelles\nBelgique",
+    "hq_label": "Siège social",
     "email": "info@mariage-afro.com",
     "phone": "+32 XXX XX XX XX",
     "legal": "Mentions légales",
@@ -77,10 +79,10 @@
     "back_home": "Retourner à l'accueil"
   },
   "meta": {
-    "home": "Mariage Afro — Mariages Afro & Mixtes en Belgique",
+    "home": "Mariage Afro — La Plateforme des Mariages Afro & Mixtes",
     "services": "Services — Mariage Afro",
-    "home_description": "Wedding planning premium pour mariages afro et mixtes en Belgique. Organisation complète, coordination jour J, sélection de prestataires.",
-    "services_description": "Découvrez nos services de wedding planning complet, coordination jour-J et sélection de prestataires pour votre mariage afro ou mixte en Belgique."
+    "home_description": "Une plateforme qui centralise et coordonne les meilleurs prestataires pour votre mariage afro ou mixte. Organisation complète, coordination jour J, sélection internationale.",
+    "services_description": "Découvrez nos services : coordination complète, coordination jour-J et sélection de prestataires pour votre mariage afro ou mixte, partout dans le monde."
   },
   "legal": {
     "common": {
