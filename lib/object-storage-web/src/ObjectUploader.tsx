@@ -26,6 +26,8 @@ interface ObjectUploaderProps {
     result: UploadResult<Record<string, unknown>, Record<string, unknown>>
   ) => void;
   buttonClassName?: string;
+  /** Optional data-testid forwarded to the trigger button for E2E tests. */
+  "data-testid"?: string;
   children: ReactNode;
 }
 
@@ -64,6 +66,7 @@ export function ObjectUploader({
   onGetUploadParameters,
   onComplete,
   buttonClassName,
+  "data-testid": dataTestId,
   children,
 }: ObjectUploaderProps) {
   const onCompleteRef = useRef(onComplete);
@@ -91,7 +94,7 @@ export function ObjectUploader({
 
   return (
     <div>
-      <button onClick={() => setShowModal(true)} className={buttonClassName}>
+      <button onClick={() => setShowModal(true)} className={buttonClassName} data-testid={dataTestId}>
         {children}
       </button>
 

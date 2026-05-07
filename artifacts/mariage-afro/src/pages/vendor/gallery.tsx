@@ -55,6 +55,7 @@ export default function VendorGalleryPage() {
 
       <div className="bg-white border border-neutral-200 p-6 space-y-5">
         <ObjectUploader
+          data-testid="button-upload-gallery"
           buttonClassName="inline-flex items-center gap-2 bg-wine-deep text-cream hover:bg-wine-deep/90 rounded-none uppercase tracking-wider text-xs h-10 px-4"
           maxNumberOfFiles={10}
           maxFileSize={10 * 1024 * 1024}

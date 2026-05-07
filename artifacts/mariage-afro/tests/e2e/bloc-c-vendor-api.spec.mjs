@@ -169,27 +169,22 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     const convs = await convsResp.json().catch(() => null);
     check("GET /api/vendor/conversations → array", Array.isArray(convs));
 
-    // — Gallery : flux UI complet — pré-peuplement API + affichage UI + delete UI ─
-    // Étape 0 : pré-peupler via API (URL externe — acceptée sans upload intent)
-    const galleryPreFill = await authFetch("/api/vendor/profile/images", jwt, {
-      method: "PATCH",
-      body: { images: ["https://picsum.photos/seed/e2e-gallery-ui/400/300"], coverImage: null },
-    });
-    check("Galerie pré-peuplée via API → 200", galleryPreFill.status === 200);
+    // — Gallery : flux UI complet — galerie vide → upload fichier Uppy → affichage → delete UI ─
 
-    // Étape 1 : naviguer vers /espace-pro/gallery (page UI)
+    // Étape 0 : partir de 0 images (état vide garanti)
+    await authFetch("/api/vendor/profile/images", jwt, { method: "PATCH", body: { images: [], coverImage: null } });
+
+    // Étape 1 : naviguer vers /espace-pro/gallery
     await page.goto(`${BASE}/espace-pro/gallery`, { waitUntil: "networkidle", timeout: 25000 });
     await page.waitForTimeout(1000);
 
-    // Étape 2 : vérifier que la grille de galerie est visible
+    // Étape 2 : grille visible + état vide confirmé
     check("UI /espace-pro/gallery → grille gallery affichée",
       await page.locator('[data-testid="grid-vendor-gallery"]').isVisible({ timeout: 5000 }).catch(() => false));
+    const countInit = await page.locator('[data-testid^="image-vendor-gallery-"]').count();
+    check("UI Galerie → état initial vide (0 images)", countInit === 0);
 
-    // Étape 3 : vérifier que l'image pré-peuplée s'affiche dans la grille
-    check("UI Galerie → image présente dans la grille",
-      await page.locator('[data-testid="image-vendor-gallery-0"]').isVisible({ timeout: 5000 }).catch(() => false));
-
-    // Étape 4 : upload via file input Uppy (input[type="file"] présent dans le DOM même caché)
+    // Étape 3 : upload via bouton ObjectUploader (data-testid="button-upload-gallery") → modal Uppy
     // prettier-ignore
     const minimalJpeg = Buffer.from(
       "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k=",
@@ -201,48 +196,47 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     const tmpJpeg = pathJoin(tmpdir(), `e2e-gallery-${Date.now()}.jpg`);
     writeFileSync(tmpJpeg, minimalJpeg);
 
-    let uploadedViaUi = false;
-    try {
-      // Ouvrir le DashboardModal Uppy (cliquer le bouton upload)
-      const uploadBtn = page.locator('button').filter({ hasText: /ajouter|upload/i }).first();
-      if (await uploadBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await uploadBtn.click();
-        await page.waitForTimeout(600);
-      }
-      // Uppy Dashboard crée un input[type="file"] dans le DOM (caché, mais accessible)
-      const fileInput = page.locator('input[type="file"]').first();
-      if (await fileInput.count() > 0) {
-        await fileInput.setInputFiles(tmpJpeg);
-        await page.waitForTimeout(500);
-        // Cliquer "Upload" dans le modal Uppy si visible
-        const uploadAllBtn = page.locator('.uppy-StatusBar-actionBtn--upload, [data-uppy] button[type="button"]').first();
-        if (await uploadAllBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
-          await uploadAllBtn.click({ force: true });
-        }
-        await page.waitForTimeout(4000); // laisser upload + TanStack Query s'effectuer
-        uploadedViaUi = true;
-      }
-    } catch { /* Uppy modal non accessible — test se poursuit avec image pré-peuplée */ }
+    // Ouvrir le DashboardModal Uppy via le bouton identifié par data-testid
+    await page.locator('[data-testid="button-upload-gallery"]').click();
+    await page.waitForTimeout(800); // laisser le modal Uppy se monter dans le DOM
 
-    // (uploadedViaUi peut être true ou false selon l'accessibilité Uppy en headless)
-    const imgCountAfterUpload = await page.locator('[data-testid^="image-vendor-gallery-"]').count();
-    check("UI Galerie → image(s) affichée(s) après upload fichier", imgCountAfterUpload >= 1);
+    // Interagir avec le file input Uppy (présent dans le DOM après ouverture du modal)
+    const fileInput = page.locator('.uppy-Dashboard-input, input[type="file"]').first();
+    check("UI Galerie → file input Uppy présent après ouverture du modal",
+      await fileInput.count().then(c => c > 0));
+    await fileInput.setInputFiles(tmpJpeg);
+    await page.waitForTimeout(400);
 
-    // Étape 5 : remettre à exactement 1 image pour garantir la prédictibilité du delete
-    await authFetch("/api/vendor/profile/images", jwt, {
-      method: "PATCH",
-      body: { images: ["https://picsum.photos/seed/e2e-gallery-ui/400/300"], coverImage: null },
-    });
+    // Cliquer le bouton "Upload" dans la barre de statut Uppy
+    const uppyUploadBtn = page.locator('.uppy-StatusBar-actionBtn--upload').first();
+    if (await uppyUploadBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await uppyUploadBtn.click({ force: true });
+    }
+    await page.waitForTimeout(6000); // laisser PUT presigned-URL + PATCH profil + React Query s'effectuer
+
+    // Fermer le modal Uppy si toujours ouvert
+    const closeBtn = page.locator('[aria-label="Close modal"], .uppy-Dashboard-close').first();
+    if (await closeBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await closeBtn.click();
+      await page.waitForTimeout(300);
+    }
+
+    // Étape 4 : vérification déterministe — le count DOIT avoir augmenté depuis 0
+    const countAfterUpload = await page.locator('[data-testid^="image-vendor-gallery-"]').count();
+    check("UI Galerie → image(s) affichée(s) après upload fichier (count > 0)", countAfterUpload > countInit);
+    check("UI Galerie → image présente dans la grille",
+      await page.locator('[data-testid="image-vendor-gallery-0"]').isVisible({ timeout: 3000 }).catch(() => false));
+
+    // Étape 5 : supprimer via hover + bouton delete (UI)
     await page.reload({ waitUntil: "networkidle", timeout: 25000 });
     await page.waitForTimeout(800);
 
     check("UI Galerie → image disponible pour suppression",
       await page.locator('[data-testid="image-vendor-gallery-0"]').isVisible({ timeout: 5000 }).catch(() => false));
 
-    const countBefore = await page.locator('[data-testid^="image-vendor-gallery-"]').count();
+    const countBeforeDelete = await page.locator('[data-testid^="image-vendor-gallery-"]').count();
 
-    // Déclencher le CSS group-hover via page.mouse.move() (plus fiable que element.hover() pour Tailwind group)
-    // Le data-testid "image-vendor-gallery-0" est sur le <img>, la div.group parente reçoit :hover via CSS bubbling
+    // Déclencher CSS group-hover via page.mouse.move() sur le centre de l'image
     const imgBox = await page.locator('[data-testid="image-vendor-gallery-0"]').boundingBox();
     if (imgBox) {
       await page.mouse.move(imgBox.x + imgBox.width / 2, imgBox.y + imgBox.height / 2);
@@ -251,8 +245,8 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     await page.locator('[data-testid="button-remove-0"]').click({ force: true });
     await page.waitForTimeout(2000); // attendre mutation API + React Query invalidation
 
-    const countAfter = await page.locator('[data-testid^="image-vendor-gallery-"]').count();
-    check("UI Galerie → image supprimée via bouton delete (UI)", countAfter === countBefore - 1);
+    const countAfterDelete = await page.locator('[data-testid^="image-vendor-gallery-"]').count();
+    check("UI Galerie → image supprimée via bouton delete (UI)", countAfterDelete === countBeforeDelete - 1);
 
     // Nettoyage : vider la galerie via API
     await authFetch("/api/vendor/profile/images", jwt, { method: "PATCH", body: { images: [], coverImage: null } });
