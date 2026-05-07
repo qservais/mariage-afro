@@ -71,7 +71,8 @@ export default function Lieux() {
         style: v.style as string,
         desc: v.description as string,
         options: (v.options as string[]) ?? [],
-        image: resolveVenueImage((v.coverImage as string | null) ?? ((v.images as string[]) ?? [])[0]),
+        image: resolveVenueImage((v.coverImage as string | null) ?? ((v.images as string[]) ?? [])[0])
+          ?? "https://images.unsplash.com/photo-1549224174-8c0e61705985?auto=format&fit=crop&w=1200&q=80",
         latitude: (v.latitude as string | null) ?? null,
         longitude: (v.longitude as string | null) ?? null,
       }));

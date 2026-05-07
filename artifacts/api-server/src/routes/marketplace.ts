@@ -180,39 +180,41 @@ const trackViewSchema = z.object({
 router.post("/marketplace/vendors/:id/track-view", async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
-  const parsed = trackViewSchema.safeParse(req.body ?? {});
-  const source = parsed.success ? (parsed.data.source ?? "detail") : "detail";
-  const referrer = parsed.success ? (parsed.data.referrer ?? null) : null;
+  try {
+    const parsed = trackViewSchema.safeParse(req.body ?? {});
+    const source = parsed.success ? (parsed.data.source ?? "detail") : "detail";
+    const referrer = parsed.success ? (parsed.data.referrer ?? null) : null;
 
-  // Best-effort vendor existence check (avoid orphan rows)
-  const [vendor] = await db
-    .select({ id: marketplaceVendorsTable.id })
-    .from(marketplaceVendorsTable)
-    .where(eq(marketplaceVendorsTable.id, id));
-  if (!vendor) { res.status(204).end(); return; }
+    const [vendor] = await db
+      .select({ id: marketplaceVendorsTable.id })
+      .from(marketplaceVendorsTable)
+      .where(eq(marketplaceVendorsTable.id, id));
+    if (!vendor) { res.status(204).end(); return; }
 
-  const ip = (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim() || req.ip || "0.0.0.0";
-  const ua = req.headers["user-agent"] || "";
-  const day = new Date().toISOString().slice(0, 10);
-  const sessionHash = crypto.createHash("sha256").update(`${ip}|${ua}|${day}`).digest("hex").slice(0, 32);
+    const ip = (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim() || req.ip || "0.0.0.0";
+    const ua = req.headers["user-agent"] || "";
+    const day = new Date().toISOString().slice(0, 10);
+    const sessionHash = crypto.createHash("sha256").update(`${ip}|${ua}|${day}`).digest("hex").slice(0, 32);
 
-  // Dedupe per session+vendor+source+day to avoid inflating with refreshes
-  // while still allowing distinct attribution per source (detail/listing/comparator).
-  const todayStart = new Date(); todayStart.setUTCHours(0, 0, 0, 0);
-  const [existing] = await db
-    .select({ id: vendorViewsTable.id })
-    .from(vendorViewsTable)
-    .where(and(
-      eq(vendorViewsTable.vendorId, id),
-      eq(vendorViewsTable.sessionHash, sessionHash),
-      eq(vendorViewsTable.source, source),
-      gte(vendorViewsTable.viewedAt, todayStart),
-    ))
-    .limit(1);
-  if (!existing) {
-    await db.insert(vendorViewsTable).values({ vendorId: id, source, sessionHash, referrer });
+    const todayStart = new Date(); todayStart.setUTCHours(0, 0, 0, 0);
+    const [existing] = await db
+      .select({ id: vendorViewsTable.id })
+      .from(vendorViewsTable)
+      .where(and(
+        eq(vendorViewsTable.vendorId, id),
+        eq(vendorViewsTable.sessionHash, sessionHash),
+        eq(vendorViewsTable.source, source),
+        gte(vendorViewsTable.viewedAt, todayStart),
+      ))
+      .limit(1);
+    if (!existing) {
+      await db.insert(vendorViewsTable).values({ vendorId: id, source, sessionHash, referrer });
+    }
+    res.status(204).end();
+  } catch (err) {
+    req.log.warn({ err }, "track-view: non-fatal error, ignoring");
+    res.status(204).end();
   }
-  res.status(204).end();
 });
 
 router.get("/marketplace/vendors-by-tags", async (req: Request, res: Response) => {

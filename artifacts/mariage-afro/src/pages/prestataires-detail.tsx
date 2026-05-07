@@ -48,6 +48,9 @@ export default function PrestataireDetail() {
   const { data: vendor, isLoading, isError } = useQuery<VendorDetail>({
     queryKey: ["vendor-detail", id],
     enabled: Number.isFinite(id) && id > 0,
+    retry: 0,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const res = await fetch(`/api/marketplace/vendors/${id}`);
       if (!res.ok) throw new Error("not_found");

@@ -742,7 +742,7 @@ export default function Prestations() {
   const filters = useMemo(() => readFiltersFromSearch(searchParams), [searchParams]);
   const [view, setView] = useState<"list" | "map">("list");
 
-  const { data: apiVendors = [] } = useQuery<DisplayVendor[]>({
+  const { data: apiVendors = [], isLoading: apiLoading } = useQuery<DisplayVendor[]>({
     queryKey: ["marketplace-vendors", apiQueryString],
     queryFn: async () => {
       const res = await fetch(`/api/marketplace/vendors${apiQueryString ? `?${apiQueryString}` : ""}`);
@@ -970,7 +970,11 @@ export default function Prestations() {
 
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-6 md:px-12">
-          {view === "map" ? (
+          {apiLoading ? (
+            <div className="flex items-center justify-center min-h-[40vh]">
+              <div className="w-8 h-8 border-2 border-wine-deep border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : view === "map" ? (
             <MarketplaceMap
               points={filtered.map((v) => ({
                 id: v.id,
@@ -979,7 +983,7 @@ export default function Prestations() {
                 category: v.category,
                 latitude: v.latitude ?? null,
                 longitude: v.longitude ?? null,
-                href: `/partenaires/${v.id}`,
+                href: usingApi ? `/partenaires/${v.id}` : "#",
                 image: v.image,
                 averageRating: v.averageRating,
                 reviewCount: v.reviewCount,
@@ -1050,13 +1054,17 @@ export default function Prestations() {
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 text-cream">
                       <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight leading-[1] mb-2">
-                        <Link
-                          to={`/partenaires/${vendor.id}`}
-                          className="hover:text-gold transition-colors"
-                          data-testid={`vendor-link-${vendor.id}`}
-                        >
-                          {vendor.name}
-                        </Link>
+                        {usingApi ? (
+                          <Link
+                            to={`/partenaires/${vendor.id}`}
+                            className="hover:text-gold transition-colors"
+                            data-testid={`vendor-link-${vendor.id}`}
+                          >
+                            {vendor.name}
+                          </Link>
+                        ) : (
+                          <span data-testid={`vendor-link-${vendor.id}`}>{vendor.name}</span>
+                        )}
                       </h3>
                       <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] flex-wrap">
                         <span className="flex items-center gap-1.5 text-cream/80">
