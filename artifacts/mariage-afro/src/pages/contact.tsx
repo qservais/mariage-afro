@@ -343,7 +343,7 @@ export default function Contact() {
         className="py-24 md:py-32 bg-white border-t border-wine-deep/10"
       >
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-16">
             <FormShell
               eyebrow={t("contact.eyebrow_form")}
               title={t("contact.form_title")}
