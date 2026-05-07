@@ -1,81 +1,88 @@
 # Comptes de test — Mariage Afro
-**Date de création :** 7 mai 2026  
-**Environnement :** Dev (Replit)
+**Date :** 7 mai 2026 · Environnement : Dev (Replit)
 
-> Ces informations sont confidentielles. Ne pas versionner en clair en production.
+> Document confidentiel. Ne pas exposer publiquement.
 
 ---
 
-## Administration
-
-### Panel Admin (Express — sans Clerk)
+## Administration — Panel Express (sans Clerk)
 
 | Champ | Valeur |
 |-------|--------|
-| URL | `https://<replit-dev-domain>/api-server/admin` |
-| Méthode | Formulaire HTML (cookie session) |
-| Mot de passe | *(voir secret Replit `ADMIN_PASSWORD`)* |
-| Session | Cookie `mariage_afro_admin` — durée 7 jours |
+| URL dev | `http://localhost:8080/admin` |
+| URL via proxy Replit | `https://<replit-dev-domain>/api-server/admin` |
+| Méthode | Formulaire HTML (`POST /admin/login`) |
+| Mot de passe | *(secret Replit `ADMIN_PASSWORD`)* |
+| Session | Cookie `mariage_afro_admin` — 7 jours — HttpOnly, SameSite=Lax |
 
-**Accès direct en dev :**
+**Test curl rapide :**
+```bash
+curl -c cookies.txt -X POST http://localhost:8080/admin/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "password=<ADMIN_PASSWORD>"
+# → 302 redirect vers /admin + cookie set
+curl -b cookies.txt http://localhost:8080/admin
+# → 200 dashboard HTML
 ```
-POST http://localhost:8080/admin/login
-Content-Type: application/x-www-form-urlencoded
-password=<ADMIN_PASSWORD>
-```
+
+**Sections accessibles après login :**
+- `/admin` — Dashboard (stats leads, prestataires)
+- `/admin/reviews` — Modération avis
+- `/admin/content/vendors` — CRUD prestataires
+- `/admin/content/venues` — CRUD lieux
+- `/admin/content/realisations` — CRUD réalisations
+- `/admin/content/vendor-accounts` — Comptes prestataires / approbation
+- `/admin/content/wedding-websites` — Sites mariage
+- `/admin/test-email` — Test envoi email Resend
 
 ---
 
-## Comptes Clerk (Espace client / Espace prestataire)
-
-Les comptes Clerk sont gérés via le dashboard Clerk en mode dev.  
-En environnement de développement, Clerk accepte n'importe quelle adresse email avec le code OTP affiché dans les logs.
-
-### Compte couple (démo)
+## Comptes Clerk — Espace client couple
 
 | Champ | Valeur |
 |-------|--------|
-| Rôle | `couple` |
-| Email de test Resend | `delivered@resend.dev` (toujours reçu) |
-| Inscription | Via `/espace-client` → Sign Up |
-| OTP | Visible dans les logs Clerk (dev mode) |
+| URL inscription | `/espace-client/register` ou `/sign-up` |
+| URL connexion | `/espace-client/login` ou `/sign-in` |
+| Rôle Clerk | `couple` (metadata) |
+| Email de test | `delivered@resend.dev` (Resend simulé) |
+| OTP en dev | Visible dans Clerk Dashboard → Logs |
 
-### Compte prestataire (démo)
-
-| Champ | Valeur |
-|-------|--------|
-| Rôle | `vendor` |
-| Email de test Resend | `delivered@resend.dev` |
-| Inscription | Via `/espace-vendeur` → Sign Up |
-| OTP | Visible dans les logs Clerk (dev mode) |
-
-> En mode dev Clerk, tout OTP peut être trouvé dans le Clerk Dashboard → Logs.  
-> En production, l'OTP sera envoyé par email via les serveurs Clerk.
+**Workaround démo si Resend domain non vérifié :** Utiliser "Email magic link" Clerk (l'OTP apparaît dans les logs Clerk Dashboard, pas dans la boîte mail).
 
 ---
 
-## Emails de test Resend
+## Comptes Clerk — Espace prestataire
+
+| Champ | Valeur |
+|-------|--------|
+| URL inscription | `/espace-pro/register` |
+| URL connexion | `/espace-pro/login` |
+| Rôle Clerk | `vendor` (metadata) |
+| Email de test | `delivered@resend.dev` |
+| OTP en dev | Visible dans Clerk Dashboard → Logs |
+
+---
+
+## Adresses email de test Resend
 
 | Adresse | Comportement |
 |---------|-------------|
-| `delivered@resend.dev` | Toujours reçu (success simulé) |
+| `delivered@resend.dev` | Succès simulé (toujours reçu si domaine vérifié) |
 | `bounced@resend.dev` | Bounce simulé |
 | `complained@resend.dev` | Spam complaint simulé |
 
-> Utiliser `delivered@resend.dev` pour tous les tests fonctionnels jusqu'à vérification du domaine.
+> Tant que `mariage-afro.com` n'est pas vérifié sur Resend, **toutes** les adresses échouent avec `403 domain not verified` — y compris `delivered@resend.dev`. Le problème est côté FROM, pas côté TO.
 
 ---
 
-## Données de démo en base
+## Données de démo en base (après QA sweep du 7 mai 2026)
 
-Suite au QA sweep du 7 mai 2026, les données suivantes sont en DB :
-
-| Table | Entrées de test |
-|-------|----------------|
-| `leads` | ~17 entrées (contact, budget_calc, quiz_result, lead_magnet, multi-devis, service_request) |
-| `vendor_requests` | 2 entrées (multi-devis test) |
+| Table | Contenu |
+|-------|---------|
 | `marketplace_vendors` | 8 prestataires actifs |
-| `partner_applications` | 1 candidature test |
+| `leads` | ~19 entrées (contact, budget_calc, quiz_result, lead_magnet, service_request) |
+| `vendor_requests` | 2 entrées (multi-devis test) |
+| `partner_applications` | 1 candidature test (Photo Studio Test) |
 
 ---
 
@@ -85,13 +92,13 @@ Suite au QA sweep du 7 mai 2026, les données suivantes sont en DB :
 |---------|-----------|
 | Frontend | `http://localhost:21974` |
 | API | `http://localhost:8080` |
-| Admin panel | `http://localhost:8080/admin` |
-| Mockup sandbox | `http://localhost:8081/__mockup` |
+| Panel admin | `http://localhost:8080/admin` |
 
 ---
 
-## Notes importantes
+## Notes avant démo
 
-1. **Email bloqué** : Jusqu'à vérification du domaine sur Resend, tous les emails échouent avec `403`. Les leads sont sauvés en DB mais aucune notification ne part.
-2. **Clerk dev keys** : Le warning Clerk en console est normal en dev. Configurer les production keys avant déploiement.
-3. **ADMIN_EMAIL manquant** : Configurer ce secret pour recevoir les notifications internes (nouveaux leads, candidatures).
+1. **Email bloqué** — Vérifier `mariage-afro.com` sur resend.com/domains avant toute démo avec envoi email.
+2. **ADMIN_EMAIL manquant** — Configurer le secret `ADMIN_EMAIL` pour les notifications internes.
+3. **Clerk dev keys** — Warning normal en console dev. Passer aux production keys avant déploiement cloud.
+4. **Admin mot de passe** — Récupérer via secret Replit `ADMIN_PASSWORD` uniquement. N'est plus dans `.replit`.
