@@ -1,6 +1,15 @@
 import { SignUp } from "@clerk/react";
 import { useTranslation } from "react-i18next";
-import { basePath } from "@/lib/clerk";
+import { basePath, clerkAppearance } from "@/lib/clerk";
+
+const vendorAppearance = {
+  ...clerkAppearance,
+  elements: {
+    ...clerkAppearance.elements,
+    card: "!shadow-none !border-0 !bg-white !rounded-none p-8",
+    footer: "!shadow-none !border-0 !bg-white !rounded-none px-8 pb-6",
+  },
+};
 
 export default function VendorSignUpPage() {
   const { t } = useTranslation();
@@ -17,6 +26,7 @@ export default function VendorSignUpPage() {
           path={`${basePath}/espace-pro/register`}
           signInUrl={`${basePath}/espace-pro/login`}
           fallbackRedirectUrl="/espace-pro"
+          appearance={vendorAppearance}
         />
       </div>
     </div>

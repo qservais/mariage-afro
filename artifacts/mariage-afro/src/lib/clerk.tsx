@@ -62,10 +62,10 @@ export const clerkAppearance = {
 
 const localization = {
   signIn: {
-    start: { title: "Espace client Mariage Afro", subtitle: "Connectez-vous pour piloter votre mariage" },
+    start: { title: "Mariage Afro", subtitle: "Connectez-vous à votre espace" },
   },
   signUp: {
-    start: { title: "Créer votre compte", subtitle: "Rejoignez l'espace client Mariage Afro" },
+    start: { title: "Créer votre compte", subtitle: "Rejoignez Mariage Afro" },
   },
 };
 
