@@ -70,12 +70,24 @@ async function requireCouple(req: Request, res: Response, next: NextFunction): P
   let [couple] = await db.select().from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
   if (!couple) {
     const contact = await fetchClerkContact(userId, req.log);
-    [couple] = await db.insert(couplesTable).values({
+    // Use ON CONFLICT DO NOTHING to handle concurrent first-login requests gracefully
+    const inserted = await db.insert(couplesTable).values({
       userId,
       email: contact.email ?? "",
       locale: contact.locale,
-    }).returning();
-  } else if (!couple.email) {
+    }).onConflictDoNothing().returning();
+    if (inserted.length > 0) {
+      couple = inserted[0];
+    } else {
+      // Race condition: another request inserted first — re-fetch
+      [couple] = await db.select().from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
+    }
+  }
+  if (!couple) {
+    res.status(500).json({ error: "Failed to create couple profile" });
+    return;
+  }
+  if (!couple.email) {
     // Backfill email/locale once for existing couples (Clerk is the source of truth)
     const contact = await fetchClerkContact(userId, req.log);
     if (contact.email) {

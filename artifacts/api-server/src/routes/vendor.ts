@@ -41,10 +41,26 @@ async function requireVendor(req: Request, res: Response, next: NextFunction): P
     .where(eq(vendorAccountsTable.userId, userId))
     .limit(1);
   if (!account) {
-    [account] = await db
+    // Use ON CONFLICT DO NOTHING to handle concurrent first-login requests gracefully
+    const inserted = await db
       .insert(vendorAccountsTable)
       .values({ userId })
+      .onConflictDoNothing()
       .returning();
+    if (inserted.length > 0) {
+      account = inserted[0];
+    } else {
+      // Race condition: another request inserted first — re-fetch
+      [account] = await db
+        .select()
+        .from(vendorAccountsTable)
+        .where(eq(vendorAccountsTable.userId, userId))
+        .limit(1);
+    }
+  }
+  if (!account) {
+    res.status(500).json({ error: "Failed to create vendor account" });
+    return;
   }
   (req as unknown as AuthedVendorRequest).userId = userId;
   (req as unknown as AuthedVendorRequest).vendorAccountId = account.id;

@@ -134,23 +134,27 @@ app.use("/admin", adminContentRouter);
 // an error handler. Returns JSON for /api routes and HTML for /admin routes.
 // Without this, Express 5 falls back to its default HTML "Internal Server Error"
 // response, which surfaces raw stack traces to the client.
+// In production, internal error details are never sent to the client.
 app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
   const status = typeof (err as { status?: number }).status === "number"
     ? (err as { status: number }).status
     : 500;
-  const message =
-    err instanceof Error ? err.message : "Internal server error";
 
   logger.error({ err, url: req.url, method: req.method }, "Unhandled error");
 
+  // Never leak internal error details to clients in production.
+  const clientMessage = isProd
+    ? status === 500 ? "Internal server error" : (err instanceof Error ? err.message : "Error")
+    : (err instanceof Error ? err.message : "Internal server error");
+
   if (req.path.startsWith("/admin")) {
     res.status(status).type("html").send(
-      `<!doctype html><html><head><title>Erreur</title></head><body><h1>Erreur ${status}</h1><p>${message}</p></body></html>`,
+      `<!doctype html><html><head><title>Erreur</title></head><body><h1>Erreur ${status}</h1><p>${isProd ? "Une erreur est survenue." : clientMessage}</p></body></html>`,
     );
     return;
   }
 
-  res.status(status).json({ error: message });
+  res.status(status).json({ error: clientMessage });
 });
 
 export default app;
