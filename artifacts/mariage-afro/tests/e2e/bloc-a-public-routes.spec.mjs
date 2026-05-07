@@ -179,62 +179,75 @@ const multiEmptyResp = await fetch(`${API}/api/leads/multi-devis`, {
 });
 check("POST /api/leads/multi-devis (0 vendors) → 400", multiEmptyResp.status >= 400);
 
-// ── 7. Calculateur budget — traversée complète + résultat € ──────────────────
+// ── 7. Calculateur budget — traversée déterministe + soumission email ────────
 console.log("\n[7] Calculateur budget — résultat €");
 await page.goto(`${BASE}/outils/budget`, { waitUntil: "networkidle", timeout: 30000 });
 await page.waitForTimeout(800);
 
-const budgetBodyInitial = await page.locator("body").innerText().catch(() => "");
-check("Budget calculator charge", budgetBodyInitial.length > 50);
+check("Budget calculator charge", await page.locator('[data-testid="budget-step-0"]').isVisible({ timeout: 5000 }).catch(() => false));
 
-const guestInput = page.locator('[data-testid="input-guest-count"]');
-if (await guestInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-  await guestInput.fill("100");
-}
-for (let step = 0; step < 5; step++) {
-  const opt = page.locator('[data-testid^="region-"], [data-testid^="standing-"], [data-testid^="month-"]').first();
-  if (await opt.count() > 0) { await opt.click({ force: true }).catch(() => {}); await page.waitForTimeout(100); }
-  const nb = page.locator('[data-testid="budget-next"]').first();
-  if (await nb.isVisible({ timeout: 800 }).catch(() => false)) {
-    await nb.click().catch(() => {}); await page.waitForTimeout(400);
-  } else break;
-}
-const resultVisible = await page.locator('[data-testid="budget-step-result"], [data-testid="budget-chart"]').isVisible({ timeout: 3000 }).catch(() => false);
-const budgetFinalBody = await page.locator("body").innerText().catch(() => "");
-check("Budget result affiche un montant €", budgetFinalBody.includes("€") || resultVisible);
+// Step 0 : nombre d'invités → next
+await page.locator('[data-testid="input-guest-count"]').fill("100").catch(() => {});
+await page.locator('[data-testid="budget-next"]').click();
+await page.waitForTimeout(400);
 
-const budgetEmailInput = page.locator('[data-testid="budget-input-email"]');
-if (await budgetEmailInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-  await page.locator('[data-testid="budget-input-name"]').fill("Budget Test E2E");
-  await budgetEmailInput.fill("budget.e2e@example.com");
-  await page.locator('[data-testid="budget-submit"]').click();
-  await page.waitForTimeout(600);
-  const budgetSuccess = await page.locator('[data-testid="budget-success"]').isVisible({ timeout: 3000 }).catch(() => false);
-  check("Budget form soumission → success affiché", budgetSuccess);
-} else {
-  console.log("  ⚠ Budget email form non visible sur step résultat — skipped");
-}
+// Step 1 : région → next
+await page.locator('[data-testid="region-bruxelles"]').click({ force: true }).catch(() => {});
+await page.locator('[data-testid="budget-next"]').click();
+await page.waitForTimeout(400);
 
-// ── 8. Quiz style — traversée complète + profil résultat ─────────────────────
+// Step 2 : standing → next
+await page.locator('[data-testid="standing-premium"]').click({ force: true }).catch(() => {});
+await page.locator('[data-testid="budget-next"]').click();
+await page.waitForTimeout(400);
+
+// Step 3 : services (sélectionnés par défaut) → next
+await page.locator('[data-testid="budget-next"]').click();
+await page.waitForTimeout(400);
+
+// Step 4 : mois → next
+await page.locator('[data-testid="month-juin"]').click({ force: true }).catch(() => {});
+await page.locator('[data-testid="budget-next"]').click();
+await page.waitForTimeout(600);
+
+// Step 5 : résultat — vérification montant €
+check("Budget result visible (step résultat)", await page.locator('[data-testid="budget-step-result"]').isVisible({ timeout: 5000 }).catch(() => false));
+const budgetBody = await page.locator("body").innerText().catch(() => "");
+check("Budget result affiche un montant €", budgetBody.includes("€"));
+
+// Soumission email (obligatoire — pas de skip)
+await page.locator('[data-testid="budget-input-name"]').fill("Budget Test E2E");
+await page.locator('[data-testid="budget-input-email"]').fill("budget.e2e@example.com");
+await page.locator('[data-testid="budget-submit"]').click();
+await page.waitForTimeout(1500);
+check("Budget form soumission → success affiché", await page.locator('[data-testid="budget-success"]').isVisible({ timeout: 5000 }).catch(() => false));
+
+// ── 8. Quiz style — traversée complète + soumission email résultat ────────────
 console.log("\n[8] Quiz style — profil résultat");
 await page.goto(`${BASE}/outils/quiz`, { waitUntil: "networkidle", timeout: 30000 });
 await page.waitForTimeout(800);
 
-const quizInitialBody = await page.locator("body").innerText().catch(() => "");
-check("Quiz style charge", quizInitialBody.length > 50);
+check("Quiz style charge", await page.locator('[data-testid^="quiz-step-"]').isVisible({ timeout: 5000 }).catch(() => false));
 
-for (let q = 0; q < 10; q++) {
-  const card = page.locator('[data-testid^="selectable-card-"]').first();
-  if (await card.count() > 0) { await card.click({ force: true }).catch(() => {}); await page.waitForTimeout(150); }
-  const qNext = page.locator('[data-testid="stepper-next"], button:has-text("Suivant")').first();
-  if (await qNext.isVisible({ timeout: 800 }).catch(() => false)) {
-    await qNext.click().catch(() => {}); await page.waitForTimeout(400);
-  } else break;
+// Répondre aux 7 questions — l'option cliquée déclenche un auto-advance après 250 ms
+for (let q = 0; q < 7; q++) {
+  const opt = page.locator('[data-testid^="quiz-opt-"]').first();
+  if (await opt.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await opt.click({ force: true });
+    await page.waitForTimeout(500);
+  }
 }
-// Résultat : soit un testid explicite, soit du contenu suffisant (> 200 chars = écran de résultat)
-const quizResultVisible = await page.locator('[data-testid="quiz-result"], [data-testid="quiz-profile"]').isVisible({ timeout: 3000 }).catch(() => false);
-const quizFinalBody = await page.locator("body").innerText().catch(() => "");
-check("Quiz termine et affiche un résultat (profil ou style)", quizResultVisible || quizFinalBody.length > 200);
+await page.waitForTimeout(300);
+
+// Résultat du quiz (obligatoire)
+check("Quiz termine et affiche un résultat (profil ou style)", await page.locator('[data-testid="quiz-result"]').isVisible({ timeout: 5000 }).catch(() => false));
+
+// Soumission du formulaire email résultat (obligatoire — pas de skip)
+await page.locator('[data-testid="quiz-input-name"]').fill("Quiz Test E2E");
+await page.locator('[data-testid="quiz-input-email"]').fill("quiz.e2e@example.com");
+await page.locator('[data-testid="quiz-submit"]').click();
+await page.waitForTimeout(1500);
+check("Quiz soumission email → success affiché", await page.locator('[data-testid="quiz-success"]').isVisible({ timeout: 5000 }).catch(() => false));
 
 // ── 9. Marketplace UI — affichage prestataires + fiche détail ─────────────────
 console.log("\n[9] Marketplace /partenaires");

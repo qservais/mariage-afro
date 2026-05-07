@@ -309,9 +309,12 @@ if (hasPendingAccount) {
     check("Compte prestataire → form approve trouvé", false);
   }
 } else {
-  console.log("  ⚠ Aucun compte pending disponible — approbation non testée (liste vide ou tous approved)");
-  // Pas d'échec si aucun compte pending (état DB variable)
-  check("Page vendor-accounts OK (liste peut être vide)", true);
+  // Hard fail : BLOC C (onboarding vendor-bloc-c) remet le status à "pending" à chaque run.
+  // Si aucun compte pending n'est trouvé ici, c'est que BLOC C n'a pas été exécuté avant BLOC D.
+  console.error("  ✗ Aucun compte pending trouvé — BLOC C doit être exécuté avant BLOC D");
+  check("Compte prestataire pending trouvé (exécuter BLOC C avant BLOC D)", false);
+  check(`Compte prestataire → approbation (redirect 3xx)`, false);
+  check("Compte approuvé → statut 'approved' visible dans la liste", false);
 }
 
 // ── 8. Test email — page + soumission ─────────────────────────────────────────
