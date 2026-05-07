@@ -40,11 +40,16 @@ for (const route of publicRoutes) {
 // Route interne guide (layout minimal)
 await checkRoute("/_interne/guide");
 
-// Routes mariage/:slug — utilise un slug existant en DB
+// Routes mariage/:slug — vérifie d'abord que le slug est réellement en DB
+// (échoue clairement si manquant plutôt qu'une erreur cryptique)
 const MARIAGE_SLUG = "servais-lahayegoffart";
-await checkRoute(`/mariage/${MARIAGE_SLUG}`);
-await checkRoute(`/mariage/${MARIAGE_SLUG}/rsvp`);
-await checkRoute(`/mariage/${MARIAGE_SLUG}/cagnotte`);
+const slugProbeResp = await page.goto(`${BASE}/mariage/${MARIAGE_SLUG}`, { waitUntil: "domcontentloaded", timeout: 20000 });
+const slugStatus = slugProbeResp?.status() ?? 0;
+check(`/mariage/${MARIAGE_SLUG} → slug connu en DB (pas 404)`, slugStatus > 0 && slugStatus < 400);
+if (slugStatus < 400) {
+  await checkRoute(`/mariage/${MARIAGE_SLUG}/rsvp`);
+  await checkRoute(`/mariage/${MARIAGE_SLUG}/cagnotte`);
+}
 
 // ── 2. API publique — marketplace (count strict + filtre catégorie) ───────────
 console.log("\n[2] API publique — marketplace");
@@ -231,12 +236,32 @@ const quizResultVisible = await page.locator('[data-testid="quiz-result"], [data
 const quizFinalBody = await page.locator("body").innerText().catch(() => "");
 check("Quiz termine et affiche un résultat (profil ou style)", quizResultVisible || quizFinalBody.length > 200);
 
-// ── 9. Marketplace UI — affichage prestataires ────────────────────────────────
+// ── 9. Marketplace UI — affichage prestataires + fiche détail ─────────────────
 console.log("\n[9] Marketplace /partenaires");
 await page.goto(`${BASE}/partenaires`, { waitUntil: "networkidle", timeout: 30000 });
-await page.waitForTimeout(500);
+await page.waitForTimeout(800);
 const cards = await page.locator('[data-testid="vendor-card"], article.vendor, article').count();
 check("Marketplace affiche au moins 1 prestataire", cards >= 1);
+
+// Fiche détail — ouvre le premier prestataire et vérifie CTA visible
+if (vendors?.length > 0) {
+  const firstVendorId = vendors[0].id;
+  const detailResp2 = await page.goto(`${BASE}/partenaires/${firstVendorId}`, { waitUntil: "domcontentloaded", timeout: 25000 });
+  const detailStatus = detailResp2?.status() ?? 0;
+  check("Fiche prestataire UI /partenaires/:id → charge (200)", detailStatus > 0 && detailStatus < 400);
+  await page.waitForTimeout(800);
+  const detailText = await page.locator("body").innerText().catch(() => "");
+  check("Fiche prestataire UI → contenu non vide", detailText.trim().length > 50);
+  // CTA : bouton/lien de contact ou demande de devis
+  const hasCta = await page.locator([
+    'a:has-text("Contacter")', 'button:has-text("Contacter")',
+    'a:has-text("Devis")', 'button:has-text("Devis")',
+    'a:has-text("Demander")', 'button:has-text("Demander")',
+    'a:has-text("Contact")', '[data-testid="vendor-cta"]',
+  ].join(", ")).first().isVisible({ timeout: 3000 }).catch(() => false);
+  const ctaInText = detailText.toLowerCase().includes("devis") || detailText.toLowerCase().includes("contacter") || detailText.toLowerCase().includes("demander");
+  check("Fiche prestataire UI → CTA contact/devis présent", hasCta || ctaInText);
+}
 
 await browser.close();
 exit(results, "bloc-a-public-routes.spec");

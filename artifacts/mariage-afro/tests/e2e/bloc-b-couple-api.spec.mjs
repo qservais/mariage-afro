@@ -39,14 +39,20 @@ console.log("\n[1] Routes couple — sans auth (redirect vers login)");
     "/espace-client/communication",
     "/espace-client/site",
     "/espace-client/inspiration",
+    "/espace-client/cagnotte",
   ];
   for (const route of routes) {
     await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded", timeout: 20000 });
-    await page.waitForTimeout(300);
-    const url = page.url();
-    const isLogin = url.includes("login") || url.includes("sign-in") || url.includes("clerk");
-    const noServerError = !(await page.locator("text=Internal Server Error").isVisible({ timeout: 500 }).catch(() => false));
-    check(`${route} → login redirect ou charge sans crash`, isLogin || noServerError);
+    // Attendre le redirect Clerk (peut prendre 1-3s au cold start lors du 1er chargement du bundle)
+    // waitForURL résout dès que le redirect survient — pas d'attente fixe inutile
+    await page.waitForURL(
+      url => url.href.includes("/login") || url.href.includes("sign-in") || url.href.includes("accounts"),
+      { timeout: 4000 }
+    ).catch(() => {});
+    const currentUrl = page.url();
+    const redirectedToLogin = currentUrl.includes("/login") || currentUrl.includes("sign-in") || currentUrl.includes("accounts");
+    const hasAuthModal = await page.locator('.cl-signIn-root, .cl-modalContent, .cl-component').isVisible({ timeout: 1000 }).catch(() => false);
+    check(`${route} → redirigé vers login`, redirectedToLogin || hasAuthModal);
   }
   await browser.close();
 }
@@ -136,6 +142,7 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
       "/espace-client/site",
       "/espace-client/inspiration",
       "/espace-client/prestataires",
+      "/espace-client/cagnotte",
       "/espace-client/dashboard",
     ];
     for (const route of clientRoutes) {

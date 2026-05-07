@@ -34,11 +34,15 @@ console.log("\n[1] Routes prestataire — sans auth");
   ];
   for (const route of routes) {
     await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded", timeout: 20000 });
-    await page.waitForTimeout(300);
-    const url = page.url();
-    const isLogin = url.includes("login") || url.includes("sign-in");
-    const noServerError = !(await page.locator("text=Internal Server Error").isVisible({ timeout: 500 }).catch(() => false));
-    check(`${route} → login redirect ou charge sans crash`, isLogin || noServerError);
+    // Attendre le redirect Clerk (peut prendre 1-3s au cold start lors du 1er chargement du bundle)
+    await page.waitForURL(
+      url => url.href.includes("/login") || url.href.includes("sign-in") || url.href.includes("accounts"),
+      { timeout: 4000 }
+    ).catch(() => {});
+    const currentUrl = page.url();
+    const redirectedToLogin = currentUrl.includes("/login") || currentUrl.includes("sign-in") || currentUrl.includes("accounts");
+    const hasAuthModal = await page.locator('.cl-signIn-root, .cl-modalContent, .cl-component').isVisible({ timeout: 1000 }).catch(() => false);
+    check(`${route} → redirigé vers login`, redirectedToLogin || hasAuthModal);
   }
   await browser.close();
 }
@@ -50,6 +54,7 @@ const protectedApis = [
   ["POST", "/api/vendor/onboarding"],
   ["GET", "/api/vendor/profile"],
   ["PATCH", "/api/vendor/profile"],
+  ["PATCH", "/api/vendor/profile/images"],
   ["GET", "/api/vendor/leads"],
   ["GET", "/api/vendor/leads/unseen-count"],
   ["GET", "/api/vendor/conversations"],
@@ -163,6 +168,68 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     check("GET /api/vendor/conversations → 200", convsResp.status === 200);
     const convs = await convsResp.json().catch(() => null);
     check("GET /api/vendor/conversations → array", Array.isArray(convs));
+
+    // — Gallery : PATCH /api/vendor/profile/images (vider la galerie) ───────────
+    // images:[] est valide (aucune URL à valider) et efface toutes les images existantes
+    const imagesResp = await authFetch("/api/vendor/profile/images", jwt, {
+      method: "PATCH",
+      body: { images: [], coverImage: null },
+    });
+    check("PATCH /api/vendor/profile/images { images:[] } → 200", imagesResp.status === 200);
+    const imagesBody = await imagesResp.json().catch(() => null);
+    check("PATCH /api/vendor/profile/images → images = [] retourné", Array.isArray(imagesBody?.images) && imagesBody.images.length === 0);
+
+    // Vérifier via GET que la galerie est bien vide
+    const profileAfterImages = await (await authFetch("/api/vendor/profile", jwt)).json().catch(() => null);
+    check("GET /api/vendor/profile → images effacées ([])", Array.isArray(profileAfterImages?.images) && profileAfterImages.images.length === 0);
+
+    // — Messages : créer conversation + envoi message prestataire ─────────────
+    // Étape 1 : signer en tant que couple-bloc-b pour créer une conversation
+    let convId = null;
+    {
+      const coupBrowser = await chromium.launch();
+      const coupCtx = await coupBrowser.newContext({ viewport: DESKTOP });
+      const coupPage = await coupCtx.newPage();
+      const coupleJwt = await clerkSignIn(coupPage, {
+        email: "couple-bloc-b@example.com",
+        loginPath: "/espace-client/login",
+      });
+      if (coupleJwt && typeof onboard?.account?.vendorId === "number") {
+        const createConvResp = await authFetch("/api/client/conversations", coupleJwt, {
+          method: "POST",
+          body: { vendorId: onboard.account.vendorId },
+        });
+        if (createConvResp.status === 200 || createConvResp.status === 201) {
+          const convData = await createConvResp.json().catch(() => null);
+          convId = convData?.id ?? null;
+        }
+      }
+      await coupBrowser.close();
+    }
+    check("Conversation créée (couple → prestataire)", typeof convId === "number");
+
+    if (typeof convId === "number") {
+      // Étape 2 : GET messages de la conversation (en tant que prestataire)
+      const msgsGetResp = await authFetch(`/api/vendor/conversations/${convId}/messages`, jwt);
+      check(`GET /api/vendor/conversations/${convId}/messages → 200`, msgsGetResp.status === 200);
+      const msgs = await msgsGetResp.json().catch(() => null);
+      check(`GET /api/vendor/conversations/${convId}/messages → array`, Array.isArray(msgs));
+
+      // Étape 3 : POST message (prestataire répond)
+      const sendMsgResp = await authFetch(`/api/vendor/conversations/${convId}/messages`, jwt, {
+        method: "POST",
+        body: { content: "Réponse automatisée BLOC C E2E — prestataire" },
+      });
+      check(`POST /api/vendor/conversations/${convId}/messages → 201`, sendMsgResp.status === 201);
+      const sentMsg = await sendMsgResp.json().catch(() => null);
+      check("Message envoyé → content correct", sentMsg?.content === "Réponse automatisée BLOC C E2E — prestataire");
+      check("Message envoyé → authorRole = vendor", sentMsg?.authorRole === "vendor");
+
+      // Étape 4 : vérifier que le message apparaît dans la liste
+      const msgsAfterSend = await (await authFetch(`/api/vendor/conversations/${convId}/messages`, jwt)).json().catch(() => []);
+      check("Messages après envoi → au moins 1 message", Array.isArray(msgsAfterSend) && msgsAfterSend.length >= 1);
+      check("Message apparaît dans la liste", Array.isArray(msgsAfterSend) && msgsAfterSend.some(m => m.authorRole === "vendor"));
+    }
 
     // — Disponibilités CRUD ───────────────────────────────────────────────────
     const futureDate = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];

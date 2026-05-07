@@ -1,7 +1,7 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { getAuth } from "@clerk/express";
 import { z } from "zod";
-import { and, asc, desc, eq, isNull, ne, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import {
   db,
   vendorAccountsTable,
@@ -594,7 +594,7 @@ router.get("/vendor/conversations", async (req, res) => {
         unread: sql<number>`count(case when ${messagesTable.authorRole} = 'couple' and ${messagesTable.readAt} is null then 1 end)`.as("unread"),
       })
       .from(messagesTable)
-      .where(sql`${messagesTable.conversationId} = ANY(${ids})`)
+      .where(inArray(messagesTable.conversationId, ids))
       .groupBy(messagesTable.conversationId);
     for (const u of unreadRows) {
       if (u.conversationId != null) stats.set(u.conversationId, { unread: Number(u.unread) || 0, lastContent: null, lastAuthor: null });
