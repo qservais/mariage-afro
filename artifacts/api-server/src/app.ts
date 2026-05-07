@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
@@ -107,7 +107,11 @@ app.use(
     origin: (origin, cb) => {
       if (!origin) return cb(null, true);
       if (isAllowedOrigin(origin)) return cb(null, true);
-      return cb(new Error("Not allowed by CORS"));
+      // Return false (no CORS headers) instead of throwing — throwing causes
+      // Express to emit a 500 HTML response, which is confusing and incorrect.
+      // With false, the browser correctly blocks the cross-origin response.
+      logger.warn({ origin }, "CORS: origin not allowed");
+      return cb(null, false);
     },
   }),
 );
@@ -125,5 +129,28 @@ app.use("/api", marketplaceRouter);
 app.use("/api", router);
 app.use("/admin", adminRouter);
 app.use("/admin", adminContentRouter);
+
+// Global error handler — must have 4 parameters so Express recognises it as
+// an error handler. Returns JSON for /api routes and HTML for /admin routes.
+// Without this, Express 5 falls back to its default HTML "Internal Server Error"
+// response, which surfaces raw stack traces to the client.
+app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
+  const status = typeof (err as { status?: number }).status === "number"
+    ? (err as { status: number }).status
+    : 500;
+  const message =
+    err instanceof Error ? err.message : "Internal server error";
+
+  logger.error({ err, url: req.url, method: req.method }, "Unhandled error");
+
+  if (req.path.startsWith("/admin")) {
+    res.status(status).type("html").send(
+      `<!doctype html><html><head><title>Erreur</title></head><body><h1>Erreur ${status}</h1><p>${message}</p></body></html>`,
+    );
+    return;
+  }
+
+  res.status(status).json({ error: message });
+});
 
 export default app;

@@ -55,3 +55,6 @@ channel = "stable-25_05"
 [userenv.shared]
 EMAIL_FROM = "Mariage Afro <hello@mariage-afro.com>"
 
+[userenv.production]
+ALLOWED_ORIGINS = "https://mariage.madebydone.be"
+
