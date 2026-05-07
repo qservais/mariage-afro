@@ -6,10 +6,12 @@
  *
  * Couverture :
  *   - Routes protégées → redirect vers login (pas de crash) sans auth
- *   - API endpoints → 401 sans token
+ *   - API endpoints → 401 sans token (toutes les routes protégées)
  *   - Sign-in authentifié → dashboard charge
- *   - CRUD complet: profil PATCH, budget (create/patch/delete),
+ *   - PATCH /api/client/me : partner1Name + weddingDate + guestEstimate avec vérification persistance
+ *   - CRUD complet: budget (create/patch/delete + vérif suppression),
  *     invités (create/patch/delete), planning (create/patch/delete)
+ *   - Toutes les sous-routes UI authentifiées (13 routes)
  */
 import { chromium } from "playwright";
 import { BASE, API, DESKTOP, makeChecker, clerkSignIn, authFetch } from "./_clerk-auth-helper.mjs";
@@ -25,8 +27,18 @@ console.log("\n[1] Routes couple — sans auth (redirect vers login)");
   const page = await ctx.newPage();
 
   const routes = [
-    "/espace-client/dashboard", "/espace-client/budget", "/espace-client/invites",
-    "/espace-client/planning", "/espace-client/prestataires", "/espace-client/profil",
+    "/espace-client/dashboard",
+    "/espace-client/budget",
+    "/espace-client/invites",
+    "/espace-client/planning",
+    "/espace-client/prestataires",
+    "/espace-client/profil",
+    "/espace-client/plan-de-table",
+    "/espace-client/documents",
+    "/espace-client/jour-j",
+    "/espace-client/communication",
+    "/espace-client/site",
+    "/espace-client/inspiration",
   ];
   for (const route of routes) {
     await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded", timeout: 20000 });
@@ -34,7 +46,7 @@ console.log("\n[1] Routes couple — sans auth (redirect vers login)");
     const url = page.url();
     const isLogin = url.includes("login") || url.includes("sign-in") || url.includes("clerk");
     const noServerError = !(await page.locator("text=Internal Server Error").isVisible({ timeout: 500 }).catch(() => false));
-    check(`${route} → login redirect ou charge sans crash`, (isLogin || noServerError));
+    check(`${route} → login redirect ou charge sans crash`, isLogin || noServerError);
   }
   await browser.close();
 }
@@ -50,6 +62,11 @@ const protectedApis = [
   ["POST", "/api/client/guests"],
   ["GET", "/api/client/planning"],
   ["POST", "/api/client/planning"],
+  ["GET", "/api/client/tables"],
+  ["POST", "/api/client/tables"],
+  ["GET", "/api/client/documents"],
+  ["GET", "/api/client/vendors"],
+  ["GET", "/api/client/jour-j"],
 ];
 for (const [method, path] of protectedApis) {
   const r = await fetch(`${API}${path}`, {
@@ -88,17 +105,14 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
     // Compléter onboarding si nécessaire
     if (await page.locator('[data-testid="onboarding-stepper"]').isVisible({ timeout: 3000 }).catch(() => false)) {
       console.log("  → Onboarding requis — complétion...");
-      // Step 1: noms
       const p1 = page.locator('[data-testid="input-onboarding-partner1"]');
       if (await p1.isVisible({ timeout: 2000 }).catch(() => false)) await p1.fill("Alex");
       await page.locator('[data-testid="onboarding-stepper"] [data-testid="stepper-next"]').click();
       await page.waitForTimeout(300);
-      // Step 2: date
       const dateIn = page.locator('[data-testid="input-onboarding-date"]');
       if (await dateIn.isVisible({ timeout: 2000 }).catch(() => false)) await dateIn.fill("2027-09-15");
       await page.locator('[data-testid="onboarding-stepper"] [data-testid="stepper-next"]').click();
       await page.waitForTimeout(300);
-      // Steps 3-4: cards (clicker la première disponible)
       for (let s = 0; s < 3; s++) {
         const card = page.locator('[data-testid^="selectable-card-"]').first();
         if (await card.count() > 0) await card.click({ force: true }).catch(() => {});
@@ -109,10 +123,20 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
       await page.waitForTimeout(1000);
     }
 
-    // Vérifier les sous-routes du dashboard
+    // — Vérifier toutes les sous-routes du dashboard ─────────────────────────
     const clientRoutes = [
-      "/espace-client/budget", "/espace-client/invites",
-      "/espace-client/planning", "/espace-client/profil",
+      "/espace-client/budget",
+      "/espace-client/invites",
+      "/espace-client/planning",
+      "/espace-client/profil",
+      "/espace-client/plan-de-table",
+      "/espace-client/documents",
+      "/espace-client/jour-j",
+      "/espace-client/communication",
+      "/espace-client/site",
+      "/espace-client/inspiration",
+      "/espace-client/prestataires",
+      "/espace-client/dashboard",
     ];
     for (const route of clientRoutes) {
       await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded", timeout: 20000 });
@@ -127,14 +151,26 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
     const me = await meResp.json().catch(() => null);
     check("GET /api/client/me → objet avec id", !!me?.id);
 
-    // — API : PATCH /api/client/me ───────────────────────────────────────────
+    // — API : PATCH /api/client/me — mise à jour et vérification persistance ──
     const patchMeResp = await authFetch("/api/client/me", jwt, {
       method: "PATCH",
-      body: { guestEstimate: 90 },
+      body: {
+        partner1Name: "Alex E2E",
+        weddingDate: "2027-09-15",
+        guestEstimate: 90,
+      },
     });
     check("PATCH /api/client/me → 200", patchMeResp.status === 200);
     const patchedMe = await patchMeResp.json().catch(() => null);
+    check("PATCH /api/client/me → partner1Name persisté", patchedMe?.partner1Name === "Alex E2E");
+    check("PATCH /api/client/me → weddingDate persisté", patchedMe?.weddingDate === "2027-09-15");
     check("PATCH /api/client/me → guestEstimate = 90", patchedMe?.guestEstimate === 90);
+
+    // Vérifier persistance via GET
+    const meAfterPatch = await (await authFetch("/api/client/me", jwt)).json().catch(() => null);
+    check("GET /api/client/me après PATCH → partner1Name persisté", meAfterPatch?.partner1Name === "Alex E2E");
+    check("GET /api/client/me après PATCH → weddingDate persisté", meAfterPatch?.weddingDate === "2027-09-15");
+    check("GET /api/client/me après PATCH → guestEstimate persisté", meAfterPatch?.guestEstimate === 90);
 
     // — Budget CRUD ───────────────────────────────────────────────────────────
     const budgetCreateResp = await authFetch("/api/client/budget", jwt, {
@@ -144,6 +180,8 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
     check("POST /api/client/budget → 200", budgetCreateResp.status === 200);
     const budgetItem = await budgetCreateResp.json().catch(() => null);
     check("POST /api/client/budget → id retourné", !!budgetItem?.id);
+    check("POST /api/client/budget → category correct", budgetItem?.category === "Lieu de réception E2E");
+    check("POST /api/client/budget → planned = 5000", budgetItem?.planned === 5000);
 
     if (budgetItem?.id) {
       const patchBudget = await authFetch(`/api/client/budget/${budgetItem.id}`, jwt, {
@@ -152,14 +190,13 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
       });
       check("PATCH /api/client/budget/:id → 200", patchBudget.status === 200);
       const patchedBudget = await patchBudget.json().catch(() => null);
-      check("PATCH /api/client/budget/:id → planned mis à jour", patchedBudget?.planned === 6000);
+      check("PATCH /api/client/budget/:id → planned mis à jour à 6000", patchedBudget?.planned === 6000);
 
       const delBudget = await authFetch(`/api/client/budget/${budgetItem.id}`, jwt, { method: "DELETE" });
       check("DELETE /api/client/budget/:id → 200", delBudget.status === 200);
 
-      // Vérifier suppression
       const budgetsAfterDel = await (await authFetch("/api/client/budget", jwt)).json().catch(() => []);
-      check("Budget supprimé n'apparaît plus dans la liste", !budgetsAfterDel.some((b) => b.id === budgetItem.id));
+      check("Budget supprimé n'apparaît plus dans GET /api/client/budget", !budgetsAfterDel.some((b) => b.id === budgetItem.id));
     }
 
     // — Invités CRUD ──────────────────────────────────────────────────────────
@@ -170,6 +207,7 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
     check("POST /api/client/guests → 200", guestCreateResp.status === 200);
     const guest = await guestCreateResp.json().catch(() => null);
     check("POST /api/client/guests → firstName correct", guest?.firstName === "Marie");
+    check("POST /api/client/guests → rsvp = pending", guest?.rsvp === "pending");
 
     if (guest?.id) {
       const patchGuest = await authFetch(`/api/client/guests/${guest.id}`, jwt, {
@@ -178,10 +216,13 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
       });
       check("PATCH /api/client/guests/:id → 200", patchGuest.status === 200);
       const patchedGuest = await patchGuest.json().catch(() => null);
-      check("PATCH /api/client/guests/:id → rsvp confirmé", patchedGuest?.rsvp === "confirmed");
+      check("PATCH /api/client/guests/:id → rsvp = confirmed", patchedGuest?.rsvp === "confirmed");
 
       const delGuest = await authFetch(`/api/client/guests/${guest.id}`, jwt, { method: "DELETE" });
       check("DELETE /api/client/guests/:id → 200", delGuest.status === 200);
+
+      const guestsAfterDel = await (await authFetch("/api/client/guests", jwt)).json().catch(() => []);
+      check("Invité supprimé n'apparaît plus dans GET /api/client/guests", !guestsAfterDel.some((g) => g.id === guest.id));
     }
 
     // — Planning CRUD ─────────────────────────────────────────────────────────
@@ -192,6 +233,7 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
     check("POST /api/client/planning → 200", taskCreateResp.status === 200);
     const task = await taskCreateResp.json().catch(() => null);
     check("POST /api/client/planning → title correct", task?.title === "Choisir le traiteur E2E");
+    check("POST /api/client/planning → done = false", task?.done === false);
 
     if (task?.id) {
       const patchTask = await authFetch(`/api/client/planning/${task.id}`, jwt, {
@@ -200,7 +242,7 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
       });
       check("PATCH /api/client/planning/:id → 200", patchTask.status === 200);
       const patchedTask = await patchTask.json().catch(() => null);
-      check("PATCH /api/client/planning/:id → done=true", patchedTask?.done === true);
+      check("PATCH /api/client/planning/:id → done = true", patchedTask?.done === true);
 
       const delTask = await authFetch(`/api/client/planning/${task.id}`, jwt, { method: "DELETE" });
       check("DELETE /api/client/planning/:id → 200", delTask.status === 200);
@@ -209,6 +251,16 @@ console.log("\n[3] BLOC B — sign-in Clerk + CRUD couple authentifié");
     // — GET /api/client/planning après CRUD ───────────────────────────────────
     const planningList = await (await authFetch("/api/client/planning", jwt)).json().catch(() => null);
     check("GET /api/client/planning → array", Array.isArray(planningList));
+
+    // — GET /api/client/vendors, documents, jour-j ────────────────────────────
+    const clientVendors = await authFetch("/api/client/vendors", jwt);
+    check("GET /api/client/vendors → 200", clientVendors.status === 200);
+
+    const docsResp = await authFetch("/api/client/documents", jwt);
+    check("GET /api/client/documents → 200", docsResp.status === 200);
+
+    const jourJResp = await authFetch("/api/client/jour-j", jwt);
+    check("GET /api/client/jour-j → 200", jourJResp.status === 200);
 
     await browser.close();
   }

@@ -5,14 +5,14 @@
  *   email test = vendor-bloc-c+clerk_test@example.com, OTP = 424242
  *
  * Couverture :
- *   - Routes /espace-pro/* → redirect sans crash (sans auth)
- *   - API endpoints → 401 sans token
+ *   - Toutes les routes /espace-pro/* → redirect sans crash (sans auth)
+ *   - Tous les API endpoints → 401 sans token
  *   - Sign-in authentifié → espace pro charge
- *   - POST /api/vendor/onboarding (création ou MAJ fiche)
- *   - PATCH /api/vendor/profile
+ *   - POST /api/vendor/onboarding (création ou MAJ fiche, avec vérif defensif si vendor supprimé)
+ *   - PATCH /api/vendor/profile : tagline + services[] avec vérification persistance
  *   - GET /api/vendor/leads, leads/unseen-count, conversations
- *   - POST + DELETE /api/vendor/availability
- *   - Sous-routes UI: leads, messages, settings, profile
+ *   - POST + GET + DELETE /api/vendor/availability
+ *   - Toutes les sous-routes UI: leads, messages, settings, profile, gallery, services, agenda, abonnement
  */
 import { chromium } from "playwright";
 import { BASE, API, DESKTOP, makeChecker, clerkSignIn, authFetch } from "./_clerk-auth-helper.mjs";
@@ -30,7 +30,7 @@ console.log("\n[1] Routes prestataire — sans auth");
   const routes = [
     "/espace-pro", "/espace-pro/profile", "/espace-pro/gallery",
     "/espace-pro/services", "/espace-pro/agenda", "/espace-pro/leads",
-    "/espace-pro/messages", "/espace-pro/settings",
+    "/espace-pro/messages", "/espace-pro/settings", "/espace-pro/abonnement",
   ];
   for (const route of routes) {
     await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded", timeout: 20000 });
@@ -53,6 +53,8 @@ const protectedApis = [
   ["GET", "/api/vendor/leads"],
   ["GET", "/api/vendor/leads/unseen-count"],
   ["GET", "/api/vendor/conversations"],
+  ["GET", "/api/vendor/availability"],
+  ["POST", "/api/vendor/availability"],
 ];
 for (const [method, path] of protectedApis) {
   const r = await fetch(`${API}${path}`, {
@@ -93,8 +95,9 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     check("GET /api/vendor/me → 200", meResp.status === 200);
     const me = await meResp.json().catch(() => null);
     check("GET /api/vendor/me → {account}", !!me?.account);
+    check("GET /api/vendor/me → account.id numérique", typeof me?.account?.id === "number");
 
-    // — POST /api/vendor/onboarding (création ou MAJ) ─────────────────────────
+    // — POST /api/vendor/onboarding (création ou MAJ, défense si vendor supprimé) ──
     const onboardResp = await authFetch("/api/vendor/onboarding", jwt, {
       method: "POST",
       body: {
@@ -110,19 +113,38 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     const onboard = await onboardResp.json().catch(() => null);
     check("POST /api/vendor/onboarding → businessName correct",
       onboard?.account?.businessName === "Test Pro BLOC C E2E");
+    check("POST /api/vendor/onboarding → vendorId présent",
+      typeof onboard?.account?.vendorId === "number");
 
-    // — PATCH /api/vendor/profile ─────────────────────────────────────────────
+    // — PATCH /api/vendor/profile : tagline ───────────────────────────────────
     const patchProfileResp = await authFetch("/api/vendor/profile", jwt, {
       method: "PATCH",
       body: { tagline: "Tagline test E2E BLOC C" },
     });
-    check("PATCH /api/vendor/profile → 200", patchProfileResp.status === 200);
+    check("PATCH /api/vendor/profile (tagline) → 200", patchProfileResp.status === 200);
 
-    // — GET /api/vendor/profile ───────────────────────────────────────────────
+    // — GET /api/vendor/profile — vérification persistance tagline ────────────
     const profileResp = await authFetch("/api/vendor/profile", jwt);
     check("GET /api/vendor/profile → 200", profileResp.status === 200);
     const profile = await profileResp.json().catch(() => null);
-    check("GET /api/vendor/profile → tagline mis à jour", profile?.tagline === "Tagline test E2E BLOC C");
+    check("GET /api/vendor/profile → tagline persisté", profile?.tagline === "Tagline test E2E BLOC C");
+
+    // — PATCH /api/vendor/profile : services[] + vérification persistance ─────
+    const patchServicesResp = await authFetch("/api/vendor/profile", jwt, {
+      method: "PATCH",
+      body: { services: ["Reportage photo mariage", "Séance engagement", "Album personnalisé"] },
+    });
+    check("PATCH /api/vendor/profile (services) → 200", patchServicesResp.status === 200);
+
+    const profileAfterServices = await (await authFetch("/api/vendor/profile", jwt)).json().catch(() => null);
+    check(
+      "GET /api/vendor/profile → services persistés (array de 3)",
+      Array.isArray(profileAfterServices?.services) && profileAfterServices.services.length === 3
+    );
+    check(
+      "GET /api/vendor/profile → services[0] correct",
+      profileAfterServices?.services?.[0] === "Reportage photo mariage"
+    );
 
     // — GET /api/vendor/leads ─────────────────────────────────────────────────
     const leadsResp = await authFetch("/api/vendor/leads", jwt);
@@ -134,7 +156,7 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     const unseenResp = await authFetch("/api/vendor/leads/unseen-count", jwt);
     check("GET /api/vendor/leads/unseen-count → 200", unseenResp.status === 200);
     const unseen = await unseenResp.json().catch(() => null);
-    check("GET /api/vendor/leads/unseen-count → {count}", typeof unseen?.count === "number");
+    check("GET /api/vendor/leads/unseen-count → {count} numérique", typeof unseen?.count === "number");
 
     // — GET /api/vendor/conversations ─────────────────────────────────────────
     const convsResp = await authFetch("/api/vendor/conversations", jwt);
@@ -154,16 +176,29 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     const availGetResp = await authFetch(`/api/vendor/availability?from=${futureDate}&to=${futureDate}`, jwt);
     check("GET /api/vendor/availability → 200", availGetResp.status === 200);
     const avail = await availGetResp.json().catch(() => null);
+    check("GET /api/vendor/availability → array", Array.isArray(avail));
     check("GET /api/vendor/availability → date bloquée présente",
       Array.isArray(avail) && avail.some((a) => a.date === futureDate));
+    check("GET /api/vendor/availability → status = blocked",
+      Array.isArray(avail) && avail.find((a) => a.date === futureDate)?.status === "blocked");
 
     const availDelResp = await authFetch(`/api/vendor/availability/${futureDate}`, jwt, { method: "DELETE" });
     check("DELETE /api/vendor/availability/:date → 204", availDelResp.status === 204);
 
-    // — Sous-routes UI authentifiées ──────────────────────────────────────────
+    // Vérifier suppression disponibilité
+    const availAfterDel = await (await authFetch(`/api/vendor/availability?from=${futureDate}&to=${futureDate}`, jwt)).json().catch(() => []);
+    check("Disponibilité supprimée → plus dans la liste", !availAfterDel.some((a) => a.date === futureDate));
+
+    // — Toutes les sous-routes UI authentifiées ───────────────────────────────
     const proRoutes = [
-      "/espace-pro/leads", "/espace-pro/messages",
-      "/espace-pro/settings", "/espace-pro/profile",
+      "/espace-pro/leads",
+      "/espace-pro/messages",
+      "/espace-pro/settings",
+      "/espace-pro/profile",
+      "/espace-pro/gallery",
+      "/espace-pro/services",
+      "/espace-pro/agenda",
+      "/espace-pro/abonnement",
     ];
     for (const route of proRoutes) {
       await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded", timeout: 20000 });

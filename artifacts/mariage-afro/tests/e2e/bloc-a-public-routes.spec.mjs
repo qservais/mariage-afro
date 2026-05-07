@@ -1,7 +1,7 @@
 /**
  * E2E spec — BLOC A: routes publiques, formulaire contact (avec validation),
- * calculateur budget (résultat + soumission), quiz style, marketplace (count strict),
- * multi-devis (UI + API), fiche prestataire.
+ * calculateur budget (résultat + soumission), quiz style, marketplace (count strict + filtre catégorie),
+ * multi-devis (count strict = 2), fiche prestataire, routes mariage/:slug.
  *
  * Aucun login requis. Toutes les assertions sont déterministes.
  */
@@ -25,30 +25,56 @@ async function checkRoute(path) {
 }
 
 // ── 1. Smoke — toutes les routes publiques ────────────────────────────────────
-console.log("\n[1] Smoke test — 13 routes publiques");
+console.log("\n[1] Smoke test — routes publiques");
 const publicRoutes = [
   "/", "/plateforme", "/services", "/partenaires", "/comparateur",
   "/lieux", "/a-propos", "/contact", "/outils/budget", "/outils/quiz",
-  "/mentions-legales", "/espace-client/login", "/espace-pro/login",
+  "/realisations", "/shop", "/guide",
+  "/mentions-legales", "/confidentialite", "/cookies",
+  "/espace-client/login", "/espace-pro/login",
 ];
 for (const route of publicRoutes) {
   await checkRoute(route);
 }
 
-// ── 2. API publique — prestataires ────────────────────────────────────────────
-console.log("\n[2] API publique — prestataires");
+// Route interne guide (layout minimal)
+await checkRoute("/_interne/guide");
+
+// Routes mariage/:slug — utilise un slug existant en DB
+const MARIAGE_SLUG = "servais-lahayegoffart";
+await checkRoute(`/mariage/${MARIAGE_SLUG}`);
+await checkRoute(`/mariage/${MARIAGE_SLUG}/rsvp`);
+await checkRoute(`/mariage/${MARIAGE_SLUG}/cagnotte`);
+
+// ── 2. API publique — marketplace (count strict + filtre catégorie) ───────────
+console.log("\n[2] API publique — marketplace");
 const vendorsResp = await fetch(`${API}/api/marketplace/vendors`);
 check("GET /api/marketplace/vendors → 200", vendorsResp.status === 200);
 const vendors = await vendorsResp.json().catch(() => null);
-check("GET /api/marketplace/vendors → au moins 1 résultat", Array.isArray(vendors) && vendors.length >= 1);
+check("GET /api/marketplace/vendors → au moins 8 résultats", Array.isArray(vendors) && vendors.length >= 8);
 
-// Fiche individuelle
+// Filtre catégorie — "Vidéo" doit retourner un sous-ensemble strict
+const catResp = await fetch(`${API}/api/marketplace/vendors?category=Vid%C3%A9o`);
+check("GET /api/marketplace/vendors?category=Vidéo → 200", catResp.status === 200);
+const catVendors = await catResp.json().catch(() => null);
+check(
+  "GET /api/marketplace/vendors?category=Vidéo → résultats filtrés (>= 1 et tous catégorie Vidéo)",
+  Array.isArray(catVendors) && catVendors.length >= 1 && catVendors.every((v) => v.category === "Vidéo")
+);
+check(
+  "Filtre catégorie < total non filtré",
+  Array.isArray(catVendors) && Array.isArray(vendors) && catVendors.length < vendors.length
+);
+
+// Fiche individuelle — name + category + id
 if (vendors?.length > 0) {
   const slug = vendors[0].slug ?? vendors[0].id;
   const detailResp = await fetch(`${API}/api/marketplace/vendors/${slug}`);
   check(`GET /api/marketplace/vendors/${slug} → 200`, detailResp.status === 200);
   const vendor = await detailResp.json().catch(() => null);
-  check("Fiche prestataire → name + category présents", !!vendor?.name && !!vendor?.category);
+  check("Fiche prestataire → name présent", typeof vendor?.name === "string" && vendor.name.length > 0);
+  check("Fiche prestataire → category présent", typeof vendor?.category === "string" && vendor.category.length > 0);
+  check("Fiche prestataire → id numérique", typeof vendor?.id === "number");
 }
 
 // ── 3. Formulaire contact — soumission valide ─────────────────────────────────
@@ -77,7 +103,6 @@ const contactEmptyResp = await fetch(`${API}/api/contact`, {
 });
 check("POST /api/contact (vide) → 400/422 (validation)", contactEmptyResp.status >= 400 && contactEmptyResp.status < 500);
 
-// Email invalide
 const contactBadEmailResp = await fetch(`${API}/api/contact`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -86,7 +111,6 @@ const contactBadEmailResp = await fetch(`${API}/api/contact`, {
 check("POST /api/contact (email invalide) → 400/422", contactBadEmailResp.status >= 400 && contactBadEmailResp.status < 500);
 
 // ── 5. Formulaire contact UI — validation stepper ─────────────────────────────
-// Helper robuste : attend qu'un testid soit visible avec timeout réel
 async function waitVisible(testid, timeout = 4000) {
   return page.locator(`[data-testid="${testid}"]`).waitFor({ state: "visible", timeout }).then(() => true).catch(() => false);
 }
@@ -100,34 +124,30 @@ await page.goto(`${BASE}/contact`, { waitUntil: "networkidle", timeout: 30000 })
 await page.waitForSelector('[data-testid="contact-stepper"]', { timeout: 15000 });
 await page.waitForTimeout(500);
 
-// Tenter de passer step 1 sans sélectionner → bloque
 await clickNext();
 check("Contact step 1 bloque sans type de mariage", await waitVisible("cards-wedding-type", 2000));
 
-// Sélectionner un type de mariage, avancer
 await page.locator('[data-testid="cards-wedding-type"] [data-testid^="selectable-card-"]').first().click({ force: true });
 await page.waitForTimeout(200);
 await clickNext();
-// Step 2 a data-testid="cards-services" OU stepper-next reste visible
 check("Contact step 1 → step 2 après sélection",
   await waitVisible("cards-services", 3000) || await waitVisible("stepper-next", 1500));
 
-// Step 2 optionnel → skip directement
 await clickNext();
 check("Contact step 2 (optionnel) → step 3", await waitVisible("input-contact-name", 4000));
 
-// Tenter step 3 sans name/email → bloque
 await clickNext();
 check("Contact step 3 bloque sans name/email", await waitVisible("input-contact-name", 2000));
 
-// Remplir et avancer
 await page.locator('[data-testid="input-contact-name"]').fill("Alice Test E2E");
 await page.locator('[data-testid="input-contact-email"]').fill("alice.e2e@example.com");
 await clickNext();
 check("Contact step 3 → step 4 après données valides", await waitVisible("textarea-contact-message", 4000));
 
-// ── 6. Multi-devis — API direct ───────────────────────────────────────────────
-console.log("\n[6] Multi-devis API");
+// ── 6. Multi-devis — count strict = nb vendorIds envoyés ─────────────────────
+console.log("\n[6] Multi-devis API — count strict");
+// Utilise les 2 premiers vendors actifs connus
+const knownVendorIds = vendors?.slice(0, 2).map((v) => v.id) ?? [1, 2];
 const multiResp = await fetch(`${API}/api/leads/multi-devis`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -136,14 +156,17 @@ const multiResp = await fetch(`${API}/api/leads/multi-devis`, {
     email: "multi-bloc-a@example.com",
     phone: null,
     message: "Test multi-devis E2E",
-    vendorIds: vendors?.slice(0, 2).map((v) => v.id) ?? [1, 2],
+    vendorIds: knownVendorIds,
   }),
 });
 check("POST /api/leads/multi-devis → 200", multiResp.status === 200);
 const multiBody = await multiResp.json().catch(() => null);
-check("POST /api/leads/multi-devis → count ≥ 1 ou success", (multiBody?.count ?? 0) >= 1 || multiBody?.success === true);
+check(
+  `POST /api/leads/multi-devis → count = ${knownVendorIds.length}`,
+  multiBody?.count === knownVendorIds.length
+);
 
-// Multi-devis validation — 0 vendors doit échouer
+// Validation : 0 vendors doit échouer
 const multiEmptyResp = await fetch(`${API}/api/leads/multi-devis`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -151,8 +174,7 @@ const multiEmptyResp = await fetch(`${API}/api/leads/multi-devis`, {
 });
 check("POST /api/leads/multi-devis (0 vendors) → 400", multiEmptyResp.status >= 400);
 
-// ── 7. Calculateur budget — traversée complète + résultat ─────────────────────
-// Steps: 0=guests, 1=region, 2=standing, 3=services, 4=month → result
+// ── 7. Calculateur budget — traversée complète + résultat € ──────────────────
 console.log("\n[7] Calculateur budget — résultat €");
 await page.goto(`${BASE}/outils/budget`, { waitUntil: "networkidle", timeout: 30000 });
 await page.waitForTimeout(800);
@@ -160,12 +182,10 @@ await page.waitForTimeout(800);
 const budgetBodyInitial = await page.locator("body").innerText().catch(() => "");
 check("Budget calculator charge", budgetBodyInitial.length > 50);
 
-// Step 0 — invités
 const guestInput = page.locator('[data-testid="input-guest-count"]');
 if (await guestInput.isVisible({ timeout: 2000 }).catch(() => false)) {
   await guestInput.fill("100");
 }
-// Steps 1-4 — cliquer les options + bouton budget-next
 for (let step = 0; step < 5; step++) {
   const opt = page.locator('[data-testid^="region-"], [data-testid^="standing-"], [data-testid^="month-"]').first();
   if (await opt.count() > 0) { await opt.click({ force: true }).catch(() => {}); await page.waitForTimeout(100); }
@@ -178,7 +198,6 @@ const resultVisible = await page.locator('[data-testid="budget-step-result"], [d
 const budgetFinalBody = await page.locator("body").innerText().catch(() => "");
 check("Budget result affiche un montant €", budgetFinalBody.includes("€") || resultVisible);
 
-// Soumission du formulaire de contact final dans le budget
 const budgetEmailInput = page.locator('[data-testid="budget-input-email"]');
 if (await budgetEmailInput.isVisible({ timeout: 2000 }).catch(() => false)) {
   await page.locator('[data-testid="budget-input-name"]').fill("Budget Test E2E");
@@ -191,7 +210,7 @@ if (await budgetEmailInput.isVisible({ timeout: 2000 }).catch(() => false)) {
   console.log("  ⚠ Budget email form non visible sur step résultat — skipped");
 }
 
-// ── 8. Quiz style — traversée complète ───────────────────────────────────────
+// ── 8. Quiz style — traversée complète + profil résultat ─────────────────────
 console.log("\n[8] Quiz style — profil résultat");
 await page.goto(`${BASE}/outils/quiz`, { waitUntil: "networkidle", timeout: 30000 });
 await page.waitForTimeout(800);
@@ -207,10 +226,12 @@ for (let q = 0; q < 10; q++) {
     await qNext.click().catch(() => {}); await page.waitForTimeout(400);
   } else break;
 }
+// Résultat : soit un testid explicite, soit du contenu suffisant (> 200 chars = écran de résultat)
+const quizResultVisible = await page.locator('[data-testid="quiz-result"], [data-testid="quiz-profile"]').isVisible({ timeout: 3000 }).catch(() => false);
 const quizFinalBody = await page.locator("body").innerText().catch(() => "");
-check("Quiz termine sans crash (contenu visible)", quizFinalBody.length > 30);
+check("Quiz termine et affiche un résultat (profil ou style)", quizResultVisible || quizFinalBody.length > 200);
 
-// ── 9. Marketplace — affichage prestataires ───────────────────────────────────
+// ── 9. Marketplace UI — affichage prestataires ────────────────────────────────
 console.log("\n[9] Marketplace /partenaires");
 await page.goto(`${BASE}/partenaires`, { waitUntil: "networkidle", timeout: 30000 });
 await page.waitForTimeout(500);

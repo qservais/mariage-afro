@@ -5,9 +5,11 @@
  *   1. Login admin (GET /admin/login → form, POST → session)
  *   2. Navigation 5 sections (vendors, venues, realisations, vendor-accounts, test-email)
  *   3. CRUD prestataires : créer → modifier → toggle actif → supprimer
+ *      ID extraction via page.evaluate() par nom unique (pas de "dernier lien" dangereux)
  *   4. CRUD lieux : créer → supprimer
+ *      ID extraction via page.evaluate() par nom unique
  *   5. CRUD réalisations : créer → modifier → supprimer
- *   6. Comptes prestataires : liste avec count, bouton approuver visible
+ *   6. Comptes prestataires : liste + approbation d'un compte pending
  *   7. Test email : page charge + soumission (200 ou 422/403 acceptés)
  *
  * Requiert ADMIN_PASSWORD dans l'environnement.
@@ -46,6 +48,31 @@ async function adminPost(path, formData) {
     },
     [`${API}${path}`, params.toString()]
   );
+}
+
+/**
+ * DOM traversal par nom unique — retourne l'ID extrait d'un lien edit ou form delete.
+ * Reçoit [name, basePath] comme tuple.
+ * Utilise les sélecteurs ciblés (.item, .grid > div) pour éviter que le container parent
+ * (.grid avec childElementCount < 20) retourne le premier lien de la page (mauvais ID).
+ */
+function evalExtractId([name, basePath]) {
+  // D'abord: chercher dans les containers spécifiques (.item, .grid > div, article, tr)
+  const candidates = document.querySelectorAll(".item, .grid > div, article, tr");
+  for (const el of candidates) {
+    if (!el.textContent || !el.textContent.includes(name)) continue;
+    const editLink = el.querySelector('a[href*="' + basePath + '"][href*="/edit"]');
+    if (editLink) {
+      const m = editLink.getAttribute("href").match(/\/(\d+)\/edit/);
+      if (m) return m[1];
+    }
+    const delForm = el.querySelector('form[action*="' + basePath + '"][action*="/delete"]');
+    if (delForm) {
+      const m = delForm.getAttribute("action").match(/\/(\d+)\/delete/);
+      if (m) return m[1];
+    }
+  }
+  return null;
 }
 
 // ── 1. Page de login ──────────────────────────────────────────────────────────
@@ -89,22 +116,7 @@ for (const [path, label] of sections) {
 console.log("\n[4] CRUD prestataires admin");
 const vendorName = `E2E Admin Vendor ${Date.now()}`;
 
-/**
- * adminPost: fetch() follows the redirect, so final status is 200 (the redirect destination).
- * We accept any success: status < 400 (200 after following redirect, or 3xx if manual).
- */
 function isAdminSuccess(status) { return status >= 200 && status < 400; }
-
-/** Extract the first numeric ID from a link/form action matching a pattern. */
-async function extractIdFromPage(linkPattern) {
-  const links = await page.locator(`a[href*="${linkPattern}"], form[action*="${linkPattern}"]`).all();
-  for (const el of links) {
-    const attr = await el.getAttribute("href") ?? await el.getAttribute("action") ?? "";
-    const m = attr.match(/\/(\d+)\//);
-    if (m) return m[1];
-  }
-  return null;
-}
 
 // Créer
 await page.goto(`${API}/admin/content/vendors/new`, { waitUntil: "domcontentloaded", timeout: 20000 });
@@ -129,29 +141,8 @@ await page.goto(`${API}/admin/content/vendors`, { waitUntil: "domcontentloaded",
 const vendorsListText = await page.locator("body").innerText().catch(() => "");
 check("Prestataire créé apparaît dans la liste", vendorsListText.includes(vendorName));
 
-// Trouver l'ID via DOM traversal par nom unique (même pattern que réalisations).
-// NE PAS prendre le "dernier" lien — ça risque de supprimer un vendor d'un autre test.
-let vendorId = await page.evaluate((name) => {
-  // 1. Chercher les éléments contenant le nom exact, puis remonter pour trouver edit/delete
-  const elems = [...document.querySelectorAll("*")].filter(
-    (e) => e.childElementCount < 20 && e.textContent.includes(name)
-  );
-  for (const el of elems) {
-    // Chercher un lien edit dans cet élément ou ses enfants
-    const editLink = el.querySelector('a[href*="/admin/content/vendors/"][href*="/edit"]');
-    if (editLink) {
-      const m = editLink.getAttribute("href").match(/vendors\/(\d+)\/edit/);
-      if (m) return m[1];
-    }
-    // Chercher un form delete dans cet élément ou ses enfants
-    const delForm = el.querySelector('form[action*="/admin/content/vendors/"][action*="/delete"]');
-    if (delForm) {
-      const m = delForm.getAttribute("action").match(/vendors\/(\d+)\/delete/);
-      if (m) return m[1];
-    }
-  }
-  return null;
-}, vendorName).catch(() => null);
+// Trouver l'ID via DOM traversal par nom unique (pas de "dernier lien" dangereux)
+let vendorId = await page.evaluate(evalExtractId, [vendorName, "/admin/content/vendors"]).catch(() => null);
 
 // Toggle actif/inactif
 if (vendorId) {
@@ -200,38 +191,21 @@ await page.goto(`${API}/admin/content/venues`, { waitUntil: "domcontentloaded", 
 const venuesListText = await page.locator("body").innerText().catch(() => "");
 check("Lieu créé apparaît dans la liste", venuesListText.includes(venueName));
 
-// Extraire ID : card .item contenant le venueName, puis form[action*=delete]
-let venueId = null;
-const venueCard = page.locator(".item, div, article").filter({ hasText: venueName }).first();
-if (await venueCard.count() > 0) {
-  const delAction = await venueCard.locator('form[action*="/delete"]').getAttribute("action").catch(() => null);
-  if (delAction) { const m = delAction.match(/\/(\d+)\/delete/); if (m) venueId = m[1]; }
-  if (!venueId) {
-    const editHref = await venueCard.locator('a[href*="/edit"]').getAttribute("href").catch(() => null);
-    if (editHref) { const m = editHref.match(/\/(\d+)\/edit/); if (m) venueId = m[1]; }
-  }
-}
-// Fallback : prendre le dernier ID sur la page
-if (!venueId) {
-  const allDel = await page.locator('form[action*="/admin/content/venues/"][action*="/delete"]').all();
-  for (const f of allDel) {
-    const a = await f.getAttribute("action") ?? "";
-    const m = a.match(/venues\/(\d+)\/delete/);
-    if (m) venueId = m[1];
-  }
-}
+// Extraire ID via page.evaluate() par nom unique
+let venueId = await page.evaluate(evalExtractId, [venueName, "/admin/content/venues"]).catch(() => null);
 
 if (venueId) {
   const venueDelResult = await adminPost(`/admin/content/venues/${venueId}/delete`, {});
   check("Lieu supprimé (redirect 3xx)", isAdminSuccess(venueDelResult.status));
+  await page.goto(`${API}/admin/content/venues`, { waitUntil: "domcontentloaded", timeout: 20000 });
+  const venuesAfterDel = await page.locator("body").innerText().catch(() => "");
+  check("Lieu supprimé → n'apparaît plus dans la liste", !venuesAfterDel.includes(venueName));
 } else {
   console.log("  ⚠ ID lieu non trouvé — suppression skipped");
   check("Lieu supprimé (ID extrait)", false);
 }
 
 // ── 6. CRUD réalisations — create → modify → delete ──────────────────────────
-// Champs du formulaire : brideName, groomName, weddingType, city, description, etc.
-// La liste affiche : "{brideName} & {groomName}"
 console.log("\n[6] CRUD réalisations admin");
 const brideName = `AliceE2E${Date.now()}`;
 const groomName = `BobE2E${Date.now()}`;
@@ -250,15 +224,11 @@ if (await brideField.isVisible({ timeout: 3000 }).catch(() => false)) {
 }
 await page.goto(`${API}/admin/content/realisations`, { waitUntil: "domcontentloaded", timeout: 20000 });
 const realsListText = await page.locator("body").innerText().catch(() => "");
-// Liste affiche "{brideName} & {groomName}"
 check("Réalisation créée apparaît dans la liste", realsListText.includes(brideName) && realsListText.includes(groomName));
 
-// Extraire ID : traversal DOM dans le browser — cherche la card contenant brideName
-// puis extrait l'action du form delete qui est dans la même card.
-// La liste est triée desc(createdAt) → notre nouvelle réalisation est PREMIÈRE.
+// Extraire ID via DOM traversal ciblé par brideName
 let realId = null;
 const realDeleteAction = await page.evaluate((name) => {
-  // Cherche dans les éléments .item, article ou div direct du .grid
   const candidates = document.querySelectorAll(".item, article, .grid > div");
   for (const el of candidates) {
     if (el.textContent && el.textContent.includes(name)) {
@@ -272,7 +242,7 @@ if (realDeleteAction) {
   const m = realDeleteAction.match(/\/(\d+)\/delete/);
   if (m) realId = m[1];
 }
-// Fallback : première réalisation de la page (triée desc → la plus récente en premier)
+// Fallback : première réalisation (triée desc → la plus récente en premier)
 if (!realId) {
   const firstEdit = page.locator('a[href*="/admin/content/realisations/"][href*="/edit"]').first();
   const href = await firstEdit.getAttribute("href").catch(() => null) ?? "";
@@ -281,7 +251,6 @@ if (!realId) {
 }
 
 if (realId) {
-  // Modifier : changer le groomName
   await page.goto(`${API}/admin/content/realisations/${realId}/edit`, { waitUntil: "domcontentloaded", timeout: 20000 });
   const editGroom = page.locator('input[name="groomName"]').first();
   if (await editGroom.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -291,7 +260,6 @@ if (realId) {
     await page.waitForTimeout(400);
   }
 
-  // Supprimer
   const realDelResult = await adminPost(`/admin/content/realisations/${realId}/delete`, {});
   check("Réalisation supprimée (redirect 3xx)", isAdminSuccess(realDelResult.status));
   await page.goto(`${API}/admin/content/realisations`, { waitUntil: "domcontentloaded", timeout: 20000 });
@@ -301,18 +269,50 @@ if (realId) {
   check("Réalisation CRUD (ID extrait)", false);
 }
 
-// ── 7. Comptes prestataires — liste + bouton approuver ────────────────────────
+// ── 7. Comptes prestataires — liste + approbation d'un compte pending ─────────
 console.log("\n[7] Comptes prestataires admin");
 await page.goto(`${API}/admin/content/vendor-accounts`, { waitUntil: "domcontentloaded", timeout: 20000 });
 await page.waitForTimeout(300);
 const accountsText = await page.locator("body").innerText().catch(() => "");
 check("Page vendor-accounts charge avec contenu", accountsText.length > 50);
-const hasApproveBtn = await page.locator(
-  'button:has-text("Approuver"), form[action*="approve"] button, a:has-text("Approuver")'
-).count();
-// La liste peut être vide si aucun compte pending — l'important est que la page charge
 check("Page vendor-accounts répond sans erreur serveur",
   !accountsText.includes("Internal Server Error") && !accountsText.includes("500"));
+
+// Tenter d'approuver un compte pending (si disponible)
+const approveBtn = page.locator('form[action*="/approve"] button, button:has-text("Approuver"), a:has-text("Approuver")').first();
+const hasPendingAccount = await approveBtn.isVisible({ timeout: 2000 }).catch(() => false);
+
+if (hasPendingAccount) {
+  // Extraire l'ID du compte via l'action du form approve
+  const approveAction = await page.evaluate(() => {
+    const form = document.querySelector('form[action*="/approve"]');
+    return form ? form.getAttribute("action") : null;
+  });
+
+  if (approveAction) {
+    const m = approveAction.match(/vendor-accounts\/(\d+)\/approve/);
+    const accountIdToApprove = m ? m[1] : null;
+
+    if (accountIdToApprove) {
+      const approveResult = await adminPost(`/admin/content/vendor-accounts/${accountIdToApprove}/approve`, {});
+      check(`Compte prestataire ${accountIdToApprove} → approbation (redirect 3xx)`, isAdminSuccess(approveResult.status));
+
+      // Vérifier que le statut est passé à "approved"
+      await page.goto(`${API}/admin/content/vendor-accounts`, { waitUntil: "domcontentloaded", timeout: 20000 });
+      const accountsAfterApprove = await page.locator("body").innerText().catch(() => "");
+      check("Compte approuvé → statut 'approved' visible dans la liste",
+        accountsAfterApprove.includes("approved") || accountsAfterApprove.includes("Approuvé"));
+    } else {
+      check("Compte prestataire → ID approve extrait", false);
+    }
+  } else {
+    check("Compte prestataire → form approve trouvé", false);
+  }
+} else {
+  console.log("  ⚠ Aucun compte pending disponible — approbation non testée (liste vide ou tous approved)");
+  // Pas d'échec si aucun compte pending (état DB variable)
+  check("Page vendor-accounts OK (liste peut être vide)", true);
+}
 
 // ── 8. Test email — page + soumission ─────────────────────────────────────────
 console.log("\n[8] Test email");
@@ -320,14 +320,12 @@ await page.goto(`${API}/admin/test-email`, { waitUntil: "domcontentloaded", time
 const emailPageText = await page.locator("body").innerText().catch(() => "");
 check("Page /admin/test-email charge", emailPageText.length > 10);
 
-// Soumettre le formulaire de test vers delivered@resend.dev
 const emailForm = page.locator("form").first();
 if (await emailForm.count() > 0) {
   const toInput = page.locator('input[name="to"], input[type="email"]').first();
   if (await toInput.isVisible({ timeout: 2000 }).catch(() => false)) {
     await toInput.fill("delivered@resend.dev");
   }
-  // Sélectionner un type d'email si disponible
   const typeSelect = page.locator('select[name="type"]').first();
   if (await typeSelect.isVisible({ timeout: 2000 }).catch(() => false)) {
     await typeSelect.selectOption({ index: 0 }).catch(() => {});
@@ -336,7 +334,6 @@ if (await emailForm.count() > 0) {
   await page.waitForLoadState("domcontentloaded").catch(() => {});
   await page.waitForTimeout(500);
   const resultText = await page.locator("body").innerText().catch(() => "");
-  // Resend retourne 200 (livré) ou 422/403 (domaine non vérifié) — les deux sont acceptés
   check("Test email soumis → réponse (200 livré ou 422/403 domaine non vérifié)",
     resultText.includes("200") || resultText.includes("422") || resultText.includes("403") ||
     resultText.includes("success") || resultText.includes("sent") || resultText.includes("erreur") ||
