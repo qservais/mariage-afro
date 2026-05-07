@@ -52,3 +52,6 @@ channel = "stable-25_05"
 
 [userenv]
 
+[userenv.shared]
+EMAIL_FROM = "Mariage Afro <hello@mariage-afro.com>"
+
