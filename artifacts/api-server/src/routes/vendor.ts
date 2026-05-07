@@ -116,6 +116,17 @@ router.post("/vendor/onboarding", async (req, res) => {
     .limit(1);
 
   let vendorId = existing?.vendorId ?? null;
+
+  // Verify the marketplace vendor still exists (may have been deleted externally)
+  if (vendorId) {
+    const [existingVendor] = await db
+      .select({ id: marketplaceVendorsTable.id })
+      .from(marketplaceVendorsTable)
+      .where(eq(marketplaceVendorsTable.id, vendorId))
+      .limit(1);
+    if (!existingVendor) vendorId = null;
+  }
+
   if (vendorId) {
     await db
       .update(marketplaceVendorsTable)

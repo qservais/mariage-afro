@@ -9,6 +9,10 @@ router.post("/contact", (req, res) => {
     res.status(400).json({ error: "Champs requis manquants" });
     return;
   }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email))) {
+    res.status(400).json({ error: "Email invalide" });
+    return;
+  }
 
   // Fire-and-forget — never block the HTTP response on Resend latency/failures
   void sendContactFormEmail(
