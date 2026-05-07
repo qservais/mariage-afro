@@ -241,7 +241,7 @@ console.log("\n[9] Marketplace /partenaires");
 await page.goto(`${BASE}/partenaires`, { waitUntil: "networkidle", timeout: 30000 });
 await page.waitForTimeout(800);
 const cards = await page.locator('[data-testid="vendor-card"], article.vendor, article').count();
-check("Marketplace affiche au moins 1 prestataire", cards >= 1);
+check("Marketplace affiche au moins 8 prestataires", cards >= 8);
 
 // Fiche détail — ouvre le premier prestataire et vérifie CTA visible
 if (vendors?.length > 0) {

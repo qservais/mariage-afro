@@ -90,7 +90,7 @@ await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 1000
 await page.waitForTimeout(400);
 
 const postLoginUrl = page.url();
-check("Login → redirigé vers /admin (pas de /login)", !postLoginUrl.endsWith("/login") || postLoginUrl.includes("/admin"));
+check("Login → redirigé vers /admin (pas de /login)", postLoginUrl.includes("/admin") && !postLoginUrl.includes("/login"));
 const noLoginError = !(await page.locator("text=incorrect, text=invalide").isVisible({ timeout: 500 }).catch(() => false));
 check("Login → pas d'erreur 'mot de passe incorrect'", noLoginError);
 const pageText = await page.locator("body").innerText().catch(() => "");

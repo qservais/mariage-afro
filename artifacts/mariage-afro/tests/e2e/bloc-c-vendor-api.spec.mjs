@@ -169,19 +169,55 @@ console.log("\n[3] BLOC C — sign-in Clerk + CRUD prestataire authentifié");
     const convs = await convsResp.json().catch(() => null);
     check("GET /api/vendor/conversations → array", Array.isArray(convs));
 
-    // — Gallery : PATCH /api/vendor/profile/images (vider la galerie) ───────────
-    // images:[] est valide (aucune URL à valider) et efface toutes les images existantes
-    const imagesResp = await authFetch("/api/vendor/profile/images", jwt, {
+    // — Gallery : upload JPEG → vérification présence → suppression ─────────────
+    // Étape 1 : demander une URL d'upload signée
+    const uploadReqResp = await authFetch("/api/storage/uploads/request-url", jwt, {
+      method: "POST",
+      body: { name: "test-e2e-gallery.jpg", size: 631, contentType: "image/jpeg" },
+    });
+    check("POST /api/storage/uploads/request-url → 200", uploadReqResp.status === 200);
+    const uploadData = await uploadReqResp.json().catch(() => null);
+    const uploadURL = uploadData?.uploadURL;
+    const objectPath = uploadData?.objectPath;
+    check("Réponse upload-intent → uploadURL + objectPath", typeof uploadURL === "string" && typeof objectPath === "string");
+
+    // Étape 2 : PUT un JPEG minimal (1×1 px) vers l'URL signée
+    // prettier-ignore
+    const minimalJpeg = Buffer.from(
+      "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k=",
+      "base64"
+    );
+    let uploadOk = false;
+    if (typeof uploadURL === "string") {
+      const putResp = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": "image/jpeg" },
+        body: minimalJpeg,
+      }).catch(() => null);
+      uploadOk = putResp?.ok === true || putResp?.status === 200;
+    }
+    check("PUT JPEG vers URL signée → succès", uploadOk);
+
+    // Étape 3 : PATCH avec l'objectPath retourné (ou URL externe si upload échoue)
+    const imageRef = (objectPath && uploadOk) ? objectPath : "https://picsum.photos/seed/e2e-bloc-c/400/300";
+    const patchImagesResp = await authFetch("/api/vendor/profile/images", jwt, {
+      method: "PATCH",
+      body: { images: [imageRef], coverImage: imageRef },
+    });
+    check("PATCH /api/vendor/profile/images [image] → 200", patchImagesResp.status === 200);
+
+    // Étape 4 : vérification via GET → image présente
+    const profileAfterUpload = await (await authFetch("/api/vendor/profile", jwt)).json().catch(() => null);
+    check("GET /api/vendor/profile → image(s) présente(s) après upload", Array.isArray(profileAfterUpload?.images) && profileAfterUpload.images.length >= 1);
+
+    // Étape 5 : suppression de toutes les images (clear)
+    const clearImagesResp = await authFetch("/api/vendor/profile/images", jwt, {
       method: "PATCH",
       body: { images: [], coverImage: null },
     });
-    check("PATCH /api/vendor/profile/images { images:[] } → 200", imagesResp.status === 200);
-    const imagesBody = await imagesResp.json().catch(() => null);
-    check("PATCH /api/vendor/profile/images → images = [] retourné", Array.isArray(imagesBody?.images) && imagesBody.images.length === 0);
-
-    // Vérifier via GET que la galerie est bien vide
-    const profileAfterImages = await (await authFetch("/api/vendor/profile", jwt)).json().catch(() => null);
-    check("GET /api/vendor/profile → images effacées ([])", Array.isArray(profileAfterImages?.images) && profileAfterImages.images.length === 0);
+    check("PATCH /api/vendor/profile/images [] → galerie effacée (200)", clearImagesResp.status === 200);
+    const profileAfterClear = await (await authFetch("/api/vendor/profile", jwt)).json().catch(() => null);
+    check("GET /api/vendor/profile → images vides après suppression", Array.isArray(profileAfterClear?.images) && profileAfterClear.images.length === 0);
 
     // — Messages : créer conversation + envoi message prestataire ─────────────
     // Étape 1 : signer en tant que couple-bloc-b pour créer une conversation
