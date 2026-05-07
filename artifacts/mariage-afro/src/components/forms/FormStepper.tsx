@@ -178,7 +178,7 @@ export function FormStepper<TValues extends Record<string, unknown>>({
           />
         </div>
 
-        <ol className="flex items-center gap-2 mt-4 overflow-x-auto" aria-label={labels.step}>
+        <ol className="flex flex-wrap items-center gap-2 mt-4" aria-label={labels.step}>
           {steps.map((s, i) => {
             const active = i === stepIndex;
             const done = i < stepIndex;
@@ -187,7 +187,7 @@ export function FormStepper<TValues extends Record<string, unknown>>({
                 key={s.id}
                 aria-current={active ? "step" : undefined}
                 className={cn(
-                  "flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] flex-shrink-0",
+                  "flex items-center gap-2 text-[10px] uppercase tracking-[0.18em]",
                   active
                     ? "text-wine-deep font-semibold"
                     : done
