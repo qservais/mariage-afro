@@ -39,27 +39,39 @@ curl -b cookies.txt http://localhost:8080/admin
 
 ## Comptes Clerk — Espace client couple
 
+> **Pour la démo** : créer le compte en amont sur l'environnement dev via `/espace-client/register`, puis noter l'adresse et le mot de passe ci-dessous.
+
 | Champ | Valeur |
 |-------|--------|
-| URL inscription | `/espace-client/register` ou `/sign-up` |
-| URL connexion | `/espace-client/login` ou `/sign-in` |
-| Rôle Clerk | `couple` (metadata) |
-| Email de test | `delivered@resend.dev` (Resend simulé) |
-| OTP en dev | Visible dans Clerk Dashboard → Logs |
+| URL inscription | `/espace-client/register` |
+| URL connexion | `/espace-client/login` |
+| Rôle Clerk | `couple` (metadata `role: "couple"`) |
+| Email démo recommandé | `demo.couple@mariage-afro.com` (ou toute adresse réelle accessible) |
+| Mot de passe démo | *(à définir lors de la création du compte)* |
+| Flux de connexion | Email + mot de passe → Dashboard couple → toutes les sous-pages |
 
-**Workaround démo si Resend domain non vérifié :** Utiliser "Email magic link" Clerk (l'OTP apparaît dans les logs Clerk Dashboard, pas dans la boîte mail).
+**Workaround si Resend non vérifié :** En mode dev Clerk, choisir "Continuer avec un mot de passe" (pas magic link) pour éviter d'attendre un email. L'OTP est aussi visible dans le Clerk Dashboard → Logs si nécessaire.
+
+**Sous-pages à montrer en démo :**
+`/espace-client/dashboard` · `/espace-client/budget` · `/espace-client/planning` · `/espace-client/site`
 
 ---
 
 ## Comptes Clerk — Espace prestataire
 
+> **Pour la démo** : créer le compte en amont via `/espace-pro/register`, puis noter les identifiants.
+
 | Champ | Valeur |
 |-------|--------|
 | URL inscription | `/espace-pro/register` |
 | URL connexion | `/espace-pro/login` |
-| Rôle Clerk | `vendor` (metadata) |
-| Email de test | `delivered@resend.dev` |
-| OTP en dev | Visible dans Clerk Dashboard → Logs |
+| Rôle Clerk | `vendor` (metadata `role: "vendor"`) |
+| Email démo recommandé | `demo.prestataire@mariage-afro.com` (ou toute adresse réelle accessible) |
+| Mot de passe démo | *(à définir lors de la création du compte)* |
+| Flux de connexion | Email + mot de passe → Dashboard prestataire |
+
+**Sous-pages à montrer en démo :**
+`/espace-pro` · `/espace-pro/profile` · `/espace-pro/leads` · `/espace-pro/abonnement`
 
 ---
 

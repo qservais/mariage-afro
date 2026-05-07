@@ -211,7 +211,7 @@ Accès : `POST /admin/login` avec `ADMIN_PASSWORD` → cookie de session 7 jours
 | `/cgv` | ⚪ Absent | V2 — page légale à créer |
 | `/lieux/:slug` | ⚪ Absent | V2 — `/lieux` (liste) existe |
 | `/realisations/:slug` | ⚪ Absent | V2 — `/realisations` (liste) existe |
-| `GET /healthz` | ⚪ 404 | Monitoring — `/api/health` est Clerk-protégé |
+| `GET /api/healthz` | ℹ️ 200 `{"status":"ok"}` | Existe, mais Clerk-protégé — non accessible sans token |
 
 ---
 
