@@ -148,8 +148,12 @@ const css = `
 
 async function getPendingCount(): Promise<number> {
   const [[cp], [va]] = await Promise.all([
-    db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNull(couplesTable.validatedAt)),
-    db.select({ count: sql<number>`count(*)::int` }).from(vendorAccountsTable).where(eq(vendorAccountsTable.status, "pending")),
+    db.select({ count: sql<number>`count(*)::int` })
+      .from(couplesTable)
+      .where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected"))),
+    db.select({ count: sql<number>`count(*)::int` })
+      .from(vendorAccountsTable)
+      .where(eq(vendorAccountsTable.status, "pending")),
   ]);
   return (cp?.count ?? 0) + (va?.count ?? 0);
 }
@@ -458,7 +462,7 @@ router.get("/", adminAuth, async (req, res) => {
   const [[couplesCount], [vendorsActiveCount], [pendingCouplesCount], [pendingVendorsCount], [devisEnvoyesCount], [devisThisMonthCount], [leadsThisMonthCount]] = await Promise.all([
     db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNotNull(couplesTable.onboardedAt)),
     db.select({ count: sql<number>`count(*)::int` }).from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.active, true)),
-    db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNull(couplesTable.validatedAt)),
+    db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected"))),
     db.select({ count: sql<number>`count(*)::int` }).from(vendorAccountsTable).where(eq(vendorAccountsTable.status, "pending")),
     db.select({ count: sql<number>`count(*)::int` }).from(vendorLeadsTable),
     db.select({ count: sql<number>`count(*)::int` }).from(vendorLeadsTable).where(gte(vendorLeadsTable.createdAt, thirtyDaysAgo)),
@@ -1208,14 +1212,18 @@ router.get("/couples", adminAuth, async (req, res) => {
 // ============ DEVIS (vendor_leads agrégés) ============
 
 const DEVIS_STATUS_LABEL: Record<string, string> = {
-  new: "Nouveau",
+  new: "Envoyé",
   in_progress: "En discussion",
   done: "Traité",
+  accepted: "Accepté",
+  refused: "Refusé",
 };
 const DEVIS_STATUS_CSS: Record<string, string> = {
   new: "background:#fff4e4;color:#68191e;border:1px solid #68191e",
   in_progress: "background:#fff8e1;color:#c08800;border:1px solid #c08800",
-  done: "background:#e8f5e9;color:#2e7d32;border:1px solid #2e7d32",
+  done: "background:#eef0ff;color:#3a3f8a;border:1px solid #3a3f8a",
+  accepted: "background:#e8f5e9;color:#2e7d32;border:1px solid #2e7d32",
+  refused: "background:#fde;color:#c33;border:1px solid #c33",
 };
 
 router.get("/devis", adminAuth, async (req, res) => {
@@ -1309,7 +1317,7 @@ router.get("/devis", adminAuth, async (req, res) => {
       }).join("")}
     </div>` : "";
 
-  const statusOpts = [["", "Tous statuts"], ["new", "Nouveau"], ["in_progress", "En discussion"], ["done", "Traité"]]
+  const statusOpts = [["", "Tous statuts"], ["new", "Envoyé"], ["in_progress", "En discussion"], ["done", "Traité"], ["accepted", "Accepté"], ["refused", "Refusé"]]
     .map(([val, lbl]) => `<option value="${val}"${filterStatus === val ? " selected" : ""}>${lbl}</option>`).join("");
 
   const vendorOpts = `<option value="">Tous les prestataires</option>` +
@@ -1318,7 +1326,10 @@ router.get("/devis", adminAuth, async (req, res) => {
   res.type("html").send(layout("Devis prestataires", `
     <div class="container">
       <h2 style="font-size:22px;font-weight:700;color:#68191e;margin-bottom:8px;">Devis prestataires (${count})</h2>
-      <p style="font-size:13px;color:#888;margin-bottom:16px;">Toutes les demandes de devis envoyées aux prestataires via la marketplace. Le montant sera disponible lorsque la plateforme de devis formelle sera activée.</p>
+      <p style="font-size:13px;color:#888;margin-bottom:16px;">
+        Toutes les demandes de devis adressées aux prestataires via la marketplace (statuts : <strong>Envoyé</strong> = reçu, <strong>En discussion</strong> = pris en charge, <strong>Traité</strong> = clôturé).
+        Les statuts <em>Accepté / Refusé</em> et le montant seront disponibles avec la plateforme de devis formelle (tâche ultérieure).
+      </p>
       <form method="GET" action="/admin/devis" class="filters" style="margin-bottom:16px;">
         <div><label>Statut</label><select name="status" onchange="this.form.submit()">${statusOpts}</select></div>
         <div><label>Prestataire</label><select name="vendor_id" onchange="this.form.submit()">${vendorOpts}</select></div>
