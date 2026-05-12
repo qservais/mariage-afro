@@ -1213,6 +1213,7 @@ router.post("/vendor/quotes/:id/send", async (req, res) => {
     amountTtc: quote.amountTtc,
     validityDays: quote.validityDays,
     quoteId: id,
+    isRegisteredCouple: !!sendCoupleId,
   }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to send quote email"));
   res.json(updated);
 });

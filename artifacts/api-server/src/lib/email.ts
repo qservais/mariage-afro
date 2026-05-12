@@ -898,6 +898,8 @@ export interface NotifyQuoteReceivedPayload {
   amountTtc: number;
   validityDays: number;
   quoteId: number;
+  /** Pass true only when the recipient is a registered couple with a client space. */
+  isRegisteredCouple?: boolean;
 }
 
 export async function notifyQuoteReceived(p: NotifyQuoteReceivedPayload, log = logger): Promise<void> {
@@ -922,8 +924,8 @@ export async function notifyQuoteReceived(p: NotifyQuoteReceivedPayload, log = l
       title,
       intro: greeting ? `${greeting}\n${intro}` : intro,
       rows,
-      ctaLabel,
-      ctaUrl: `${appUrl()}/espace-client/devis`,
+      ctaLabel: p.isRegisteredCouple ? ctaLabel : undefined,
+      ctaUrl: p.isRegisteredCouple ? `${appUrl()}/espace-client/devis` : undefined,
       locale,
     }),
   }, log);

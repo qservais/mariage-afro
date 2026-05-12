@@ -99,6 +99,7 @@ export default function VendorQuotesPage() {
       qc.invalidateQueries({ queryKey: ["vendor", "quotes"] });
       setShowForm(false);
       setForm({ ...EMPTY_FORM });
+      setPrefillLeadId(null);
       toast({ title: t("vendor.quotes.created") });
     },
     onError: () => toast({ title: t("vendor.quotes.error"), variant: "destructive" }),
