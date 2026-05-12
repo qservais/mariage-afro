@@ -1108,6 +1108,21 @@ router.post("/vendor/quotes", async (req, res) => {
   if (!account) { res.status(404).json({ error: "Account not found" }); return; }
   const parsed = quoteCreateSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+
+  // Ownership checks: verify leadId belongs to this vendor account
+  if (parsed.data.leadId) {
+    const [lead] = await db.select({ id: vendorLeadsTable.id })
+      .from(vendorLeadsTable)
+      .where(and(eq(vendorLeadsTable.id, parsed.data.leadId), eq(vendorLeadsTable.vendorAccountId, r.vendorAccountId)))
+      .limit(1);
+    if (!lead) { res.status(403).json({ error: "Lead not found or does not belong to this account" }); return; }
+  }
+  // Verify coupleId exists if provided
+  if (parsed.data.coupleId) {
+    const [couple] = await db.select({ id: couplesTable.id }).from(couplesTable).where(eq(couplesTable.id, parsed.data.coupleId)).limit(1);
+    if (!couple) { res.status(400).json({ error: "Couple not found" }); return; }
+  }
+
   const { services, vatRate } = parsed.data;
   const { amountHt, amountTtc } = computeAmounts(services, vatRate ?? 21);
   const [row] = await db.insert(vendorQuotesTable).values({

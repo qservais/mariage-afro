@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Mail, Phone, Calendar, MessageSquare, X, LayoutGrid, List } from "lucide-react";
+import { Loader2, Mail, Phone, Calendar, MessageSquare, X, LayoutGrid, List, FileText } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,6 +56,7 @@ function formatDate(iso: string) {
 export default function VendorLeadsPage() {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const qc = useQueryClient();
 
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -448,7 +450,21 @@ export default function VendorLeadsPage() {
                 </Button>
               </div>
 
-              <p className="text-[10px] uppercase tracking-widest text-neutral-400 pt-2 border-t border-neutral-100">
+              <div className="pt-2 border-t border-neutral-100">
+                <Button
+                  onClick={() => {
+                    const params = new URLSearchParams({ email: selected.email, name: selected.name, leadId: String(selected.id) });
+                    navigate(`/espace-pro/devis?${params.toString()}`);
+                  }}
+                  className="w-full bg-wine-deep text-cream hover:bg-wine-deep/90 rounded-none uppercase tracking-wider gap-2 text-xs"
+                  data-testid="button-send-quote"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  {t("vendor.leads.send_quote", { defaultValue: "Envoyer un devis" })}
+                </Button>
+              </div>
+
+              <p className="text-[10px] uppercase tracking-widest text-neutral-400 border-t border-neutral-100 pt-2">
                 {t("vendor.leads.received_on")} {formatDate(selected.createdAt)}
               </p>
             </div>

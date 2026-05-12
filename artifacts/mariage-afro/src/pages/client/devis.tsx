@@ -73,6 +73,7 @@ export default function ClientDevisPage() {
 
   function handleRespond(action: "accept" | "refuse") {
     if (!selected) return;
+    setResponding(action);
     respondMutation.mutate({ id: selected.id, action, message: replyMsg || undefined });
   }
 

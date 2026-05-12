@@ -29,7 +29,7 @@ import {
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage, notifyMoodBoardInvite, notifyQuoteResponded, appUrl } from "../lib/email";
+import { notifyConversationMessage, notifyMoodBoardInvite, notifyQuoteResponded, notifyQuoteAccepted, appUrl } from "../lib/email";
 import { nanoid } from "nanoid";
 
 const router = Router();
@@ -1320,6 +1320,7 @@ router.post("/client/quotes/:id/respond", async (req, res) => {
 
   const [account] = await db.select().from(vendorAccountsTable)
     .where(eq(vendorAccountsTable.id, quote.vendorAccountId)).limit(1);
+  // Notify vendor of couple's response
   if (account?.email) {
     void notifyQuoteResponded({
       to: account.email,
@@ -1328,7 +1329,18 @@ router.post("/client/quotes/:id/respond", async (req, res) => {
       action: parsed.data.action,
       message: parsed.data.message ?? null,
       quoteId: id,
-    }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to send quote responded email"));
+    }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to send quote responded email to vendor"));
+  }
+  // On acceptance: confirm to the couple that their acceptance was recorded
+  if (parsed.data.action === "accept") {
+    void notifyQuoteAccepted({
+      to: quote.recipientEmail,
+      recipientName: quote.recipientName,
+      vendorName: account?.businessName || "Mariage Afro",
+      subject: quote.subject,
+      amountTtc: quote.amountTtc,
+      quoteId: id,
+    }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to send quote acceptance confirmation to couple"));
   }
 
   res.json(updated);

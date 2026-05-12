@@ -963,6 +963,43 @@ export async function notifyQuoteResponded(p: NotifyQuoteRespondedPayload, log =
   }, log);
 }
 
+export interface NotifyQuoteAcceptedPayload {
+  to: string;
+  locale?: string | null;
+  recipientName: string;
+  vendorName: string;
+  subject: string;
+  amountTtc: number;
+  quoteId: number;
+}
+
+export async function notifyQuoteAccepted(p: NotifyQuoteAcceptedPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const greeting = p.recipientName ? pick(dict.greeting(p.recipientName), locale) : "";
+  const title = { fr: "Devis accepté — confirmation", nl: "Offerte geaccepteerd — bevestiging", en: "Quote accepted — confirmation" }[locale];
+  const intro = {
+    fr: `Votre acceptation du devis de ${p.vendorName} a bien été enregistrée. Le prestataire vous contactera prochainement.`,
+    nl: `Uw acceptatie van de offerte van ${p.vendorName} is goed geregistreerd. De leverancier neemt binnenkort contact met u op.`,
+    en: `Your acceptance of the quote from ${p.vendorName} has been recorded. The vendor will contact you shortly.`,
+  }[locale];
+  const rows =
+    row({ fr: "Prestataire", nl: "Leverancier", en: "Vendor" }[locale], p.vendorName) +
+    row({ fr: "Objet", nl: "Onderwerp", en: "Subject" }[locale], p.subject || undefined) +
+    row({ fr: "Montant TTC", nl: "Bedrag incl. BTW", en: "Amount incl. VAT" }[locale], fmtEur(p.amountTtc / 100));
+  await sendOne({
+    to: p.to,
+    subject: `[Mariage Afro] ${title}`,
+    html: wrap({
+      title,
+      intro: greeting ? `${greeting}\n${intro}` : intro,
+      rows,
+      ctaLabel: { fr: "Voir mes devis", nl: "Mijn offertes bekijken", en: "View my quotes" }[locale],
+      ctaUrl: `${appUrl()}/espace-client/devis`,
+      locale,
+    }),
+  }, log);
+}
+
 export async function sendContactFormEmail(p: ContactFormPayload, log = logger): Promise<void> {
   const rows =
     row("Nom", p.name) +

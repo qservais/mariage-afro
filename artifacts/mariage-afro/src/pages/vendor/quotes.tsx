@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus, Trash2, Send, X, ChevronDown, ChevronUp, FileText } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
@@ -63,9 +64,24 @@ export default function VendorQuotesPage() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const qc = useQueryClient();
+  const [searchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ ...EMPTY_FORM });
+  const [prefillLeadId, setPrefillLeadId] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  // Prefill form when navigated from the Leads page (?email=&name=&leadId=)
+  useEffect(() => {
+    const email = searchParams.get("email");
+    const name = searchParams.get("name");
+    const leadId = searchParams.get("leadId");
+    if (email) {
+      setForm((f) => ({ ...f, recipientEmail: email, recipientName: name ?? f.recipientName }));
+      if (leadId) setPrefillLeadId(Number(leadId));
+      setShowForm(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data: quotes = [], isLoading } = useQuery<VendorQuote[]>({
     queryKey: ["vendor", "quotes"],
@@ -124,7 +140,7 @@ export default function VendorQuotesPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    createMutation.mutate(form);
+    createMutation.mutate({ ...form, leadId: prefillLeadId ?? undefined } as typeof EMPTY_FORM & { leadId?: number });
   }
 
   return (

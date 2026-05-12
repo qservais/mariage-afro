@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS "vendor_quotes" (
+  "id" serial PRIMARY KEY NOT NULL,
+  "vendor_account_id" integer NOT NULL,
+  "vendor_id" integer,
+  "couple_id" integer,
+  "lead_id" integer,
+  "recipient_email" text NOT NULL,
+  "recipient_name" text NOT NULL DEFAULT '',
+  "services" jsonb NOT NULL DEFAULT '[]',
+  "amount_ht" integer NOT NULL DEFAULT 0,
+  "amount_ttc" integer NOT NULL DEFAULT 0,
+  "vat_rate" integer NOT NULL DEFAULT 21,
+  "validity_days" integer NOT NULL DEFAULT 30,
+  "subject" text NOT NULL DEFAULT '',
+  "message" text NOT NULL DEFAULT '',
+  "status" text NOT NULL DEFAULT 'draft',
+  "sent_at" timestamp with time zone,
+  "responded_at" timestamp with time zone,
+  "respond_message" text,
+  "created_at" timestamp with time zone NOT NULL DEFAULT now(),
+  "updated_at" timestamp with time zone NOT NULL DEFAULT now()
+);
