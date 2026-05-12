@@ -22,10 +22,13 @@ const storageService = new ObjectStorageService();
 const router = Router();
 
 const rsvpSchema = z.object({
-  name: z.string().min(1).max(100),
+  name: z.string().min(1).max(100).optional().default(""),
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().max(100).optional().default(""),
   email: z.string().email(),
   attending: z.preprocess((v) => v === "true" || v === true || v === "1" || v === 1, z.boolean()),
-  guestCount: z.preprocess((v) => Number(v) || 1, z.number().int().min(1).max(20)),
+  companionFirstName: z.string().max(100).optional().nullable(),
+  companionLastName: z.string().max(100).optional().nullable(),
   message: z.string().max(1000).optional(),
   answers: z.array(z.object({
     questionId: z.coerce.number().int().positive(),
@@ -103,12 +106,19 @@ router.post("/api/wedding/:slug/rsvp", async (req: Request, res: Response) => {
     return;
   }
 
+  const hasCompanion = !!(parsed.data.companionFirstName?.trim());
+  const fullName = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ") || parsed.data.name || parsed.data.firstName;
+
   const [row] = await db.insert(weddingRsvpsTable).values({
     weddingWebsiteId: site.id,
-    name: parsed.data.name,
+    name: fullName,
+    firstName: parsed.data.firstName,
+    lastName: parsed.data.lastName || "",
     email: parsed.data.email,
     attending: parsed.data.attending,
-    guestCount: parsed.data.guestCount,
+    guestCount: hasCompanion ? 2 : 1,
+    companionFirstName: parsed.data.companionFirstName || null,
+    companionLastName: parsed.data.companionLastName || null,
     message: parsed.data.message || null,
   }).returning();
 
@@ -128,13 +138,15 @@ router.post("/api/wedding/:slug/rsvp", async (req: Request, res: Response) => {
       .where(eq(couplesTable.id, site.coupleId))
       .limit(1);
     if (couple?.email) {
+      const hasCompanion = !!(parsed.data.companionFirstName?.trim());
+      const fullName = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ") || parsed.data.name || parsed.data.firstName;
       await notifyCoupleNewRsvp({
         to: couple.email,
         locale: couple.locale,
-        guestName: parsed.data.name,
+        guestName: fullName,
         guestEmail: parsed.data.email,
         attending: parsed.data.attending,
-        guestCount: parsed.data.guestCount,
+        guestCount: hasCompanion ? 2 : 1,
         message: parsed.data.message || null,
         weddingSlug: slug,
       }, req.log);
@@ -198,7 +210,7 @@ router.post("/api/mood-board/shared/:token/images", async (req: Request, res: Re
   let { url } = parsed.data;
   if (url.startsWith("/objects/")) {
     // For collaborators, intent is keyed by token (collaborator id) instead of userId
-    if (!consumeUploadIntent(url, `collab:${collab.id}`)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
+    if (!await consumeUploadIntent(url, `collab:${collab.id}`)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
     try {
       url = await storageService.trySetObjectEntityAclPolicy(url, { owner: `collab:${collab.id}`, visibility: "public" });
     } catch (err) {
@@ -231,7 +243,7 @@ router.post("/api/mood-board/shared/:token/upload-url", async (req: Request, res
 
   const uploadURL = await storageService.getObjectEntityUploadURL();
   const objectPath = storageService.normalizeObjectEntityPath(uploadURL);
-  recordUploadIntent(objectPath, `collab:${collab.id}`);
+  await recordUploadIntent(objectPath, `collab:${collab.id}`);
   res.json({ uploadURL, objectPath });
 });
 

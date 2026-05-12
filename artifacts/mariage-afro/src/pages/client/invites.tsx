@@ -10,7 +10,7 @@ import type { Guest, GuestCreate, GuestPatch } from "@/lib/clientTypes";
 const RSVP_COLORS: Record<string, string> = { pending: "bg-amber-100 text-amber-800", confirmed: "bg-emerald-100 text-emerald-800", declined: "bg-rose-100 text-rose-800" };
 
 interface RsvpQuestion { id: number; label: string; type: "text" | "yesno" | "choice"; options: string[]; required: boolean; position: number; }
-interface PublicRsvp { id: number; name: string; email: string | null; attending: boolean; guestCount: number; message: string | null; createdAt: string; }
+interface PublicRsvp { id: number; name: string; firstName: string; lastName: string; email: string | null; attending: boolean; guestCount: number; companionFirstName: string | null; companionLastName: string | null; message: string | null; createdAt: string; }
 interface RsvpsView { rsvps: PublicRsvp[]; answers: Record<number, { questionId: number; answer: string }[]>; }
 
 type PublicFilter = "all" | "attending" | "declined";
@@ -308,7 +308,14 @@ export default function GuestsPage() {
                 {filteredRsvps.map((r) => (
                   <tr key={r.id} className="border-t border-neutral-100 align-top">
                     <td className="px-3 py-2 text-xs text-neutral-500">{new Date(r.createdAt).toLocaleDateString()}</td>
-                    <td className="px-3 py-2 font-medium">{r.name}</td>
+                    <td className="px-3 py-2 font-medium">
+                      {r.firstName ? `${r.firstName} ${r.lastName}`.trim() : r.name}
+                      {r.companionFirstName && (
+                        <div className="text-xs text-neutral-500 mt-0.5">
+                          + {[r.companionFirstName, r.companionLastName].filter(Boolean).join(" ")}
+                        </div>
+                      )}
+                    </td>
                     <td className="px-3 py-2 text-neutral-600">{r.email || "—"}</td>
                     <td className="px-3 py-2"><span className={`text-xs px-2 py-1 ${r.attending ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>{r.attending ? t("invites.yes") : t("invites.no")}</span></td>
                     <td className="px-3 py-2">{r.guestCount}</td>

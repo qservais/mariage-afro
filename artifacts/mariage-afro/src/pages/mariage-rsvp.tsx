@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Loader2, Heart } from "lucide-react";
+import { CheckCircle2, Loader2, Heart, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +20,8 @@ export default function MariageRsvpPage() {
   const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const [done, setDone] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", attending: true, guestCount: 1, message: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", attending: true, message: "" });
+  const [companion, setCompanion] = useState<{ firstName: string; lastName: string } | null>(null);
   const emailValid = /.+@.+\..+/.test(form.email);
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
@@ -40,8 +41,13 @@ export default function MariageRsvpPage() {
   const submit = useMutation({
     mutationFn: async () => {
       const payload = {
-        ...form,
-        guestCount: Number(form.guestCount),
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        email: form.email,
+        attending: form.attending,
+        companionFirstName: companion?.firstName.trim() || null,
+        companionLastName: companion?.lastName.trim() || null,
+        message: form.message,
         answers: Object.entries(answers).map(([qid, a]) => ({ questionId: Number(qid), answer: a })).filter((a) => a.answer !== ""),
       };
       const r = await fetch(`/api/wedding/${slug}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -67,9 +73,8 @@ export default function MariageRsvpPage() {
     );
   }
 
-  // Required-field validation includes custom required questions
   const customMissing = questions.some((q) => q.required && !((answers[q.id] || "").trim()));
-  const canSubmit = !!form.name.trim() && emailValid && !customMissing && !submit.isPending;
+  const canSubmit = !!form.firstName.trim() && emailValid && !customMissing && !submit.isPending;
 
   return (
     <div className="min-h-screen bg-cream-soft">
@@ -81,14 +86,35 @@ export default function MariageRsvpPage() {
 
       <section className="py-10 px-6 max-w-lg mx-auto">
         <form onSubmit={(e) => { e.preventDefault(); if (canSubmit) submit.mutate(); }} className="bg-white border border-border p-6 space-y-5">
-          <div className="space-y-2">
-            <Label>{t("mariage_public.your_name")} *</Label>
-            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="rounded-none" data-testid="input-rsvp-name" />
+
+          {/* Prénom + Nom séparés */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label>{t("mariage_public.first_name")} *</Label>
+              <Input
+                value={form.firstName}
+                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                required
+                className="rounded-none"
+                data-testid="input-rsvp-firstname"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("mariage_public.last_name")}</Label>
+              <Input
+                value={form.lastName}
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                className="rounded-none"
+                data-testid="input-rsvp-lastname"
+              />
+            </div>
           </div>
+
           <div className="space-y-2">
             <Label>{t("mariage_public.email_required")} *</Label>
             <Input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-none" data-testid="input-rsvp-email" />
           </div>
+
           <div className="space-y-2">
             <Label>{t("mariage_public.presence")}</Label>
             <div className="flex gap-3">
@@ -96,17 +122,63 @@ export default function MariageRsvpPage() {
                 { val: true, label: t("mariage_public.attending") },
                 { val: false, label: t("mariage_public.not_attending") },
               ].map(({ val, label }) => (
-                <button key={String(val)} type="button" onClick={() => setForm({ ...form, attending: val })}
+                <button key={String(val)} type="button"
+                  onClick={() => { setForm({ ...form, attending: val }); if (!val) setCompanion(null); }}
                   className={`flex-1 text-sm py-2.5 px-3 border ${form.attending === val ? "border-primary bg-primary text-white" : "border-border hover:border-primary"}`}>
                   {label}
                 </button>
               ))}
             </div>
           </div>
+
+          {/* Accompagnant (un seul) — visible seulement si "présent" */}
           {form.attending && (
-            <div className="space-y-2">
-              <Label>{t("mariage_public.guest_count")}</Label>
-              <Input type="number" min={1} max={20} value={form.guestCount} onChange={(e) => setForm({ ...form, guestCount: Number(e.target.value) })} className="rounded-none w-28" />
+            <div className="space-y-3">
+              <Label>{t("mariage_public.companion_title")}</Label>
+              {companion === null ? (
+                <button
+                  type="button"
+                  onClick={() => setCompanion({ firstName: "", lastName: "" })}
+                  className="flex items-center gap-2 text-sm text-primary hover:underline underline-offset-4"
+                  data-testid="button-add-companion"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t("mariage_public.add_companion")}
+                </button>
+              ) : (
+                <div className="border border-border p-4 space-y-3 relative">
+                  <button
+                    type="button"
+                    onClick={() => setCompanion(null)}
+                    className="absolute top-3 right-3 text-muted-foreground hover:text-primary"
+                    aria-label={t("mariage_public.remove_companion")}
+                    data-testid="button-remove-companion"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{t("mariage_public.companion_info")}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">{t("mariage_public.first_name")}</Label>
+                      <Input
+                        value={companion.firstName}
+                        onChange={(e) => setCompanion({ ...companion, firstName: e.target.value })}
+                        className="rounded-none h-9 text-sm"
+                        data-testid="input-companion-firstname"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">{t("mariage_public.last_name")}</Label>
+                      <Input
+                        value={companion.lastName}
+                        onChange={(e) => setCompanion({ ...companion, lastName: e.target.value })}
+                        className="rounded-none h-9 text-sm"
+                        data-testid="input-companion-lastname"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

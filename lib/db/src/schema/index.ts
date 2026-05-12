@@ -389,12 +389,26 @@ export const weddingRsvpsTable = pgTable("wedding_rsvps", {
   id: serial("id").primaryKey(),
   weddingWebsiteId: integer("wedding_website_id").notNull(),
   name: text("name").notNull(),
+  firstName: text("first_name").notNull().default(""),
+  lastName: text("last_name").notNull().default(""),
   email: text("email"),
   attending: boolean("attending").notNull().default(true),
   guestCount: integer("guest_count").notNull().default(1),
+  companionFirstName: text("companion_first_name"),
+  companionLastName: text("companion_last_name"),
   message: text("message"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const uploadIntentsTable = pgTable("upload_intents", {
+  id: serial("id").primaryKey(),
+  objectPath: text("object_path").notNull(),
+  userId: text("user_id").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  objectPathIdx: uniqueIndex("upload_intents_object_path_idx").on(t.objectPath),
+}));
 
 // LOT 9 — Mood board (collaborative inspiration)
 export const moodBoardsTable = pgTable("mood_boards", {
@@ -514,3 +528,4 @@ export type VendorLead = typeof vendorLeadsTable.$inferSelect;
 export type VendorReview = typeof vendorReviewsTable.$inferSelect;
 export type VendorSubscription = typeof vendorSubscriptionsTable.$inferSelect;
 export type VendorView = typeof vendorViewsTable.$inferSelect;
+export type UploadIntent = typeof uploadIntentsTable.$inferSelect;

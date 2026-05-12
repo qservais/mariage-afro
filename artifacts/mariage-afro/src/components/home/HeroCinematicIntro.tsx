@@ -183,7 +183,7 @@ export function HeroMobileFadeOverlay({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="fixed inset-0 z-40 bg-wine-deep"
+          className="fixed inset-0 z-40 bg-wine-deep pointer-events-none"
           data-testid="hero-intro-mobile"
         >
           <video
@@ -201,7 +201,7 @@ export function HeroMobileFadeOverlay({
           <button
             type="button"
             onClick={skipIntro}
-            className="fixed top-24 right-5 z-[51] text-cream/90 hover:text-gold text-[10px] uppercase tracking-[0.3em] font-medium underline underline-offset-4 decoration-gold/40"
+            className="fixed top-24 right-5 z-[51] text-cream/90 hover:text-gold text-[10px] uppercase tracking-[0.3em] font-medium underline underline-offset-4 decoration-gold/40 pointer-events-auto"
             data-testid="hero-intro-skip"
           >
             {t("home.intro_skip")}

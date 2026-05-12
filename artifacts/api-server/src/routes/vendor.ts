@@ -236,7 +236,7 @@ router.patch("/vendor/profile", async (req, res) => {
 
   const data = { ...parsed.data };
   if (typeof data.logoUrl === "string" && data.logoUrl.startsWith("/objects/")) {
-    if (!consumeUploadIntent(data.logoUrl, r.userId)) {
+    if (!await consumeUploadIntent(data.logoUrl, r.userId)) {
       res.status(403).json({ error: "Upload intent expired or unauthorized" });
       return;
     }
@@ -285,7 +285,7 @@ router.patch("/vendor/profile/images", async (req, res) => {
   const normalizedImages: string[] = [];
   for (const url of parsed.data.images) {
     if (url.startsWith("/objects/")) {
-      if (!consumeUploadIntent(url, r.userId)) {
+      if (!await consumeUploadIntent(url, r.userId)) {
         res.status(403).json({ error: "Upload intent expired or unauthorized" });
         return;
       }

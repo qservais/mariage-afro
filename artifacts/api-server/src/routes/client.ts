@@ -459,7 +459,7 @@ router.post("/client/documents", async (req, res) => {
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
   let { url } = parsed.data;
   if (url.startsWith("/objects/")) {
-    if (!consumeUploadIntent(url, r.userId)) {
+    if (!await consumeUploadIntent(url, r.userId)) {
       res.status(403).json({
         error: "Upload intent not found, expired, or not owned by you",
       });
@@ -846,7 +846,7 @@ router.patch("/client/wedding-website", async (req, res) => {
 
   const data = { ...parsed.data };
   if (typeof data.coverImage === "string" && data.coverImage.startsWith("/objects/")) {
-    if (!consumeUploadIntent(data.coverImage, r.userId)) {
+    if (!await consumeUploadIntent(data.coverImage, r.userId)) {
       res.status(403).json({ error: "Upload intent expired or unauthorized" });
       return;
     }
@@ -1024,7 +1024,7 @@ router.post("/client/mood-board-images", async (req, res) => {
 
   let { url } = parsed.data;
   if (url.startsWith("/objects/")) {
-    if (!consumeUploadIntent(url, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
+    if (!await consumeUploadIntent(url, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
     try {
       url = await storageService.trySetObjectEntityAclPolicy(url, { owner: r.userId, visibility: "public" });
     } catch (err) {
@@ -1193,7 +1193,7 @@ router.post("/client/cagnottes", async (req, res) => {
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
   let photo = parsed.data.photo ?? null;
   if (photo && photo.startsWith("/objects/")) {
-    if (!consumeUploadIntent(photo, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
+    if (!await consumeUploadIntent(photo, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
     try {
       photo = await storageService.trySetObjectEntityAclPolicy(photo, { owner: r.userId, visibility: "public" });
     } catch (err) {
@@ -1222,7 +1222,7 @@ router.patch("/client/cagnottes/:id", async (req, res) => {
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
   const patch: Record<string, unknown> = { ...parsed.data };
   if (typeof parsed.data.photo === "string" && parsed.data.photo.startsWith("/objects/")) {
-    if (!consumeUploadIntent(parsed.data.photo, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
+    if (!await consumeUploadIntent(parsed.data.photo, r.userId)) { res.status(403).json({ error: "Upload intent invalid" }); return; }
     try {
       patch.photo = await storageService.trySetObjectEntityAclPolicy(parsed.data.photo, { owner: r.userId, visibility: "public" });
     } catch (err) {
