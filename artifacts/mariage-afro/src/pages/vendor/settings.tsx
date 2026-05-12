@@ -3,7 +3,7 @@ import { useUser, useClerk } from "@clerk/react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, X } from "lucide-react";
+import { Loader2, X, ExternalLink } from "lucide-react";
 import { useVendorMe } from "@/components/vendor/VendorLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -196,6 +196,29 @@ export default function VendorSettingsPage() {
           </div>
         )}
       </section>
+
+      {/* Public profile URL */}
+      {data?.account?.vendorId && (
+        <section className="bg-white border border-neutral-200 p-6 space-y-3" data-testid="section-public-url">
+          <h3 className="text-sm uppercase tracking-widest text-neutral-500">{t("vendor.settings.public_url_title")}</h3>
+          <p className="text-sm text-neutral-600">{t("vendor.settings.public_url_desc")}</p>
+          <div className="flex items-center gap-3 p-3 bg-neutral-50 border border-neutral-200">
+            <span className="flex-1 text-sm font-mono text-neutral-700 truncate">
+              {window.location.origin}/partenaires/{data.account.vendorId}
+            </span>
+            <a
+              href={`/partenaires/${data.account.vendorId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-wine-deep hover:text-wine-deep/70 transition-colors shrink-0"
+              data-testid="link-settings-public-profile"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              {t("vendor.settings.public_url_open")}
+            </a>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -286,6 +286,9 @@
       "custom_tags_add": "Toevoegen",
       "custom_tags_remove": "Verwijderen",
       "saved": "Instellingen opgeslagen.",
+      "public_url_title": "Uw publieke profiel",
+      "public_url_desc": "URL van uw profiel in de Mariage Afro marketplace.",
+      "public_url_open": "Openen",
       "manage_account": "Account beheren",
       "signout": "Uitloggen"
     },

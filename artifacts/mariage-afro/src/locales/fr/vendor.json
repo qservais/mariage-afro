@@ -287,7 +287,10 @@
       "custom_tags_placeholder": "Ex : Mariage à l'étranger",
       "custom_tags_add": "Ajouter",
       "custom_tags_remove": "Retirer",
-      "saved": "Paramètres enregistrés."
+      "saved": "Paramètres enregistrés.",
+      "public_url_title": "Votre fiche publique",
+      "public_url_desc": "URL de votre fiche dans la marketplace Mariage Afro.",
+      "public_url_open": "Ouvrir"
     },
     "leads": {
       "title": "Mes demandes",
