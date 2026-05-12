@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq, sql, desc, and, inArray, isNull, ne } from "drizzle-orm";
+import { eq, sql, desc, and, inArray, isNull, ne, isNotNull, gte } from "drizzle-orm";
 import {
   db,
   leadsTable,
@@ -11,6 +11,8 @@ import {
   couplesTable,
   vendorSubscriptionsTable,
   vendorAccountsTable,
+  weddingWebsitesTable,
+  conversationsTable,
 } from "@workspace/db";
 import { adminAuth, ADMIN_COOKIE, isAuthed } from "../middlewares/adminAuth";
 import {
@@ -152,6 +154,8 @@ function layout(title: string, body: string, showNav = true): string {
         <a href="/admin/reviews">Avis</a>
         <a href="/admin/subscriptions">Abonnements</a>
         <a href="/admin/accounts">Comptes</a>
+        <a href="/admin/couples">Couples</a>
+        <a href="/admin/devis">Contacts</a>
         <form method="POST" action="/admin/logout" style="margin:0;">
           <button type="submit">Déconnexion</button>
         </form>
@@ -434,7 +438,32 @@ router.get("/", adminAuth, async (req, res) => {
   const { rows: pageRows, total, totals } = await loadFeed({ filterType, filterStatus, page, perPage });
   const totalPages = Math.max(1, Math.ceil(total / perPage));
 
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+  const [[couplesCount], [vendorsActiveCount], [pendingCouplesCount], [pendingVendorsCount], [contactsCount], [leadsThisMonthCount]] = await Promise.all([
+    db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNotNull(couplesTable.onboardedAt)),
+    db.select({ count: sql<number>`count(*)::int` }).from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.active, true)),
+    db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNull(couplesTable.validatedAt)),
+    db.select({ count: sql<number>`count(*)::int` }).from(vendorAccountsTable).where(eq(vendorAccountsTable.status, "pending")),
+    db.select({ count: sql<number>`count(*)::int` }).from(conversationsTable).where(isNotNull(conversationsTable.vendorId)),
+    db.select({ count: sql<number>`count(*)::int` }).from(leadsTable).where(gte(leadsTable.createdAt, thirtyDaysAgo)),
+  ]);
+
+  const pendingTotal = (pendingCouplesCount?.count ?? 0) + (pendingVendorsCount?.count ?? 0);
+
+  const platformStats = `
+    <div style="margin-bottom:8px;font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:#888;font-weight:600;">Vue globale de la plateforme</div>
+    <div class="stats" style="margin-bottom:8px;">
+      <div class="stat"><div class="lbl">Couples inscrits</div><div class="val"><a href="/admin/couples" style="color:inherit;text-decoration:none;">${couplesCount?.count ?? 0}</a></div></div>
+      <div class="stat"><div class="lbl">Prestataires actifs</div><div class="val">${vendorsActiveCount?.count ?? 0}</div></div>
+      <div class="stat"><div class="lbl">Contacts pro</div><div class="val"><a href="/admin/devis" style="color:inherit;text-decoration:none;">${contactsCount?.count ?? 0}</a></div></div>
+      <div class="stat"><div class="lbl">Leads ce mois</div><div class="val">${leadsThisMonthCount?.count ?? 0}</div></div>
+      <div class="stat" style="${pendingTotal > 0 ? "border-left:3px solid #c08800;" : ""}"><div class="lbl">En attente validation</div><div class="val" style="${pendingTotal > 0 ? "color:#c08800;" : ""}">${pendingTotal}</div></div>
+    </div>
+    <div style="margin-bottom:8px;font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:#888;font-weight:600;margin-top:24px;">Demandes entrantes</div>`;
+
   const stats = `
+    ${platformStats}
     <div class="stats">
       <div class="stat"><div class="lbl">Leads généraux</div><div class="val">${totals.lead}</div></div>
       <div class="stat"><div class="lbl">Calc. budget</div><div class="val">${totals.lead_budget}</div></div>
@@ -1033,6 +1062,202 @@ router.post("/accounts/vendors/:id/reject", adminAuth, async (req, res) => {
     }).catch(() => undefined);
   }
   res.redirect("/admin/accounts");
+});
+
+// ============ COUPLES ============
+
+router.get("/couples", adminAuth, async (req, res) => {
+  const page = Math.max(1, Number(req.query.page) || 1);
+  const perPage = 30;
+  const offset = (page - 1) * perPage;
+  const filterStatus = typeof req.query.status === "string" ? req.query.status : "";
+
+  const baseCond = (() => {
+    if (filterStatus === "validated") return isNotNull(couplesTable.validatedAt);
+    if (filterStatus === "pending") return and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected"));
+    if (filterStatus === "rejected") return eq(couplesTable.status, "rejected");
+    return undefined;
+  })();
+
+  const [totalRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(couplesTable)
+    .where(baseCond);
+
+  const rows = await db
+    .select({
+      id: couplesTable.id,
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+      email: couplesTable.email,
+      weddingDate: couplesTable.weddingDate,
+      status: couplesTable.status,
+      createdAt: couplesTable.createdAt,
+      onboardedAt: couplesTable.onboardedAt,
+      validatedAt: couplesTable.validatedAt,
+      budget: couplesTable.budget,
+      guestEstimate: couplesTable.guestEstimate,
+      websiteActive: weddingWebsitesTable.active,
+      websiteSlug: weddingWebsitesTable.slug,
+    })
+    .from(couplesTable)
+    .leftJoin(weddingWebsitesTable, eq(weddingWebsitesTable.coupleId, couplesTable.id))
+    .where(baseCond)
+    .orderBy(desc(couplesTable.createdAt))
+    .limit(perPage)
+    .offset(offset);
+
+  const count = totalRow?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(count / perPage));
+
+  const statusBadge = (r: typeof rows[0]) => {
+    if (r.validatedAt) return `<span class="badge status-done">Validé</span>`;
+    if (r.status === "rejected") return `<span class="badge" style="background:#fde;color:#c33;border:1px solid #c33;">Rejeté</span>`;
+    if (r.onboardedAt) return `<span class="badge status-in_progress">En attente</span>`;
+    return `<span class="badge status-new">Inscription</span>`;
+  };
+
+  const tableBody = rows.length === 0
+    ? `<tr><td colspan="8" class="empty">Aucun couple trouvé.</td></tr>`
+    : rows.map(r => `
+      <tr>
+        <td>${escapeHtml(r.createdAt.toISOString().slice(0, 10))}</td>
+        <td><strong>${escapeHtml(r.partner1Name)} & ${escapeHtml(r.partner2Name)}</strong></td>
+        <td>${escapeHtml(r.email)}</td>
+        <td>${escapeHtml(r.weddingDate ?? "—")}</td>
+        <td>${r.guestEstimate != null ? r.guestEstimate : "—"}</td>
+        <td>${r.budget != null ? `${r.budget.toLocaleString("fr-BE")} €` : "—"}</td>
+        <td>${statusBadge(r)}</td>
+        <td>${r.websiteSlug
+          ? `<a href="https://${req.hostname}/mariage/${escapeHtml(r.websiteSlug)}" target="_blank" style="color:#68191e;">
+              ${r.websiteActive ? "🌐 Publié" : "Brouillon"}
+            </a>`
+          : `<span style="color:#bbb;">—</span>`
+        }</td>
+      </tr>`).join("");
+
+  const pagination = totalPages > 1 ? `
+    <div class="pagination">
+      ${Array.from({ length: totalPages }).map((_, i) => {
+        const p = i + 1;
+        const qs = new URLSearchParams();
+        if (filterStatus) qs.set("status", filterStatus);
+        qs.set("page", String(p));
+        return p === page ? `<span class="current">${p}</span>` : `<a href="/admin/couples?${qs}">${p}</a>`;
+      }).join("")}
+    </div>` : "";
+
+  const filterOpts = [
+    ["", "Tous les couples"],
+    ["pending", "En attente validation"],
+    ["validated", "Validés"],
+    ["rejected", "Rejetés"],
+  ].map(([val, lbl]) => `<option value="${val}"${filterStatus === val ? " selected" : ""}>${lbl}</option>`).join("");
+
+  res.type("html").send(layout("Couples", `
+    <div class="container">
+      <h2 style="font-size:22px;font-weight:700;color:#68191e;margin-bottom:24px;">Couples (${count})</h2>
+      <form method="GET" action="/admin/couples" class="filters" style="margin-bottom:16px;">
+        <div><label>Statut</label><select name="status" onchange="this.form.submit()">${filterOpts}</select></div>
+        ${filterStatus ? `<a href="/admin/couples" class="reset">Réinitialiser</a>` : ""}
+      </form>
+      <table>
+        <thead><tr>
+          <th>Inscription</th>
+          <th>Couple</th>
+          <th>Email</th>
+          <th>Date mariage</th>
+          <th>Invités</th>
+          <th>Budget</th>
+          <th>Statut</th>
+          <th>Site web</th>
+        </tr></thead>
+        <tbody>${tableBody}</tbody>
+      </table>
+      ${pagination}
+    </div>
+  `));
+});
+
+// ============ CONTACTS PRO (DEVIS) ============
+
+router.get("/devis", adminAuth, async (req, res) => {
+  const page = Math.max(1, Number(req.query.page) || 1);
+  const perPage = 30;
+  const offset = (page - 1) * perPage;
+
+  const [totalRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(conversationsTable)
+    .where(isNotNull(conversationsTable.vendorId));
+
+  const rows = await db
+    .select({
+      convId: conversationsTable.id,
+      coupleId: conversationsTable.coupleId,
+      vendorId: conversationsTable.vendorId,
+      lastMessageAt: conversationsTable.lastMessageAt,
+      createdAt: conversationsTable.createdAt,
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+      coupleEmail: couplesTable.email,
+      vendorName: marketplaceVendorsTable.name,
+      vendorCategory: marketplaceVendorsTable.category,
+      msgCount: sql<number>`(select count(*) from messages where conversation_id = ${conversationsTable.id})::int`,
+    })
+    .from(conversationsTable)
+    .leftJoin(couplesTable, eq(couplesTable.id, conversationsTable.coupleId))
+    .leftJoin(marketplaceVendorsTable, eq(marketplaceVendorsTable.id, conversationsTable.vendorId))
+    .where(isNotNull(conversationsTable.vendorId))
+    .orderBy(desc(conversationsTable.lastMessageAt))
+    .limit(perPage)
+    .offset(offset);
+
+  const count = totalRow?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(count / perPage));
+
+  const tableBody = rows.length === 0
+    ? `<tr><td colspan="7" class="empty">Aucun contact prestataire pour l'instant.</td></tr>`
+    : rows.map(r => `
+      <tr>
+        <td>${escapeHtml(r.createdAt.toISOString().slice(0, 10))}</td>
+        <td><strong>${escapeHtml(r.partner1Name ?? "")} & ${escapeHtml(r.partner2Name ?? "")}</strong><br><span style="font-size:11px;color:#888;">${escapeHtml(r.coupleEmail ?? "")}</span></td>
+        <td>${escapeHtml(r.vendorName ?? "—")}</td>
+        <td><span style="font-size:11px;background:#eef0ff;color:#3a3f8a;padding:2px 8px;border:1px solid #3a3f8a;">${escapeHtml(r.vendorCategory ?? "")}</span></td>
+        <td style="text-align:center;">${r.msgCount ?? 0}</td>
+        <td>${r.lastMessageAt ? escapeHtml(r.lastMessageAt.toISOString().slice(0, 10)) : "—"}</td>
+        <td><a href="/admin/content/conversations#conv-${r.convId}" class="btn" style="font-size:10px;padding:4px 10px;">Voir</a></td>
+      </tr>`).join("");
+
+  const pagination = totalPages > 1 ? `
+    <div class="pagination">
+      ${Array.from({ length: totalPages }).map((_, i) => {
+        const p = i + 1;
+        return p === page
+          ? `<span class="current">${p}</span>`
+          : `<a href="/admin/devis?page=${p}">${p}</a>`;
+      }).join("")}
+    </div>` : "";
+
+  res.type("html").send(layout("Contacts prestataires", `
+    <div class="container">
+      <h2 style="font-size:22px;font-weight:700;color:#68191e;margin-bottom:8px;">Contacts prestataires (${count})</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:24px;">Tous les échanges entre couples et prestataires via la messagerie.</p>
+      <table>
+        <thead><tr>
+          <th>Date contact</th>
+          <th>Couple</th>
+          <th>Prestataire</th>
+          <th>Catégorie</th>
+          <th style="text-align:center;">Messages</th>
+          <th>Dernier échange</th>
+          <th></th>
+        </tr></thead>
+        <tbody>${tableBody}</tbody>
+      </table>
+      ${pagination}
+    </div>
+  `));
 });
 
 export default router;

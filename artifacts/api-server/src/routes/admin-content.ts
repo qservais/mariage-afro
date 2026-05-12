@@ -168,7 +168,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
 }
 
 router.get("/content/vendors/new", (_req: Request, res: Response) => {
-  res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm({active:true})}`));
+  res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm({active:true, verified:true})}`));
 });
 
 router.post("/content/vendors/new", async (req: Request, res: Response) => {
