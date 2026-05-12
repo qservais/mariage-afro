@@ -23,7 +23,9 @@ const PRIMARY = "#68191e";
 const CREAM = "#fff4e4";
 
 export default function MariageJourJPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
+  const dateLocale = LOCALE_MAP[(i18n.resolvedLanguage || i18n.language || "fr").split("-")[0]] || "fr-BE";
   const { slug } = useParams<{ slug: string }>();
 
   const { data, isLoading, isError } = useQuery<JourJPublicData>({
@@ -38,7 +40,7 @@ export default function MariageJourJPage() {
 
   useEffect(() => {
     if (data) {
-      document.title = `${data.partner1Name} & ${data.partner2Name} — Jour J`;
+      document.title = `${data.partner1Name} & ${data.partner2Name} — ${t("mariage_jour_j.day_label")}`;
     }
   }, [data]);
 
@@ -71,7 +73,7 @@ export default function MariageJourJPage() {
   }
 
   const formattedDate = data.weddingDate
-    ? new Date(data.weddingDate).toLocaleDateString("fr-BE", {
+    ? new Date(data.weddingDate).toLocaleDateString(dateLocale, {
         day: "2-digit",
         month: "long",
         year: "numeric",

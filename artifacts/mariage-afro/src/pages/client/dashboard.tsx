@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift, AlertCircle, QrCode, ExternalLink, Globe, GlobeLock } from "lucide-react";
+import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift, AlertCircle, QrCode, ExternalLink } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
