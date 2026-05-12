@@ -13,6 +13,7 @@ import {
   vendorAccountsTable,
   weddingWebsitesTable,
   conversationsTable,
+  vendorLeadsTable,
 } from "@workspace/db";
 import { adminAuth, ADMIN_COOKIE, isAuthed } from "../middlewares/adminAuth";
 import {
@@ -145,17 +146,29 @@ const css = `
   .err{color:#c01a1a;font-size:13px;margin-bottom:12px;text-align:center}
 `;
 
-function layout(title: string, body: string, showNav = true): string {
+async function getPendingCount(): Promise<number> {
+  const [[cp], [va]] = await Promise.all([
+    db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNull(couplesTable.validatedAt)),
+    db.select({ count: sql<number>`count(*)::int` }).from(vendorAccountsTable).where(eq(vendorAccountsTable.status, "pending")),
+  ]);
+  return (cp?.count ?? 0) + (va?.count ?? 0);
+}
+
+function layout(title: string, body: string, showNav = true, pendingBadge = 0): string {
+  const badge = (n: number) => n > 0
+    ? ` <sup style="background:#c08800;color:#fff;padding:1px 5px;font-size:9px;vertical-align:super;font-weight:700;">${n}</sup>`
+    : "";
   const nav = showNav ? `
     <div class="topbar">
       <h1><a href="/admin" style="color:inherit;">Mariage Afro · Admin</a></h1>
-      <div style="display:flex;gap:8px;align-items:center;">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
         <a href="/admin">Demandes</a>
         <a href="/admin/reviews">Avis</a>
         <a href="/admin/subscriptions">Abonnements</a>
-        <a href="/admin/accounts">Comptes</a>
+        <a href="/admin/accounts">Comptes${badge(pendingBadge)}</a>
         <a href="/admin/couples">Couples</a>
-        <a href="/admin/devis">Contacts</a>
+        <a href="/admin/devis">Devis</a>
+        <a href="/admin/content/vendors">Prestataires</a>
         <form method="POST" action="/admin/logout" style="margin:0;">
           <button type="submit">Déconnexion</button>
         </form>
@@ -241,6 +254,8 @@ router.get("/reviews", adminAuth, async (req, res) => {
           </td>
         </tr>`).join("");
 
+  const pendingBadge = await getPendingCount();
+
   res.type("html").send(layout("Avis", `
     <div class="container">
       <h2 style="margin-bottom:16px;font-size:22px;color:#68191e;">Modération des avis couples</h2>
@@ -253,7 +268,7 @@ router.get("/reviews", adminAuth, async (req, res) => {
         <tbody>${tableBody}</tbody>
       </table>
     </div>
-  `));
+  `, true, pendingBadge));
 });
 
 router.post("/reviews/:id/status", adminAuth, async (req, res) => {
@@ -440,25 +455,32 @@ router.get("/", adminAuth, async (req, res) => {
 
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-  const [[couplesCount], [vendorsActiveCount], [pendingCouplesCount], [pendingVendorsCount], [contactsCount], [leadsThisMonthCount]] = await Promise.all([
+  const [[couplesCount], [vendorsActiveCount], [pendingCouplesCount], [pendingVendorsCount], [devisEnvoyesCount], [devisThisMonthCount], [leadsThisMonthCount]] = await Promise.all([
     db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNotNull(couplesTable.onboardedAt)),
     db.select({ count: sql<number>`count(*)::int` }).from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.active, true)),
     db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNull(couplesTable.validatedAt)),
     db.select({ count: sql<number>`count(*)::int` }).from(vendorAccountsTable).where(eq(vendorAccountsTable.status, "pending")),
-    db.select({ count: sql<number>`count(*)::int` }).from(conversationsTable).where(isNotNull(conversationsTable.vendorId)),
+    db.select({ count: sql<number>`count(*)::int` }).from(vendorLeadsTable),
+    db.select({ count: sql<number>`count(*)::int` }).from(vendorLeadsTable).where(gte(vendorLeadsTable.createdAt, thirtyDaysAgo)),
     db.select({ count: sql<number>`count(*)::int` }).from(leadsTable).where(gte(leadsTable.createdAt, thirtyDaysAgo)),
   ]);
 
   const pendingTotal = (pendingCouplesCount?.count ?? 0) + (pendingVendorsCount?.count ?? 0);
+  const devisTotal = devisEnvoyesCount?.count ?? 0;
+  const devisMonth = devisThisMonthCount?.count ?? 0;
+  const couplesTotal = couplesCount?.count ?? 0;
+  const convRate = couplesTotal > 0 ? Math.round((devisTotal / couplesTotal) * 100) : 0;
 
   const platformStats = `
     <div style="margin-bottom:8px;font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:#888;font-weight:600;">Vue globale de la plateforme</div>
     <div class="stats" style="margin-bottom:8px;">
-      <div class="stat"><div class="lbl">Couples inscrits</div><div class="val"><a href="/admin/couples" style="color:inherit;text-decoration:none;">${couplesCount?.count ?? 0}</a></div></div>
-      <div class="stat"><div class="lbl">Prestataires actifs</div><div class="val">${vendorsActiveCount?.count ?? 0}</div></div>
-      <div class="stat"><div class="lbl">Contacts pro</div><div class="val"><a href="/admin/devis" style="color:inherit;text-decoration:none;">${contactsCount?.count ?? 0}</a></div></div>
+      <div class="stat"><div class="lbl">Couples inscrits</div><div class="val"><a href="/admin/couples" style="color:inherit;text-decoration:none;">${couplesTotal}</a></div></div>
+      <div class="stat"><div class="lbl">Prestataires actifs</div><div class="val"><a href="/admin/content/vendors" style="color:inherit;text-decoration:none;">${vendorsActiveCount?.count ?? 0}</a></div></div>
+      <div class="stat"><div class="lbl">Devis envoyés</div><div class="val"><a href="/admin/devis" style="color:inherit;text-decoration:none;">${devisTotal}</a></div></div>
+      <div class="stat"><div class="lbl">Devis ce mois</div><div class="val">${devisMonth}</div></div>
       <div class="stat"><div class="lbl">Leads ce mois</div><div class="val">${leadsThisMonthCount?.count ?? 0}</div></div>
-      <div class="stat" style="${pendingTotal > 0 ? "border-left:3px solid #c08800;" : ""}"><div class="lbl">En attente validation</div><div class="val" style="${pendingTotal > 0 ? "color:#c08800;" : ""}">${pendingTotal}</div></div>
+      <div class="stat"><div class="lbl">Taux contact/couple</div><div class="val">${convRate}%</div></div>
+      <div class="stat" style="${pendingTotal > 0 ? "border-left:3px solid #c08800;" : ""}"><div class="lbl">En attente validation</div><div class="val" style="${pendingTotal > 0 ? "color:#c08800;" : ""}"><a href="/admin/accounts" style="color:inherit;text-decoration:none;">${pendingTotal}</a></div></div>
     </div>
     <div style="margin-bottom:8px;font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:#888;font-weight:600;margin-top:24px;">Demandes entrantes</div>`;
 
@@ -522,7 +544,7 @@ router.get("/", adminAuth, async (req, res) => {
       </table>
       ${pagination}
     </div>
-  `));
+  `, true, pendingTotal));
 });
 
 router.get("/leads/:type/:id", adminAuth, async (req, res) => {
@@ -956,6 +978,8 @@ router.get("/accounts", adminAuth, async (_req, res) => {
         </td>
       </tr>`).join("");
 
+  const pendingBadge = couples.length + vendors.length;
+
   res.type("html").send(layout("Comptes en attente", `
     <div class="container">
       <h2 style="margin-bottom:24px;font-size:22px;color:#68191e;">Validation des comptes</h2>
@@ -973,7 +997,7 @@ router.get("/accounts", adminAuth, async (_req, res) => {
       </table>
     </div>
     <script>function confirmReject(){return confirm("Confirmer le rejet de ce compte ?");}</script>
-  `));
+  `, true, pendingBadge));
 });
 
 router.post("/accounts/couples/:id/approve", adminAuth, async (req, res) => {
@@ -1154,6 +1178,8 @@ router.get("/couples", adminAuth, async (req, res) => {
     ["rejected", "Rejetés"],
   ].map(([val, lbl]) => `<option value="${val}"${filterStatus === val ? " selected" : ""}>${lbl}</option>`).join("");
 
+  const pendingBadge = await getPendingCount();
+
   res.type("html").send(layout("Couples", `
     <div class="container">
       <h2 style="font-size:22px;font-weight:700;color:#68191e;margin-bottom:24px;">Couples (${count})</h2>
@@ -1176,40 +1202,64 @@ router.get("/couples", adminAuth, async (req, res) => {
       </table>
       ${pagination}
     </div>
-  `));
+  `, true, pendingBadge));
 });
 
-// ============ CONTACTS PRO (DEVIS) ============
+// ============ DEVIS (vendor_leads agrégés) ============
+
+const DEVIS_STATUS_LABEL: Record<string, string> = {
+  new: "Nouveau",
+  in_progress: "En discussion",
+  done: "Traité",
+};
+const DEVIS_STATUS_CSS: Record<string, string> = {
+  new: "background:#fff4e4;color:#68191e;border:1px solid #68191e",
+  in_progress: "background:#fff8e1;color:#c08800;border:1px solid #c08800",
+  done: "background:#e8f5e9;color:#2e7d32;border:1px solid #2e7d32",
+};
 
 router.get("/devis", adminAuth, async (req, res) => {
   const page = Math.max(1, Number(req.query.page) || 1);
   const perPage = 30;
   const offset = (page - 1) * perPage;
+  const filterStatus = typeof req.query.status === "string" && req.query.status ? req.query.status : "";
+  const filterVendorId = Number(req.query.vendor_id) || 0;
 
-  const [totalRow] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(conversationsTable)
-    .where(isNotNull(conversationsTable.vendorId));
+  const conds: ReturnType<typeof eq>[] = [];
+  if (filterStatus) conds.push(eq(vendorLeadsTable.status, filterStatus) as ReturnType<typeof eq>);
+  if (filterVendorId) conds.push(eq(vendorLeadsTable.vendorId, filterVendorId) as ReturnType<typeof eq>);
+  const where = conds.length > 0 ? and(...conds) : undefined;
+
+  const [totalRow, vendors, pendingBadge] = await Promise.all([
+    db.select({ count: sql<number>`count(*)::int` }).from(vendorLeadsTable).where(where).then(r => r[0]),
+    db.select({ id: marketplaceVendorsTable.id, name: marketplaceVendorsTable.name })
+      .from(marketplaceVendorsTable)
+      .where(eq(marketplaceVendorsTable.active, true))
+      .orderBy(marketplaceVendorsTable.name),
+    getPendingCount(),
+  ]);
 
   const rows = await db
     .select({
-      convId: conversationsTable.id,
-      coupleId: conversationsTable.coupleId,
-      vendorId: conversationsTable.vendorId,
-      lastMessageAt: conversationsTable.lastMessageAt,
-      createdAt: conversationsTable.createdAt,
-      partner1Name: couplesTable.partner1Name,
-      partner2Name: couplesTable.partner2Name,
-      coupleEmail: couplesTable.email,
+      id: vendorLeadsTable.id,
+      vendorId: vendorLeadsTable.vendorId,
+      requestType: vendorLeadsTable.requestType,
+      name: vendorLeadsTable.name,
+      email: vendorLeadsTable.email,
+      phone: vendorLeadsTable.phone,
+      weddingDate: vendorLeadsTable.weddingDate,
+      message: vendorLeadsTable.message,
+      status: vendorLeadsTable.status,
+      internalNote: vendorLeadsTable.internalNote,
+      seenAt: vendorLeadsTable.seenAt,
+      createdAt: vendorLeadsTable.createdAt,
       vendorName: marketplaceVendorsTable.name,
       vendorCategory: marketplaceVendorsTable.category,
-      msgCount: sql<number>`(select count(*) from messages where conversation_id = ${conversationsTable.id})::int`,
     })
-    .from(conversationsTable)
-    .leftJoin(couplesTable, eq(couplesTable.id, conversationsTable.coupleId))
-    .leftJoin(marketplaceVendorsTable, eq(marketplaceVendorsTable.id, conversationsTable.vendorId))
-    .where(isNotNull(conversationsTable.vendorId))
-    .orderBy(desc(conversationsTable.lastMessageAt))
+    .from(vendorLeadsTable)
+    .leftJoin(marketplaceVendorsTable, eq(marketplaceVendorsTable.id, vendorLeadsTable.vendorId))
+    .where(where)
+    .orderBy(desc(vendorLeadsTable.createdAt))
     .limit(perPage)
     .offset(offset);
 
@@ -1217,17 +1267,37 @@ router.get("/devis", adminAuth, async (req, res) => {
   const totalPages = Math.max(1, Math.ceil(count / perPage));
 
   const tableBody = rows.length === 0
-    ? `<tr><td colspan="7" class="empty">Aucun contact prestataire pour l'instant.</td></tr>`
-    : rows.map(r => `
+    ? `<tr><td colspan="8" class="empty">Aucun devis pour l'instant.</td></tr>`
+    : rows.map(r => {
+        const statusLabel = DEVIS_STATUS_LABEL[r.status] ?? r.status;
+        const statusCss = DEVIS_STATUS_CSS[r.status] ?? "";
+        return `
       <tr>
         <td>${escapeHtml(r.createdAt.toISOString().slice(0, 10))}</td>
-        <td><strong>${escapeHtml(r.partner1Name ?? "")} & ${escapeHtml(r.partner2Name ?? "")}</strong><br><span style="font-size:11px;color:#888;">${escapeHtml(r.coupleEmail ?? "")}</span></td>
-        <td>${escapeHtml(r.vendorName ?? "—")}</td>
-        <td><span style="font-size:11px;background:#eef0ff;color:#3a3f8a;padding:2px 8px;border:1px solid #3a3f8a;">${escapeHtml(r.vendorCategory ?? "")}</span></td>
-        <td style="text-align:center;">${r.msgCount ?? 0}</td>
-        <td>${r.lastMessageAt ? escapeHtml(r.lastMessageAt.toISOString().slice(0, 10)) : "—"}</td>
-        <td><a href="/admin/content/conversations#conv-${r.convId}" class="btn" style="font-size:10px;padding:4px 10px;">Voir</a></td>
-      </tr>`).join("");
+        <td>
+          <strong>${escapeHtml(r.name)}</strong><br>
+          <span style="font-size:11px;color:#888;">${escapeHtml(r.email)}</span>
+          ${r.phone ? `<br><span style="font-size:11px;color:#888;">${escapeHtml(r.phone)}</span>` : ""}
+        </td>
+        <td>
+          ${escapeHtml(r.vendorName ?? "—")}
+          ${r.vendorCategory ? `<br><span style="font-size:10px;color:#888;">${escapeHtml(r.vendorCategory)}</span>` : ""}
+        </td>
+        <td>${escapeHtml(r.requestType)}</td>
+        <td>${escapeHtml(r.weddingDate ?? "—")}</td>
+        <td>—</td>
+        <td><span style="display:inline-block;padding:2px 8px;font-size:10px;font-weight:700;${statusCss}">${statusLabel}</span></td>
+        <td>${r.seenAt ? "✓" : `<span style="color:#c08800;">Non vu</span>`}</td>
+      </tr>`;
+      }).join("");
+
+  const qs = (extra: Record<string, string>) => {
+    const p = new URLSearchParams();
+    if (filterStatus) p.set("status", filterStatus);
+    if (filterVendorId) p.set("vendor_id", String(filterVendorId));
+    Object.entries(extra).forEach(([k, v]) => p.set(k, v));
+    return p.toString();
+  };
 
   const pagination = totalPages > 1 ? `
     <div class="pagination">
@@ -1235,29 +1305,41 @@ router.get("/devis", adminAuth, async (req, res) => {
         const p = i + 1;
         return p === page
           ? `<span class="current">${p}</span>`
-          : `<a href="/admin/devis?page=${p}">${p}</a>`;
+          : `<a href="/admin/devis?${qs({ page: String(p) })}">${p}</a>`;
       }).join("")}
     </div>` : "";
 
-  res.type("html").send(layout("Contacts prestataires", `
+  const statusOpts = [["", "Tous statuts"], ["new", "Nouveau"], ["in_progress", "En discussion"], ["done", "Traité"]]
+    .map(([val, lbl]) => `<option value="${val}"${filterStatus === val ? " selected" : ""}>${lbl}</option>`).join("");
+
+  const vendorOpts = `<option value="">Tous les prestataires</option>` +
+    vendors.map(v => `<option value="${v.id}"${filterVendorId === v.id ? " selected" : ""}>${escapeHtml(v.name)}</option>`).join("");
+
+  res.type("html").send(layout("Devis prestataires", `
     <div class="container">
-      <h2 style="font-size:22px;font-weight:700;color:#68191e;margin-bottom:8px;">Contacts prestataires (${count})</h2>
-      <p style="font-size:13px;color:#888;margin-bottom:24px;">Tous les échanges entre couples et prestataires via la messagerie.</p>
+      <h2 style="font-size:22px;font-weight:700;color:#68191e;margin-bottom:8px;">Devis prestataires (${count})</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:16px;">Toutes les demandes de devis envoyées aux prestataires via la marketplace. Le montant sera disponible lorsque la plateforme de devis formelle sera activée.</p>
+      <form method="GET" action="/admin/devis" class="filters" style="margin-bottom:16px;">
+        <div><label>Statut</label><select name="status" onchange="this.form.submit()">${statusOpts}</select></div>
+        <div><label>Prestataire</label><select name="vendor_id" onchange="this.form.submit()">${vendorOpts}</select></div>
+        ${filterStatus || filterVendorId ? `<a href="/admin/devis" class="reset">Réinitialiser</a>` : ""}
+      </form>
       <table>
         <thead><tr>
-          <th>Date contact</th>
-          <th>Couple</th>
+          <th>Date envoi</th>
+          <th>Contact (couple/client)</th>
           <th>Prestataire</th>
-          <th>Catégorie</th>
-          <th style="text-align:center;">Messages</th>
-          <th>Dernier échange</th>
-          <th></th>
+          <th>Type demande</th>
+          <th>Date mariage</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Lu</th>
         </tr></thead>
         <tbody>${tableBody}</tbody>
       </table>
       ${pagination}
     </div>
-  `));
+  `, true, pendingBadge));
 });
 
 export default router;
