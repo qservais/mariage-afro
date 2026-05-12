@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, Briefcase, Image as ImageIcon, ListChecks,
   Settings, LogOut, Menu, X, Heart, AlertCircle, CheckCircle2,
-  CalendarDays, Inbox, MessageCircle, Crown,
+  CalendarDays, Inbox, MessageCircle, Crown, ExternalLink,
 } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import VendorOnboardingGate from "@/components/vendor/VendorOnboardingGate";
@@ -195,9 +195,22 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
           {vendor && (
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest" data-testid="badge-vendor-status">
               {vendor.verified && vendor.active ? (
-                <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> {t("vendor.layout.status_published")}
-                </span>
+                <>
+                  <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> {t("vendor.layout.status_published")}
+                  </span>
+                  {account?.vendorId && (
+                    <a
+                      href={`/partenaires/${account.vendorId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-wine-deep border border-wine-deep/30 bg-white hover:bg-wine-deep hover:text-white transition-colors px-3 py-1.5"
+                      data-testid="link-vendor-public-profile"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> {t("vendor.dashboard.view_public")}
+                    </a>
+                  )}
+                </>
               ) : (
                 <span className="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-3 py-1.5">
                   <AlertCircle className="w-3.5 h-3.5" /> {t("vendor.layout.status_pending")}

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq, sql, desc, and, inArray, isNull, or } from "drizzle-orm";
+import { eq, sql, desc, and, inArray, isNull, ne } from "drizzle-orm";
 import {
   db,
   leadsTable,
@@ -865,7 +865,7 @@ router.get("/accounts", adminAuth, async (_req, res) => {
       validatedAt: couplesTable.validatedAt,
     })
     .from(couplesTable)
-    .where(isNull(couplesTable.validatedAt))
+    .where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected")))
     .orderBy(desc(couplesTable.createdAt));
 
   const vendors = await db
@@ -883,7 +883,7 @@ router.get("/accounts", adminAuth, async (_req, res) => {
       vendorId: vendorAccountsTable.vendorId,
     })
     .from(vendorAccountsTable)
-    .where(and(isNull(vendorAccountsTable.validatedAt), sql`${vendorAccountsTable.onboardedAt} IS NOT NULL`))
+    .where(and(isNull(vendorAccountsTable.validatedAt), ne(vendorAccountsTable.status, "rejected"), sql`${vendorAccountsTable.onboardedAt} IS NOT NULL`))
     .orderBy(desc(vendorAccountsTable.onboardedAt));
 
   const coupleRows = couples.length === 0
@@ -952,7 +952,7 @@ router.post("/accounts/couples/:id/approve", adminAuth, async (req, res) => {
   if (!Number.isFinite(id)) { res.status(400).send("Invalid id"); return; }
   const [couple] = await db
     .update(couplesTable)
-    .set({ validatedAt: new Date(), validatedBy: "admin" })
+    .set({ validatedAt: new Date(), validatedBy: process.env.ADMIN_EMAIL || "admin" })
     .where(eq(couplesTable.id, id))
     .returning();
   if (!couple) { res.status(404).send("Couple not found"); return; }
@@ -994,7 +994,7 @@ router.post("/accounts/vendors/:id/approve", adminAuth, async (req, res) => {
   if (!Number.isFinite(id)) { res.status(400).send("Invalid id"); return; }
   const [account] = await db
     .update(vendorAccountsTable)
-    .set({ validatedAt: new Date(), validatedBy: "admin", status: "approved" })
+    .set({ validatedAt: new Date(), validatedBy: process.env.ADMIN_EMAIL || "admin", status: "approved" })
     .where(eq(vendorAccountsTable.id, id))
     .returning();
   if (!account) { res.status(404).send("Vendor account not found"); return; }

@@ -699,6 +699,15 @@ router.post("/client/conversations", async (req, res) => {
   const r = req as unknown as AuthedRequest;
   const parsed = startConversationSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const [coupleValidation] = await db
+    .select({ validatedAt: couplesTable.validatedAt })
+    .from(couplesTable)
+    .where(eq(couplesTable.id, r.coupleId))
+    .limit(1);
+  if (!coupleValidation?.validatedAt) {
+    res.status(403).json({ error: "Votre compte doit être validé par l'administrateur avant de contacter un prestataire." });
+    return;
+  }
   const [vendor] = await db.select().from(marketplaceVendorsTable)
     .where(eq(marketplaceVendorsTable.id, parsed.data.vendorId))
     .limit(1);
