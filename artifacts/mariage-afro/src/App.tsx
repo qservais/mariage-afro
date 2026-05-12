@@ -56,6 +56,7 @@ const CommunicationPage = lazy(() => import("@/pages/client/communication"));
 const SiteMariagePage = lazy(() => import("@/pages/client/site-mariage"));
 const InspirationPage = lazy(() => import("@/pages/client/inspiration"));
 const CagnottePage = lazy(() => import("@/pages/client/cagnotte"));
+const ClientDevisPage = lazy(() => import("@/pages/client/devis"));
 
 // Public wedding pages (lazy — only loaded when visiting /mariage/:slug)
 const MariagePublicPage = lazy(() => import("@/pages/mariage-public"));
@@ -72,6 +73,7 @@ const VendorServicesPage = lazy(() => import("@/pages/vendor/services"));
 const VendorSettingsPage = lazy(() => import("@/pages/vendor/settings"));
 const VendorAvailabilityPage = lazy(() => import("@/pages/vendor/availability"));
 const VendorLeadsPage = lazy(() => import("@/pages/vendor/leads"));
+const VendorQuotesPage = lazy(() => import("@/pages/vendor/quotes"));
 const VendorMessagesPage = lazy(() => import("@/pages/vendor/messages"));
 const VendorAbonnementPage = lazy(() => import("@/pages/vendor/abonnement"));
 const VendorSignInPage = lazy(() => import("@/pages/vendor/sign-in"));
@@ -219,6 +221,7 @@ function AppRoutes() {
             <Route path="services" element={<VendorServicesPage />} />
             <Route path="agenda" element={<VendorAvailabilityPage />} />
             <Route path="leads" element={<VendorLeadsPage />} />
+            <Route path="devis" element={<VendorQuotesPage />} />
             <Route path="messages" element={<VendorMessagesPage />} />
             <Route path="settings" element={<VendorSettingsPage />} />
             <Route path="abonnement" element={<VendorAbonnementPage />} />
@@ -251,6 +254,7 @@ function AppRoutes() {
             <Route path="site" element={<SiteMariagePage />} />
             <Route path="inspiration" element={<InspirationPage />} />
             <Route path="cagnotte" element={<CagnottePage />} />
+            <Route path="devis" element={<ClientDevisPage />} />
             <Route path="profil" element={<ProfilPage />} />
             <Route path="*" element={<Navigate to="/espace-client/dashboard" replace />} />
           </Route>

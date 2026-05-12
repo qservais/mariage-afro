@@ -37,7 +37,8 @@
       "site": "Mon site mariage",
       "profile": "Profil",
       "inspiration": "Inspiration",
-      "cagnotte": "Cagnotte"
+      "cagnotte": "Cagnotte",
+      "devis": "Devis"
     },
     "signout": "Se déconnecter",
     "hello": "Bonjour 👋",
@@ -490,5 +491,38 @@
     "loading": "Chargement…",
     "added": "Image ajoutée",
     "upload_failed": "Échec du téléversement"
+  },
+  "devis": {
+    "title": "Mes devis",
+    "subtitle": "Consultez et répondez aux devis envoyés par vos prestataires.",
+    "empty": "Aucun devis reçu pour le moment.",
+    "col_date": "Date",
+    "col_subject": "Objet",
+    "col_amount": "Montant TTC",
+    "col_status": "Statut",
+    "no_subject": "Sans objet",
+    "detail_empty": "Sélectionnez un devis pour en voir les détails.",
+    "services": "Prestations",
+    "total_ht": "Total HT",
+    "total_ttc": "Total TTC",
+    "message": "Message",
+    "your_reply": "Votre réponse",
+    "received_on": "Reçu le",
+    "validity": "Validité",
+    "days": "jours",
+    "responded_at": "Répondu le",
+    "your_response": "Votre réponse",
+    "reply_ph": "Message facultatif…",
+    "accept": "Accepter",
+    "refuse": "Refuser",
+    "accepted_toast": "Devis accepté",
+    "refused_toast": "Devis refusé",
+    "error": "Une erreur s'est produite",
+    "status": {
+      "sent": "Envoyé",
+      "accepted": "Accepté",
+      "refused": "Refusé",
+      "expired": "Expiré"
+    }
   }
 }

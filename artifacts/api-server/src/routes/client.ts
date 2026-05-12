@@ -25,10 +25,11 @@ import {
   moodBoardCollaboratorsTable,
   rsvpQuestionsTable,
   cagnottesTable,
+  vendorQuotesTable,
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage, notifyMoodBoardInvite, appUrl } from "../lib/email";
+import { notifyConversationMessage, notifyMoodBoardInvite, notifyQuoteResponded, appUrl } from "../lib/email";
 import { nanoid } from "nanoid";
 
 const router = Router();
@@ -1283,6 +1284,54 @@ router.get("/client/rsvps", async (req, res) => {
     }
   }
   res.json({ rsvps, answers });
+});
+
+// ---------- Client Quotes (Devis reçus) ----------
+router.get("/client/quotes", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const rows = await db.select().from(vendorQuotesTable)
+    .where(and(eq(vendorQuotesTable.coupleId, r.coupleId), ne(vendorQuotesTable.status, "draft")))
+    .orderBy(desc(vendorQuotesTable.createdAt));
+  res.json(rows);
+});
+
+router.post("/client/quotes/:id/respond", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  const parsed = z.object({
+    action: z.enum(["accept", "refuse"]),
+    message: z.string().optional().nullable(),
+  }).safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+
+  const [quote] = await db.select().from(vendorQuotesTable)
+    .where(and(eq(vendorQuotesTable.id, id), eq(vendorQuotesTable.coupleId, r.coupleId)))
+    .limit(1);
+  if (!quote) { res.status(404).json({ error: "Quote not found" }); return; }
+  if (quote.status !== "sent") { res.status(409).json({ error: "Quote cannot be responded to in its current state" }); return; }
+
+  const newStatus = parsed.data.action === "accept" ? "accepted" : "refused";
+  const [updated] = await db.update(vendorQuotesTable).set({
+    status: newStatus,
+    respondedAt: new Date(),
+    respondMessage: parsed.data.message ?? null,
+    updatedAt: new Date(),
+  }).where(eq(vendorQuotesTable.id, id)).returning();
+
+  const [account] = await db.select().from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, quote.vendorAccountId)).limit(1);
+  if (account?.email) {
+    void notifyQuoteResponded({
+      to: account.email,
+      vendorName: account.businessName || "Prestataire",
+      recipientName: quote.recipientName,
+      action: parsed.data.action,
+      message: parsed.data.message ?? null,
+      quoteId: id,
+    }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to send quote responded email"));
+  }
+
+  res.json(updated);
 });
 
 // ---------- RSVP public-facing (no auth needed, outside requireCouple middleware) ----------

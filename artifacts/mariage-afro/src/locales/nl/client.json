@@ -37,7 +37,8 @@
       "site": "Mijn trouwsite",
       "profile": "Profiel",
       "inspiration": "Inspiratie",
-      "cagnotte": "Geldpot"
+      "cagnotte": "Geldpot",
+      "devis": "Offertes"
     },
     "signout": "Afmelden",
     "hello": "Hallo 👋",
@@ -490,5 +491,38 @@
     "loading": "Laden…",
     "added": "Afbeelding toegevoegd",
     "upload_failed": "Uploaden mislukt"
+  },
+  "devis": {
+    "title": "Mijn offertes",
+    "subtitle": "Bekijk en beantwoord offertes van uw leveranciers.",
+    "empty": "Nog geen offertes ontvangen.",
+    "col_date": "Datum",
+    "col_subject": "Onderwerp",
+    "col_amount": "Bedrag incl. BTW",
+    "col_status": "Status",
+    "no_subject": "Geen onderwerp",
+    "detail_empty": "Selecteer een offerte voor details.",
+    "services": "Diensten",
+    "total_ht": "Totaal excl. BTW",
+    "total_ttc": "Totaal incl. BTW",
+    "message": "Bericht",
+    "your_reply": "Uw antwoord",
+    "received_on": "Ontvangen op",
+    "validity": "Geldigheid",
+    "days": "dagen",
+    "responded_at": "Beantwoord op",
+    "your_response": "Uw antwoord",
+    "reply_ph": "Optioneel bericht…",
+    "accept": "Accepteren",
+    "refuse": "Weigeren",
+    "accepted_toast": "Offerte geaccepteerd",
+    "refused_toast": "Offerte geweigerd",
+    "error": "Er is een fout opgetreden",
+    "status": {
+      "sent": "Verzonden",
+      "accepted": "Geaccepteerd",
+      "refused": "Geweigerd",
+      "expired": "Verlopen"
+    }
   }
 }

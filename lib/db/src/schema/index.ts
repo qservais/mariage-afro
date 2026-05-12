@@ -363,6 +363,30 @@ export const vendorLeadsTable = pgTable("vendor_leads", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// LOT 10 — Devis formels (vendor → couple)
+export const vendorQuotesTable = pgTable("vendor_quotes", {
+  id: serial("id").primaryKey(),
+  vendorAccountId: integer("vendor_account_id").notNull(),
+  vendorId: integer("vendor_id"),
+  coupleId: integer("couple_id"),
+  leadId: integer("lead_id"),
+  recipientEmail: text("recipient_email").notNull(),
+  recipientName: text("recipient_name").notNull().default(""),
+  services: jsonb("services").$type<Array<{ label: string; qty: number; unitPrice: number }>>().notNull().default([]),
+  amountHt: integer("amount_ht").notNull().default(0),
+  amountTtc: integer("amount_ttc").notNull().default(0),
+  vatRate: integer("vat_rate").notNull().default(21),
+  validityDays: integer("validity_days").notNull().default(30),
+  subject: text("subject").notNull().default(""),
+  message: text("message").notNull().default(""),
+  status: text("status").notNull().default("draft"),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  respondedAt: timestamp("responded_at", { withTimezone: true }),
+  respondMessage: text("respond_message"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 // LOT 8 — Espace Pro pivot business
 export const vendorSubscriptionsTable = pgTable("vendor_subscriptions", {
   id: serial("id").primaryKey(),
@@ -479,6 +503,8 @@ export const cagnottesTable = pgTable("cagnottes", {
   active: boolean("active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export type VendorQuote = typeof vendorQuotesTable.$inferSelect;
 
 export type MoodBoard = typeof moodBoardsTable.$inferSelect;
 export type MoodBoardImage = typeof moodBoardImagesTable.$inferSelect;

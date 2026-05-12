@@ -7,6 +7,7 @@
       "services": "Services",
       "agenda": "Agenda",
       "leads": "Demandes",
+      "quotes": "Devis",
       "subscription": "Abonnement",
       "settings": "Paramètres"
     },
@@ -354,6 +355,55 @@
       "loading": "Chargement…",
       "unread": "non lu",
       "secure": "Conversation modérée"
+    },
+    "quotes": {
+      "title": "Mes devis",
+      "subtitle": "Créez et envoyez des devis formels à vos clients.",
+      "new": "Nouveau devis",
+      "form_title": "Créer un devis",
+      "recipient_email": "Email du destinataire",
+      "recipient_name": "Nom du destinataire",
+      "subject": "Objet",
+      "services_label": "Prestations",
+      "service_label_ph": "Prestation",
+      "price_hint": "Les prix sont en centimes d'euro (ex: 100000 = 1 000,00 €)",
+      "add_service": "Ajouter une prestation",
+      "vat_rate": "TVA",
+      "validity_days": "Validité (jours)",
+      "total_ht": "Total HT",
+      "total_ttc": "Total TTC",
+      "message": "Message",
+      "message_ph": "Message accompagnant le devis…",
+      "save_draft": "Enregistrer le brouillon",
+      "cancel": "Annuler",
+      "send_btn": "Envoyer",
+      "delete_btn": "Supprimer",
+      "delete_confirm": "Supprimer ce devis ?",
+      "empty": "Aucun devis pour le moment.",
+      "col_date": "Date",
+      "col_recipient": "Destinataire",
+      "col_amount": "Montant TTC",
+      "col_status": "Statut",
+      "detail_empty": "Sélectionnez un devis pour en voir les détails.",
+      "sent_at": "Envoyé le",
+      "responded_at": "Répondu le",
+      "validity": "Validité",
+      "days": "jours",
+      "respond_message": "Message du client",
+      "created": "Devis créé",
+      "sent": "Devis envoyé",
+      "deleted": "Devis supprimé",
+      "error": "Une erreur s'est produite",
+      "status": {
+        "draft": "Brouillon",
+        "sent": "Envoyé",
+        "accepted": "Accepté",
+        "refused": "Refusé",
+        "expired": "Expiré"
+      },
+      "nav": {
+        "quotes": "Devis"
+      }
     }
   }
 }

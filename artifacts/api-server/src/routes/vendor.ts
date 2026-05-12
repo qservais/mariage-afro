@@ -10,6 +10,7 @@ import {
   vendorLeadsTable,
   vendorSubscriptionsTable,
   vendorViewsTable,
+  vendorQuotesTable,
   conversationsTable,
   messagesTable,
   couplesTable,
@@ -17,7 +18,7 @@ import {
 import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendorLeadFollowup } from "../lib/email";
+import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendorLeadFollowup, notifyQuoteReceived, notifyQuoteResponded } from "../lib/email";
 import { logger } from "../lib/logger";
 
 const router = Router();
@@ -1064,6 +1065,132 @@ router.post("/vendor/subscription", async (req, res) => {
   }
 
   res.status(201).json(row);
+});
+
+// ---------- Vendor Quotes (Devis formels) ----------
+const quoteServiceSchema = z.object({
+  label: z.string().min(1),
+  qty: z.coerce.number().int().min(1).default(1),
+  unitPrice: z.coerce.number().int().nonnegative().default(0),
+});
+
+const quoteCreateSchema = z.object({
+  recipientEmail: z.string().email(),
+  recipientName: z.string().optional().default(""),
+  leadId: z.coerce.number().int().positive().optional().nullable(),
+  coupleId: z.coerce.number().int().positive().optional().nullable(),
+  subject: z.string().optional().default(""),
+  message: z.string().optional().default(""),
+  services: z.array(quoteServiceSchema).optional().default([]),
+  vatRate: z.coerce.number().int().min(0).max(100).optional().default(21),
+  validityDays: z.coerce.number().int().min(1).max(365).optional().default(30),
+});
+
+function computeAmounts(services: Array<{ qty: number; unitPrice: number }>, vatRate: number) {
+  const ht = services.reduce((s, item) => s + item.qty * item.unitPrice, 0);
+  const ttc = Math.round(ht * (1 + vatRate / 100));
+  return { amountHt: ht, amountTtc: ttc };
+}
+
+router.get("/vendor/quotes", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const [account] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, r.vendorAccountId)).limit(1);
+  if (!account) { res.status(404).json({ error: "Account not found" }); return; }
+  const rows = await db.select().from(vendorQuotesTable)
+    .where(eq(vendorQuotesTable.vendorAccountId, r.vendorAccountId))
+    .orderBy(desc(vendorQuotesTable.createdAt));
+  res.json(rows);
+});
+
+router.post("/vendor/quotes", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const [account] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, r.vendorAccountId)).limit(1);
+  if (!account) { res.status(404).json({ error: "Account not found" }); return; }
+  const parsed = quoteCreateSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const { services, vatRate } = parsed.data;
+  const { amountHt, amountTtc } = computeAmounts(services, vatRate ?? 21);
+  const [row] = await db.insert(vendorQuotesTable).values({
+    vendorAccountId: r.vendorAccountId,
+    vendorId: account.vendorId ?? undefined,
+    coupleId: parsed.data.coupleId ?? undefined,
+    leadId: parsed.data.leadId ?? undefined,
+    recipientEmail: parsed.data.recipientEmail,
+    recipientName: parsed.data.recipientName ?? "",
+    subject: parsed.data.subject ?? "",
+    message: parsed.data.message ?? "",
+    services,
+    vatRate: vatRate ?? 21,
+    validityDays: parsed.data.validityDays ?? 30,
+    amountHt,
+    amountTtc,
+    status: "draft",
+  }).returning();
+  res.status(201).json(row);
+});
+
+router.patch("/vendor/quotes/:id", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const id = Number(req.params.id);
+  const [quote] = await db.select().from(vendorQuotesTable)
+    .where(and(eq(vendorQuotesTable.id, id), eq(vendorQuotesTable.vendorAccountId, r.vendorAccountId)))
+    .limit(1);
+  if (!quote) { res.status(404).json({ error: "Quote not found" }); return; }
+  if (quote.status !== "draft") { res.status(409).json({ error: "Only draft quotes can be edited" }); return; }
+  const parsed = quoteCreateSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const services = parsed.data.services ?? quote.services;
+  const vatRate = parsed.data.vatRate ?? quote.vatRate;
+  const { amountHt, amountTtc } = computeAmounts(services, vatRate);
+  const [updated] = await db.update(vendorQuotesTable).set({
+    ...parsed.data,
+    services,
+    vatRate,
+    amountHt,
+    amountTtc,
+    updatedAt: new Date(),
+  }).where(eq(vendorQuotesTable.id, id)).returning();
+  res.json(updated);
+});
+
+router.post("/vendor/quotes/:id/send", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const id = Number(req.params.id);
+  const [account] = await db.select().from(vendorAccountsTable).where(eq(vendorAccountsTable.id, r.vendorAccountId)).limit(1);
+  if (!account) { res.status(404).json({ error: "Account not found" }); return; }
+  const [quote] = await db.select().from(vendorQuotesTable)
+    .where(and(eq(vendorQuotesTable.id, id), eq(vendorQuotesTable.vendorAccountId, r.vendorAccountId)))
+    .limit(1);
+  if (!quote) { res.status(404).json({ error: "Quote not found" }); return; }
+  if (quote.status !== "draft") { res.status(409).json({ error: "Quote already sent" }); return; }
+  const [updated] = await db.update(vendorQuotesTable).set({
+    status: "sent",
+    sentAt: new Date(),
+    updatedAt: new Date(),
+  }).where(eq(vendorQuotesTable.id, id)).returning();
+  void notifyQuoteReceived({
+    to: quote.recipientEmail,
+    recipientName: quote.recipientName,
+    vendorName: account.businessName || "Mariage Afro",
+    subject: quote.subject,
+    message: quote.message,
+    amountTtc: quote.amountTtc,
+    validityDays: quote.validityDays,
+    quoteId: id,
+  }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to send quote email"));
+  res.json(updated);
+});
+
+router.delete("/vendor/quotes/:id", async (req, res) => {
+  const r = req as unknown as AuthedVendorRequest;
+  const id = Number(req.params.id);
+  const [quote] = await db.select().from(vendorQuotesTable)
+    .where(and(eq(vendorQuotesTable.id, id), eq(vendorQuotesTable.vendorAccountId, r.vendorAccountId)))
+    .limit(1);
+  if (!quote) { res.status(404).json({ error: "Quote not found" }); return; }
+  if (quote.status === "sent") { res.status(409).json({ error: "Cannot delete a sent quote" }); return; }
+  await db.delete(vendorQuotesTable).where(eq(vendorQuotesTable.id, id));
+  res.json({ success: true });
 });
 
 export default router;

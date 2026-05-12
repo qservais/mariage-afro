@@ -7,6 +7,7 @@
       "services": "Services",
       "agenda": "Calendar",
       "leads": "Leads",
+      "quotes": "Quotes",
       "subscription": "Subscription",
       "settings": "Settings"
     },
@@ -354,6 +355,55 @@
       "loading": "Loading…",
       "unread": "unread",
       "secure": "Moderated conversation"
+    },
+    "quotes": {
+      "title": "My Quotes",
+      "subtitle": "Create and send formal quotes to your clients.",
+      "new": "New quote",
+      "form_title": "Create a quote",
+      "recipient_email": "Recipient email",
+      "recipient_name": "Recipient name",
+      "subject": "Subject",
+      "services_label": "Services",
+      "service_label_ph": "Service",
+      "price_hint": "Prices are in euro cents (e.g. 100000 = €1,000.00)",
+      "add_service": "Add service",
+      "vat_rate": "VAT",
+      "validity_days": "Validity (days)",
+      "total_ht": "Total excl. VAT",
+      "total_ttc": "Total incl. VAT",
+      "message": "Message",
+      "message_ph": "Message included with the quote…",
+      "save_draft": "Save draft",
+      "cancel": "Cancel",
+      "send_btn": "Send",
+      "delete_btn": "Delete",
+      "delete_confirm": "Delete this quote?",
+      "empty": "No quotes yet.",
+      "col_date": "Date",
+      "col_recipient": "Recipient",
+      "col_amount": "Total incl. VAT",
+      "col_status": "Status",
+      "detail_empty": "Select a quote to see details.",
+      "sent_at": "Sent on",
+      "responded_at": "Responded on",
+      "validity": "Validity",
+      "days": "days",
+      "respond_message": "Client message",
+      "created": "Quote created",
+      "sent": "Quote sent",
+      "deleted": "Quote deleted",
+      "error": "An error occurred",
+      "status": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "accepted": "Accepted",
+        "refused": "Refused",
+        "expired": "Expired"
+      },
+      "nav": {
+        "quotes": "Quotes"
+      }
     }
   }
 }

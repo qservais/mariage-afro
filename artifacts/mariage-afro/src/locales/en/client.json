@@ -37,7 +37,8 @@
       "site": "My wedding site",
       "profile": "Profile",
       "inspiration": "Inspiration",
-      "cagnotte": "Honeymoon fund"
+      "cagnotte": "Honeymoon fund",
+      "devis": "Quotes"
     },
     "signout": "Sign out",
     "hello": "Hello 👋",
@@ -490,5 +491,38 @@
     "loading": "Loading…",
     "added": "Image added",
     "upload_failed": "Upload failed"
+  },
+  "devis": {
+    "title": "My Quotes",
+    "subtitle": "View and respond to quotes sent by your vendors.",
+    "empty": "No quotes received yet.",
+    "col_date": "Date",
+    "col_subject": "Subject",
+    "col_amount": "Total incl. VAT",
+    "col_status": "Status",
+    "no_subject": "No subject",
+    "detail_empty": "Select a quote to see details.",
+    "services": "Services",
+    "total_ht": "Total excl. VAT",
+    "total_ttc": "Total incl. VAT",
+    "message": "Message",
+    "your_reply": "Your reply",
+    "received_on": "Received on",
+    "validity": "Validity",
+    "days": "days",
+    "responded_at": "Responded on",
+    "your_response": "Your response",
+    "reply_ph": "Optional message…",
+    "accept": "Accept",
+    "refuse": "Refuse",
+    "accepted_toast": "Quote accepted",
+    "refused_toast": "Quote refused",
+    "error": "An error occurred",
+    "status": {
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "refused": "Refused",
+      "expired": "Expired"
+    }
   }
 }

@@ -7,6 +7,7 @@
       "services": "Diensten",
       "agenda": "Agenda",
       "leads": "Aanvragen",
+      "quotes": "Offertes",
       "subscription": "Abonnement",
       "settings": "Instellingen"
     },
@@ -354,6 +355,55 @@
       "loading": "Laden…",
       "unread": "ongelezen",
       "secure": "Gemodereerd gesprek"
+    },
+    "quotes": {
+      "title": "Mijn offertes",
+      "subtitle": "Maak en stuur formele offertes naar uw klanten.",
+      "new": "Nieuwe offerte",
+      "form_title": "Offerte aanmaken",
+      "recipient_email": "E-mail ontvanger",
+      "recipient_name": "Naam ontvanger",
+      "subject": "Onderwerp",
+      "services_label": "Diensten",
+      "service_label_ph": "Dienst",
+      "price_hint": "Prijzen zijn in euro-centen (bijv: 100000 = 1.000,00 €)",
+      "add_service": "Dienst toevoegen",
+      "vat_rate": "BTW",
+      "validity_days": "Geldigheid (dagen)",
+      "total_ht": "Totaal excl. BTW",
+      "total_ttc": "Totaal incl. BTW",
+      "message": "Bericht",
+      "message_ph": "Bericht bij de offerte…",
+      "save_draft": "Concept opslaan",
+      "cancel": "Annuleren",
+      "send_btn": "Verzenden",
+      "delete_btn": "Verwijderen",
+      "delete_confirm": "Deze offerte verwijderen?",
+      "empty": "Nog geen offertes.",
+      "col_date": "Datum",
+      "col_recipient": "Ontvanger",
+      "col_amount": "Bedrag incl. BTW",
+      "col_status": "Status",
+      "detail_empty": "Selecteer een offerte voor details.",
+      "sent_at": "Verzonden op",
+      "responded_at": "Beantwoord op",
+      "validity": "Geldigheid",
+      "days": "dagen",
+      "respond_message": "Bericht van klant",
+      "created": "Offerte aangemaakt",
+      "sent": "Offerte verzonden",
+      "deleted": "Offerte verwijderd",
+      "error": "Er is een fout opgetreden",
+      "status": {
+        "draft": "Concept",
+        "sent": "Verzonden",
+        "accepted": "Geaccepteerd",
+        "refused": "Geweigerd",
+        "expired": "Verlopen"
+      },
+      "nav": {
+        "quotes": "Offertes"
+      }
     }
   }
 }

@@ -887,6 +887,82 @@ export interface ContactFormPayload {
   message: string;
 }
 
+// ---- LOT 10. Quote emails ----
+export interface NotifyQuoteReceivedPayload {
+  to: string;
+  locale?: string | null;
+  recipientName: string;
+  vendorName: string;
+  subject: string;
+  message: string;
+  amountTtc: number;
+  validityDays: number;
+  quoteId: number;
+}
+
+export async function notifyQuoteReceived(p: NotifyQuoteReceivedPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const greeting = p.recipientName ? pick(dict.greeting(p.recipientName), locale) : "";
+  const title = { fr: "Vous avez reçu un devis", nl: "U heeft een offerte ontvangen", en: "You received a quote" }[locale];
+  const intro = { fr: `${p.vendorName} vous a envoyé un devis.`, nl: `${p.vendorName} heeft u een offerte gestuurd.`, en: `${p.vendorName} sent you a quote.` }[locale];
+  const validLabel = { fr: "Valable", nl: "Geldig", en: "Valid for" }[locale];
+  const amtLabel = { fr: "Montant TTC", nl: "Bedrag incl. BTW", en: "Amount incl. VAT" }[locale];
+  const ctaLabel = { fr: "Voir le devis", nl: "Offerte bekijken", en: "View quote" }[locale];
+  const daysLabel = { fr: `${p.validityDays} jours`, nl: `${p.validityDays} dagen`, en: `${p.validityDays} days` }[locale];
+  const rows =
+    row({ fr: "Prestataire", nl: "Leverancier", en: "Vendor" }[locale], p.vendorName) +
+    row({ fr: "Objet", nl: "Onderwerp", en: "Subject" }[locale], p.subject || undefined) +
+    row(amtLabel, fmtEur(p.amountTtc / 100)) +
+    row(validLabel, daysLabel) +
+    row({ fr: "Message", nl: "Bericht", en: "Message" }[locale], p.message || undefined);
+  await sendOne({
+    to: p.to,
+    subject: `[Mariage Afro] ${title} — ${p.vendorName}`,
+    html: wrap({
+      title,
+      intro: greeting ? `${greeting}\n${intro}` : intro,
+      rows,
+      ctaLabel,
+      ctaUrl: `${appUrl()}/espace-client/devis`,
+      locale,
+    }),
+  }, log);
+}
+
+export interface NotifyQuoteRespondedPayload {
+  to: string;
+  locale?: string | null;
+  vendorName: string;
+  recipientName: string;
+  action: "accept" | "refuse";
+  message: string | null;
+  quoteId: number;
+}
+
+export async function notifyQuoteResponded(p: NotifyQuoteRespondedPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const accepted = p.action === "accept";
+  const title = accepted
+    ? { fr: "Devis accepté", nl: "Offerte geaccepteerd", en: "Quote accepted" }[locale]
+    : { fr: "Devis refusé", nl: "Offerte geweigerd", en: "Quote refused" }[locale];
+  const intro = accepted
+    ? { fr: `${p.recipientName || "Le couple"} a accepté votre devis.`, nl: `${p.recipientName || "Het koppel"} heeft uw offerte geaccepteerd.`, en: `${p.recipientName || "The couple"} accepted your quote.` }[locale]
+    : { fr: `${p.recipientName || "Le couple"} a refusé votre devis.`, nl: `${p.recipientName || "Het koppel"} heeft uw offerte geweigerd.`, en: `${p.recipientName || "The couple"} refused your quote.` }[locale];
+  const rows = p.message ? row({ fr: "Message", nl: "Bericht", en: "Message" }[locale], p.message) : "";
+  await sendOne({
+    to: p.to,
+    subject: `[Mariage Afro] ${title}`,
+    html: wrap({
+      title,
+      intro,
+      rows,
+      ctaLabel: { fr: "Voir mes devis", nl: "Mijn offertes bekijken", en: "View my quotes" }[locale],
+      ctaUrl: `${appUrl()}/espace-pro/devis`,
+      locale,
+    }),
+  }, log);
+}
+
 export async function sendContactFormEmail(p: ContactFormPayload, log = logger): Promise<void> {
   const rows =
     row("Nom", p.name) +
