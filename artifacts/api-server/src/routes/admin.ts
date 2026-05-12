@@ -1230,7 +1230,9 @@ router.get("/devis", adminAuth, async (req, res) => {
   const page = Math.max(1, Number(req.query.page) || 1);
   const perPage = 30;
   const offset = (page - 1) * perPage;
-  const filterStatus = typeof req.query.status === "string" && req.query.status ? req.query.status : "";
+  const ALLOWED_STATUSES = ["new", "in_progress", "done", "accepted", "refused"];
+  const rawStatus = typeof req.query.status === "string" ? req.query.status : "";
+  const filterStatus = ALLOWED_STATUSES.includes(rawStatus) ? rawStatus : "";
   const filterVendorId = Number(req.query.vendor_id) || 0;
 
   const conds: ReturnType<typeof eq>[] = [];

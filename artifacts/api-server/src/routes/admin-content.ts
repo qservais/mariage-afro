@@ -114,6 +114,7 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
         </div>
         <div class="actions">
           <a class="btn sm secondary" href="/admin/content/vendors/${v.id}/edit">Modifier</a>
+          <a class="btn sm secondary" href="/admin/devis?vendor_id=${v.id}" title="Voir les devis">Devis</a>
           <form method="post" action="/admin/content/vendors/${v.id}/toggle" style="display:inline">
             <button class="btn sm ${v.active ? "danger" : "success"}" type="submit">${v.active ? "Désactiver" : "Activer"}</button>
           </form>
