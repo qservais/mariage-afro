@@ -208,6 +208,9 @@ importers:
       pino-http:
         specifier: ^10
         version: 10.5.0
+      qrcode:
+        specifier: ^1.5.4
+        version: 1.5.4
       resend:
         specifier: ^4.5.1
         version: 4.8.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -227,6 +230,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.3.5
+      '@types/qrcode':
+        specifier: ^1.5.6
+        version: 1.5.6
       esbuild:
         specifier: 0.27.3
         version: 0.27.3

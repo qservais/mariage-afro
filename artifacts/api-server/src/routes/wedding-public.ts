@@ -256,7 +256,7 @@ router.get("/api/wedding/:slug/jour-j", async (req: Request, res: Response) => {
   const [site] = await db
     .select()
     .from(weddingWebsitesTable)
-    .where(and(eq(weddingWebsitesTable.slug, slug), eq(weddingWebsitesTable.active, true)));
+    .where(eq(weddingWebsitesTable.slug, slug));
   if (!site) { res.status(404).json({ error: "Not found" }); return; }
 
   const [config] = await db.select().from(weddingJourJTable)

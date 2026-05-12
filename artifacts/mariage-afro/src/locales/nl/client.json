@@ -73,6 +73,16 @@
       "profile": "Profiel",
       "inspiration": "Inspiratie",
       "cagnotte": "Geldpot"
+    },
+    "jour_j_card": {
+      "title": "Gasten-QR voor de trouwdag",
+      "subtitle": "Deel deze QR-code met uw gasten zodat ze het dagprogramma kunnen bekijken.",
+      "enabled": "Actief",
+      "disabled": "Inactief",
+      "enable": "Pagina activeren",
+      "disable": "Deactiveren",
+      "view": "Pagina bekijken",
+      "edit": "Inhoud bewerken"
     }
   },
   "budget": {

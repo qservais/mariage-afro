@@ -20,6 +20,7 @@ interface JourJPublicConfig {
   bioPartner1: string;
   bioPartner2: string;
   driveUrl: string | null;
+  qrDataUrl?: string;
 }
 
 export default function JourJPage() {
@@ -96,9 +97,7 @@ export default function JourJPage() {
   };
 
   const publicUrl = publicCfg?.slug ? `/mariage/${publicCfg.slug}/jour-j` : null;
-  const qrUrl = publicUrl
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin + publicUrl)}&bgcolor=fff4e4&color=68191e&qzone=2&format=png`
-    : null;
+  const qrDataUrl = publicCfg?.qrDataUrl ?? null;
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -176,9 +175,9 @@ export default function JourJPage() {
 
             {/* QR Code + controls */}
             <div className="flex flex-wrap gap-6 items-start">
-              {qrUrl && (
+              {qrDataUrl && (
                 <div className="shrink-0 text-center">
-                  <img src={qrUrl} alt="QR Code Jour-J" className="w-[140px] h-[140px] border border-neutral-200" />
+                  <img src={qrDataUrl} alt="QR Code Jour-J" className="w-[140px] h-[140px] border border-neutral-200" />
                   <p className="text-xs text-neutral-500 mt-2">{t("jour_j_public.qr_desc")}</p>
                 </div>
               )}

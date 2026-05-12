@@ -1,3 +1,4 @@
+import QRCode from "qrcode";
 import { Router, Request, Response, NextFunction } from "express";
 import { db } from "@workspace/db";
 import {
@@ -725,7 +726,11 @@ router.get("/content/wedding-websites/:slug/jour-j", async (req: Request, res: R
     .where(eq(weddingJourJTable.weddingWebsiteId, site.id)).limit(1);
 
   const publicUrl = `${process.env.PUBLIC_APP_URL || ""}/mariage/${site.slug}/jour-j`;
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(publicUrl)}&bgcolor=fff4e4&color=68191e&qzone=2&format=png`;
+  const qrDataUrl = await QRCode.toDataURL(publicUrl, {
+    width: 200,
+    color: { dark: "#68191e", light: "#fff4e4" },
+    margin: 2,
+  });
 
   const c = config ?? { menuText: "", timeline: [], bioPartner1: "", bioPartner2: "", driveUrl: "", enabled: false };
   const timelineJson = JSON.stringify(c.timeline ?? []).replace(/</g, "\\u003c");
@@ -753,8 +758,8 @@ router.get("/content/wedding-websites/:slug/jour-j", async (req: Request, res: R
       <div class="card" style="min-width:240px;text-align:center">
         <h2>QR Code invités</h2>
         <p style="font-size:12px;color:#555;margin-bottom:12px">Pointe vers :<br><a href="${escHtml(publicUrl)}" target="_blank" style="font-size:11px;word-break:break-all">${escHtml(publicUrl)}</a></p>
-        <img src="${escHtml(qrSrc)}" alt="QR Code" width="200" height="200" style="display:block;margin:0 auto 12px;border:4px solid #fff4e4">
-        <a class="btn sm secondary" href="${escHtml(qrSrc)}" download="qr-jour-j-${escHtml(site.slug)}.png">Télécharger le QR</a>
+        <img src="${qrDataUrl}" alt="QR Code" width="200" height="200" style="display:block;margin:0 auto 12px;border:4px solid #fff4e4">
+        <a class="btn sm secondary" href="${qrDataUrl}" download="qr-jour-j-${escHtml(site.slug)}.png">Télécharger le QR</a>
         <div style="margin-top:12px">
           <a class="btn sm success" href="${escHtml(publicUrl)}" target="_blank">Voir la page publique →</a>
         </div>

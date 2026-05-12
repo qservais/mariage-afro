@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift, AlertCircle } from "lucide-react";
+import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift, AlertCircle, QrCode, ExternalLink, Globe, GlobeLock } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,12 @@ interface TileDef {
   labelKey: string;
   icon: typeof Wallet;
   color: string;
+}
+
+interface JourJPublicConfig {
+  slug?: string;
+  enabled: boolean;
+  qrDataUrl?: string;
 }
 
 const TILES: TileDef[] = [
@@ -44,6 +50,16 @@ export default function ClientDashboard() {
   const { data: tasks = [] } = useQuery<Task[]>({
     queryKey: ["client", "planning"],
     queryFn: () => clientApi.get<Task[]>("/api/client/planning"),
+  });
+
+  const { data: jourJCfg } = useQuery<JourJPublicConfig | null>({
+    queryKey: ["client", "wedding-jour-j"],
+    queryFn: () => clientApi.get<JourJPublicConfig | null>("/api/client/wedding-jour-j"),
+  });
+
+  const toggleJourJ = useMutation({
+    mutationFn: (body: { enabled: boolean }) => clientApi.patch("/api/client/wedding-jour-j", body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "wedding-jour-j"] }),
   });
 
   const updateCouple = useMutation({
@@ -160,6 +176,84 @@ export default function ClientDashboard() {
           );
         })}
       </section>
+
+      {jourJCfg != null && (
+        <section className="bg-white border border-neutral-200 p-6">
+          <div className="flex flex-wrap gap-6 items-start">
+            {jourJCfg.qrDataUrl && (
+              <div className="shrink-0">
+                <img
+                  src={jourJCfg.qrDataUrl}
+                  alt="QR Code Jour-J"
+                  className="w-[84px] h-[84px] border border-neutral-200"
+                />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 flex-wrap mb-1">
+                <p className="text-xs uppercase tracking-widest text-neutral-500 flex items-center gap-1.5">
+                  <QrCode className="w-3.5 h-3.5" />
+                  {t("client_dashboard.jour_j_card.title")}
+                </p>
+                <span
+                  className={`text-xs px-2 py-0.5 font-medium ${
+                    jourJCfg.enabled
+                      ? "bg-green-100 text-green-800"
+                      : "bg-neutral-100 text-neutral-500"
+                  }`}
+                >
+                  {jourJCfg.enabled
+                    ? t("client_dashboard.jour_j_card.enabled")
+                    : t("client_dashboard.jour_j_card.disabled")}
+                </span>
+              </div>
+              <p className="text-sm text-neutral-600 mb-4">
+                {t("client_dashboard.jour_j_card.subtitle")}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant={jourJCfg.enabled ? "outline" : "default"}
+                  className="rounded-none uppercase tracking-wider text-xs"
+                  onClick={() => toggleJourJ.mutate({ enabled: !jourJCfg.enabled })}
+                  disabled={toggleJourJ.isPending}
+                >
+                  {jourJCfg.enabled
+                    ? t("client_dashboard.jour_j_card.disable")
+                    : t("client_dashboard.jour_j_card.enable")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-none uppercase tracking-wider text-xs"
+                  asChild
+                >
+                  <Link to="/espace-client/jour-j">
+                    {t("client_dashboard.jour_j_card.edit")}
+                  </Link>
+                </Button>
+                {jourJCfg.enabled && jourJCfg.slug && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="rounded-none uppercase tracking-wider text-xs"
+                    asChild
+                  >
+                    <a
+                      href={`/mariage/${jourJCfg.slug}/jour-j`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 mr-1" />
+                      {t("client_dashboard.jour_j_card.view")}
+                    </a>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

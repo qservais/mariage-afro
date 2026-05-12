@@ -1,3 +1,4 @@
+import QRCode from "qrcode";
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod";
@@ -550,9 +551,17 @@ router.get("/client/wedding-jour-j", async (req, res) => {
   if (!site) { res.json(null); return; }
   const [config] = await db.select().from(weddingJourJTable)
     .where(eq(weddingJourJTable.weddingWebsiteId, site.id)).limit(1);
+
+  const publicUrl = `${process.env.PUBLIC_APP_URL || ""}/mariage/${site.slug}/jour-j`;
+  const qrDataUrl = await QRCode.toDataURL(publicUrl, {
+    width: 200,
+    color: { dark: "#68191e", light: "#fff4e4" },
+    margin: 2,
+  });
+
   res.json(config
-    ? { ...config, slug: site.slug }
-    : { weddingWebsiteId: site.id, slug: site.slug, enabled: false, menuText: "", timeline: [], bioPartner1: "", bioPartner2: "", driveUrl: null });
+    ? { ...config, slug: site.slug, qrDataUrl }
+    : { weddingWebsiteId: site.id, slug: site.slug, enabled: false, menuText: "", timeline: [], bioPartner1: "", bioPartner2: "", driveUrl: null, qrDataUrl });
 });
 
 router.patch("/client/wedding-jour-j", async (req, res) => {

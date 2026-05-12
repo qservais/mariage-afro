@@ -73,6 +73,16 @@
       "profile": "Profile",
       "inspiration": "Inspiration",
       "cagnotte": "Honeymoon fund"
+    },
+    "jour_j_card": {
+      "title": "Wedding day guest page",
+      "subtitle": "Share this QR code with your guests so they can access the day's programme.",
+      "enabled": "Active",
+      "disabled": "Inactive",
+      "enable": "Enable page",
+      "disable": "Disable",
+      "view": "View page",
+      "edit": "Edit content"
     }
   },
   "budget": {

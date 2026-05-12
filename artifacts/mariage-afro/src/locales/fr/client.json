@@ -73,6 +73,16 @@
       "profile": "Profil",
       "inspiration": "Inspiration",
       "cagnotte": "Cagnotte"
+    },
+    "jour_j_card": {
+      "title": "Page Jour-J invités",
+      "subtitle": "Partagez ce QR code avec vos invités pour qu'ils accèdent au programme du jour.",
+      "enabled": "Activée",
+      "disabled": "Désactivée",
+      "enable": "Activer la page",
+      "disable": "Désactiver",
+      "view": "Voir la page",
+      "edit": "Modifier le contenu"
     }
   },
   "budget": {
