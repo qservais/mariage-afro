@@ -809,6 +809,74 @@ export async function sendPartnerApplicationEmails(p: PartnerApplicationEmailPay
   }, log);
 }
 
+// ---- 7. Couple approved ----
+export interface NotifyCoupleApprovedPayload {
+  to: string;
+  locale?: string | null;
+  partner1Name: string;
+  partner2Name?: string | null;
+}
+
+export async function notifyCoupleApproved(p: NotifyCoupleApprovedPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const names = [p.partner1Name, p.partner2Name].filter(Boolean).join(" & ");
+  const subject = { fr: "Votre compte Mariage Afro est validé", nl: "Uw Mariage Afro-account is goedgekeurd", en: "Your Mariage Afro account is approved" }[locale];
+  const title = { fr: "Compte validé", nl: "Account goedgekeurd", en: "Account approved" }[locale];
+  const intro = { fr: `Félicitations ${names} ! Votre compte a été validé par notre équipe. Vous pouvez maintenant publier votre mini-site de mariage et envoyer des demandes de devis à nos prestataires.`, nl: `Gefeliciteerd ${names}! Uw account is goedgekeurd door ons team. U kunt nu uw huwelijkswebsite publiceren en offerteaanvragen sturen.`, en: `Congratulations ${names}! Your account has been approved by our team. You can now publish your wedding website and send quote requests.` }[locale];
+  const ctaLabel = { fr: "Accéder à mon espace", nl: "Mijn ruimte openen", en: "Open my space" }[locale];
+  await sendOne({
+    to: p.to,
+    subject,
+    html: wrap({ title, intro, ctaLabel, ctaUrl: `${appUrl()}/espace-client`, locale }),
+  }, log);
+}
+
+// ---- 8. Couple rejected ----
+export interface NotifyCoupleRejectedPayload {
+  to: string;
+  locale?: string | null;
+  partner1Name: string;
+  partner2Name?: string | null;
+  reason?: string | null;
+}
+
+export async function notifyCoupleRejected(p: NotifyCoupleRejectedPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const names = [p.partner1Name, p.partner2Name].filter(Boolean).join(" & ");
+  const subject = { fr: "Mise à jour de votre compte Mariage Afro", nl: "Update van uw Mariage Afro-account", en: "Update on your Mariage Afro account" }[locale];
+  const title = { fr: "Demande non aboutie", nl: "Aanvraag niet goedgekeurd", en: "Request not approved" }[locale];
+  const intro = { fr: `Bonjour ${names}. Après examen de votre dossier, nous ne sommes pas en mesure de valider votre compte pour le moment.`, nl: `Hallo ${names}. Na beoordeling van uw dossier kunnen wij uw account momenteel niet goedkeuren.`, en: `Hello ${names}. After reviewing your file, we are unable to approve your account at this time.` }[locale];
+  const reasonHtml = p.reason ? `<p style="margin-top:12px;padding:12px 16px;background:#fff4e4;border-left:3px solid #c9a96e;">${esc(p.reason)}</p>` : "";
+  const ctaLabel = { fr: "Nous contacter", nl: "Contact opnemen", en: "Contact us" }[locale];
+  await sendOne({
+    to: p.to,
+    subject,
+    html: wrap({ title, intro, bodyHtml: reasonHtml, ctaLabel, ctaUrl: `${appUrl()}/contact`, locale }),
+  }, log);
+}
+
+// ---- 9. Vendor rejected ----
+export interface NotifyVendorRejectedPayload {
+  to: string;
+  locale?: string | null;
+  businessName: string;
+  reason?: string | null;
+}
+
+export async function notifyVendorRejected(p: NotifyVendorRejectedPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const subject = { fr: "Mise à jour de votre candidature Mariage Afro", nl: "Update van uw Mariage Afro-kandidatuur", en: "Update on your Mariage Afro application" }[locale];
+  const title = { fr: "Candidature non retenue", nl: "Kandidatuur niet weerhouden", en: "Application not approved" }[locale];
+  const intro = { fr: `Bonjour ${p.businessName}. Après examen de votre candidature, nous ne pouvons pas l'approuver pour le moment.`, nl: `Hallo ${p.businessName}. Na beoordeling van uw kandidatuur kunnen wij deze momenteel niet goedkeuren.`, en: `Hello ${p.businessName}. After reviewing your application, we are unable to approve it at this time.` }[locale];
+  const reasonHtml = p.reason ? `<p style="margin-top:12px;padding:12px 16px;background:#fff4e4;border-left:3px solid #c9a96e;">${esc(p.reason)}</p>` : "";
+  const ctaLabel = { fr: "Nous contacter", nl: "Contact opnemen", en: "Contact us" }[locale];
+  await sendOne({
+    to: p.to,
+    subject,
+    html: wrap({ title, intro, bodyHtml: reasonHtml, ctaLabel, ctaUrl: `${appUrl()}/contact`, locale }),
+  }, log);
+}
+
 // ---- Generic contact form (used by routes/contact.ts) ----
 export interface ContactFormPayload {
   name: string;

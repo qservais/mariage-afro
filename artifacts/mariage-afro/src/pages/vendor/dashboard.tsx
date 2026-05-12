@@ -5,7 +5,7 @@ import { resolveColor } from "@/lib/brand-colors";
 import {
   Briefcase, Image as ImageIcon, ListChecks, Settings, ExternalLink,
   CalendarDays, Eye, Inbox, MessageCircle, Sparkles, Crown,
-  CheckCircle2, Circle, ArrowRight, Trophy, BarChart3,
+  CheckCircle2, Circle, ArrowRight, Trophy, BarChart3, AlertCircle,
 } from "lucide-react";
 import { useVendorMe } from "@/components/vendor/VendorLayout";
 import { vendorApi } from "@/lib/vendorApi";
@@ -74,6 +74,7 @@ export default function VendorDashboard() {
   });
 
   const isPublished = vendor?.verified && vendor?.active;
+  const isPendingValidation = !!account?.onboardedAt && !account?.validatedAt && !vendor?.active;
   const tierLabel = sub?.tier ? t(`vendor.subscription.tiers.${sub.tier}.label`) : t("vendor.subscription.no_plan");
   const TierIcon = sub?.tier === "featured" ? Crown : sub?.tier === "premium" ? Sparkles : Briefcase;
 
@@ -92,6 +93,15 @@ export default function VendorDashboard() {
 
   return (
     <div className="space-y-8 max-w-6xl">
+      {isPendingValidation && (
+        <div className="bg-amber-50 border border-amber-200 p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-amber-800 text-sm">{t("vendor.dashboard.pending_validation_title")}</p>
+            <p className="text-sm text-amber-700 mt-0.5">{t("vendor.dashboard.pending_validation_desc")}</p>
+          </div>
+        </div>
+      )}
       {/* Status + plan */}
       <section className="bg-white p-6 border border-neutral-200 grid md:grid-cols-[1fr_auto] gap-6 items-start">
         <div>

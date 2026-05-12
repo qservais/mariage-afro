@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift } from "lucide-react";
+import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift, AlertCircle } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,6 +73,15 @@ export default function ClientDashboard() {
 
   return (
     <div className="space-y-8 max-w-6xl">
+      {!couple?.validatedAt && (
+        <div className="bg-amber-50 border border-amber-200 p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-amber-800 text-sm">{t("client_dashboard.pending_validation_title")}</p>
+            <p className="text-sm text-amber-700 mt-0.5">{t("client_dashboard.pending_validation_desc")}</p>
+          </div>
+        </div>
+      )}
       <section className="bg-white p-6 border border-neutral-200">
         {!editing ? (
           <div className="flex items-start justify-between flex-wrap gap-4">

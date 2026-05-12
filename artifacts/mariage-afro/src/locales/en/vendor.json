@@ -146,7 +146,9 @@
       "source_listing": "Vendor listing",
       "source_comparator": "Comparator",
       "response_rate": "Response rate",
-      "leads_chart_title": "Inquiries over 90 days"
+      "leads_chart_title": "Inquiries over 90 days",
+      "pending_validation_title": "Your account is being reviewed",
+      "pending_validation_desc": "Our team is reviewing your application. Your profile will be visible in the marketplace once approved."
     },
     "checklist": {
       "title": "Set up your listing",

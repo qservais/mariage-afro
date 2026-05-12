@@ -60,6 +60,8 @@
     "progress_count": "{{pct}}% — {{done}}/{{total}} tasks",
     "next_task": "Next task:",
     "next_task_due": " — by {{date}}",
+    "pending_validation_title": "Account pending review",
+    "pending_validation_desc": "Our team is reviewing your account. Publishing your wedding website and sending quote requests will be available once validated.",
     "tile": {
       "budget": "Budget",
       "invites": "Guests",

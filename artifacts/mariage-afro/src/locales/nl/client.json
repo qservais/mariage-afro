@@ -60,6 +60,8 @@
     "progress_count": "{{pct}}% — {{done}}/{{total}} taken",
     "next_task": "Volgende taak:",
     "next_task_due": " — vóór {{date}}",
+    "pending_validation_title": "Account wordt gevalideerd",
+    "pending_validation_desc": "Ons team bekijkt uw account. Het publiceren van uw huwelijkswebsite en offerteaanvragen zijn beschikbaar na validatie.",
     "tile": {
       "budget": "Budget",
       "invites": "Gasten",

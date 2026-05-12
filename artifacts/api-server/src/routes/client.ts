@@ -841,6 +841,18 @@ router.patch("/client/wedding-website", async (req, res) => {
     }
   }
 
+  if (parsed.data.active === true) {
+    const [coupleRow] = await db
+      .select({ validatedAt: couplesTable.validatedAt })
+      .from(couplesTable)
+      .where(eq(couplesTable.id, r.coupleId))
+      .limit(1);
+    if (!coupleRow?.validatedAt) {
+      res.status(403).json({ error: "Votre compte doit être validé par l'administrateur avant de publier votre mini-site." });
+      return;
+    }
+  }
+
   const [current] = await db.select().from(weddingWebsitesTable)
     .where(eq(weddingWebsitesTable.coupleId, r.coupleId));
 

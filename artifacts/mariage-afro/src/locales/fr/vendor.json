@@ -146,7 +146,9 @@
       "source_listing": "Liste prestataires",
       "source_comparator": "Comparateur",
       "response_rate": "Taux de réponse",
-      "leads_chart_title": "Demandes sur 90 jours"
+      "leads_chart_title": "Demandes sur 90 jours",
+      "pending_validation_title": "Votre compte est en cours de validation",
+      "pending_validation_desc": "Notre équipe examine votre candidature. Votre fiche sera visible dans la marketplace dès approbation."
     },
     "checklist": {
       "title": "Préparez votre fiche",

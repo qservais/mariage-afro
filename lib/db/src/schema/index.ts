@@ -78,6 +78,8 @@ export const couplesTable = pgTable("couples", {
   budget: integer("budget"),
   status: text("status").notNull().default("planning"),
   onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
+  validatedAt: timestamp("validated_at", { withTimezone: true }),
+  validatedBy: text("validated_by"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({
@@ -320,6 +322,8 @@ export const vendorAccountsTable = pgTable("vendor_accounts", {
   locale: text("locale").notNull().default("fr"),
   status: text("status").notNull().default("pending"),
   onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
+  validatedAt: timestamp("validated_at", { withTimezone: true }),
+  validatedBy: text("validated_by"),
   // LOT 8 — Espace Pro pivot business
   customLeadTags: jsonb("custom_lead_tags").$type<string[]>().notNull().default([]),
   autoFollowupEnabled: boolean("auto_followup_enabled").notNull().default(true),

@@ -146,7 +146,9 @@
       "source_listing": "Leveranciersoverzicht",
       "source_comparator": "Vergelijker",
       "response_rate": "Antwoordpercentage",
-      "leads_chart_title": "Aanvragen over 90 dagen"
+      "leads_chart_title": "Aanvragen over 90 dagen",
+      "pending_validation_title": "Uw account wordt gevalideerd",
+      "pending_validation_desc": "Ons team bekijkt uw kandidatuur. Uw profiel wordt zichtbaar in de marketplace na goedkeuring."
     },
     "checklist": {
       "title": "Bereid uw profiel voor",

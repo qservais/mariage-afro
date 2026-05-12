@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq, sql, desc, and, inArray } from "drizzle-orm";
+import { eq, sql, desc, and, inArray, isNull, or } from "drizzle-orm";
 import {
   db,
   leadsTable,
@@ -13,7 +13,13 @@ import {
   vendorAccountsTable,
 } from "@workspace/db";
 import { adminAuth, ADMIN_COOKIE, isAuthed } from "../middlewares/adminAuth";
-import { notifyVendorSubscriptionActivated } from "../lib/email";
+import {
+  notifyVendorSubscriptionActivated,
+  notifyVendorApproved,
+  notifyVendorRejected,
+  notifyCoupleApproved,
+  notifyCoupleRejected,
+} from "../lib/email";
 
 const router = Router();
 
@@ -145,6 +151,7 @@ function layout(title: string, body: string, showNav = true): string {
         <a href="/admin">Demandes</a>
         <a href="/admin/reviews">Avis</a>
         <a href="/admin/subscriptions">Abonnements</a>
+        <a href="/admin/accounts">Comptes</a>
         <form method="POST" action="/admin/logout" style="margin:0;">
           <button type="submit">Déconnexion</button>
         </form>
@@ -840,6 +847,192 @@ router.post("/subscriptions/:id/cancel-html", adminAuth, async (req, res) => {
     }).catch(() => undefined);
   }
   res.redirect(`/admin/vendors/${updated.vendorAccountId}/subscription`);
+});
+
+// ---------- LOT 10 — Compte management (Couples & Vendors) ----------
+
+router.get("/accounts", adminAuth, async (_req, res) => {
+  const couples = await db
+    .select({
+      id: couplesTable.id,
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+      email: couplesTable.email,
+      weddingDate: couplesTable.weddingDate,
+      locale: couplesTable.locale,
+      status: couplesTable.status,
+      createdAt: couplesTable.createdAt,
+      validatedAt: couplesTable.validatedAt,
+    })
+    .from(couplesTable)
+    .where(isNull(couplesTable.validatedAt))
+    .orderBy(desc(couplesTable.createdAt));
+
+  const vendors = await db
+    .select({
+      id: vendorAccountsTable.id,
+      businessName: vendorAccountsTable.businessName,
+      contactName: vendorAccountsTable.contactName,
+      email: vendorAccountsTable.email,
+      category: vendorAccountsTable.category,
+      city: vendorAccountsTable.city,
+      locale: vendorAccountsTable.locale,
+      status: vendorAccountsTable.status,
+      onboardedAt: vendorAccountsTable.onboardedAt,
+      validatedAt: vendorAccountsTable.validatedAt,
+      vendorId: vendorAccountsTable.vendorId,
+    })
+    .from(vendorAccountsTable)
+    .where(and(isNull(vendorAccountsTable.validatedAt), sql`${vendorAccountsTable.onboardedAt} IS NOT NULL`))
+    .orderBy(desc(vendorAccountsTable.onboardedAt));
+
+  const coupleRows = couples.length === 0
+    ? `<tr><td colspan="7" class="empty">Aucun couple en attente.</td></tr>`
+    : couples.map((c) => `
+      <tr>
+        <td>${escapeHtml(new Date(c.createdAt as Date).toISOString().slice(0, 10))}</td>
+        <td><strong>${escapeHtml([c.partner1Name, c.partner2Name].filter(Boolean).join(" & ") || "—")}</strong></td>
+        <td>${escapeHtml(c.email)}</td>
+        <td>${escapeHtml(c.weddingDate ?? "—")}</td>
+        <td>${escapeHtml(c.locale)}</td>
+        <td><span class="badge status-${c.status === "planning" ? "in_progress" : "new"}">${escapeHtml(c.status)}</span></td>
+        <td style="white-space:nowrap;">
+          <form method="POST" action="/admin/accounts/couples/${c.id}/approve" style="display:inline;margin:0 4px 4px 0;">
+            <button class="btn primary" type="submit">Approuver</button>
+          </form>
+          <form method="POST" action="/admin/accounts/couples/${c.id}/reject" style="display:inline;margin:0 4px 4px 0;" onsubmit="return confirmReject()">
+            <input type="hidden" name="reason" value="" />
+            <button class="btn" type="submit">Rejeter</button>
+          </form>
+        </td>
+      </tr>`).join("");
+
+  const vendorRows = vendors.length === 0
+    ? `<tr><td colspan="7" class="empty">Aucun prestataire en attente.</td></tr>`
+    : vendors.map((v) => `
+      <tr>
+        <td>${v.onboardedAt ? escapeHtml(new Date(v.onboardedAt as Date).toISOString().slice(0, 10)) : "—"}</td>
+        <td><strong>${escapeHtml(v.businessName || "—")}</strong><div style="color:#888;font-size:11px;">${escapeHtml(v.contactName)}</div></td>
+        <td>${escapeHtml(v.email)}</td>
+        <td>${escapeHtml(v.category)}</td>
+        <td>${escapeHtml(v.city)}</td>
+        <td><span class="badge status-in_progress">${escapeHtml(v.status)}</span></td>
+        <td style="white-space:nowrap;">
+          <form method="POST" action="/admin/accounts/vendors/${v.id}/approve" style="display:inline;margin:0 4px 4px 0;">
+            <button class="btn primary" type="submit">Approuver</button>
+          </form>
+          <form method="POST" action="/admin/accounts/vendors/${v.id}/reject" style="display:inline;margin:0 4px 4px 0;">
+            <button class="btn" type="submit">Rejeter</button>
+          </form>
+        </td>
+      </tr>`).join("");
+
+  res.type("html").send(layout("Comptes en attente", `
+    <div class="container">
+      <h2 style="margin-bottom:24px;font-size:22px;color:#68191e;">Validation des comptes</h2>
+
+      <h3 style="margin-bottom:12px;font-size:16px;color:#68191e;">Couples (${couples.length} en attente)</h3>
+      <table style="margin-bottom:32px;">
+        <thead><tr><th>Inscrit le</th><th>Couple</th><th>Email</th><th>Date mariage</th><th>Langue</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>${coupleRows}</tbody>
+      </table>
+
+      <h3 style="margin-bottom:12px;font-size:16px;color:#68191e;">Prestataires (${vendors.length} en attente)</h3>
+      <table>
+        <thead><tr><th>Inscrit le</th><th>Entreprise</th><th>Email</th><th>Catégorie</th><th>Ville</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>${vendorRows}</tbody>
+      </table>
+    </div>
+    <script>function confirmReject(){return confirm("Confirmer le rejet de ce compte ?");}</script>
+  `));
+});
+
+router.post("/accounts/couples/:id/approve", adminAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).send("Invalid id"); return; }
+  const [couple] = await db
+    .update(couplesTable)
+    .set({ validatedAt: new Date(), validatedBy: "admin" })
+    .where(eq(couplesTable.id, id))
+    .returning();
+  if (!couple) { res.status(404).send("Couple not found"); return; }
+  if (couple.email) {
+    void notifyCoupleApproved({
+      to: couple.email,
+      locale: couple.locale,
+      partner1Name: couple.partner1Name,
+      partner2Name: couple.partner2Name,
+    }).catch(() => undefined);
+  }
+  res.redirect("/admin/accounts");
+});
+
+router.post("/accounts/couples/:id/reject", adminAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).send("Invalid id"); return; }
+  const reason = String(req.body?.reason ?? "").trim() || null;
+  const [couple] = await db
+    .update(couplesTable)
+    .set({ status: "rejected" })
+    .where(eq(couplesTable.id, id))
+    .returning();
+  if (!couple) { res.status(404).send("Couple not found"); return; }
+  if (couple.email) {
+    void notifyCoupleRejected({
+      to: couple.email,
+      locale: couple.locale,
+      partner1Name: couple.partner1Name,
+      partner2Name: couple.partner2Name,
+      reason,
+    }).catch(() => undefined);
+  }
+  res.redirect("/admin/accounts");
+});
+
+router.post("/accounts/vendors/:id/approve", adminAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).send("Invalid id"); return; }
+  const [account] = await db
+    .update(vendorAccountsTable)
+    .set({ validatedAt: new Date(), validatedBy: "admin", status: "approved" })
+    .where(eq(vendorAccountsTable.id, id))
+    .returning();
+  if (!account) { res.status(404).send("Vendor account not found"); return; }
+  if (account.vendorId) {
+    await db
+      .update(marketplaceVendorsTable)
+      .set({ active: true })
+      .where(eq(marketplaceVendorsTable.id, account.vendorId));
+  }
+  if (account.email) {
+    void notifyVendorApproved({
+      to: account.email,
+      locale: account.locale,
+      businessName: account.businessName || account.contactName || "Prestataire",
+    }).catch(() => undefined);
+  }
+  res.redirect("/admin/accounts");
+});
+
+router.post("/accounts/vendors/:id/reject", adminAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) { res.status(400).send("Invalid id"); return; }
+  const reason = String(req.body?.reason ?? "").trim() || null;
+  const [account] = await db
+    .update(vendorAccountsTable)
+    .set({ status: "rejected" })
+    .where(eq(vendorAccountsTable.id, id))
+    .returning();
+  if (!account) { res.status(404).send("Vendor account not found"); return; }
+  if (account.email) {
+    void notifyVendorRejected({
+      to: account.email,
+      locale: account.locale,
+      businessName: account.businessName || account.contactName || "Prestataire",
+      reason,
+    }).catch(() => undefined);
+  }
+  res.redirect("/admin/accounts");
 });
 
 export default router;

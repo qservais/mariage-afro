@@ -60,6 +60,8 @@
     "progress_count": "{{pct}}% — {{done}}/{{total}} tâches",
     "next_task": "Prochaine tâche :",
     "next_task_due": " — d'ici le {{date}}",
+    "pending_validation_title": "Compte en cours de validation",
+    "pending_validation_desc": "Notre équipe examine votre compte. La publication de votre mini-site et les demandes de devis seront disponibles dès validation.",
     "tile": {
       "budget": "Budget",
       "invites": "Invités",

@@ -16,6 +16,7 @@ interface Couple {
   partner2Name: string;
   weddingDate: string | null;
   onboardedAt: string | null;
+  validatedAt: string | null;
 }
 
 interface NavItem {

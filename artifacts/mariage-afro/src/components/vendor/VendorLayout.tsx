@@ -23,6 +23,7 @@ interface VendorAccount {
   city: string;
   status: string;
   onboardedAt: string | null;
+  validatedAt: string | null;
 }
 
 interface VendorProfile {
