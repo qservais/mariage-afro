@@ -1010,5 +1010,18 @@
     "cta_title": "Already a client?",
     "cta_desc": "Our team supports you while we finalize your personal space. Contact us for any request.",
     "cta_button": "Contact us"
+  },
+  "mariage_jour_j": {
+    "not_found_title": "Page not found",
+    "not_found_desc": "This Wedding Day page does not exist or is no longer available.",
+    "back_home": "Back to Mariage Afro",
+    "loading": "Loading…",
+    "menu_title": "The menu",
+    "timeline_title": "Day programme",
+    "bio_title": "The couple",
+    "gallery_title": "Shared photo gallery",
+    "gallery_open": "Open gallery",
+    "cta_btn": "Discover the platform",
+    "footer_made_with": "Made with"
   }
 }

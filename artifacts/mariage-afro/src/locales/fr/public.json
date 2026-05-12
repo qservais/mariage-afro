@@ -1010,5 +1010,18 @@
     "cta_title": "Vous êtes déjà client ?",
     "cta_desc": "Notre équipe vous accompagne pendant que nous finalisons votre espace personnel. Contactez-nous pour toute demande.",
     "cta_button": "Nous contacter"
+  },
+  "mariage_jour_j": {
+    "not_found_title": "Page introuvable",
+    "not_found_desc": "Cette page Jour-J n'existe pas ou n'est plus disponible.",
+    "back_home": "Retour à Mariage Afro",
+    "loading": "Chargement…",
+    "menu_title": "Le menu",
+    "timeline_title": "Programme de la journée",
+    "bio_title": "Les mariés",
+    "gallery_title": "Galerie photos partagées",
+    "gallery_open": "Ouvrir la galerie",
+    "cta_btn": "Découvrir la plateforme",
+    "footer_made_with": "Créé avec"
   }
 }

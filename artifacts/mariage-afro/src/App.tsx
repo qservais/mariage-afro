@@ -62,6 +62,7 @@ const ClientDevisPage = lazy(() => import("@/pages/client/devis"));
 const MariagePublicPage = lazy(() => import("@/pages/mariage-public"));
 const MariageRsvpPage = lazy(() => import("@/pages/mariage-rsvp"));
 const MariageCagnottePage = lazy(() => import("@/pages/mariage-cagnotte"));
+const MariageJourJPage = lazy(() => import("@/pages/mariage-jour-j"));
 const MoodBoardSharedPage = lazy(() => import("@/pages/mood-board-shared"));
 
 // Espace Pro (lazy — never loaded for couples or anonymous)
@@ -202,6 +203,7 @@ function AppRoutes() {
           <Route path="/mariage/:slug" element={<MariagePublicPage />} />
           <Route path="/mariage/:slug/rsvp" element={<MariageRsvpPage />} />
           <Route path="/mariage/:slug/cagnotte" element={<MariageCagnottePage />} />
+          <Route path="/mariage/:slug/jour-j" element={<MariageJourJPage />} />
           <Route path="*" element={<MariagePublicPage />} />
         </Routes>
       </Suspense>

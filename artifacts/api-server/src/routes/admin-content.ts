@@ -9,6 +9,7 @@ import {
   weddingWebsitesTable,
   couplesTable,
   vendorAccountsTable,
+  weddingJourJTable,
 } from "@workspace/db";
 import { eq, desc, asc, sql, and, isNull, isNotNull } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
@@ -687,10 +688,11 @@ router.get("/content/wedding-websites", async (_req: Request, res: Response) => 
         <td>${escHtml(r.title)}</td>
         <td><a href="/mariage/${escHtml(r.slug)}" target="_blank">/mariage/${escHtml(r.slug)}</a></td>
         <td><span class="badge ${r.active?"active":"inactive"}">${r.active?"Publié":"Privé"}</span></td>
-        <td>
+        <td style="white-space:nowrap">
           <form method="post" action="/admin/content/wedding-websites/${r.id}/toggle" style="display:inline">
             <button class="btn sm ${r.active?"danger":"success"}" type="submit">${r.active?"Dépublier":"Publier"}</button>
           </form>
+          <a class="btn sm secondary" href="/admin/content/wedding-websites/${escHtml(r.slug)}/jour-j" style="margin-left:6px">Page Jour-J</a>
         </td>
       </tr>`).join("")}
       </tbody></table>`;
@@ -703,6 +705,100 @@ router.post("/content/wedding-websites/:id/toggle", async (req: Request, res: Re
   if (!site) { res.redirect("/admin/content/wedding-websites"); return; }
   await db.update(weddingWebsitesTable).set({ active: !site.active }).where(eq(weddingWebsitesTable.id, site.id));
   res.redirect("/admin/content/wedding-websites");
+});
+
+// ============ JOUR-J PUBLIC PAGE (admin config) ============
+
+router.get("/content/wedding-websites/:slug/jour-j", async (req: Request, res: Response) => {
+  const slug = String(req.params.slug);
+  const [site] = await db
+    .select({ id: weddingWebsitesTable.id, slug: weddingWebsitesTable.slug, title: weddingWebsitesTable.title, coupleId: weddingWebsitesTable.coupleId })
+    .from(weddingWebsitesTable)
+    .where(eq(weddingWebsitesTable.slug, slug));
+  if (!site) { res.status(404).type("html").send(contentLayout("Introuvable", "<p>Site non trouvé</p>")); return; }
+
+  const [couple] = await db
+    .select({ partner1Name: couplesTable.partner1Name, partner2Name: couplesTable.partner2Name })
+    .from(couplesTable).where(eq(couplesTable.id, site.coupleId)).limit(1);
+
+  const [config] = await db.select().from(weddingJourJTable)
+    .where(eq(weddingJourJTable.weddingWebsiteId, site.id)).limit(1);
+
+  const publicUrl = `${process.env.PUBLIC_APP_URL || ""}/mariage/${site.slug}/jour-j`;
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(publicUrl)}&bgcolor=fff4e4&color=68191e&qzone=2&format=png`;
+
+  const c = config ?? { menuText: "", timeline: [], bioPartner1: "", bioPartner2: "", driveUrl: "", enabled: false };
+  const timelineJson = JSON.stringify(c.timeline ?? []).replace(/</g, "\\u003c");
+
+  const body = `
+    <h1>Page Jour-J — ${escHtml(couple?.partner1Name || "—")} &amp; ${escHtml(couple?.partner2Name || "—")}</h1>
+    <a class="btn secondary sm" href="/admin/content/wedding-websites" style="margin-bottom:24px;display:inline-block">← Retour aux sites</a>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start">
+      <div class="card" style="flex:1;min-width:320px">
+        <h2>Configuration</h2>
+        <form method="post">
+          <label>
+            <input type="checkbox" name="enabled" value="1" ${c.enabled ? "checked" : ""}> Page activée (visible par les invités)
+          </label>
+          <label>Menu du repas<textarea name="menuText" rows="6" placeholder="Entrée : Velouté…">${escHtml(c.menuText)}</textarea></label>
+          <label>Bio partenaire 1<textarea name="bioPartner1" rows="4" placeholder="Quelques mots…">${escHtml(c.bioPartner1)}</textarea></label>
+          <label>Bio partenaire 2<textarea name="bioPartner2" rows="4" placeholder="Quelques mots…">${escHtml(c.bioPartner2)}</textarea></label>
+          <label>Lien Google Drive (photos partagées)<input type="url" name="driveUrl" value="${escHtml(c.driveUrl || "")}" placeholder="https://drive.google.com/drive/folders/…"></label>
+          <label>Programme de la journée (JSON)<br><small style="color:#666">Format : [{"time":"10:00","label":"Cérémonie"}]</small>
+            <textarea name="timeline" rows="6" placeholder='[{"time":"10:00","label":"Cérémonie"}]'>${escHtml(timelineJson)}</textarea>
+          </label>
+          <button class="btn primary" type="submit">Enregistrer</button>
+        </form>
+      </div>
+      <div class="card" style="min-width:240px;text-align:center">
+        <h2>QR Code invités</h2>
+        <p style="font-size:12px;color:#555;margin-bottom:12px">Pointe vers :<br><a href="${escHtml(publicUrl)}" target="_blank" style="font-size:11px;word-break:break-all">${escHtml(publicUrl)}</a></p>
+        <img src="${escHtml(qrSrc)}" alt="QR Code" width="200" height="200" style="display:block;margin:0 auto 12px;border:4px solid #fff4e4">
+        <a class="btn sm secondary" href="${escHtml(qrSrc)}" download="qr-jour-j-${escHtml(site.slug)}.png">Télécharger le QR</a>
+        <div style="margin-top:12px">
+          <a class="btn sm success" href="${escHtml(publicUrl)}" target="_blank">Voir la page publique →</a>
+        </div>
+      </div>
+    </div>`;
+
+  res.type("html").send(contentLayout(`Jour-J — ${site.slug}`, body));
+});
+
+router.post("/content/wedding-websites/:slug/jour-j", async (req: Request, res: Response) => {
+  const slug = String(req.params.slug);
+  const [site] = await db
+    .select({ id: weddingWebsitesTable.id })
+    .from(weddingWebsitesTable)
+    .where(eq(weddingWebsitesTable.slug, slug));
+  if (!site) { res.redirect("/admin/content/wedding-websites"); return; }
+
+  const body = req.body as Record<string, string>;
+  const enabled = body.enabled === "1";
+  const menuText = (body.menuText || "").trim();
+  const bioPartner1 = (body.bioPartner1 || "").trim();
+  const bioPartner2 = (body.bioPartner2 || "").trim();
+  const driveUrl = (body.driveUrl || "").trim() || null;
+
+  let timeline: { time: string; label: string }[] = [];
+  try {
+    const parsed = JSON.parse(body.timeline || "[]");
+    if (Array.isArray(parsed)) {
+      timeline = parsed.filter((s) => s && typeof s.time === "string" && typeof s.label === "string")
+        .map((s) => ({ time: String(s.time).slice(0, 20), label: String(s.label).slice(0, 300) }));
+    }
+  } catch { /* ignore bad JSON */ }
+
+  const [existing] = await db.select().from(weddingJourJTable)
+    .where(eq(weddingJourJTable.weddingWebsiteId, site.id)).limit(1);
+
+  const vals = { enabled, menuText, bioPartner1, bioPartner2, driveUrl, timeline, updatedAt: new Date() };
+  if (existing) {
+    await db.update(weddingJourJTable).set(vals).where(eq(weddingJourJTable.id, existing.id));
+  } else {
+    await db.insert(weddingJourJTable).values({ weddingWebsiteId: site.id, ...vals });
+  }
+
+  res.redirect(`/admin/content/wedding-websites/${slug}/jour-j`);
 });
 
 // ============ VENDOR ACCOUNTS (Espace Pro signup approval) ============

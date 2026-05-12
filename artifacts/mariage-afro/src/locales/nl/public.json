@@ -1010,5 +1010,18 @@
     "cta_title": "Al klant?",
     "cta_desc": "Ons team begeleidt jullie terwijl wij jullie persoonlijke ruimte afronden. Contacteer ons voor elke aanvraag.",
     "cta_button": "Contacteer ons"
+  },
+  "mariage_jour_j": {
+    "not_found_title": "Pagina niet gevonden",
+    "not_found_desc": "Deze Trouwdag-pagina bestaat niet of is niet meer beschikbaar.",
+    "back_home": "Terug naar Mariage Afro",
+    "loading": "Laden…",
+    "menu_title": "Het menu",
+    "timeline_title": "Programma van de dag",
+    "bio_title": "De trouwers",
+    "gallery_title": "Gedeelde fotogalerij",
+    "gallery_open": "Galerij openen",
+    "cta_btn": "Ontdek het platform",
+    "footer_made_with": "Gemaakt met"
   }
 }

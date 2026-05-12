@@ -11,6 +11,7 @@ import {
   moodBoardsTable,
   moodBoardImagesTable,
   moodBoardCollaboratorsTable,
+  weddingJourJTable,
 } from "@workspace/db";
 import { eq, and, asc } from "drizzle-orm";
 import { notifyCoupleNewRsvp } from "../lib/email";
@@ -245,6 +246,37 @@ router.post("/api/mood-board/shared/:token/upload-url", async (req: Request, res
   const objectPath = storageService.normalizeObjectEntityPath(uploadURL);
   await recordUploadIntent(objectPath, `collab:${collab.id}`);
   res.json({ uploadURL, objectPath });
+});
+
+// ====================================================================
+// LOT 10 — Jour-J Public Page
+// ====================================================================
+router.get("/api/wedding/:slug/jour-j", async (req: Request, res: Response) => {
+  const slug = String(req.params.slug);
+  const [site] = await db
+    .select()
+    .from(weddingWebsitesTable)
+    .where(and(eq(weddingWebsitesTable.slug, slug), eq(weddingWebsitesTable.active, true)));
+  if (!site) { res.status(404).json({ error: "Not found" }); return; }
+
+  const [config] = await db.select().from(weddingJourJTable)
+    .where(eq(weddingJourJTable.weddingWebsiteId, site.id)).limit(1);
+  if (!config || !config.enabled) { res.status(404).json({ error: "Page not available" }); return; }
+
+  const [couple] = await db
+    .select({ partner1Name: couplesTable.partner1Name, partner2Name: couplesTable.partner2Name, weddingDate: couplesTable.weddingDate })
+    .from(couplesTable)
+    .where(eq(couplesTable.id, site.coupleId))
+    .limit(1);
+
+  res.json({
+    ...config,
+    slug,
+    title: site.title,
+    weddingDate: couple?.weddingDate ?? null,
+    partner1Name: couple?.partner1Name || "",
+    partner2Name: couple?.partner2Name || "",
+  });
 });
 
 export default router;

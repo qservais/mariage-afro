@@ -26,6 +26,7 @@ import {
   rsvpQuestionsTable,
   cagnottesTable,
   vendorQuotesTable,
+  weddingJourJTable,
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
@@ -530,6 +531,50 @@ router.delete("/client/jour-j/:id", async (req, res) => {
   await db.delete(jourJEventsTable)
     .where(and(eq(jourJEventsTable.id, id), eq(jourJEventsTable.coupleId, r.coupleId)));
   res.json({ success: true });
+});
+
+// ---------- Jour-J Public Page ----------
+const jourJPublicSchema = z.object({
+  enabled: z.boolean().optional(),
+  menuText: z.string().max(10000).optional(),
+  timeline: z.array(z.object({ time: z.string().max(20), label: z.string().max(300) })).max(100).optional(),
+  bioPartner1: z.string().max(5000).optional(),
+  bioPartner2: z.string().max(5000).optional(),
+  driveUrl: z.string().nullable().optional(),
+});
+
+router.get("/client/wedding-jour-j", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const [site] = await db.select().from(weddingWebsitesTable)
+    .where(eq(weddingWebsitesTable.coupleId, r.coupleId)).limit(1);
+  if (!site) { res.json(null); return; }
+  const [config] = await db.select().from(weddingJourJTable)
+    .where(eq(weddingJourJTable.weddingWebsiteId, site.id)).limit(1);
+  res.json(config
+    ? { ...config, slug: site.slug }
+    : { weddingWebsiteId: site.id, slug: site.slug, enabled: false, menuText: "", timeline: [], bioPartner1: "", bioPartner2: "", driveUrl: null });
+});
+
+router.patch("/client/wedding-jour-j", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = jourJPublicSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+  const [site] = await db.select().from(weddingWebsitesTable)
+    .where(eq(weddingWebsitesTable.coupleId, r.coupleId)).limit(1);
+  if (!site) { res.status(404).json({ error: "No wedding website" }); return; }
+  const [existing] = await db.select().from(weddingJourJTable)
+    .where(eq(weddingJourJTable.weddingWebsiteId, site.id)).limit(1);
+  const patch = { ...parsed.data, driveUrl: parsed.data.driveUrl || null, updatedAt: new Date() };
+  let config;
+  if (existing) {
+    [config] = await db.update(weddingJourJTable)
+      .set(patch)
+      .where(eq(weddingJourJTable.id, existing.id)).returning();
+  } else {
+    [config] = await db.insert(weddingJourJTable)
+      .values({ weddingWebsiteId: site.id, ...patch }).returning();
+  }
+  res.json({ ...config, slug: site.slug });
 });
 
 // ---------- Conversations ----------

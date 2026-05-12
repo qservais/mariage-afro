@@ -504,6 +504,22 @@ export const cagnottesTable = pgTable("cagnottes", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// LOT 10 — Jour-J Public Page config
+export const weddingJourJTable = pgTable("wedding_jour_j", {
+  id: serial("id").primaryKey(),
+  weddingWebsiteId: integer("wedding_website_id").notNull(),
+  menuText: text("menu_text").notNull().default(""),
+  timeline: jsonb("timeline").$type<{ time: string; label: string }[]>().notNull().default([]),
+  bioPartner1: text("bio_partner1").notNull().default(""),
+  bioPartner2: text("bio_partner2").notNull().default(""),
+  driveUrl: text("drive_url"),
+  enabled: boolean("enabled").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  websiteIdIdx: uniqueIndex("wedding_jour_j_website_id_idx").on(t.weddingWebsiteId),
+}));
+
 export type VendorQuote = typeof vendorQuotesTable.$inferSelect;
 
 export type MoodBoard = typeof moodBoardsTable.$inferSelect;
@@ -559,3 +575,4 @@ export type VendorReview = typeof vendorReviewsTable.$inferSelect;
 export type VendorSubscription = typeof vendorSubscriptionsTable.$inferSelect;
 export type VendorView = typeof vendorViewsTable.$inferSelect;
 export type UploadIntent = typeof uploadIntentsTable.$inferSelect;
+export type WeddingJourJ = typeof weddingJourJTable.$inferSelect;
