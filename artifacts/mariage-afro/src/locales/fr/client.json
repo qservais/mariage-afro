@@ -218,7 +218,9 @@
     "no_site": "Créez d'abord votre site mariage pour activer la page Jour-J.",
     "save": "Enregistrer",
     "saving": "Enregistrement…",
-    "saved": "Page Jour-J mise à jour"
+    "saved": "Page Jour-J mise à jour",
+    "edit_content": "Modifier le contenu",
+    "cancel": "Annuler"
   },
   "profil": {
     "title": "Profil",

@@ -218,7 +218,9 @@
     "no_site": "Maak eerst uw trouwwebsite aan om de Trouwdag-pagina te activeren.",
     "save": "Opslaan",
     "saving": "Opslaan…",
-    "saved": "Trouwdag-pagina bijgewerkt"
+    "saved": "Trouwdag-pagina bijgewerkt",
+    "edit_content": "Inhoud bewerken",
+    "cancel": "Annuleren"
   },
   "profil": {
     "title": "Profiel",

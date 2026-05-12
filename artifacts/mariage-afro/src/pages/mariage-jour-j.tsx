@@ -87,7 +87,7 @@ export default function MariageJourJPage() {
       >
         <div className="flex items-center justify-center gap-2 mb-4 opacity-60">
           <Heart className="w-3 h-3" fill="currentColor" />
-          <span className="text-xs uppercase tracking-widest">Jour J</span>
+          <span className="text-xs uppercase tracking-widest">{t("mariage_jour_j.day_label")}</span>
           <Heart className="w-3 h-3" fill="currentColor" />
         </div>
         <h1 className="text-4xl md:text-5xl font-serif font-bold leading-tight tracking-tight">

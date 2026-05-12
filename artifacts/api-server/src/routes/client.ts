@@ -541,7 +541,10 @@ const jourJPublicSchema = z.object({
   timeline: z.array(z.object({ time: z.string().max(20), label: z.string().max(300) })).max(100).optional(),
   bioPartner1: z.string().max(5000).optional(),
   bioPartner2: z.string().max(5000).optional(),
-  driveUrl: z.string().nullable().optional(),
+  driveUrl: z.string().nullable().optional().refine(
+    (url) => !url || url.startsWith("https://"),
+    { message: "driveUrl must start with https://" }
+  ),
 });
 
 router.get("/client/wedding-jour-j", async (req, res) => {

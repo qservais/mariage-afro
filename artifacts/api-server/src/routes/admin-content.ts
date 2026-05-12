@@ -782,7 +782,8 @@ router.post("/content/wedding-websites/:slug/jour-j", async (req: Request, res: 
   const menuText = (body.menuText || "").trim();
   const bioPartner1 = (body.bioPartner1 || "").trim();
   const bioPartner2 = (body.bioPartner2 || "").trim();
-  const driveUrl = (body.driveUrl || "").trim() || null;
+  const rawDriveUrl = (body.driveUrl || "").trim();
+  const driveUrl = rawDriveUrl && rawDriveUrl.startsWith("https://") ? rawDriveUrl : null;
 
   let timeline: { time: string; label: string }[] = [];
   try {

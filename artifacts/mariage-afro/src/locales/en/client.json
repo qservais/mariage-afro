@@ -218,7 +218,9 @@
     "no_site": "Create your wedding website first to enable the Wedding Day page.",
     "save": "Save",
     "saving": "Saving…",
-    "saved": "Wedding Day page updated"
+    "saved": "Wedding Day page updated",
+    "edit_content": "Edit content",
+    "cancel": "Cancel"
   },
   "profil": {
     "title": "Profile",

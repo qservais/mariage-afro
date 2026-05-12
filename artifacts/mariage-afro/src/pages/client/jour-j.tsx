@@ -228,7 +228,7 @@ export default function JourJPage() {
               </div>
             )}
             <Button size="sm" className="rounded-none uppercase tracking-wider text-xs mt-2" onClick={startEdit}>
-              Modifier le contenu
+              {t("jour_j_public.edit_content")}
             </Button>
           </div>
         ) : pubForm ? (
@@ -327,7 +327,7 @@ export default function JourJPage() {
                 {savePublic.isPending ? t("jour_j_public.saving") : t("jour_j_public.save")}
               </Button>
               <Button type="button" variant="outline" className="rounded-none uppercase tracking-wider text-xs" onClick={() => { setPubEditing(false); setPubForm(null); }}>
-                Annuler
+                {t("jour_j_public.cancel")}
               </Button>
             </div>
           </form>
