@@ -1,7 +1,7 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod";
-import { and, eq, asc, desc, sql, isNull, ne, inArray } from "drizzle-orm";
+import { and, eq, asc, desc, sql, isNull, ne, inArray, or } from "drizzle-orm";
 import {
   db,
   couplesTable,
@@ -1287,10 +1287,24 @@ router.get("/client/rsvps", async (req, res) => {
 });
 
 // ---------- Client Quotes (Devis reçus) ----------
+
+/** Build the visibility condition: a couple can see a quote if:
+ *  1. quote.coupleId matches their coupleId (explicit link), OR
+ *  2. quote.coupleId is NULL and quote.recipientEmail matches their email (email fallback)
+ */
+function quoteVisibilityCondition(coupleId: number, coupleEmail: string | null) {
+  if (!coupleEmail) return eq(vendorQuotesTable.coupleId, coupleId);
+  return or(
+    eq(vendorQuotesTable.coupleId, coupleId),
+    and(isNull(vendorQuotesTable.coupleId), sql`lower(${vendorQuotesTable.recipientEmail}) = lower(${coupleEmail})`),
+  )!;
+}
+
 router.get("/client/quotes", async (req, res) => {
   const r = req as unknown as AuthedRequest;
+  const [couple] = await db.select({ email: couplesTable.email }).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
   const rows = await db.select().from(vendorQuotesTable)
-    .where(and(eq(vendorQuotesTable.coupleId, r.coupleId), ne(vendorQuotesTable.status, "draft")))
+    .where(and(ne(vendorQuotesTable.status, "draft"), quoteVisibilityCondition(r.coupleId, couple?.email ?? null)))
     .orderBy(desc(vendorQuotesTable.createdAt));
   res.json(rows);
 });
@@ -1304,8 +1318,9 @@ router.post("/client/quotes/:id/respond", async (req, res) => {
   }).safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
 
+  const [couple] = await db.select({ email: couplesTable.email }).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
   const [quote] = await db.select().from(vendorQuotesTable)
-    .where(and(eq(vendorQuotesTable.id, id), eq(vendorQuotesTable.coupleId, r.coupleId)))
+    .where(and(eq(vendorQuotesTable.id, id), quoteVisibilityCondition(r.coupleId, couple?.email ?? null)))
     .limit(1);
   if (!quote) { res.status(404).json({ error: "Quote not found" }); return; }
   if (quote.status !== "sent") { res.status(409).json({ error: "Quote cannot be responded to in its current state" }); return; }

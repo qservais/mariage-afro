@@ -1,7 +1,7 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { getAuth } from "@clerk/express";
 import { z } from "zod";
-import { and, asc, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, isNotNull, ne, or, sql } from "drizzle-orm";
 import {
   db,
   vendorAccountsTable,
@@ -1117,10 +1117,19 @@ router.post("/vendor/quotes", async (req, res) => {
       .limit(1);
     if (!lead) { res.status(403).json({ error: "Lead not found or does not belong to this account" }); return; }
   }
-  // Verify coupleId exists if provided
+  // Resolve coupleId: use provided value (validated), or auto-match by recipientEmail
+  let resolvedCoupleId: number | null = null;
   if (parsed.data.coupleId) {
     const [couple] = await db.select({ id: couplesTable.id }).from(couplesTable).where(eq(couplesTable.id, parsed.data.coupleId)).limit(1);
     if (!couple) { res.status(400).json({ error: "Couple not found" }); return; }
+    resolvedCoupleId = couple.id;
+  } else {
+    // Auto-resolve: if the recipient email belongs to a registered couple, link it
+    const [matched] = await db.select({ id: couplesTable.id })
+      .from(couplesTable)
+      .where(and(sql`lower(${couplesTable.email}) = lower(${parsed.data.recipientEmail})`, isNotNull(couplesTable.email)))
+      .limit(1);
+    if (matched) resolvedCoupleId = matched.id;
   }
 
   const { services, vatRate } = parsed.data;
@@ -1128,7 +1137,7 @@ router.post("/vendor/quotes", async (req, res) => {
   const [row] = await db.insert(vendorQuotesTable).values({
     vendorAccountId: r.vendorAccountId,
     vendorId: account.vendorId ?? undefined,
-    coupleId: parsed.data.coupleId ?? undefined,
+    coupleId: resolvedCoupleId ?? undefined,
     leadId: parsed.data.leadId ?? undefined,
     recipientEmail: parsed.data.recipientEmail,
     recipientName: parsed.data.recipientName ?? "",
@@ -1178,9 +1187,21 @@ router.post("/vendor/quotes/:id/send", async (req, res) => {
     .limit(1);
   if (!quote) { res.status(404).json({ error: "Quote not found" }); return; }
   if (quote.status !== "draft") { res.status(409).json({ error: "Quote already sent" }); return; }
+
+  // Auto-resolve coupleId at send time if still unset
+  let sendCoupleId = quote.coupleId;
+  if (!sendCoupleId) {
+    const [matched] = await db.select({ id: couplesTable.id })
+      .from(couplesTable)
+      .where(and(sql`lower(${couplesTable.email}) = lower(${quote.recipientEmail})`, isNotNull(couplesTable.email)))
+      .limit(1);
+    if (matched) sendCoupleId = matched.id;
+  }
+
   const [updated] = await db.update(vendorQuotesTable).set({
     status: "sent",
     sentAt: new Date(),
+    coupleId: sendCoupleId ?? undefined,
     updatedAt: new Date(),
   }).where(eq(vendorQuotesTable.id, id)).returning();
   void notifyQuoteReceived({
