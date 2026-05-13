@@ -143,25 +143,50 @@ router.post("/vendor/onboarding", async (req, res) => {
       })
       .where(eq(marketplaceVendorsTable.id, vendorId));
   } else {
-    const [vendor] = await db
-      .insert(marketplaceVendorsTable)
-      .values({
-        name: data.businessName,
-        category: data.category,
-        city: data.city,
-        tagline: "",
-        description: data.description ?? "",
-        services: [],
-        images: [],
-        website: data.website ?? null,
-        phone: data.phone ?? null,
-        email: data.email,
-        verified: false,
-        active: false,
-        rating: 5,
-      })
-      .returning();
-    vendorId = vendor.id;
+    // Check if admin pre-linked this email to an existing vendor profile (invitation flow)
+    const [invitedVendor] = await db
+      .select({ id: marketplaceVendorsTable.id })
+      .from(marketplaceVendorsTable)
+      .where(sql`lower(${marketplaceVendorsTable.invitedEmail}) = lower(${data.email})`)
+      .limit(1);
+
+    if (invitedVendor) {
+      // Auto-link: update the pre-existing vendor profile with the submitted data
+      await db
+        .update(marketplaceVendorsTable)
+        .set({
+          name: data.businessName,
+          category: data.category,
+          city: data.city,
+          tagline: "",
+          description: data.description ?? "",
+          website: data.website ?? null,
+          phone: data.phone ?? null,
+          email: data.email,
+        })
+        .where(eq(marketplaceVendorsTable.id, invitedVendor.id));
+      vendorId = invitedVendor.id;
+    } else {
+      const [vendor] = await db
+        .insert(marketplaceVendorsTable)
+        .values({
+          name: data.businessName,
+          category: data.category,
+          city: data.city,
+          tagline: "",
+          description: data.description ?? "",
+          services: [],
+          images: [],
+          website: data.website ?? null,
+          phone: data.phone ?? null,
+          email: data.email,
+          verified: false,
+          active: false,
+          rating: 5,
+        })
+        .returning();
+      vendorId = vendor.id;
+    }
   }
 
   const [account] = await db

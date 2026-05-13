@@ -1016,3 +1016,33 @@ export async function sendContactFormEmail(p: ContactFormPayload, log = logger):
     html: wrap({ title: "Nouvelle demande de rendez-vous", rows, locale: "fr" }),
   }, log);
 }
+
+// ---- Vendor invitation (admin → prestataire existant) ----
+export interface NotifyVendorInvitationPayload {
+  to: string;
+  locale?: string | null;
+  vendorName: string;
+}
+
+export async function notifyVendorInvitation(p: NotifyVendorInvitationPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const subject = { fr: "Votre espace prestataire vous attend sur Mariage Afro", nl: "Uw leveranciersruimte wacht op u op Mariage Afro", en: "Your vendor space is ready on Mariage Afro" }[locale];
+  const title = { fr: "Rejoignez votre espace pro", nl: "Ga naar uw pro-ruimte", en: "Join your pro space" }[locale];
+  const intro = {
+    fr: `Bonjour,\n\nL'équipe Mariage Afro a créé une fiche prestataire pour **${p.vendorName}**. Créez votre compte avec cette adresse email pour accéder directement à votre espace professionnel et gérer vos informations.`,
+    nl: `Hallo,\n\nHet team van Mariage Afro heeft een leveranciersfiche aangemaakt voor **${p.vendorName}**. Maak een account aan met dit e-mailadres om rechtstreeks toegang te krijgen tot uw professionele ruimte en uw gegevens te beheren.`,
+    en: `Hello,\n\nThe Mariage Afro team has created a vendor profile for **${p.vendorName}**. Create your account with this email address to access your professional space and manage your information directly.`,
+  }[locale];
+  const ctaLabel = { fr: "Créer mon espace pro", nl: "Mijn pro-ruimte aanmaken", en: "Create my pro space" }[locale];
+  await sendOne({
+    to: p.to,
+    subject,
+    html: wrap({
+      title,
+      intro: intro.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+      ctaLabel,
+      ctaUrl: `${appUrl()}/espace-pro/register`,
+      locale,
+    }),
+  }, log);
+}

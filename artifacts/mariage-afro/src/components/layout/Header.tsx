@@ -229,7 +229,7 @@ export default function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="fixed inset-0 z-40 bg-wine-deep flex flex-col"
+            className="fixed inset-0 z-[45] bg-wine-deep flex flex-col"
           >
             {/* Bandeau B2B/B2C en haut du menu pour orienter immédiatement */}
             <motion.div

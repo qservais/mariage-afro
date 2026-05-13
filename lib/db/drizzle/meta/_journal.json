@@ -29,6 +29,13 @@
       "when": 1747234800000,
       "tag": "0006_wedding_jour_j",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1747321200000,
+      "tag": "0007_vendor_invited_email",
+      "breakpoints": true
     }
   ]
 }

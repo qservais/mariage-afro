@@ -206,6 +206,8 @@ export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
   descriptionEn: text("description_en").notNull().default(""),
   indicativePrice: text("indicative_price"),
   hasFirstPost: boolean("has_first_post").notNull().default(false),
+  // Invitation admin : email pré-enregistré pour auto-lier un prestataire à sa fiche
+  invitedEmail: text("invited_email"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

@@ -14,7 +14,7 @@ import {
 } from "@workspace/db";
 import { eq, desc, asc, sql, and, isNull, isNotNull } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
-import { notifyVendorApproved, notifyConversationMessage } from "../lib/email";
+import { notifyVendorApproved, notifyConversationMessage, notifyVendorInvitation } from "../lib/email";
 
 const router = Router();
 router.use(adminAuth);
@@ -103,6 +103,7 @@ tr:last-child td{border-bottom:none}
 
 router.get("/content/vendors", async (_req: Request, res: Response) => {
   const vendors = await db.select().from(marketplaceVendorsTable).orderBy(asc(marketplaceVendorsTable.name));
+  const inviteMsg = _req.query.invite_ok ? `<div style="background:#d4edda;color:#155724;padding:10px 16px;border-radius:4px;margin-bottom:16px;">✓ Invitation envoyée avec succès.</div>` : "";
   const listHtml = vendors.length === 0
     ? `<p style="color:#888">Aucun partenaire. Cliquez sur "Ajouter" pour commencer.</p>`
     : `<div class="grid">${vendors.map(v => `
@@ -113,6 +114,7 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
         <div class="meta">
           <span class="badge ${v.active ? "active" : "inactive"}">${v.active ? "Actif" : "Inactif"}</span>
           &nbsp;${v.services.length} services · Note: ${v.rating}/5
+          ${v.invitedEmail ? `<span style="margin-left:8px;font-size:11px;color:#888;">✉ Invité : ${escHtml(v.invitedEmail)}</span>` : ""}
         </div>
         <div class="actions">
           <a class="btn sm secondary" href="/admin/content/vendors/${v.id}/edit">Modifier</a>
@@ -124,6 +126,17 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
             <button class="btn sm danger" type="submit">Supprimer</button>
           </form>
         </div>
+        <details style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+          <summary style="cursor:pointer;font-size:12px;color:#68191e;font-weight:600;letter-spacing:0.05em;">✉ Lier un compte prestataire par email</summary>
+          <form method="post" action="/admin/content/vendors/${v.id}/invite" style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input type="email" name="invited_email" required placeholder="email@prestataire.be" value="${escHtml(v.invitedEmail ?? "")}" style="flex:1;min-width:200px;padding:6px 10px;border:1px solid #ccc;font-size:13px;">
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;">
+              <input type="checkbox" name="send_email" value="1" checked> Envoyer l'email d'invitation
+            </label>
+            <button class="btn sm primary" type="submit">Lier</button>
+          </form>
+          <p style="font-size:11px;color:#888;margin-top:6px;">Le prestataire crée son compte sur /espace-pro/register avec cet email → il est automatiquement lié à cette fiche.</p>
+        </details>
       </div>`).join("")}</div>`;
 
   const body = `
@@ -131,8 +144,24 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
       <h1>Partenaires Marketplace (${vendors.length})</h1>
       <a class="btn primary" href="/admin/content/vendors/new">+ Ajouter un partenaire</a>
     </div>
+    ${inviteMsg}
     ${listHtml}`;
   res.type("html").send(contentLayout("Partenaires", body));
+});
+
+router.post("/content/vendors/:id/invite", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const invitedEmail = (req.body as Record<string, string>).invited_email?.trim() ?? "";
+  const sendEmail = (req.body as Record<string, string>).send_email === "1";
+  if (!invitedEmail) { res.redirect("/admin/content/vendors"); return; }
+  await db.update(marketplaceVendorsTable)
+    .set({ invitedEmail })
+    .where(eq(marketplaceVendorsTable.id, id));
+  if (sendEmail) {
+    const [v] = await db.select({ name: marketplaceVendorsTable.name }).from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.id, id));
+    notifyVendorInvitation({ to: invitedEmail, vendorName: v?.name ?? "votre entreprise", locale: "fr" }, req.log).catch((err) => req.log.error({ err }, "Failed to send vendor invitation email"));
+  }
+  res.redirect("/admin/content/vendors?invite_ok=1");
 });
 
 function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:string[];images:string[];website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number}> = {}, error = ""): string {
