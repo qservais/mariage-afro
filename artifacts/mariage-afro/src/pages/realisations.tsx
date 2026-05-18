@@ -242,7 +242,7 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
 
   /* Shared story panel content */
   const storyPanel = (
-    <div className={`flex flex-col p-10 md:p-14 bg-cream ${hasDoubleVideo && isReversed ? "lg:order-first" : isReversed ? "lg:order-1" : ""}`}>
+    <div className={`flex flex-col p-10 md:p-14 bg-cream ${!hasDoubleVideo && isReversed ? "lg:order-1" : ""}`}>
       {/* Meta pills */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-8">
         {r.type && <span className="badge-editorial">{r.type}</span>}
@@ -339,10 +339,12 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
         className="card-editorial overflow-hidden"
       >
         {hasDoubleVideo ? (
-          /* ── Double video layout ─────────────────────────────────────────── */
-          <div className="flex flex-col lg:flex-row">
-            {/* Two stacked video players (desktop: side-by-side within the left half; mobile: each full-width stacked) */}
-            <div className={`lg:w-1/2 flex flex-col sm:flex-row lg:flex-col ${isReversed ? "lg:order-2" : ""}`}>
+          /* ── Double video layout ─────────────────────────────────────────── *
+           * Desktop: two videos side-by-side (left = couple, right = teaser)  *
+           *          story panel below at full width                           *
+           * Mobile:  videoCouple → videoTeaser → story, each full-width       */
+          <div className="flex flex-col">
+            <div className="flex flex-col sm:flex-row">
               <VideoPlayer
                 url={r.videoCouple!}
                 label={t("realisations.video_couple_label")}
@@ -354,10 +356,7 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
                 className="flex-1 aspect-video"
               />
             </div>
-            {/* Story */}
-            <div className={`lg:w-1/2 ${isReversed ? "lg:order-1" : ""}`}>
-              {storyPanel}
-            </div>
+            {storyPanel}
           </div>
         ) : (
           /* ── Original layout: single media left / story right ─────────── */
