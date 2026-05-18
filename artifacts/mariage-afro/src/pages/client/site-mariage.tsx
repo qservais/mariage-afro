@@ -18,7 +18,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { clientFetch } from "@/lib/clientApi";
+import { clientFetch, clientProxyUpload } from "@/lib/clientApi";
 import {
   WEDDING_TEMPLATE_IDS,
   WEDDING_FONT_HEADINGS,
@@ -197,19 +197,7 @@ export default function SiteMariagePage() {
         maxWidth: 1920, maxHeight: 1280, quality: 0.82, mimeType: "image/jpeg",
       });
       if (error) { setCoverError(error); return; }
-      const intent = await fetch("/api/storage/uploads/request-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
-      });
-      if (!intent.ok) throw new Error(`HTTP ${intent.status}`);
-      const { uploadURL, objectPath } = await intent.json();
-      const put = await fetch(uploadURL, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-      if (!put.ok) throw new Error("Upload failed");
+      const { objectPath } = await clientProxyUpload(file);
       setForm((f) => ({ ...f, coverImage: objectPath }));
     } catch (err) {
       setCoverError((err as Error).message);

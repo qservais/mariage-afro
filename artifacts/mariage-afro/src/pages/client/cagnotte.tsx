@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Edit2, ImagePlus, Loader2, ExternalLink } from "lucide-react";
 import QRCode from "qrcode";
-import { clientApi } from "@/lib/clientApi";
+import { clientApi, clientProxyUpload } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,13 +29,8 @@ function objectUrl(path: string | null): string {
 }
 
 async function uploadFile(file: File): Promise<string> {
-  const meta = await clientApi.post<{ uploadURL: string; objectPath: string }>(
-    "/storage/uploads/request-url",
-    { name: file.name, size: file.size, contentType: file.type },
-  );
-  const put = await fetch(meta.uploadURL, { method: "PUT", headers: { "Content-Type": file.type || "application/octet-stream" }, body: file });
-  if (!put.ok) throw new Error("Upload failed");
-  return meta.objectPath;
+  const { objectPath } = await clientProxyUpload(file);
+  return objectPath;
 }
 
 const empty = { title: "", description: "", iban: "", externalUrl: "", photo: null as string | null, active: true };

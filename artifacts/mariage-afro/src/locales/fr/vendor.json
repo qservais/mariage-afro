@@ -270,7 +270,8 @@
       "set_cover": "Définir comme couverture",
       "unset_cover": "Retirer comme couverture",
       "remove": "Supprimer",
-      "saved": "Galerie mise à jour."
+      "saved": "Galerie mise à jour.",
+      "max_reached": "Maximum 10 photos atteint."
     },
     "services": {
       "title": "Mes services",

@@ -1,9 +1,8 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2, ExternalLink, FileText, UploadCloud } from "lucide-react";
-import { ObjectUploader } from "@workspace/object-storage-web";
-import { clientApi } from "@/lib/clientApi";
+import { Trash2, ExternalLink, FileText, UploadCloud, Loader2 } from "lucide-react";
+import { clientApi, clientProxyUpload } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -38,7 +37,9 @@ export default function DocumentsPage() {
     queryFn: () => clientApi.get<Doc[]>("/api/client/documents"),
   });
   const [form, setForm] = useState({ name: "", url: "", category: "contrat" });
-  const objectPathsRef = useRef<Map<string, string>>(new Map());
+  const docFileRef = useRef<HTMLInputElement>(null);
+  const [docUploading, setDocUploading] = useState(false);
+  const [docUploadError, setDocUploadError] = useState<string | null>(null);
 
   const create = useMutation({
     mutationFn: (b: DocCreate) => clientApi.post<Doc>("/api/client/documents", b),
@@ -64,40 +65,42 @@ export default function DocumentsPage() {
 
       <div className="bg-white p-4 border border-neutral-200 space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-          <ObjectUploader
-            buttonClassName="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-wider text-xs h-10 px-4"
-            maxNumberOfFiles={5}
-            maxFileSize={20 * 1024 * 1024}
-            onGetUploadParameters={async (file) => {
-              const res = await clientApi.post<{ uploadURL: string; objectPath: string }>(
-                "/api/storage/uploads/request-url",
-                { name: file.name, size: file.size, contentType: file.type },
-              );
-              if (file.id) objectPathsRef.current.set(file.id, res.objectPath);
-              return {
-                method: "PUT" as const,
-                url: res.uploadURL,
-                headers: { "Content-Type": file.type },
-              };
-            }}
-            onComplete={async (result) => {
-              for (const f of result.successful ?? []) {
-                const meta = (f.meta ?? {}) as { name?: string; type?: string; size?: number };
-                const objectPath = f.id ? objectPathsRef.current.get(f.id) : undefined;
-                if (!objectPath) continue;
-                await create.mutateAsync({
-                  name: meta.name ?? f.name ?? "Document",
-                  url: objectPath,
-                  category: form.category,
-                  fileType: meta.type ?? null,
-                  size: meta.size ?? 0,
-                });
-                if (f.id) objectPathsRef.current.delete(f.id);
-              }
-            }}
-          >
-            <UploadCloud className="w-4 h-4" /> {t("documents.upload")}
-          </ObjectUploader>
+          <label className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer rounded-none uppercase tracking-wider text-xs h-10 px-4">
+            {docUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
+            {t("documents.upload")}
+            <input
+              ref={docFileRef}
+              type="file"
+              multiple
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.zip"
+              className="hidden"
+              disabled={docUploading}
+              onChange={async (e) => {
+                const files = e.target.files;
+                if (!files || files.length === 0) return;
+                setDocUploadError(null);
+                setDocUploading(true);
+                try {
+                  for (const file of Array.from(files)) {
+                    const { objectPath } = await clientProxyUpload(file);
+                    await create.mutateAsync({
+                      name: file.name,
+                      url: objectPath,
+                      category: form.category,
+                      fileType: file.type || null,
+                      size: file.size,
+                    });
+                  }
+                } catch (err) {
+                  setDocUploadError((err as Error).message);
+                } finally {
+                  setDocUploading(false);
+                  if (docFileRef.current) docFileRef.current.value = "";
+                }
+              }}
+            />
+          </label>
+          {docUploadError && <p className="text-[11px] text-red-600">{docUploadError}</p>}
           <select
             className="border border-neutral-300 px-3 text-sm h-10"
             value={form.category}

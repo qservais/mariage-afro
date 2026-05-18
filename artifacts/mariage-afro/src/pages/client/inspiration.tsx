@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, ImagePlus, Mail, Loader2, X } from "lucide-react";
-import { clientApi, clientFetch } from "@/lib/clientApi";
+import { clientApi, clientFetch, clientProxyUpload } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,17 +32,8 @@ interface Collaborator {
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 async function uploadFile(file: File): Promise<string> {
-  const meta = await clientApi.post<{ uploadURL: string; objectPath: string }>(
-    "/storage/uploads/request-url",
-    { name: file.name, size: file.size, contentType: file.type },
-  );
-  const put = await fetch(meta.uploadURL, {
-    method: "PUT",
-    headers: { "Content-Type": file.type || "application/octet-stream" },
-    body: file,
-  });
-  if (!put.ok) throw new Error(`Upload failed: ${put.status}`);
-  return meta.objectPath;
+  const { objectPath } = await clientProxyUpload(file);
+  return objectPath;
 }
 
 function objectUrl(path: string): string {

@@ -270,7 +270,8 @@
       "set_cover": "Als omslag instellen",
       "unset_cover": "Omslag verwijderen",
       "remove": "Verwijderen",
-      "saved": "Galerij bijgewerkt."
+      "saved": "Galerij bijgewerkt.",
+      "max_reached": "Maximum van 10 foto's bereikt."
     },
     "services": {
       "title": "Mijn diensten",

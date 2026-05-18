@@ -72,11 +72,17 @@ export default function VendorGalleryPage() {
               onChange={async (e) => {
                 const files = e.target.files;
                 if (!files || files.length === 0) return;
+                const remaining = 10 - images.length;
+                if (remaining <= 0) {
+                  setUploadError(t("vendor.gallery.max_reached"));
+                  return;
+                }
                 setUploadError(null);
                 setUploading(true);
                 try {
                   const newPaths: string[] = [];
-                  for (const file of Array.from(files)) {
+                  const toUpload = Array.from(files).slice(0, remaining);
+                  for (const file of toUpload) {
                     const { objectPath } = await proxyUpload(file);
                     newPaths.push(objectPath);
                   }

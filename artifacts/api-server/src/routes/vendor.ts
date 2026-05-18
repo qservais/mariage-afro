@@ -323,6 +323,8 @@ router.patch("/vendor/profile", async (req, res) => {
   }
 
   const data = { ...parsed.data };
+
+  // Process logoUrl — consume upload intent and set public ACL
   if (typeof data.logoUrl === "string" && data.logoUrl.startsWith("/objects/")) {
     if (!await consumeUploadIntent(data.logoUrl, r.userId)) {
       res.status(403).json({ error: "Upload intent expired or unauthorized" });
@@ -343,6 +345,27 @@ router.patch("/vendor/profile", async (req, res) => {
     return;
   }
 
+  // Process videoUrl — same ownership/ACL flow as logoUrl when it's an uploaded object path
+  if (typeof data.videoUrl === "string" && data.videoUrl.startsWith("/objects/")) {
+    if (!await consumeUploadIntent(data.videoUrl, r.userId)) {
+      res.status(403).json({ error: "Video upload intent expired or unauthorized" });
+      return;
+    }
+    try {
+      data.videoUrl = await storageService.trySetObjectEntityAclPolicy(data.videoUrl, {
+        owner: r.userId,
+        visibility: "public",
+      });
+    } catch (err) {
+      req.log?.error?.({ err }, "Failed to set video ACL");
+      res.status(400).json({ error: "Invalid uploaded video path" });
+      return;
+    }
+  } else if (typeof data.videoUrl === "string" && data.videoUrl.includes("/.private/")) {
+    res.status(400).json({ error: "Invalid url" });
+    return;
+  }
+
   const [updated] = await db
     .update(marketplaceVendorsTable)
     .set(data)
@@ -353,7 +376,7 @@ router.patch("/vendor/profile", async (req, res) => {
 
 // ---------- Gallery ----------
 const imagesSchema = z.object({
-  images: z.array(z.string().min(1)).max(40),
+  images: z.array(z.string().min(1)).max(10),
   coverImage: z.string().optional().nullable(),
 });
 
