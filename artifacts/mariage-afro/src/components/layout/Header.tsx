@@ -102,14 +102,14 @@ export default function Header() {
         }`}
       >
         {/*
-          Layout: relative container with absolute-centered logo.
-          This guarantees the logo is pixel-perfect centered on every language
-          and screen size, independent of the widths of the left/right columns.
+          3-section flex: left=flex-none, center=flex-1 justify-center, right=flex-none.
+          Logo is centered in the available middle space — no absolute positioning needed,
+          no z-index collisions with right-side controls.
         */}
-        <div className="px-5 md:px-10 relative flex items-center justify-between">
+        <div className="px-5 md:px-10 flex items-center gap-4 md:gap-6">
 
-          {/* Left: hamburger */}
-          <div className="flex items-center z-10">
+          {/* Left: hamburger — flex-none */}
+          <div className="flex items-center flex-none">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className={`flex items-center gap-3 group transition-colors ${
@@ -128,24 +128,24 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Center: Logo — absolute so it is always exactly centered */}
-          <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none">
-            <Link to="/" className="flex items-center pointer-events-auto" aria-label="Mariage Afro">
+          {/* Center: Logo — flex-1, centered in remaining space */}
+          <div className="flex-1 flex justify-center">
+            <Link to="/" className="flex items-center" aria-label="Mariage Afro">
               <img
                 src={logoColor}
                 alt="Mariage Afro"
                 width={180}
                 height={48}
                 fetchPriority="high"
-                className={`h-9 sm:h-10 md:h-12 w-auto transition-all duration-500 ${
+                className={`h-8 sm:h-9 md:h-9 lg:h-10 xl:h-12 w-auto transition-all duration-500 ${
                   isScrolled || mobileMenuOpen || isOverDark ? "brightness-0 invert" : ""
                 }`}
               />
             </Link>
           </div>
 
-          {/* Right: language switcher (always visible) + CTA + client area (md+) */}
-          <div className="flex items-center gap-3 md:gap-6 z-10">
+          {/* Right: language switcher (always visible) + CTA + client area (md+) — flex-none */}
+          <div className="flex items-center gap-2 md:gap-4 flex-none">
             {/* Language switcher — visible on all screen sizes */}
             <div
               className={`flex items-center gap-1.5 text-[10px] sm:text-xs font-medium tracking-[0.15em] sm:tracking-[0.2em] transition-colors ${
@@ -192,16 +192,18 @@ export default function Header() {
               </button>
             </div>
 
+            {/* PRENDRE RDV — icon only on md, full label on lg+ */}
             <Link
               to="/contact#contact-form"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-semibold border transition-colors bg-bordeaux text-cream border-bordeaux hover:bg-bordeaux-light hover:border-bordeaux-light"
+              className="hidden md:inline-flex items-center gap-2 px-3 lg:px-4 py-2 text-[11px] uppercase tracking-[0.2em] font-semibold border transition-colors bg-bordeaux text-cream border-bordeaux hover:bg-bordeaux-light hover:border-bordeaux-light"
               aria-label={t("header.cta_rdv")}
               data-testid="link-header-rdv"
             >
-              <CalendarCheck2 className="w-3.5 h-3.5" aria-hidden="true" />
-              <span>{t("header.cta_rdv")}</span>
+              <CalendarCheck2 className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+              <span className="hidden lg:inline">{t("header.cta_rdv")}</span>
             </Link>
 
+            {/* ESPACE CLIENT — icon only on md, full label on lg+ */}
             <Link
               to="/espace-client/login"
               className={`hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium transition-colors ${goldHover} hover:underline underline-offset-4 ${
@@ -209,8 +211,8 @@ export default function Header() {
               }`}
               aria-label={t("nav.client_area")}
             >
-              <User className="w-3.5 h-3.5" />
-              <span>{t("nav.client_area")}</span>
+              <User className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="hidden lg:inline">{t("nav.client_area")}</span>
             </Link>
           </div>
         </div>
