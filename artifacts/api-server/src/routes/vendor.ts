@@ -2,7 +2,7 @@ import { Router, type Request, type Response, type NextFunction } from "express"
 import { getAuth } from "@clerk/express";
 import { z } from "zod";
 import { and, asc, desc, eq, inArray, isNull, isNotNull, ne, or, sql } from "drizzle-orm";
-import { slugify } from "../lib/slugify";
+import { slugify, uniqueSlug } from "../lib/slugify";
 import {
   db,
   vendorAccountsTable,
@@ -23,6 +23,20 @@ import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendor
 import { logger } from "../lib/logger";
 
 const router = Router();
+
+/**
+ * Generate a slug that is guaranteed unique in the marketplace_vendors table.
+ * If `baseSlug` is already taken by a different vendor, appends the numeric id.
+ */
+async function resolveVendorSlug(baseSlug: string, vendorId: number): Promise<string> {
+  if (!baseSlug) return `vendor-${vendorId}`;
+  const [collision] = await db
+    .select({ id: marketplaceVendorsTable.id })
+    .from(marketplaceVendorsTable)
+    .where(and(eq(marketplaceVendorsTable.slug, baseSlug), ne(marketplaceVendorsTable.id, vendorId)))
+    .limit(1);
+  return collision ? uniqueSlug(baseSlug, vendorId) : baseSlug;
+}
 const storageService = new ObjectStorageService();
 
 interface AuthedVendorRequest extends Request {
@@ -132,6 +146,7 @@ router.post("/vendor/onboarding", async (req, res) => {
   const baseSlug = slugify(data.businessName);
 
   if (vendorId) {
+    const slug = await resolveVendorSlug(baseSlug, vendorId);
     await db
       .update(marketplaceVendorsTable)
       .set({
@@ -143,7 +158,7 @@ router.post("/vendor/onboarding", async (req, res) => {
         website: data.website ?? null,
         phone: data.phone ?? null,
         email: data.email,
-        slug: baseSlug || `vendor-${vendorId}`,
+        slug,
       })
       .where(eq(marketplaceVendorsTable.id, vendorId));
   } else {
@@ -156,6 +171,7 @@ router.post("/vendor/onboarding", async (req, res) => {
 
     if (invitedVendor) {
       // Auto-link: update the pre-existing vendor profile with the submitted data
+      const slug = await resolveVendorSlug(baseSlug, invitedVendor.id);
       await db
         .update(marketplaceVendorsTable)
         .set({
@@ -167,7 +183,7 @@ router.post("/vendor/onboarding", async (req, res) => {
           website: data.website ?? null,
           phone: data.phone ?? null,
           email: data.email,
-          slug: baseSlug || `vendor-${invitedVendor.id}`,
+          slug,
         })
         .where(eq(marketplaceVendorsTable.id, invitedVendor.id));
       vendorId = invitedVendor.id;
@@ -191,10 +207,11 @@ router.post("/vendor/onboarding", async (req, res) => {
         })
         .returning();
       vendorId = vendor.id;
-      // Set slug after insert so we have the id available for uniqueness
+      // Set slug after insert so we have the id for collision-safe uniqueness
+      const slug = await resolveVendorSlug(baseSlug, vendorId);
       await db
         .update(marketplaceVendorsTable)
-        .set({ slug: baseSlug || `vendor-${vendorId}` })
+        .set({ slug })
         .where(eq(marketplaceVendorsTable.id, vendorId));
     }
   }

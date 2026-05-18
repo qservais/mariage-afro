@@ -1,4 +1,4 @@
-import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
+import express, { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { Readable } from "stream";
 import { getAuth } from "@clerk/express";
 import {
@@ -55,6 +55,60 @@ router.post("/storage/uploads/request-url", requireAuth, async (req: Request, re
     res.status(500).json({ error: "Failed to generate upload URL" });
   }
 });
+
+/**
+ * POST /storage/uploads/proxy-upload
+ *
+ * Server-side proxy for browser file uploads to GCS.
+ * Solves CORS issues when the Replit domain is not whitelisted on the GCS bucket.
+ *
+ * Body:    raw binary (the file bytes)
+ * Header:  x-content-type — MIME type (e.g. "image/jpeg")
+ *
+ * Returns: { objectPath: string }
+ */
+router.post(
+  "/storage/uploads/proxy-upload",
+  requireAuth,
+  express.raw({ type: "*/*", limit: "50mb" }),
+  async (req: Request, res: Response) => {
+    const body = req.body as Buffer;
+    if (!Buffer.isBuffer(body) || body.length === 0) {
+      res.status(400).json({ error: "Empty or invalid request body" });
+      return;
+    }
+
+    const contentType =
+      (req.headers["x-content-type"] as string) ||
+      (req.headers["content-type"] as string) ||
+      "application/octet-stream";
+
+    const userId = getAuth(req)?.userId as string;
+
+    try {
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      await recordUploadIntent(objectPath, userId);
+
+      const gcsRes = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": contentType },
+        body,
+      });
+
+      if (!gcsRes.ok) {
+        req.log.error({ status: gcsRes.status }, "GCS proxy upload failed");
+        res.status(502).json({ error: "Storage upload failed" });
+        return;
+      }
+
+      res.json({ objectPath });
+    } catch (error) {
+      req.log.error({ err: error }, "Error in proxy upload");
+      res.status(500).json({ error: "Failed to upload file" });
+    }
+  },
+);
 
 /**
  * GET /storage/public-objects/*

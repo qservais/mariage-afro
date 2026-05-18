@@ -1019,7 +1019,8 @@ export default function Prestations() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.06 }}
-                  className="card-editorial overflow-hidden flex flex-col"
+                  className={`card-editorial overflow-hidden flex flex-col${usingApi ? " cursor-pointer" : ""}`}
+                  onClick={() => usingApi && navigate(`/partenaires/${vendor.slug || vendor.id}`)}
                 >
                   <div className="relative h-64 md:h-72 overflow-hidden">
                     <img
@@ -1054,7 +1055,10 @@ export default function Prestations() {
                           {t("prestations.verified_badge")}
                         </span>
                       )}
-                      <label className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-cream/95 backdrop-blur-sm text-[10px] uppercase tracking-[0.2em] text-wine-deep cursor-pointer hover:bg-cream">
+                      <label
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-cream/95 backdrop-blur-sm text-[10px] uppercase tracking-[0.2em] text-wine-deep cursor-pointer hover:bg-cream"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <input
                           type="checkbox"
                           checked={compareIds.includes(vendor.id)}
@@ -1138,9 +1142,10 @@ export default function Prestations() {
                     <div className="mt-auto space-y-3">
                       <button
                         type="button"
-                        onClick={() =>
-                          setExpandedAvailability((cur) => (cur === vendor.id ? null : vendor.id))
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedAvailability((cur) => (cur === vendor.id ? null : vendor.id));
+                        }}
                         className="w-full flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-wine-deep/80 border-t border-wine-deep/10 pt-3"
                         data-testid={`toggle-availability-${vendor.id}`}
                       >
@@ -1158,7 +1163,7 @@ export default function Prestations() {
                         <VendorAvailabilityCalendar vendorId={vendor.id} months={6} />
                       )}
                       <button
-                        onClick={() => handleAddToProject(vendor)}
+                        onClick={(e) => { e.stopPropagation(); handleAddToProject(vendor); }}
                         disabled={addingId === vendor.id}
                         className="btn-editorial-compact-solid w-full"
                       >
@@ -1173,12 +1178,13 @@ export default function Prestations() {
                         {ACTIONS.map(({ key, icon: Icon }) => (
                           <button
                             key={key}
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setActiveModal({
                                 vendor: { id: vendor.id, name: vendor.name },
                                 action: key,
-                              })
-                            }
+                              });
+                            }}
                             className="btn-editorial-compact"
                           >
                             <Icon className="w-3.5 h-3.5 flex-shrink-0" />
