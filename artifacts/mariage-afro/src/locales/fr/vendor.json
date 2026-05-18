@@ -83,6 +83,8 @@
         "Transport": "Transport",
         "Invitations": "Invitations",
         "Lieu de réception": "Lieu de réception",
+        "Coordinateur de mariage": "Coordinateur de mariage",
+        "Wedding Designer": "Wedding Designer",
         "Autre": "Autre"
       },
       "regions_label": "Régions Belgique",
