@@ -1,0 +1,36 @@
+Tout vue mariée:
+- Vue Marié avoir la totalité des invités et des publiques sur
+- Vue du site, l’image upload ne fonctionne pas
+- Pour confirmer votre présente, qqch de plus Premium et plus brandé mariage Afro
+- Synchroniser dans la vue marié, d’avoir le budget et le prestataire (si payé etc) ces 2 onglets doivent communiquer ensembles
+- Vue marié, planning est-ce qu’il y a moyen de prévoir un planning par défaut modifiable pour prémacher le travail
+- Dans inspiration, je ne sais pas mettre des images
+- Le devis ne doit pas être synchronisé avec le budget
+- Il y a 2 types de mariés qui fonctionne avec « un budget libre » et d’autres avec un budget global. Du coup voir dans leur budget la déduction du budget et voir l’avancé à ce niveau
+
+Côté prestataire
+- Dans un premier temps, pour les formules, mettre le featured pour tout le monde, mais ne pas exploiter, tout le monde Premium, mais pour l’instant on ne facture pas c’est offert
+- Oubli d’un bouton pour « un message pour notre équipe » 
+- Prestataire validé, mais tjrs en attente
+- Attention même adresse email pour marié et prestataire ne doit pas être possible et surtout ne doit pas poser un problème de validation.
+- Adapter la page prestataire en fonction de la catégorie du prestataire, si photographe, adapter les services proposés, si traiteur adapter les services (par exemple des packages etc) personnalisés chaque services en fonction de la catégorie (donc avoir une façon de personnaliser) le formulaire du devis doit aussi pouvoir être personnalisé en fonction du thème pour ne pas avoir qqch de générique
+
+
+Côté admin
+- Améliorer globalement l’UX/UI pour que ce soit beau et clair
+- Quand un nouveau partenaire et qu’on choisit « autre » pouvoir encoder 
+    - Pas de champs « url photos » pouvoir télécharger les images
+    - Dans les champs partenaires ajouter des liens réseaux sociaux
+
+
+Publique:
+- Détail prestataire avoir la possibilité de mettre une embed (vidéo YouTube) avoir une template pour ne pas avoir 200 vidéos sur une page prestataire 
+- Quand une personne fait une demande de devis, recevoir confirmation 
+- Pour la date du mariage, le champ doit être en fonction de la langue (dd/yy/mm par exemple)
+- Bien s’assurer qu’une demande de devis sur une page partenaire, arrive bien sur l’admin du prestataire dans les demandes
+- Pour les lieux de demander une visite, avoir dans le formulaire proposer des créneaux de visite
+- Bien s’assurer que tous les emails et les envoie automatique soit bien configurés soit via Clerk soit via resend (si pas alors mettre en place ressent
+- Prévenir pour le calcul du budget d’un mariage que c’est une estimation
+
+Dans le site du jour j
+- Plutôt que le drive, mettre en avant ce lien: https://filmdemiel.pixieset.com/michaelaandstephano-1/ (qui sera adapté en fonction du marié)
