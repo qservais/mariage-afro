@@ -40,6 +40,16 @@ interface VendorDetail {
 
 const PRICE_LABEL = ["—", "€", "€€", "€€€", "€€€€"];
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+/** Convert an internal object path to a public serving URL. */
+function objectUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  return path;
+}
+
 function escapeJsonLd(s: string) {
   return s
     .replace(/<\/(script)/gi, "<\\/$1")
@@ -218,7 +228,7 @@ export default function PrestataireDetail() {
             {vendor.logoUrl && (
               <div className="hidden sm:flex flex-shrink-0 w-20 h-20 bg-cream/10 overflow-hidden items-center justify-center">
                 <img
-                  src={vendor.logoUrl}
+                  src={objectUrl(vendor.logoUrl)}
                   alt={`${vendor.name} logo`}
                   className="w-full h-full object-contain p-1"
                 />
@@ -264,7 +274,7 @@ export default function PrestataireDetail() {
           {/* Cover image */}
           {vendor.coverImage && (
             <img
-              src={vendor.coverImage}
+              src={objectUrl(vendor.coverImage)}
               alt={vendor.name}
               className="w-full h-80 object-cover rounded-sm"
             />
@@ -301,7 +311,7 @@ export default function PrestataireDetail() {
               {vendor.images.slice(0, 6).map((img) => (
                 <img
                   key={img}
-                  src={img}
+                  src={objectUrl(img)}
                   alt={vendor.name}
                   className="w-full h-40 object-cover rounded-sm"
                   loading="lazy"
@@ -317,7 +327,15 @@ export default function PrestataireDetail() {
                 <Play className="w-3.5 h-3.5" />
                 {t("vendor_detail.video", { defaultValue: "Vidéo de présentation" })}
               </h3>
-              {embedUrl ? (
+              {vendor.videoUrl.startsWith("/objects/") || vendor.videoUrl.startsWith("http") && !embedUrl ? (
+                /* Uploaded video file — serve via storage proxy */
+                <video
+                  src={objectUrl(vendor.videoUrl)}
+                  controls
+                  className="w-full rounded-sm max-h-[480px]"
+                  preload="metadata"
+                />
+              ) : embedUrl ? (
                 <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
                   <iframe
                     src={embedUrl}

@@ -1019,9 +1019,17 @@ export default function Prestations() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.06 }}
-                  className={`card-editorial overflow-hidden flex flex-col${usingApi ? " cursor-pointer" : ""}`}
-                  onClick={() => usingApi && navigate(`/partenaires/${vendor.slug || vendor.id}`)}
+                  className="card-editorial overflow-hidden flex flex-col relative"
                 >
+                  {/* Full-card link — semantic <a> covering the entire card */}
+                  {usingApi && (
+                    <Link
+                      to={`/partenaires/${vendor.slug || vendor.id}`}
+                      className="absolute inset-0 z-0"
+                      aria-label={vendor.name}
+                      tabIndex={-1}
+                    />
+                  )}
                   <div className="relative h-64 md:h-72 overflow-hidden">
                     <img
                       src={vendor.image}
@@ -1038,7 +1046,7 @@ export default function Prestations() {
                     <span className="badge-editorial-dark absolute top-4 left-4">
                       {vendor.category}
                     </span>
-                    <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 items-end relative z-10">
                       {vendor.tier === "featured" && (
                         <span className="badge-editorial bg-gold text-wine-deep border-gold" data-testid={`tier-badge-${vendor.id}`}>
                           <Crown className="w-3 h-3" /> Featured
@@ -1057,7 +1065,6 @@ export default function Prestations() {
                       )}
                       <label
                         className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-cream/95 backdrop-blur-sm text-[10px] uppercase tracking-[0.2em] text-wine-deep cursor-pointer hover:bg-cream"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <input
                           type="checkbox"
@@ -1069,7 +1076,7 @@ export default function Prestations() {
                         <Scale className="w-3 h-3" /> Comparer
                       </label>
                     </div>
-                    <div className="absolute bottom-5 left-5 right-5 text-cream">
+                    <div className="absolute bottom-5 left-5 right-5 text-cream relative z-10">
                       <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight leading-[1] mb-2">
                         {usingApi ? (
                           <Link
@@ -1117,7 +1124,7 @@ export default function Prestations() {
                     ))}
                   </div>
 
-                  <div className="p-7 md:p-8 flex flex-col flex-grow">
+                  <div className="p-7 md:p-8 flex flex-col flex-grow relative z-10">
                     <p className="text-wine-deep/70 text-sm leading-relaxed mb-7 font-light italic">
                       {vendor.tagline}
                     </p>
