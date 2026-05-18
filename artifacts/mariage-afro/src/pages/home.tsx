@@ -180,6 +180,11 @@ export default function Home() {
       num: t("platform.point3_num"),
       title: t("platform.point3_title"),
       desc: t("platform.point3_desc")
+    },
+    {
+      num: t("platform.point4_num"),
+      title: t("platform.point4_title"),
+      desc: t("platform.point4_desc")
     }
   ];
 

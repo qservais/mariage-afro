@@ -1,7 +1,7 @@
 {
   "hero": {
     "tagline": "Afro & Mixed Wedding Platform",
-    "title": "Eén plek voor jullie volledige bruiloft.",
+    "title": "Een compleet platform, ontworpen om elke stap van jullie bruiloft te begeleiden",
     "subtitle": "Mariage Afro is het internationale premium platform om jullie Afro of gemengde bruiloft van A tot Z te orkestreren: geverifieerde leveranciers, geïntegreerde planning, coördinatie op de Dag Zelf.",
     "cta_primary": "Maak een afspraak",
     "cta_secondary": "Ontdek het platform"
@@ -62,13 +62,13 @@
   "destination": {
     "section_label": "Destination Wedding",
     "afrique_name": "Afrika",
-    "afrique_countries": "Marokko · Senegal · Ivoorkust · Kameroen · Benin · Togo · DRC · Burkina Faso · Madagaskar",
+    "afrique_countries": "Congo · Senegal · Ivoorkust · Kameroen · Marokko · Angola · Nigeria · Ghana · Rwanda · Kenia · Tanzania · Kaapverdië",
     "europe_name": "Europa",
-    "europe_countries": "Portugal · Frankrijk · Spanje · Italië · Griekenland · België · Nederland · Zwitserland",
+    "europe_countries": "Portugal · Griekenland · Italië · Frankrijk · Spanje · Kroatië · België",
     "asie_name": "Azië",
-    "asie_countries": "Bali · Malediven · Dubai · Mauritius · Sri Lanka · Thailand",
+    "asie_countries": "Thailand · Vietnam · Filipijnen · Indonesië · Verenigde Arabische Emiraten · Japan · Malediven",
     "amerique_name": "Cariben & Indische Oceaan",
-    "amerique_countries": "Martinique · Guadeloupe · Réunion · Mauritius · Haïti · Cuba"
+    "amerique_countries": "Mauritius · Madagaskar · Réunion · Seychellen · Martinique · Guadeloupe · Haïti"
   },
   "services": {
     "title": "Onze Diensten",
@@ -136,15 +136,18 @@
     "label": "Onze unieke aanpak",
     "title": "Een platform, niet zomaar een wedding planner",
     "desc": "Mariage Afro geeft u toegang tot een compleet ecosysteem: een netwerk van meer dan 50 geverifieerde leveranciers, zeldzame culturele expertise en een toegewijd team om elk aspect van uw Afro of gemengd huwelijk te orkestreren, waar u ook bent.",
-    "point1_num": "50+",
-    "point1_title": "Geverifieerde leveranciers",
-    "point1_desc": "Fotografen, videografen, cateraars, DJ's — allemaal gespecialiseerd en geselecteerd voor Afro en gemengde bruiloften.",
-    "point2_num": "55",
-    "point2_title": "Landen beheerst",
-    "point2_desc": "Een unieke Pan-Afrikaanse dekking: de 55 landen en eilanden van het Afrikaanse continent, hun tradities, rituelen en de codes van een geslaagd gemengd huwelijk.",
-    "point3_num": "1",
-    "point3_title": "Toegewijde contactpersoon",
-    "point3_desc": "Één enkel aanspreekpunt, van het eerste consult tot de dag na jullie bruiloft.",
+    "point1_num": "01",
+    "point1_title": "Culturele Expertise",
+    "point1_desc": "Een echte kennis van tradities, etnische achtergronden, families en codes eigen aan Afro en gemengde bruiloften.",
+    "point2_num": "02",
+    "point2_title": "Gestructureerde Organisatie",
+    "point2_desc": "Een duidelijke methode om de uitdagingen van een multiculturele bruiloft aan te pakken: gasten, timing, leveranciers, ceremonies en sleutelmomenten.",
+    "point3_num": "03",
+    "point3_title": "Geselecteerd Netwerk",
+    "point3_desc": "Locaties en leveranciers gekozen op hun ernst, kwaliteit en vermogen om jullie visie te begrijpen.",
+    "point4_num": "04",
+    "point4_title": "Volledige Begeleiding",
+    "point4_desc": "Een platform dat jullie bij elke stap begeleidt om een elegante, vlotte bruiloft te creëren die trouw blijft aan jullie verhaal.",
     "cta": "Maak een afspraak"
   },
   "platform_page": {

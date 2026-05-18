@@ -1,7 +1,7 @@
 {
   "hero": {
     "tagline": "Afro & Mixed Wedding Platform",
-    "title": "Un seul lieu pour tout votre mariage.",
+    "title": "Une plateforme complète, pensée pour accompagner chaque étape de votre mariage",
     "subtitle": "Mariage Afro est la plateforme premium internationale pour orchestrer votre mariage afro ou mixte de A à Z : prestataires vérifiés, planification intégrée, coordination sur le Jour J.",
     "cta_primary": "Prendre rendez-vous",
     "cta_secondary": "Découvrir la plateforme"
@@ -62,13 +62,13 @@
   "destination": {
     "section_label": "Destination Wedding",
     "afrique_name": "Afrique",
-    "afrique_countries": "Maroc · Sénégal · Côte d'Ivoire · Cameroun · Bénin · Togo · RDC · Burkina Faso · Madagascar",
+    "afrique_countries": "Congo · Sénégal · Côte d'Ivoire · Cameroun · Maroc · Angola · Nigeria · Ghana · Rwanda · Kenya · Tanzanie · Cap-Vert",
     "europe_name": "Europe",
-    "europe_countries": "Portugal · France · Espagne · Italie · Grèce · Belgique · Pays-Bas · Suisse",
+    "europe_countries": "Portugal · Grèce · Italie · France · Espagne · Croatie · Belgique",
     "asie_name": "Asie",
-    "asie_countries": "Bali · Maldives · Dubaï · Île Maurice · Sri Lanka · Thaïlande",
+    "asie_countries": "Thaïlande · Vietnam · Philippines · Indonésie · Émirats arabes unis · Japon · Maldives",
     "amerique_name": "Caraïbes & Océan Indien",
-    "amerique_countries": "Martinique · Guadeloupe · La Réunion · Maurice · Haïti · Cuba"
+    "amerique_countries": "Île Maurice · Madagascar · La Réunion · Seychelles · Martinique · Guadeloupe · Haïti"
   },
   "services": {
     "title": "Nos Services",
@@ -136,15 +136,18 @@
     "label": "Notre approche unique",
     "title": "Une plateforme, pas un simple wedding planner",
     "desc": "Mariage Afro, c'est l'accès à un écosystème complet : un réseau de plus de 50 prestataires vérifiés, une expertise culturelle rare, et une équipe dédiée pour orchestrer chaque aspect de votre mariage afro ou mixte, partout où vous êtes.",
-    "point1_num": "50+",
-    "point1_title": "Prestataires vérifiés",
-    "point1_desc": "Photographes, vidéastes, traiteurs, DJs — tous spécialisés et sélectionnés pour les mariages afro et mixtes.",
-    "point2_num": "55",
-    "point2_title": "Pays maîtrisés",
-    "point2_desc": "Une couverture Pan-Africaine unique : les 55 pays et îles du continent africain, leurs traditions, leurs rituels et les codes d'un mariage mixte réussi.",
-    "point3_num": "1",
-    "point3_title": "Interlocuteur dédié",
-    "point3_desc": "Un seul contact, de la première consultation jusqu'au lendemain de votre mariage.",
+    "point1_num": "01",
+    "point1_title": "Expertise Culturelle",
+    "point1_desc": "Une vraie compréhension des traditions, des ethnies, des familles et des codes propres aux mariages afro et mixtes.",
+    "point2_num": "02",
+    "point2_title": "Organisation Structurée",
+    "point2_desc": "Une méthode claire pour gérer les défis d'un mariage multiculturel : invités, timing, prestataires, cérémonies et moments clés.",
+    "point3_num": "03",
+    "point3_title": "Réseau Sélectionné",
+    "point3_desc": "Des lieux et prestataires choisis pour leur sérieux, leur qualité et leur capacité à comprendre votre vision.",
+    "point4_num": "04",
+    "point4_title": "Accompagnement Complet",
+    "point4_desc": "Une plateforme qui vous accompagne à chaque étape pour créer un mariage élégant, fluide et fidèle à votre histoire.",
     "cta": "Prendre rendez-vous"
   },
   "platform_page": {
