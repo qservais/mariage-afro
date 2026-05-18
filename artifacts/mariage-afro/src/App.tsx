@@ -11,6 +11,7 @@ import ExitIntentPopup from "@/components/ExitIntentPopup";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+import BackToTop from "@/components/layout/BackToTop";
 import { StickyCTA } from "@/components/StickyCTA";
 import { MariageAfroClerkProvider } from "@/lib/clerk";
 import "./i18n";
@@ -128,6 +129,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <Footer />
       <ExitIntentPopup />
       <StickyCTA />
+      <BackToTop />
     </div>
   );
 }

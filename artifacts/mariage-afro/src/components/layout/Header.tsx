@@ -106,8 +106,9 @@ export default function Header() {
             : "bg-cream/95 backdrop-blur-sm py-5"
         }`}
       >
-        <div className="px-5 md:px-10 flex items-center justify-between">
-          {/* Hamburger top-left */}
+        <div className="px-5 md:px-10 grid grid-cols-3 items-center">
+          {/* Col 1: Hamburger top-left */}
+          <div className="flex items-center">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className={`flex items-center gap-3 group transition-colors ${
@@ -124,8 +125,10 @@ export default function Header() {
               {mobileMenuOpen ? t("header.menu_close") : t("header.menu_open")}
             </span>
           </button>
+          </div>
 
-          {/* Logo center — wordmark Mariage Afro toujours présent ; recoloré en blanc via filter sur fonds sombres pour rester lisible */}
+          {/* Col 2: Logo center — always perfectly centered regardless of side widths */}
+          <div className="flex justify-center">
           <Link to="/" className="flex items-center" aria-label="Mariage Afro">
             <img
               src={logoColor}
@@ -138,9 +141,10 @@ export default function Header() {
               }`}
             />
           </Link>
+          </div>
 
-          {/* Right: language + client area */}
-          <div className="flex items-center gap-4 md:gap-6">
+          {/* Col 3: Right: language + client area */}
+          <div className="flex items-center justify-end gap-4 md:gap-6">
             <div
               className={`hidden sm:flex items-center gap-2 text-xs font-medium tracking-[0.2em] transition-colors ${
                 isOverDark || isScrolled || mobileMenuOpen ? "text-cream/90" : "text-wine-deep"

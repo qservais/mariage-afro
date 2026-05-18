@@ -48,7 +48,7 @@
     "how_cta": "Discover the platform",
     "discover": "Discover",
     "intro_skip": "Skip intro",
-    "already_client": "Already a client? Access your area",
+    "already_client": "Already registered? Access your area",
     "you_are": "You are",
     "meta_title": "Mariage Afro — The Platform for Afro & Mixed Weddings",
     "partner1": "Venue Rental",
@@ -62,13 +62,13 @@
   "destination": {
     "section_label": "Destination Wedding",
     "afrique_name": "Africa",
-    "afrique_countries": "Morocco · Senegal · Ivory Coast",
+    "afrique_countries": "Morocco · Senegal · Ivory Coast · Cameroon · Benin · Togo · DRC · Burkina Faso · Madagascar",
     "europe_name": "Europe",
-    "europe_countries": "Portugal · Greece",
+    "europe_countries": "Portugal · France · Spain · Italy · Greece · Belgium · Netherlands · Switzerland",
     "asie_name": "Asia",
-    "asie_countries": "Mauritius · Sri Lanka",
-    "amerique_name": "Americas",
-    "amerique_countries": "Martinique · Guadeloupe"
+    "asie_countries": "Bali · Maldives · Dubai · Mauritius · Sri Lanka · Thailand",
+    "amerique_name": "Caribbean & Indian Ocean",
+    "amerique_countries": "Martinique · Guadeloupe · Réunion · Mauritius · Haiti · Cuba"
   },
   "services": {
     "title": "Our Services",
@@ -150,7 +150,7 @@
   "platform_page": {
     "tagline": "The Mariage Afro platform",
     "title": "Pilot your wedding from your dashboard",
-    "subtitle": "Nine integrated modules to centralize your wedding planning. The client pilots, we orchestrate.",
+    "subtitle": "Nine integrated modules to centralize your wedding planning. The couple pilots, we orchestrate.",
     "cta_primary": "Request access",
     "cta_secondary": "View our services",
     "modules_label": "Platform modules",
@@ -427,7 +427,7 @@
       "services_label": "Which vendors do you need?",
       "services": {
         "dj": "DJ",
-        "catering": "Traiteur",
+        "catering": "Caterer",
         "photo": "Photographer",
         "decoration": "Decoration",
         "flowers": "Flowers",
@@ -435,7 +435,27 @@
         "venue": "Venue",
         "beauty": "Hair & Makeup",
         "video": "Videographer",
-        "animation": "Entertainment"
+        "animation": "Entertainment",
+        "coordination": "Wedding Coordinator",
+        "wedding_planner": "Wedding Planner",
+        "camera": "Cameraman",
+        "lighting": "Sound & Lighting",
+        "live_band": "Live Band",
+        "special_effects": "Special Effects",
+        "officiant": "Officiant",
+        "wedding_cake": "Wedding Cake",
+        "screen": "Giant Screen",
+        "waiters": "Hostesses & Waitstaff",
+        "wedding_website": "Wedding Website"
+      },
+      "wedding_type_label": "Wedding type",
+      "wedding_types": {
+        "afro": "Afro wedding",
+        "mixte": "Mixed wedding",
+        "traditionnel": "Traditional wedding",
+        "religieux": "Religious wedding",
+        "laique": "Non-religious wedding",
+        "civil": "Civil wedding"
       },
       "budget_placeholder": "e.g. €15,000 — €25,000",
       "message_label": "Tell us about your wedding",
@@ -681,14 +701,14 @@
   },
   "value_props": {
     "title": "Why choose Mariage Afro?",
-    "item1_title": "Cultural Expertise",
-    "item1_desc": "A deep understanding of your traditions and customs for an authentic celebration.",
-    "item2_title": "Premium Network",
-    "item2_desc": "Exclusive access to the best specialized vendors in Afro and mixed weddings.",
-    "item3_title": "Tailored Support",
-    "item3_desc": "Personalized guidance to bring your unique vision to life.",
-    "item4_title": "Absolute Serenity",
-    "item4_desc": "Enjoy your day, we manage every detail with excellence."
+    "item1_title": "CULTURAL EXPERTISE",
+    "item1_desc": "A deep and genuine understanding of African traditions, their codes and rituals — for a celebration that truly reflects who you are.",
+    "item2_title": "STRUCTURED ORGANISATION",
+    "item2_desc": "A rigorous framework, practical tools and a proven methodology so every detail is under control, months in advance.",
+    "item3_title": "CURATED NETWORK",
+    "item3_desc": "Carefully hand-picked vendors: photographers, caterers, DJs, decorators — all experts in Afro and mixed weddings.",
+    "item4_title": "COMPLETE SUPPORT",
+    "item4_desc": "From the first consultation to the morning after your wedding day, you are never alone. We are there, every step of the way."
   },
   "testimonials": {
     "label": "They trust us",

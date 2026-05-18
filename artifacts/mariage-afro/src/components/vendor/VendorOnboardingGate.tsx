@@ -45,6 +45,8 @@ const CATEGORY_VALUES = [
   "Transport",
   "Invitations",
   "Lieu de réception",
+  "Coordinateur de mariage",
+  "Wedding Designer",
   "Autre",
 ] as const;
 

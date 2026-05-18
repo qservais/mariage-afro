@@ -50,7 +50,7 @@ export function TrustBar() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-center text-[10px] uppercase tracking-[0.35em] text-primary/40 font-medium mt-5"
         >
-          {t("trust_bar.label", "La référence du mariage afro & mixte en Belgique")}
+          {t("trust_bar.label", "La référence du mariage afro & mixte — partout dans le monde")}
         </motion.p>
       </div>
     </section>

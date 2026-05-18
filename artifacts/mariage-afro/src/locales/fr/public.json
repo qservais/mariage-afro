@@ -48,7 +48,7 @@
     "how_cta": "Découvrir la plateforme",
     "discover": "Découvrir",
     "intro_skip": "Passer l'intro",
-    "already_client": "Déjà client&nbsp;? Accédez à votre espace",
+    "already_client": "Déjà inscrit·e&nbsp;? Accédez à votre espace",
     "you_are": "Vous êtes",
     "meta_title": "Mariage Afro — La Plateforme des Mariages Afro & Mixtes",
     "partner1": "Location de salle",
@@ -62,13 +62,13 @@
   "destination": {
     "section_label": "Destination Wedding",
     "afrique_name": "Afrique",
-    "afrique_countries": "Maroc · Sénégal · Côte d'Ivoire",
+    "afrique_countries": "Maroc · Sénégal · Côte d'Ivoire · Cameroun · Bénin · Togo · RDC · Burkina Faso · Madagascar",
     "europe_name": "Europe",
-    "europe_countries": "Portugal · Grèce",
+    "europe_countries": "Portugal · France · Espagne · Italie · Grèce · Belgique · Pays-Bas · Suisse",
     "asie_name": "Asie",
-    "asie_countries": "Île Maurice · Sri Lanka",
-    "amerique_name": "Amérique",
-    "amerique_countries": "Martinique · Guadeloupe"
+    "asie_countries": "Bali · Maldives · Dubaï · Île Maurice · Sri Lanka · Thaïlande",
+    "amerique_name": "Caraïbes & Océan Indien",
+    "amerique_countries": "Martinique · Guadeloupe · La Réunion · Maurice · Haïti · Cuba"
   },
   "services": {
     "title": "Nos Services",
@@ -150,7 +150,7 @@
   "platform_page": {
     "tagline": "La plateforme Mariage Afro",
     "title": "Pilotez votre mariage depuis votre tableau de bord",
-    "subtitle": "Neuf modules intégrés pour centraliser l'organisation de votre mariage. Le client pilote, nous orchestrons.",
+    "subtitle": "Neuf modules intégrés pour centraliser l'organisation de votre mariage. Le couple pilote, nous orchestrons.",
     "cta_primary": "Demander un accès",
     "cta_secondary": "Voir nos services",
     "modules_label": "Les modules de la plateforme",
@@ -435,7 +435,27 @@
         "venue": "Salle / Lieu",
         "beauty": "Coiffure & Maquillage",
         "video": "Vidéaste",
-        "animation": "Animation"
+        "animation": "Animation",
+        "coordination": "Coordinateur de mariage",
+        "wedding_planner": "Wedding Planner",
+        "camera": "Caméraman",
+        "lighting": "Sono & Lumière",
+        "live_band": "Live Band",
+        "special_effects": "Effets spéciaux",
+        "officiant": "Officiant",
+        "wedding_cake": "Wedding Cake",
+        "screen": "Écran géant",
+        "waiters": "Hôtesses & Serveurs",
+        "wedding_website": "Site web de mariage"
+      },
+      "wedding_type_label": "Type de mariage",
+      "wedding_types": {
+        "afro": "Mariage afro",
+        "mixte": "Mariage mixte",
+        "traditionnel": "Mariage traditionnel",
+        "religieux": "Mariage religieux",
+        "laique": "Mariage laïque",
+        "civil": "Mariage civil"
       },
       "budget_placeholder": "ex. 15 000 € — 25 000 €",
       "message_label": "Parlez-nous de votre mariage",
@@ -681,14 +701,14 @@
   },
   "value_props": {
     "title": "Pourquoi choisir Mariage Afro ?",
-    "item1_title": "Expertise Culturelle",
-    "item1_desc": "Une compréhension profonde de vos traditions et coutumes pour une célébration authentique.",
-    "item2_title": "Réseau Premium",
-    "item2_desc": "Accès exclusif aux meilleurs prestataires spécialisés en mariages afro et mixtes.",
-    "item3_title": "Accompagnement Sur-Mesure",
-    "item3_desc": "Un suivi personnalisé pour donner vie à votre vision unique.",
-    "item4_title": "Sérénité Absolue",
-    "item4_desc": "Profitez de votre journée, nous gérons les moindres détails avec excellence."
+    "item1_title": "EXPERTISE CULTURELLE",
+    "item1_desc": "Une compréhension profonde et sincère des traditions africaines, de leurs codes et rituels — pour une célébration qui vous ressemble vraiment.",
+    "item2_title": "ORGANISATION STRUCTURÉE",
+    "item2_desc": "Un cadre rigoureux, des outils pratiques et une méthodologie éprouvée pour que chaque détail soit maîtrisé, des mois à l'avance.",
+    "item3_title": "RÉSEAU SÉLECTIONNÉ",
+    "item3_desc": "Des prestataires soigneusement triés sur le volet : photographes, traiteurs, DJs, décorateurs — tous experts du mariage afro et mixte.",
+    "item4_title": "ACCOMPAGNEMENT COMPLET",
+    "item4_desc": "De la première consultation jusqu'au lendemain du Jour J, vous n'êtes jamais seuls. Nous sommes là, à chaque étape."
   },
   "testimonials": {
     "label": "Ils nous font confiance",
