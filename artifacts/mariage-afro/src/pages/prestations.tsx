@@ -229,6 +229,17 @@ const SERVICE_REQUEST_OPTIONS = [
   "beauty",
   "video",
   "animation",
+  "coordination",
+  "wedding_planner",
+  "camera",
+  "lighting",
+  "live_band",
+  "special_effects",
+  "officiant",
+  "wedding_cake",
+  "screen",
+  "waiters",
+  "wedding_website",
 ] as const;
 
 type ServiceRequestValues = {

@@ -40,7 +40,7 @@ const INITIAL: LeadValues = {
   date: "",
 };
 
-const WEDDING_TYPES = ["afro", "mixte", "traditional", "religious", "other"] as const;
+const WEDDING_TYPES = ["afro", "mixte", "traditional", "religious", "laique", "civil", "other"] as const;
 
 export default function LeadModal({ open, onClose }: LeadModalProps) {
   const { t } = useTranslation();

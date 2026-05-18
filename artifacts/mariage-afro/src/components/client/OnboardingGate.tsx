@@ -39,7 +39,7 @@ interface CoupleValues extends Record<string, unknown> {
   budgetTier: string;
 }
 
-const WEDDING_TYPE_KEYS = ["afro", "mixte", "traditional", "religious", "other"] as const;
+const WEDDING_TYPE_KEYS = ["afro", "mixte", "traditional", "religious", "laique", "civil", "other"] as const;
 const AMBIANCE_KEYS = ["chic_intime", "grand_celebration", "traditionnel", "moderne_mixte", "non_decide"] as const;
 const STAGE_KEYS = ["tres_debut", "en_cours", "finalisation"] as const;
 const BUDGET_KEYS = ["under_15k", "15k_30k", "30k_50k", "over_50k", "undecided"] as const;
