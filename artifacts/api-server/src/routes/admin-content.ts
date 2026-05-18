@@ -269,6 +269,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
         </div>
       </div>
 
+
       <div class="actions">
         <button class="btn primary" type="submit">Enregistrer</button>
         <a class="btn secondary" href="/admin/content/vendors">Annuler</a>

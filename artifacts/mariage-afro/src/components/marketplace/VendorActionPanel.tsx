@@ -16,12 +16,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { comparator } from "@/lib/comparator";
+import {
+  getCategoryConfig,
+  getCategoryLabel,
+  type CategoryField,
+} from "@/lib/vendorCategoryConfig";
 
 export type VendorActionType = "quote" | "availability" | "booking" | "zoom" | "rdv";
 
 interface VendorLite {
   id: number;
   name: string;
+  category?: string;
 }
 
 interface VendorActionPanelProps {
@@ -134,10 +140,16 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
   const [phone, setPhone] = useState("");
   const [weddingDate, setWeddingDate] = useState("");
   const [message, setMessage] = useState("");
+  const [categoryFieldValues, setCategoryFieldValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const k = useMemo(() => `partners.actions.${action}` as const, [action]);
+
+  const catConfig = useMemo(
+    () => (action === "quote" && vendor.category ? getCategoryConfig(vendor.category) : null),
+    [action, vendor.category],
+  );
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -146,6 +158,10 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  function setCatField(key: string, value: string) {
+    setCategoryFieldValues((prev) => ({ ...prev, [key]: value }));
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -165,6 +181,10 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
           weddingDate: weddingDate || null,
           message: message || null,
           locale: i18n.language,
+          categoryFields:
+            catConfig && Object.keys(categoryFieldValues).length > 0
+              ? categoryFieldValues
+              : null,
         }),
       });
       if (!res.ok) throw new Error("bad_status");
@@ -278,6 +298,26 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
               </div>
             </div>
 
+            {/* Dynamic category-specific fields — quote only */}
+            {catConfig && catConfig.quoteFields.length > 0 && (
+              <div className="space-y-4 border-t border-wine-deep/10 pt-5">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold">
+                  {t("vendor_detail.category_fields_title", {
+                    defaultValue: "Informations spécifiques",
+                  })}
+                </p>
+                {catConfig.quoteFields.map((field: CategoryField) => (
+                  <CategoryFieldInput
+                    key={field.key}
+                    field={field}
+                    lang={i18n.language}
+                    value={categoryFieldValues[field.key] ?? ""}
+                    onChange={(v) => setCatField(field.key, v)}
+                  />
+                ))}
+              </div>
+            )}
+
             <div>
               <Label htmlFor={`va-message-${action}`} className="text-xs uppercase tracking-wide">
                 {t(`${k}.message_label`)}
@@ -331,6 +371,78 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+interface CategoryFieldInputProps {
+  field: CategoryField;
+  lang: string;
+  value: string;
+  onChange: (v: string) => void;
+}
+
+function CategoryFieldInput({ field, lang, value, onChange }: CategoryFieldInputProps) {
+  const label = getCategoryLabel(field, lang);
+  const id = `cat-field-${field.key}`;
+
+  if (field.type === "select" && field.options) {
+    return (
+      <div>
+        <Label htmlFor={id} className="text-xs uppercase tracking-wide">
+          {label}
+        </Label>
+        <select
+          id={id}
+          value={value}
+          required={field.required}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-1 w-full px-3 py-2 bg-cream border border-wine-deep/15 text-sm text-wine-deep focus:outline-none focus:ring-1 focus:ring-gold-deep"
+        >
+          <option value="">—</option>
+          {field.options.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
+  if (field.type === "textarea") {
+    return (
+      <div>
+        <Label htmlFor={id} className="text-xs uppercase tracking-wide">
+          {label}
+        </Label>
+        <Textarea
+          id={id}
+          value={value}
+          required={field.required}
+          placeholder={field.placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          className="bg-cream border-wine-deep/15 rounded-none mt-1 min-h-[80px] resize-none"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Label htmlFor={id} className="text-xs uppercase tracking-wide">
+        {label}
+      </Label>
+      <Input
+        id={id}
+        type={field.type === "number" ? "number" : "text"}
+        value={value}
+        required={field.required}
+        placeholder={field.placeholder}
+        min={field.type === "number" ? 0 : undefined}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-cream border-wine-deep/15 rounded-none mt-1"
+      />
     </div>
   );
 }

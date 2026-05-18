@@ -57,6 +57,7 @@ const vendorRequestSchema = z.object({
   phone: z.string().optional().nullable(),
   weddingDate: isoDateOrNull,
   message: z.string().optional().nullable(),
+  categoryFields: z.record(z.string(), z.string()).optional().nullable(),
 });
 
 const venueRequestSchema = z.object({
@@ -152,6 +153,15 @@ router.post("/vendor-request", async (req, res) => {
   }
   const data = parsed.data;
   try {
+    const catFieldsSuffix =
+      data.categoryFields && Object.keys(data.categoryFields).length > 0
+        ? "\n\n--- Informations spécifiques ---\n" +
+          Object.entries(data.categoryFields)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join("\n")
+        : "";
+    const fullMessage = data.message ? data.message + catFieldsSuffix : catFieldsSuffix.trim() || null;
+
     const [row] = await db.insert(vendorRequestsTable).values({
       vendorId: data.vendorId ?? null,
       vendorName: data.vendorName,
@@ -160,9 +170,9 @@ router.post("/vendor-request", async (req, res) => {
       email: data.email,
       phone: data.phone ?? null,
       weddingDate: data.weddingDate ?? null,
-      message: data.message ?? null,
+      message: fullMessage,
     }).returning();
-    void sendVendorRequestEmails(data, req.log).catch((err) => {
+    void sendVendorRequestEmails({ ...data, message: fullMessage }, req.log).catch((err) => {
       req.log.error({ err }, "Vendor request saved but email failed");
     });
     // Notify the vendor directly if they have a vendor_account linked to this marketplace vendor
@@ -185,7 +195,7 @@ router.post("/vendor-request", async (req, res) => {
               contactPhone: data.phone,
               requestType: data.requestType,
               weddingDate: data.weddingDate,
-              message: data.message,
+              message: fullMessage,
             }, req.log);
           }
         })().catch((err) => {

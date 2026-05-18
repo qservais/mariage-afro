@@ -8,6 +8,7 @@ import ReviewsList from "@/components/marketplace/ReviewsList";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
 import VendorActionPanel from "@/components/marketplace/VendorActionPanel";
 import { SEO } from "@/components/SEO";
+import { getCategoryConfig } from "@/lib/vendorCategoryConfig";
 
 interface VendorDetail {
   id: number;
@@ -293,22 +294,71 @@ export default function PrestataireDetail() {
             </p>
           </div>
 
-          {/* Services */}
-          {vendor.services?.length > 0 && (
-            <div>
-              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">{t("vendor_detail.services")}</h3>
-              <ul className="flex flex-wrap gap-2">
-                {vendor.services.map((s) => (
-                  <li
-                    key={s}
-                    className="px-3 py-1.5 bg-wine-deep/5 text-wine-deep text-xs uppercase tracking-[0.15em]"
-                  >
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Services — category-aware */}
+          {vendor.services?.length > 0 && (() => {
+            const catConfig = getCategoryConfig(vendor.category);
+            const suggestedSet = new Set(catConfig?.suggestedServices ?? []);
+
+            const suggestedServices = vendor.services.filter((s) => suggestedSet.has(s));
+            const otherServices = vendor.services.filter((s) => !suggestedSet.has(s));
+
+            if (catConfig && suggestedServices.length > 0) {
+              return (
+                <div className="space-y-5">
+                  <div>
+                    <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
+                      {t("vendor_detail.services")}
+                    </h3>
+                    <ul className="flex flex-wrap gap-2">
+                      {suggestedServices.map((s) => (
+                        <li
+                          key={s}
+                          className="px-3 py-1.5 bg-wine-deep/10 text-wine-deep text-xs uppercase tracking-[0.15em] border border-wine-deep/10"
+                        >
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  {otherServices.length > 0 && (
+                    <div>
+                      <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep/70 font-semibold mb-3">
+                        {t("vendor_detail.other_services", { defaultValue: "Prestations supplémentaires" })}
+                      </h3>
+                      <ul className="flex flex-wrap gap-2">
+                        {otherServices.map((s) => (
+                          <li
+                            key={s}
+                            className="px-3 py-1.5 bg-wine-deep/5 text-wine-deep text-xs uppercase tracking-[0.15em]"
+                          >
+                            {s}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <div>
+                <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
+                  {t("vendor_detail.services")}
+                </h3>
+                <ul className="flex flex-wrap gap-2">
+                  {vendor.services.map((s) => (
+                    <li
+                      key={s}
+                      className="px-3 py-1.5 bg-wine-deep/5 text-wine-deep text-xs uppercase tracking-[0.15em]"
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
 
           {/* Gallery */}
           {vendor.images && vendor.images.length > 1 && (
@@ -379,7 +429,7 @@ export default function PrestataireDetail() {
         </div>
 
         <aside className="space-y-6 md:sticky md:top-24 md:self-start">
-          <VendorActionPanel vendor={{ id: vendor.id, name: vendor.name }} />
+          <VendorActionPanel vendor={{ id: vendor.id, name: vendor.name, category: vendor.category }} />
 
           <div className="bg-white p-6 border border-wine-deep/10 rounded-sm space-y-3">
             {vendor.website && (
