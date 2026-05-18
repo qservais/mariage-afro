@@ -9,7 +9,7 @@
     "shop": "Shop",
     "about": "Over Ons",
     "contact": "Contact",
-    "client_area": "Klantenzone",
+    "client_area": "Koppelzone",
     "cta": "Maak een afspraak",
     "prestations": "Leveranciers",
     "tool_budget": "Budgetcalculator",
@@ -63,7 +63,7 @@
   },
   "auth": {
     "client": {
-      "eyebrow": "Klantruimte",
+      "eyebrow": "Koppelzone",
       "title": "Mariage Afro"
     },
     "vendor": {

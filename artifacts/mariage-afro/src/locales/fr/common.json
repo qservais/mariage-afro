@@ -9,7 +9,7 @@
     "shop": "Shop",
     "about": "À Propos",
     "contact": "Contact",
-    "client_area": "Espace client",
+    "client_area": "Espace couple",
     "cta": "Prendre rendez-vous",
     "prestations": "Prestataires",
     "tool_budget": "Calculateur de budget",
@@ -63,7 +63,7 @@
   },
   "auth": {
     "client": {
-      "eyebrow": "Espace client",
+      "eyebrow": "Espace couple",
       "title": "Mariage Afro"
     },
     "vendor": {

@@ -9,7 +9,7 @@
     "shop": "Shop",
     "about": "About",
     "contact": "Contact",
-    "client_area": "Client Area",
+    "client_area": "Couple Area",
     "cta": "Book an appointment",
     "prestations": "Vendors",
     "tool_budget": "Budget calculator",
@@ -63,7 +63,7 @@
   },
   "auth": {
     "client": {
-      "eyebrow": "Client Area",
+      "eyebrow": "Couple Area",
       "title": "Mariage Afro"
     },
     "vendor": {
