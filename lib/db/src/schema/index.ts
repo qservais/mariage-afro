@@ -262,6 +262,9 @@ export const realisationsTable = pgTable("realisations", {
   description: text("description").notNull().default(""),
   coverImage: text("cover_image"),
   gallery: jsonb("gallery").$type<string[]>().notNull().default([]),
+  // LOT 129 — double vidéo par réalisation (portrait couple + teaser mariage)
+  videoCouple: text("video_couple"),
+  videoTeaser: text("video_teaser"),
   active: boolean("active").notNull().default(true),
   featured: boolean("featured").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

@@ -568,7 +568,9 @@
     "read_less": "Réduire",
     "watch_film": "Voir le film de mariage",
     "play_video": "Lire la vidéo",
-    "video_placeholder": "Film disponible prochainement"
+    "video_placeholder": "Film disponible prochainement",
+    "video_couple_label": "Portrait du couple",
+    "video_teaser_label": "Teaser du mariage"
   },
   "about": {
     "title": "Notre Histoire",

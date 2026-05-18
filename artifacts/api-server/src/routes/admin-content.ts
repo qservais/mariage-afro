@@ -398,7 +398,7 @@ router.get("/content/realisations", async (_req: Request, res: Response) => {
   res.type("html").send(contentLayout("Réalisations", body));
 });
 
-function realisationForm(r: Partial<{brideName:string;groomName:string;weddingType:string;venueName:string;city:string;weddingDate:string|null;description:string;coverImage:string|null;gallery:string[];active:boolean;featured:boolean}> = {}, error = ""): string {
+function realisationForm(r: Partial<{brideName:string;groomName:string;weddingType:string;venueName:string;city:string;weddingDate:string|null;description:string;coverImage:string|null;gallery:string[];videoCouple:string|null;videoTeaser:string|null;active:boolean;featured:boolean}> = {}, error = ""): string {
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
@@ -412,6 +412,10 @@ function realisationForm(r: Partial<{brideName:string;groomName:string;weddingTy
       <label>Description (storytelling)<textarea name="description" style="min-height:120px">${escHtml(r.description)}</textarea></label>
       <label>URL photo de couverture<input name="coverImage" value="${escHtml(r.coverImage)}"></label>
       <label>Galerie (une URL par ligne)<textarea name="gallery">${(r.gallery ?? []).join("\n")}</textarea></label>
+      <hr style="border:none;border-top:1px solid #e5e5e5;margin:4px 0">
+      <p style="font-size:12px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Vidéos (YouTube, Vimeo, ou URL directe)</p>
+      <label>🎥 Vidéo portrait du couple (gauche)<input name="videoCouple" type="url" placeholder="https://youtube.com/embed/..." value="${escHtml(r.videoCouple)}"></label>
+      <label>🎬 Teaser du mariage (droite)<input name="videoTeaser" type="url" placeholder="https://youtube.com/embed/..." value="${escHtml(r.videoTeaser)}"></label>
       <label style="flex-direction:row;align-items:center;gap:8px">
         <input type="checkbox" name="featured" value="1" ${r.featured?"checked":""}> À la une
       </label>
@@ -443,6 +447,8 @@ router.post("/content/realisations/new", async (req: Request, res: Response) => 
     description: b.description ?? "",
     coverImage: b.coverImage || null,
     gallery: b.gallery ? b.gallery.split("\n").map(s=>s.trim()).filter(Boolean) : [],
+    videoCouple: b.videoCouple || null,
+    videoTeaser: b.videoTeaser || null,
     featured: b.featured === "1", active: b.active === "1",
   });
   res.redirect("/admin/content/realisations");
@@ -464,6 +470,8 @@ router.post("/content/realisations/:id/edit", async (req: Request, res: Response
     description: b.description ?? "",
     coverImage: b.coverImage || null,
     gallery: b.gallery ? b.gallery.split("\n").map(s=>s.trim()).filter(Boolean) : [],
+    videoCouple: b.videoCouple || null,
+    videoTeaser: b.videoTeaser || null,
     featured: b.featured === "1", active: b.active === "1",
   }).where(eq(realisationsTable.id, id));
   res.redirect("/admin/content/realisations");

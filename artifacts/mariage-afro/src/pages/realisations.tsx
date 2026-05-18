@@ -27,8 +27,111 @@ interface Realisation {
   coverImage: string | null;
   gallery: string[];
   videoUrl: string | null;
+  videoCouple: string | null;
+  videoTeaser: string | null;
   featured: boolean;
 }
+
+/* ─── VideoPlayer ─────────────────────────────────────────────────────────── */
+
+function toEmbedUrl(url: string): string | null {
+  if (url.includes("/embed/") || url.includes("player.vimeo")) return url;
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`;
+  const vmMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vmMatch) return `https://player.vimeo.com/video/${vmMatch[1]}`;
+  return null;
+}
+
+function isEmbed(url: string): boolean {
+  return !!(
+    url.includes("youtube.com") ||
+    url.includes("youtu.be") ||
+    url.includes("vimeo.com") ||
+    url.includes("dailymotion.com") ||
+    url.includes("/embed/") ||
+    url.includes("player.")
+  );
+}
+
+interface VideoPlayerProps {
+  url: string;
+  label: string;
+  className?: string;
+}
+
+function VideoPlayer({ url, label, className = "" }: VideoPlayerProps) {
+  const [playing, setPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const embedSrc = isEmbed(url) ? (toEmbedUrl(url) ?? url) : null;
+
+  function handleHoverIn() {
+    if (videoRef.current && !playing) videoRef.current.play().catch(() => {});
+  }
+  function handleHoverOut() {
+    if (videoRef.current && !playing) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }
+  function handleClick() {
+    if (!videoRef.current) return;
+    setPlaying(true);
+    videoRef.current.muted = false;
+    videoRef.current.controls = true;
+    videoRef.current.play();
+  }
+
+  if (embedSrc) {
+    return (
+      <div className={`relative w-full bg-wine-deep overflow-hidden ${className}`}>
+        <div className="absolute top-2 left-3 z-10 text-[10px] uppercase tracking-[0.2em] text-cream/50 font-medium pointer-events-none">
+          {label}
+        </div>
+        <iframe
+          src={embedSrc}
+          title={label}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full border-0"
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`relative w-full bg-wine-deep overflow-hidden cursor-pointer group ${className}`}
+      onMouseEnter={handleHoverIn}
+      onMouseLeave={handleHoverOut}
+      onClick={handleClick}
+      aria-label={label}
+    >
+      <div className="absolute top-2 left-3 z-10 text-[10px] uppercase tracking-[0.2em] text-cream/50 font-medium pointer-events-none">
+        {label}
+      </div>
+      <video
+        ref={videoRef}
+        src={url}
+        muted
+        playsInline
+        loop
+        preload="metadata"
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      />
+      {!playing && (
+        <div className="absolute inset-0 flex items-center justify-center bg-wine-deep/40 group-hover:bg-wine-deep/20 transition-colors">
+          <div className="w-12 h-12 rounded-full bg-gold/90 flex items-center justify-center shadow-lg">
+            <Play className="w-5 h-5 text-wine-deep fill-wine-deep ml-0.5" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── GalleryModal ────────────────────────────────────────────────────────── */
 
 function GalleryModal({ images, startIndex, onClose }: { images: string[]; startIndex: number; onClose: () => void }) {
   const [idx, setIdx] = useState(startIndex);
@@ -85,6 +188,8 @@ function GalleryModal({ images, startIndex, onClose }: { images: string[]; start
   );
 }
 
+/* ─── RealisationCard ─────────────────────────────────────────────────────── */
+
 function RealisationCard({ r, index }: { r: Realisation; index: number }) {
   const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
@@ -92,9 +197,15 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
   const [storyExpanded, setStoryExpanded] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
   const galleryImages = r.gallery?.length ? r.gallery : r.coverImage ? [r.coverImage] : [];
   const cover = r.coverImage || galleryImages[0] || FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
   const isReversed = index % 2 === 1;
+
+  // Double-video mode: both videoCouple AND videoTeaser are set
+  const hasDoubleVideo = !!(r.videoCouple && r.videoTeaser);
+  // Single-video fallback (legacy videoUrl or only one of the two fields)
+  const singleVideoUrl = r.videoUrl || (!hasDoubleVideo ? (r.videoCouple || r.videoTeaser) : null) || null;
 
   const formattedDate = r.weddingDate
     ? new Date(r.weddingDate).toLocaleDateString("fr-BE", { month: "long", year: "numeric" })
@@ -119,19 +230,104 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
     videoRef.current.controls = true;
     videoRef.current.play();
   }
-
   function handleVideoHoverIn() {
-    if (videoRef.current && !videoPlaying) {
-      videoRef.current.play().catch(() => {});
-    }
+    if (videoRef.current && !videoPlaying) videoRef.current.play().catch(() => {});
   }
-
   function handleVideoHoverOut() {
     if (videoRef.current && !videoPlaying) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
     }
   }
+
+  /* Shared story panel content */
+  const storyPanel = (
+    <div className={`flex flex-col p-10 md:p-14 bg-cream ${hasDoubleVideo && isReversed ? "lg:order-first" : isReversed ? "lg:order-1" : ""}`}>
+      {/* Meta pills */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-8">
+        {r.type && <span className="badge-editorial">{r.type}</span>}
+        {formattedDate && (
+          <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-wine-deep/75 font-semibold">
+            <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span className="text-wine-deep/50 font-normal normal-case tracking-normal mr-0.5">{t("realisations.date_label")} ·</span>
+            {formattedDate}
+          </span>
+        )}
+        {r.location && (
+          <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-wine-deep/75 font-semibold">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
+            <span className="text-wine-deep/50 font-normal normal-case tracking-normal mr-0.5">{t("realisations.location_label")} ·</span>
+            {r.location}
+          </span>
+        )}
+        {hasDoubleVideo && (
+          <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-gold-deep font-semibold">
+            <Film className="w-3 h-3" />
+            Film
+          </span>
+        )}
+      </div>
+
+      {/* Names */}
+      <h3 className="font-display uppercase text-3xl md:text-5xl tracking-tight leading-[0.95] text-wine-deep mb-3">
+        {r.coupleName}
+      </h3>
+      <div className="flex items-center gap-2 mb-8">
+        <span className="block w-8 h-px bg-gold"></span>
+        <Heart className="w-3 h-3 text-gold flex-shrink-0" />
+        <span className="block w-8 h-px bg-gold"></span>
+      </div>
+
+      {/* Story — expandable */}
+      <div className="flex-grow mb-6">
+        {displayedStory ? (
+          <>
+            <p className="text-wine-deep/70 leading-relaxed text-sm md:text-base font-light italic">
+              "{displayedStory}"
+            </p>
+            {storyIsTruncatable && (
+              <button
+                onClick={() => setStoryExpanded(v => !v)}
+                className="mt-3 text-xs uppercase tracking-[0.25em] text-gold-deep font-semibold hover:text-wine-deep transition-colors"
+              >
+                {storyExpanded ? t("realisations.read_less") : t("realisations.read_more")}
+              </button>
+            )}
+          </>
+        ) : (
+          <p className="text-wine-deep/55 italic text-sm font-light">
+            "Une histoire d'amour unique, célébrée avec élégance."
+          </p>
+        )}
+      </div>
+
+      {/* Thumbnails — only when no videos */}
+      {!hasDoubleVideo && !singleVideoUrl && galleryImages.length > 1 && (
+        <div className="mt-4 grid grid-cols-4 gap-1.5">
+          {galleryImages.slice(0, 4).map((img, i) => (
+            <button
+              key={i}
+              onClick={() => openGallery(i)}
+              aria-label={`Ouvrir la galerie — photo ${i + 1}`}
+              className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
+            >
+              <Picture src={img} alt="" role="presentation" width={400} height={400} loading="lazy" className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* No-video placeholder */}
+      {!hasDoubleVideo && !singleVideoUrl && (
+        <div className="mt-6 flex items-center gap-2 text-wine-deep/30">
+          <Film className="w-4 h-4" />
+          <span className="text-xs uppercase tracking-[0.2em] font-medium">{t("realisations.video_placeholder")}</span>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -140,161 +336,109 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6 }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-0 card-editorial overflow-hidden"
+        className="card-editorial overflow-hidden"
       >
-        {/* Media side */}
-        <div className={`relative h-80 lg:h-auto min-h-[420px] overflow-hidden group ${isReversed ? "lg:order-2" : ""}`}>
-          {/* Inline video player for any videoUrl (local or remote MP4) */}
-          {r.videoUrl ? (
-            <div
-              className="relative w-full h-full cursor-pointer"
-              onMouseEnter={handleVideoHoverIn}
-              onMouseLeave={handleVideoHoverOut}
-              onClick={handleVideoClick}
-              aria-label={t("realisations.play_video")}
-            >
-              <video
-                ref={videoRef}
-                src={r.videoUrl}
-                muted
-                playsInline
-                loop
-                preload="metadata"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        {hasDoubleVideo ? (
+          /* ── Double video layout ─────────────────────────────────────────── */
+          <div className="flex flex-col lg:flex-row">
+            {/* Two stacked video players (desktop: side-by-side within the left half; mobile: each full-width stacked) */}
+            <div className={`lg:w-1/2 flex flex-col sm:flex-row lg:flex-col ${isReversed ? "lg:order-2" : ""}`}>
+              <VideoPlayer
+                url={r.videoCouple!}
+                label={t("realisations.video_couple_label")}
+                className="flex-1 aspect-video"
               />
-              {!videoPlaying && (
-                <div className="absolute inset-0 flex items-center justify-center bg-wine-deep/30 group-hover:bg-wine-deep/10 transition-colors">
-                  <div className="w-14 h-14 rounded-full bg-gold/90 flex items-center justify-center shadow-lg">
-                    <Play className="w-6 h-6 text-wine-deep fill-wine-deep ml-0.5" />
+              <VideoPlayer
+                url={r.videoTeaser!}
+                label={t("realisations.video_teaser_label")}
+                className="flex-1 aspect-video"
+              />
+            </div>
+            {/* Story */}
+            <div className={`lg:w-1/2 ${isReversed ? "lg:order-1" : ""}`}>
+              {storyPanel}
+            </div>
+          </div>
+        ) : (
+          /* ── Original layout: single media left / story right ─────────── */
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            {/* Media side */}
+            <div className={`relative h-80 lg:h-auto min-h-[420px] overflow-hidden group ${isReversed ? "lg:order-2" : ""}`}>
+              {singleVideoUrl ? (
+                /* Legacy single-video using the original inline player for direct files,
+                   or the new VideoPlayer for embeds */
+                isEmbed(singleVideoUrl) ? (
+                  <VideoPlayer
+                    url={singleVideoUrl}
+                    label={t("realisations.video_couple_label")}
+                    className="w-full h-full"
+                  />
+                ) : (
+                  <div
+                    className="relative w-full h-full cursor-pointer"
+                    onMouseEnter={handleVideoHoverIn}
+                    onMouseLeave={handleVideoHoverOut}
+                    onClick={handleVideoClick}
+                    aria-label={t("realisations.play_video")}
+                  >
+                    <video
+                      ref={videoRef}
+                      src={singleVideoUrl}
+                      muted
+                      playsInline
+                      loop
+                      preload="metadata"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    {!videoPlaying && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-wine-deep/30 group-hover:bg-wine-deep/10 transition-colors">
+                        <div className="w-14 h-14 rounded-full bg-gold/90 flex items-center justify-center shadow-lg">
+                          <Play className="w-6 h-6 text-wine-deep fill-wine-deep ml-0.5" />
+                        </div>
+                      </div>
+                    )}
                   </div>
+                )
+              ) : (
+                /* Photo cover */
+                <div
+                  className="relative w-full h-full cursor-pointer"
+                  onClick={() => galleryImages.length > 0 && openGallery(0)}
+                >
+                  <Picture
+                    src={cover}
+                    alt={r.coupleName}
+                    width={1200}
+                    height={1500}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+              )}
+
+              <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/60 via-wine-deep/10 to-transparent pointer-events-none" />
+
+              {r.featured && (
+                <span className="badge-editorial-dark absolute top-4 left-4 z-10">À la une</span>
+              )}
+              {singleVideoUrl && (
+                <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-wine-deep/70 text-cream text-[10px] uppercase tracking-[0.25em] px-3 py-2 backdrop-blur-sm font-medium z-10">
+                  <Film className="w-3 h-3" />
+                  Film
+                </div>
+              )}
+              {!singleVideoUrl && galleryImages.length > 1 && (
+                <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-wine-deep/70 text-cream text-[10px] uppercase tracking-[0.25em] px-3 py-2 backdrop-blur-sm font-medium z-10">
+                  <Images className="w-3 h-3" />
+                  {galleryImages.length} photos
                 </div>
               )}
             </div>
-          ) : (
-            /* Photo cover — gallery click */
-            <div
-              className="relative w-full h-full cursor-pointer"
-              onClick={() => galleryImages.length > 0 && openGallery(0)}
-            >
-              <Picture
-                src={cover}
-                alt={r.coupleName}
-                width={1200}
-                height={1500}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
-          )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/60 via-wine-deep/10 to-transparent pointer-events-none" />
-
-          {/* Featured badge */}
-          {r.featured && (
-            <span className="badge-editorial-dark absolute top-4 left-4 z-10">
-              À la une
-            </span>
-          )}
-
-          {/* Video badge */}
-          {r.videoUrl && (
-            <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-wine-deep/70 text-cream text-[10px] uppercase tracking-[0.25em] px-3 py-2 backdrop-blur-sm font-medium z-10">
-              <Film className="w-3 h-3" />
-              Film
-            </div>
-          )}
-
-          {/* Gallery count badge */}
-          {!r.videoUrl && galleryImages.length > 1 && (
-            <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-wine-deep/70 text-cream text-[10px] uppercase tracking-[0.25em] px-3 py-2 backdrop-blur-sm font-medium z-10">
-              <Images className="w-3 h-3" />
-              {galleryImages.length} photos
-            </div>
-          )}
-        </div>
-
-        {/* Story side */}
-        <div className={`flex flex-col p-10 md:p-14 bg-cream ${isReversed ? "lg:order-1" : ""}`}>
-          {/* Meta pills with translated labels */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-8">
-            {r.type && (
-              <span className="badge-editorial">{r.type}</span>
-            )}
-            {formattedDate && (
-              <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-wine-deep/75 font-semibold">
-                <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                <span className="text-wine-deep/50 font-normal normal-case tracking-normal mr-0.5">{t("realisations.date_label")} ·</span>
-                {formattedDate}
-              </span>
-            )}
-            {r.location && (
-              <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-wine-deep/75 font-semibold">
-                <MapPin className="w-3 h-3 flex-shrink-0" />
-                <span className="text-wine-deep/50 font-normal normal-case tracking-normal mr-0.5">{t("realisations.location_label")} ·</span>
-                {r.location}
-              </span>
-            )}
+            {/* Story side */}
+            {storyPanel}
           </div>
-
-          {/* Names */}
-          <h3 className="font-display uppercase text-3xl md:text-5xl tracking-tight leading-[0.95] text-wine-deep mb-3">
-            {r.coupleName}
-          </h3>
-          <div className="flex items-center gap-2 mb-8">
-            <span className="block w-8 h-px bg-gold"></span>
-            <Heart className="w-3 h-3 text-gold flex-shrink-0" />
-            <span className="block w-8 h-px bg-gold"></span>
-          </div>
-
-          {/* Story — expandable */}
-          <div className="flex-grow mb-6">
-            {displayedStory ? (
-              <>
-                <p className="text-wine-deep/70 leading-relaxed text-sm md:text-base font-light italic">
-                  "{displayedStory}"
-                </p>
-                {storyIsTruncatable && (
-                  <button
-                    onClick={() => setStoryExpanded(v => !v)}
-                    className="mt-3 text-xs uppercase tracking-[0.25em] text-gold-deep font-semibold hover:text-wine-deep transition-colors"
-                  >
-                    {storyExpanded ? t("realisations.read_less") : t("realisations.read_more")}
-                  </button>
-                )}
-              </>
-            ) : (
-              <p className="text-wine-deep/55 italic text-sm font-light">
-                "Une histoire d'amour unique, célébrée avec élégance."
-              </p>
-            )}
-          </div>
-
-          {/* Thumbnails */}
-          {!r.videoUrl && galleryImages.length > 1 && (
-            <div className="mt-4 grid grid-cols-4 gap-1.5">
-              {galleryImages.slice(0, 4).map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => openGallery(i)}
-                  aria-label={`Ouvrir la galerie — photo ${i + 1}`}
-                  className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
-                >
-                  <Picture src={img} alt="" role="presentation" width={400} height={400} loading="lazy" className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* No video placeholder */}
-          {!r.videoUrl && (
-            <div className="mt-6 flex items-center gap-2 text-wine-deep/30">
-              <Film className="w-4 h-4" />
-              <span className="text-xs uppercase tracking-[0.2em] font-medium">{t("realisations.video_placeholder")}</span>
-            </div>
-          )}
-        </div>
+        )}
       </motion.article>
 
       {modalOpen && galleryImages.length > 0 && (
@@ -304,9 +448,10 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
   );
 }
 
+/* ─── Page ────────────────────────────────────────────────────────────────── */
+
 export default function Realisations() {
   const { t } = useTranslation();
-
 
   const { data: apiRealisations = [] } = useQuery({
     queryKey: ["marketplace-realisations"],
@@ -330,6 +475,8 @@ export default function Realisations() {
       coverImage: img,
       gallery: [img],
       videoUrl: null,
+      videoCouple: null,
+      videoTeaser: null,
       featured: i === 0,
     }));
   }, [apiRealisations]);

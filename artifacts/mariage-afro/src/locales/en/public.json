@@ -568,7 +568,9 @@
     "read_less": "Show less",
     "watch_film": "Watch the wedding film",
     "play_video": "Play video",
-    "video_placeholder": "Film coming soon"
+    "video_placeholder": "Film coming soon",
+    "video_couple_label": "Couple portrait",
+    "video_teaser_label": "Wedding teaser"
   },
   "about": {
     "title": "Our Story",

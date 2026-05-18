@@ -568,7 +568,9 @@
     "read_less": "Minder tonen",
     "watch_film": "Bekijk de trouwfilm",
     "play_video": "Video afspelen",
-    "video_placeholder": "Film binnenkort beschikbaar"
+    "video_placeholder": "Film binnenkort beschikbaar",
+    "video_couple_label": "Koppelsportret",
+    "video_teaser_label": "Huwelijksteaser"
   },
   "about": {
     "title": "Ons Verhaal",
