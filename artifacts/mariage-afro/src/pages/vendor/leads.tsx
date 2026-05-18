@@ -1,12 +1,49 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Mail, Phone, Calendar, MessageSquare, X, LayoutGrid, List, FileText } from "lucide-react";
+import { Loader2, Mail, Phone, Calendar, MessageSquare, X, LayoutGrid, List, FileText, Tag } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { CATEGORY_CONFIG } from "@/lib/vendorCategoryConfig";
+
+/** Build a flat key→French-label map from CATEGORY_CONFIG for structured field display. */
+const FIELD_LABEL_MAP: Record<string, string> = Object.values(CATEGORY_CONFIG).reduce(
+  (acc, cfg) => {
+    for (const f of cfg.quoteFields) {
+      if (!acc[f.key]) acc[f.key] = f.labelFr;
+    }
+    return acc;
+  },
+  {} as Record<string, string>,
+);
+
+/**
+ * Split a message field into the couple's free-text message and the
+ * structured category-specific fields appended by the API.
+ */
+function parseCategoryFields(message: string | null): {
+  mainMessage: string | null;
+  fields: Array<[string, string]>;
+} {
+  if (!message) return { mainMessage: null, fields: [] };
+  const SEP = "--- Informations spécifiques ---";
+  const idx = message.indexOf(SEP);
+  if (idx === -1) return { mainMessage: message.trim() || null, fields: [] };
+  const mainMessage = message.slice(0, idx).trim() || null;
+  const fieldsPart = message.slice(idx + SEP.length).trim();
+  const fields: Array<[string, string]> = fieldsPart
+    .split("\n")
+    .filter(Boolean)
+    .flatMap((line) => {
+      const colon = line.indexOf(": ");
+      if (colon === -1) return [];
+      return [[line.slice(0, colon).trim(), line.slice(colon + 2).trim()] as [string, string]];
+    });
+  return { mainMessage, fields };
+}
 
 interface VendorSettingsResp { autoFollowupEnabled: boolean; customLeadTags: string[] }
 
@@ -345,16 +382,42 @@ export default function VendorLeadsPage() {
                 )}
               </div>
 
-              {selected.message && (
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2 flex items-center gap-1.5">
-                    <MessageSquare className="w-3.5 h-3.5" /> {t("vendor.leads.message_label")}
-                  </p>
-                  <p className="text-sm bg-neutral-50 p-3 whitespace-pre-wrap leading-relaxed">
-                    {selected.message}
-                  </p>
-                </div>
-              )}
+              {(() => {
+                const { mainMessage, fields } = parseCategoryFields(selected.message);
+                return (
+                  <>
+                    {mainMessage && (
+                      <div>
+                        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2 flex items-center gap-1.5">
+                          <MessageSquare className="w-3.5 h-3.5" /> {t("vendor.leads.message_label")}
+                        </p>
+                        <p className="text-sm bg-neutral-50 p-3 whitespace-pre-wrap leading-relaxed">
+                          {mainMessage}
+                        </p>
+                      </div>
+                    )}
+                    {fields.length > 0 && (
+                      <div>
+                        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2 flex items-center gap-1.5">
+                          <Tag className="w-3.5 h-3.5" /> Informations spécifiques
+                        </p>
+                        <dl className="bg-neutral-50 p-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+                          {fields.map(([key, value]) => (
+                            <Fragment key={key}>
+                              <dt className="text-neutral-500 font-medium whitespace-nowrap">
+                                {FIELD_LABEL_MAP[key] ?? key}
+                              </dt>
+                              <dd className="text-neutral-800">
+                                {value}
+                              </dd>
+                            </Fragment>
+                          ))}
+                        </dl>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
 
               <div>
                 <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">

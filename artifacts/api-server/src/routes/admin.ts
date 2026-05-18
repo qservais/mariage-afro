@@ -1211,6 +1211,57 @@ router.get("/couples", adminAuth, async (req, res) => {
 
 // ============ DEVIS (vendor_leads agrégés) ============
 
+/**
+ * Split the message field into the couple's free-text message and the
+ * structured category-specific fields that were appended by the API.
+ * Format appended by leads.ts:
+ *   \n\n--- Informations spécifiques ---\nkey: value\nkey2: value2
+ */
+function parseCategoryFields(message: string | null): {
+  mainMessage: string | null;
+  fields: Array<[string, string]>;
+} {
+  if (!message) return { mainMessage: null, fields: [] };
+  const SEP = "--- Informations spécifiques ---";
+  const idx = message.indexOf(SEP);
+  if (idx === -1) return { mainMessage: message.trim() || null, fields: [] };
+  const mainMessage = message.slice(0, idx).trim() || null;
+  const fieldsPart = message.slice(idx + SEP.length).trim();
+  const fields: Array<[string, string]> = fieldsPart
+    .split("\n")
+    .filter(Boolean)
+    .flatMap((line) => {
+      const colon = line.indexOf(": ");
+      if (colon === -1) return [];
+      return [[line.slice(0, colon).trim(), line.slice(colon + 2).trim()] as [string, string]];
+    });
+  return { mainMessage, fields };
+}
+
+/** Human-readable French labels for category field keys (all categories combined). */
+const CATEGORY_FIELD_LABELS: Record<string, string> = {
+  hours: "Nombre d'heures",
+  photoStyle: "Style photographique",
+  videoAlso: "Vidéo souhaitée ?",
+  videoFormat: "Format vidéo",
+  drone: "Drone souhaité ?",
+  musicStyle: "Style musical",
+  ceremony: "Sonorisation cérémonie ?",
+  guestCount: "Nombre d'invités/couverts",
+  decoStyle: "Style de décoration",
+  colorPalette: "Palette de couleurs",
+  serviceType: "Type de service",
+  allergies: "Allergies / régimes",
+  personsCount: "Nombre de personnes",
+  trialNeeded: "Essai souhaité ?",
+  hairType: "Type de cheveux",
+  robeStyle: "Style de robe",
+  budget: "Budget indicatif",
+  vehicleType: "Type de véhicule",
+  quantity: "Quantité estimée",
+  printOrDigital: "Format",
+};
+
 const DEVIS_STATUS_LABEL: Record<string, string> = {
   new: "Envoyé",
   in_progress: "En discussion",
@@ -1281,6 +1332,28 @@ router.get("/devis", adminAuth, async (req, res) => {
     : rows.map(r => {
         const statusLabel = DEVIS_STATUS_LABEL[r.status] ?? r.status;
         const statusCss = DEVIS_STATUS_CSS[r.status] ?? "";
+        const { mainMessage, fields } = parseCategoryFields(r.message);
+        const detailsCell = (() => {
+          const fieldRows = fields.map(([k, v]) =>
+            `<tr>
+              <td style="padding:2px 10px 2px 0;color:#777;font-weight:500;white-space:nowrap;font-size:11px;">${escapeHtml(CATEGORY_FIELD_LABELS[k] ?? k)}</td>
+              <td style="padding:2px 0;color:#222;font-size:11px;">${escapeHtml(v)}</td>
+            </tr>`
+          ).join("");
+          const msgSnippet = mainMessage
+            ? `<p style="font-size:11px;color:#555;margin-bottom:${fields.length > 0 ? "8px" : "0"};white-space:pre-wrap;max-width:260px;">${escapeHtml(mainMessage.length > 120 ? mainMessage.slice(0, 120) + "…" : mainMessage)}</p>`
+            : "";
+          if (fields.length === 0 && !mainMessage) return `<span style="color:#bbb;">—</span>`;
+          if (fields.length === 0) return msgSnippet;
+          return `
+            ${msgSnippet}
+            <details style="margin-top:${mainMessage ? "2px" : "0"}">
+              <summary style="cursor:pointer;font-size:11px;color:#68191e;font-weight:600;list-style:none;display:inline-flex;align-items:center;gap:4px;">
+                <span style="font-size:10px;">▸</span> ${fields.length} info${fields.length > 1 ? "s" : ""} spécifique${fields.length > 1 ? "s" : ""}
+              </summary>
+              <table style="margin-top:6px;border-collapse:collapse;">${fieldRows}</table>
+            </details>`;
+        })();
         return `
       <tr>
         <td>${escapeHtml(r.createdAt.toISOString().slice(0, 10))}</td>
@@ -1295,7 +1368,7 @@ router.get("/devis", adminAuth, async (req, res) => {
         </td>
         <td>${escapeHtml(r.requestType)}</td>
         <td>${escapeHtml(r.weddingDate ?? "—")}</td>
-        <td>—</td>
+        <td style="max-width:300px;">${detailsCell}</td>
         <td><span style="display:inline-block;padding:2px 8px;font-size:10px;font-weight:700;${statusCss}">${statusLabel}</span></td>
         <td>${r.seenAt ? "✓" : `<span style="color:#c08800;">Non vu</span>`}</td>
       </tr>`;
@@ -1344,7 +1417,7 @@ router.get("/devis", adminAuth, async (req, res) => {
           <th>Prestataire</th>
           <th>Type demande</th>
           <th>Date mariage</th>
-          <th>Montant</th>
+          <th>Message &amp; Détails</th>
           <th>Statut</th>
           <th>Lu</th>
         </tr></thead>
