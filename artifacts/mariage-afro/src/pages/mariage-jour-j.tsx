@@ -16,6 +16,7 @@ interface JourJPublicData {
   bioPartner1: string;
   bioPartner2: string;
   driveUrl: string | null;
+  photoAlbumUrl: string | null;
   enabled: boolean;
 }
 
@@ -170,12 +171,12 @@ export default function MariageJourJPage() {
           </section>
         )}
 
-        {/* Gallery / Drive */}
-        {data.driveUrl && (
+        {/* Photo album */}
+        {(data.photoAlbumUrl || data.driveUrl) && (
           <section>
             <SectionHeader icon={<ImageIcon className="w-4 h-4" />} label={t("mariage_jour_j.gallery_title")} />
             <a
-              href={data.driveUrl}
+              href={(data.photoAlbumUrl || data.driveUrl)!}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-4 bg-white/70 border border-neutral-200 p-5 transition-colors hover:border-neutral-400 group"
@@ -190,7 +191,7 @@ export default function MariageJourJPage() {
                 <p className="text-sm font-bold" style={{ color: PRIMARY }}>
                   {t("mariage_jour_j.gallery_open")}
                 </p>
-                <p className="text-xs text-neutral-500 truncate mt-0.5">{data.driveUrl}</p>
+                <p className="text-xs text-neutral-500 truncate mt-0.5">{data.photoAlbumUrl || data.driveUrl}</p>
               </div>
               <ExternalLink className="w-4 h-4 shrink-0 text-neutral-400 group-hover:text-neutral-600" />
             </a>

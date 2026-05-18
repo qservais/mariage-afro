@@ -17,11 +17,18 @@ import {
 
 const router = Router();
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const isoDateOrNull = z
+  .string()
+  .nullable()
+  .optional()
+  .refine((v) => !v || ISO_DATE_RE.test(v), { message: "Date must be YYYY-MM-DD" });
+
 const leadSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().optional().nullable(),
-  weddingDate: z.string().optional().nullable(),
+  weddingDate: isoDateOrNull,
   guestCount: z.preprocess(
     (v) => (v === "" || v === null || v === undefined ? null : v),
     z.coerce.number().int().nonnegative().nullable(),
@@ -36,7 +43,7 @@ const serviceRequestSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().optional().nullable(),
-  weddingDate: z.string().optional().nullable(),
+  weddingDate: isoDateOrNull,
   services: z.array(z.string()).min(1),
   message: z.string().optional().nullable(),
 });
@@ -48,7 +55,7 @@ const vendorRequestSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().optional().nullable(),
-  weddingDate: z.string().optional().nullable(),
+  weddingDate: isoDateOrNull,
   message: z.string().optional().nullable(),
 });
 
@@ -58,12 +65,16 @@ const venueRequestSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().optional().nullable(),
-  weddingDate: z.string().optional().nullable(),
+  weddingDate: isoDateOrNull,
   guestCount: z.preprocess(
     (v) => (v === "" || v === null || v === undefined ? null : v),
     z.coerce.number().int().nonnegative().nullable(),
   ),
   message: z.string().optional().nullable(),
+  visitSlots: z.array(z.object({
+    date: isoDateOrNull,
+    time: z.string().regex(/^\d{2}:\d{2}$/, { message: "Time must be HH:MM" }).optional().nullable(),
+  })).max(3).optional().nullable(),
 });
 
 const partnerApplicationSchema = z.object({
@@ -206,6 +217,7 @@ router.post("/venue-request", async (req, res) => {
       weddingDate: data.weddingDate ?? null,
       guestCount: data.guestCount ?? null,
       message: data.message ?? null,
+      visitSlots: data.visitSlots?.filter((s) => s.date) ?? null,
     }).returning();
     void sendVenueRequestEmails(data, req.log).catch((err) => {
       req.log.error({ err }, "Venue request saved but email failed");

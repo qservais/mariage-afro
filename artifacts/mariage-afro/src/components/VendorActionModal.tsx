@@ -40,7 +40,9 @@ interface Props {
 }
 
 export default function VendorActionModal({ open, onClose, vendor, action }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
+  const dateFormatHint = lang === "en" ? "MM/DD/YYYY" : lang === "nl" ? "DD/MM/JJJJ" : "JJ/MM/AAAA";
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
 
@@ -218,6 +220,7 @@ export default function VendorActionModal({ open, onClose, vendor, action }: Pro
                           <FormControl>
                             <Input type="date" {...field} className="rounded-none" />
                           </FormControl>
+                          <p className="text-[11px] text-muted-foreground mt-1">{dateFormatHint}</p>
                           <FormMessage />
                           {watchedDate && !checkingDate && dateStatus && (
                             <div

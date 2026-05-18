@@ -1,9 +1,9 @@
 import { useState, FormEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { MapPin, Users, Sparkles, List as ListIcon, Map as MapIcon } from "lucide-react";
+import { MapPin, Users, Sparkles, List as ListIcon, Map as MapIcon, CheckCircle2 } from "lucide-react";
 
 import MarketplaceFilters from "@/components/marketplace/MarketplaceFilters";
 import MarketplaceMap from "@/components/marketplace/MarketplaceMap";
@@ -30,20 +30,59 @@ interface VenueApi extends Venue {
   longitude?: string | null;
 }
 
+interface VisitSlot { date: string; time: string }
+
 export default function Lieux() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState<"list" | "map">("list");
-  const [formData, setFormData] = useState({ name: "", venue: "", date: "" });
+  const [formData, setFormData] = useState({
+    name: "", email: "", phone: "", venue: "", weddingDate: "", guestCount: "", message: "",
+  });
+  const [visitSlots, setVisitSlots] = useState<VisitSlot[]>([
+    { date: "", time: "" },
+    { date: "", time: "" },
+    { date: "", time: "" },
+  ]);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
+  const dateHint = lang === "en" ? "MM/DD/YYYY" : lang === "nl" ? "DD/MM/JJJJ" : "JJ/MM/AAAA";
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (formData.name) params.set("name", formData.name);
-    if (formData.venue) params.set("venue", formData.venue);
-    if (formData.date) params.set("date", formData.date);
-    navigate(`/contact?${params.toString()}`);
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const slots = visitSlots.filter((s) => s.date);
+      const res = await fetch("/api/venue-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          venueName: formData.venue || t("venues.form_venue_placeholder"),
+          requestType: "visit",
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          weddingDate: formData.weddingDate || null,
+          guestCount: formData.guestCount ? Number(formData.guestCount) : null,
+          message: formData.message || null,
+          visitSlots: slots.length > 0 ? slots : null,
+        }),
+      });
+      if (!res.ok) throw new Error("error");
+      setSubmitted(true);
+    } catch {
+      setSubmitError(t("venues.form_error"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const updateSlot = (i: number, field: keyof VisitSlot, value: string) => {
+    setVisitSlots((prev) => prev.map((s, idx) => idx === i ? { ...s, [field]: value } : s));
   };
 
 
@@ -273,6 +312,17 @@ export default function Lieux() {
             </p>
           </motion.div>
 
+          {submitted ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-10"
+            >
+              <CheckCircle2 className="w-14 h-14 text-gold mx-auto mb-4" />
+              <h3 className="font-display uppercase text-cream text-2xl mb-3">{t("venues.form_success_title")}</h3>
+              <p className="text-cream/70">{t("venues.form_success_desc")}</p>
+            </motion.div>
+          ) : (
           <motion.form
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -282,9 +332,10 @@ export default function Lieux() {
             className="space-y-6"
             data-testid="form-venues"
           >
+            {/* Name */}
             <div>
               <label htmlFor="venues-name" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                {t("venues.form_name")}
+                {t("venues.form_name")} *
               </label>
               <input
                 id="venues-name"
@@ -296,6 +347,39 @@ export default function Lieux() {
                 data-testid="input-venues-name"
               />
             </div>
+
+            {/* Email + Phone */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="venues-email" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                  {t("venues.form_email")} *
+                </label>
+                <input
+                  id="venues-email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
+                  data-testid="input-venues-email"
+                />
+              </div>
+              <div>
+                <label htmlFor="venues-phone" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                  {t("venues.form_phone")}
+                </label>
+                <input
+                  id="venues-phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
+                  data-testid="input-venues-phone"
+                />
+              </div>
+            </div>
+
+            {/* Venue */}
             <div>
               <label htmlFor="venues-venue" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
                 {t("venues.form_venue")}
@@ -303,7 +387,6 @@ export default function Lieux() {
               <input
                 id="venues-venue"
                 type="text"
-                required
                 placeholder={t("venues.form_venue_placeholder")}
                 value={formData.venue}
                 onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
@@ -311,29 +394,111 @@ export default function Lieux() {
                 data-testid="input-venues-venue"
               />
             </div>
+
+            {/* Wedding date + guest count */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="venues-date" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                  {t("venues.form_date")}
+                </label>
+                <input
+                  id="venues-date"
+                  type="date"
+                  value={formData.weddingDate}
+                  onChange={(e) => setFormData({ ...formData, weddingDate: e.target.value })}
+                  className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
+                  data-testid="input-venues-date"
+                />
+                <p className="text-[10px] text-cream/40 mt-1">{dateHint}</p>
+              </div>
+              <div>
+                <label htmlFor="venues-guests" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                  {t("venues.form_guests")}
+                </label>
+                <input
+                  id="venues-guests"
+                  type="number"
+                  min="1"
+                  value={formData.guestCount}
+                  onChange={(e) => setFormData({ ...formData, guestCount: e.target.value })}
+                  className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
+                  data-testid="input-venues-guests"
+                />
+              </div>
+            </div>
+
+            {/* Visit slots */}
             <div>
-              <label htmlFor="venues-date" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                {t("venues.form_date")}
+              <p className="text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-4">
+                {t("venues.form_slots_label")}
+              </p>
+              <div className="space-y-4">
+                {visitSlots.map((slot, i) => (
+                  <div key={i} className="grid grid-cols-2 gap-4 items-end">
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-[0.2em] text-cream/50 mb-2">
+                        {t("venues.form_slot_date", { n: i + 1 })}
+                      </label>
+                      <input
+                        type="date"
+                        value={slot.date}
+                        onChange={(e) => updateSlot(i, "date", e.target.value)}
+                        className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
+                        data-testid={`input-slot-date-${i}`}
+                      />
+                      <p className="text-[10px] text-cream/40 mt-1">{dateHint}</p>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-[0.2em] text-cream/50 mb-2">
+                        {t("venues.form_slot_time")}
+                      </label>
+                      <input
+                        type="time"
+                        value={slot.time}
+                        onChange={(e) => updateSlot(i, "time", e.target.value)}
+                        disabled={!slot.date}
+                        className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors disabled:opacity-40"
+                        data-testid={`input-slot-time-${i}`}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-cream/40 mt-3">{t("venues.form_slots_hint")}</p>
+            </div>
+
+            {/* Message */}
+            <div>
+              <label htmlFor="venues-message" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                {t("venues.form_message")}
               </label>
-              <input
-                id="venues-date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
-                data-testid="input-venues-date"
+              <textarea
+                id="venues-message"
+                rows={4}
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                placeholder={t("venues.form_message_placeholder")}
+                className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors resize-none"
+                data-testid="input-venues-message"
               />
             </div>
+
+            {submitError && (
+              <p className="text-red-400 text-sm">{submitError}</p>
+            )}
+
             <div className="pt-6">
               <button
                 type="submit"
-                className="btn-editorial w-full justify-center"
+                disabled={submitting}
+                className="btn-editorial w-full justify-center disabled:opacity-60"
                 data-testid="button-venues-submit"
               >
-                {t("venues.form_submit")}
+                {submitting ? t("venues.form_submitting") : t("venues.form_submit")}
               </button>
             </div>
           </motion.form>
+          )}
         </div>
       </section>
 

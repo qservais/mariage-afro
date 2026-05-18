@@ -151,6 +151,58 @@ export async function sendVendorRequestEmails(p: VendorRequestEmailPayload, log 
   }, log);
 }
 
+// ---- notifyQuoteRequestConfirmation — visitor confirmation after vendor lead ----
+export interface NotifyQuoteRequestConfirmationPayload {
+  vendorName: string;
+  requestType: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  weddingDate?: string | null;
+  message?: string | null;
+  locale?: string | null;
+}
+
+export async function notifyQuoteRequestConfirmation(p: NotifyQuoteRequestConfirmationPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const labels: Record<string, Record<Locale, string>> = {
+    quote: { fr: "Demande de devis", nl: "Offerte aanvraag", en: "Quote request" },
+    availability: { fr: "Demande de disponibilité", nl: "Beschikbaarheidsaanvraag", en: "Availability request" },
+    booking: { fr: "Demande de réservation", nl: "Reserveringsaanvraag", en: "Booking request" },
+    zoom: { fr: "Demande de Zoom call", nl: "Zoom call aanvraag", en: "Zoom call request" },
+    rdv: { fr: "Demande de RDV", nl: "Afspraakaanvraag", en: "Meeting request" },
+  };
+  const reqLabel = labels[p.requestType]?.[locale] ?? p.requestType;
+  const T = dict.adminNewLead;
+  const greeting = pick(dict.greeting(p.name), locale);
+  const confirmTitle = { fr: "Merci pour votre demande", nl: "Bedankt voor uw aanvraag", en: "Thank you for your request" }[locale];
+  const confirmBody = {
+    fr: `Nous avons bien reçu votre demande concernant <strong>${esc(p.vendorName)}</strong>. Le prestataire et notre équipe vous répondront dans les plus brefs délais.`,
+    nl: `Wij hebben uw aanvraag voor <strong>${esc(p.vendorName)}</strong> goed ontvangen. De leverancier en ons team nemen spoedig contact op.`,
+    en: `We received your request regarding <strong>${esc(p.vendorName)}</strong>. The vendor and our team will get back to you shortly.`,
+  }[locale];
+  const rows =
+    row(pick(T.rowVendor, locale), p.vendorName) +
+    row("Type", reqLabel) +
+    row(pick(T.rowDate, locale), p.weddingDate) +
+    row(pick(T.rowPhone, locale), p.phone) +
+    row(pick(T.rowMessage, locale), p.message);
+
+  await sendOne({
+    to: p.email,
+    subject: { fr: `Votre demande pour ${p.vendorName} — Mariage Afro`, nl: `Uw aanvraag voor ${p.vendorName} — Mariage Afro`, en: `Your request for ${p.vendorName} — Mariage Afro` }[locale],
+    html: wrap({
+      title: confirmTitle,
+      bodyHtml: `<p>${esc(greeting)}</p><p>${confirmBody}</p>`,
+      rows,
+      ctaLabel: { fr: "Découvrir la plateforme", nl: "Ontdek het platform", en: "Discover the platform" }[locale],
+      ctaUrl: appUrl(),
+      locale,
+    }),
+    text: plainText({ title: confirmTitle, intro: `${greeting}\n${p.vendorName} — ${reqLabel}` }),
+  }, log);
+}
+
 export interface VenueRequestEmailPayload {
   venueName: string;
   requestType: string;

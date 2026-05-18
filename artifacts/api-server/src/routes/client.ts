@@ -625,6 +625,10 @@ const jourJPublicSchema = z.object({
     (url) => !url || url.startsWith("https://"),
     { message: "driveUrl must start with https://" }
   ),
+  photoAlbumUrl: z.string().nullable().optional().refine(
+    (url) => !url || url.startsWith("https://"),
+    { message: "photoAlbumUrl must start with https://" }
+  ),
 });
 
 router.get("/client/wedding-jour-j", async (req, res) => {
@@ -644,7 +648,7 @@ router.get("/client/wedding-jour-j", async (req, res) => {
 
   res.json(config
     ? { ...config, slug: site.slug, qrDataUrl }
-    : { weddingWebsiteId: site.id, slug: site.slug, enabled: false, menuText: "", timeline: [], bioPartner1: "", bioPartner2: "", driveUrl: null, qrDataUrl });
+    : { weddingWebsiteId: site.id, slug: site.slug, enabled: false, menuText: "", timeline: [], bioPartner1: "", bioPartner2: "", driveUrl: null, photoAlbumUrl: null, qrDataUrl });
 });
 
 router.patch("/client/wedding-jour-j", async (req, res) => {
@@ -656,7 +660,7 @@ router.patch("/client/wedding-jour-j", async (req, res) => {
   if (!site) { res.status(404).json({ error: "No wedding website" }); return; }
   const [existing] = await db.select().from(weddingJourJTable)
     .where(eq(weddingJourJTable.weddingWebsiteId, site.id)).limit(1);
-  const patch = { ...parsed.data, driveUrl: parsed.data.driveUrl || null, updatedAt: new Date() };
+  const patch = { ...parsed.data, driveUrl: parsed.data.driveUrl || null, photoAlbumUrl: parsed.data.photoAlbumUrl || null, updatedAt: new Date() };
   let config;
   if (existing) {
     [config] = await db.update(weddingJourJTable)

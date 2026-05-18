@@ -20,6 +20,7 @@ interface JourJPublicConfig {
   bioPartner1: string;
   bioPartner2: string;
   driveUrl: string | null;
+  photoAlbumUrl: string | null;
   qrDataUrl?: string;
 }
 
@@ -219,12 +220,12 @@ export default function JourJPage() {
             </div>
 
             {/* Summary of configured content */}
-            {(publicCfg.menuText || publicCfg.timeline.length > 0 || publicCfg.bioPartner1 || publicCfg.bioPartner2 || publicCfg.driveUrl) && (
+            {(publicCfg.menuText || publicCfg.timeline.length > 0 || publicCfg.bioPartner1 || publicCfg.bioPartner2 || publicCfg.photoAlbumUrl || publicCfg.driveUrl) && (
               <div className="grid sm:grid-cols-2 gap-3 text-xs text-neutral-600 border-t border-neutral-100 pt-4">
                 {publicCfg.menuText && <div><span className="font-semibold text-neutral-800">{t("jour_j_public.section_menu")} :</span> {publicCfg.menuText.slice(0, 60)}{publicCfg.menuText.length > 60 ? "…" : ""}</div>}
                 {publicCfg.timeline.length > 0 && <div><span className="font-semibold text-neutral-800">{t("jour_j_public.section_timeline")} :</span> {publicCfg.timeline.length} étape(s)</div>}
                 {publicCfg.bioPartner1 && <div><span className="font-semibold text-neutral-800">{t("jour_j_public.section_bio1")} :</span> {publicCfg.bioPartner1.slice(0, 40)}…</div>}
-                {publicCfg.driveUrl && <div><span className="font-semibold text-neutral-800">{t("jour_j_public.section_drive")} :</span> ✓</div>}
+                {(publicCfg.photoAlbumUrl || publicCfg.driveUrl) && <div><span className="font-semibold text-neutral-800">{t("jour_j_public.section_photo_album")} :</span> ✓</div>}
               </div>
             )}
             <Button size="sm" className="rounded-none uppercase tracking-wider text-xs mt-2" onClick={startEdit}>
@@ -241,6 +242,7 @@ export default function JourJPage() {
                 bioPartner1: pubForm.bioPartner1,
                 bioPartner2: pubForm.bioPartner2,
                 driveUrl: pubForm.driveUrl,
+                photoAlbumUrl: pubForm.photoAlbumUrl,
                 timeline: pubForm.timeline,
               });
             }}
@@ -311,15 +313,16 @@ export default function JourJPage() {
               </div>
             </div>
 
-            {/* Drive URL */}
+            {/* Photo album URL */}
             <div>
-              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("jour_j_public.section_drive")}</label>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("jour_j_public.section_photo_album")}</label>
               <Input
                 type="url"
-                value={pubForm.driveUrl || ""}
-                onChange={(e) => setPubForm({ ...pubForm, driveUrl: e.target.value || null })}
-                placeholder={t("jour_j_public.section_drive_ph")}
+                value={pubForm.photoAlbumUrl || ""}
+                onChange={(e) => setPubForm({ ...pubForm, photoAlbumUrl: e.target.value || null })}
+                placeholder={t("jour_j_public.section_photo_album_ph")}
               />
+              <p className="text-xs text-neutral-400 mt-1">{t("jour_j_public.section_photo_album_hint")}</p>
             </div>
 
             <div className="flex gap-3 pt-2">

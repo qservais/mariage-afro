@@ -18,7 +18,7 @@ import {
 } from "@workspace/db";
 import crypto from "node:crypto";
 import { eq, and, asc, desc, gte, lte, sql, inArray, or, ilike } from "drizzle-orm";
-import { notifyAdminNewLead, notifyVendorNewLead } from "../lib/email";
+import { notifyAdminNewLead, notifyVendorNewLead, notifyQuoteRequestConfirmation } from "../lib/email";
 
 const router = Router();
 
@@ -476,6 +476,16 @@ async function createVendorLead(
     message: data.message ? `[${data.requestType}] ${data.message}` : `[${data.requestType}]`,
     vendorName: result.vendor.name,
   }, log).catch((err) => log?.error?.({ err }, "Failed to notify admin of vendor lead"));
+
+  void notifyQuoteRequestConfirmation({
+    vendorName: result.vendor.name,
+    requestType: data.requestType,
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    weddingDate: data.weddingDate,
+    message: data.message,
+  }, log).catch((err) => log?.error?.({ err }, "Failed to send quote confirmation to visitor"));
 
   if (result.vendorAccount?.email) {
     void notifyVendorNewLead({
