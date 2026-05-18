@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, User, ArrowUpRight, Briefcase, CalendarCheck2 } from "lucide-react";
+import { User, ArrowUpRight, Briefcase, CalendarCheck2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoColor from "@assets/logo-mariage-affro-01.svg";
 
@@ -36,14 +36,10 @@ export default function Header() {
     i18n.changeLanguage(lng);
   };
 
-  // Détecter si on est sur une page avec hero sombre (style éditorial wine-deep)
-  // pour adapter automatiquement les couleurs du header + sidebar
   const DARK_HERO_ROUTES = ["/", "/realisations", "/lieux", "/partenaires", "/services", "/plateforme", "/contact", "/shop"];
   const isOverDarkRoute = DARK_HERO_ROUTES.includes(location);
   const isOverDark = isOverDarkRoute && !isScrolled;
 
-  // Menu catégorisé en 3 colonnes pour tout afficher sans scroll.
-  // Hiérarchie pensée pour qu'un visiteur comprenne immédiatement où aller.
   const menuColumns = [
     {
       eyebrow: t("header.eyebrow_couples"),
@@ -88,15 +84,14 @@ export default function Header() {
     return location === to || location.startsWith(to + "/");
   };
 
-  // Hover gold accessible : sur header dark/scrolled/menu, gold clair (#c9a96e
-  // contraste ≥ 7 sur wine-deep). Sur header cream-translucide, gold clair
-  // tombe à 2.06 — on bascule sur gold-deep (#8a6d3b, ratio 4.6 sur cream).
   const goldHover =
     isOverDark || isScrolled || mobileMenuOpen ? "hover:text-gold" : "hover:text-gold-deep";
 
+  const isLight = !isOverDark && !isScrolled && !mobileMenuOpen;
+
   return (
     <>
-      {/* Top Header — minimal, logo centered, hamburger top-left */}
+      {/* Top Header */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled || mobileMenuOpen
@@ -106,73 +101,92 @@ export default function Header() {
             : "bg-cream/95 backdrop-blur-sm py-5"
         }`}
       >
-        <div className="px-5 md:px-10 grid grid-cols-3 items-center">
-          {/* Col 1: Hamburger top-left */}
-          <div className="flex items-center">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`flex items-center gap-3 group transition-colors ${
-              isOverDark || isScrolled || mobileMenuOpen ? "text-cream" : "text-wine-deep"
-            }`}
-            aria-label={t("header.toggle_menu")}
-            data-testid="button-mobile-menu"
-          >
-            <div className="flex flex-col items-end gap-1.5">
-              <span className="block h-px w-7 bg-current transition-all" />
-              <span className="block h-px w-5 bg-current transition-all" />
-            </div>
-            <span className="text-xs uppercase tracking-[0.25em] font-semibold hidden sm:inline">
-              {mobileMenuOpen ? t("header.menu_close") : t("header.menu_open")}
-            </span>
-          </button>
-          </div>
+        {/*
+          Layout: relative container with absolute-centered logo.
+          This guarantees the logo is pixel-perfect centered on every language
+          and screen size, independent of the widths of the left/right columns.
+        */}
+        <div className="px-5 md:px-10 relative flex items-center justify-between">
 
-          {/* Col 2: Logo center — always perfectly centered regardless of side widths */}
-          <div className="flex justify-center">
-          <Link to="/" className="flex items-center" aria-label="Mariage Afro">
-            <img
-              src={logoColor}
-              alt="Mariage Afro"
-              width={180}
-              height={48}
-              fetchPriority="high"
-              className={`h-10 md:h-12 w-auto transition-all duration-500 ${
-                isScrolled || mobileMenuOpen || isOverDark ? "brightness-0 invert" : ""
+          {/* Left: hamburger */}
+          <div className="flex items-center z-10">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className={`flex items-center gap-3 group transition-colors ${
+                isLight ? "text-wine-deep" : "text-cream"
               }`}
-            />
-          </Link>
+              aria-label={t("header.toggle_menu")}
+              data-testid="button-mobile-menu"
+            >
+              <div className="flex flex-col items-end gap-1.5">
+                <span className="block h-px w-7 bg-current transition-all" />
+                <span className="block h-px w-5 bg-current transition-all" />
+              </div>
+              <span className="text-xs uppercase tracking-[0.25em] font-semibold hidden sm:inline">
+                {mobileMenuOpen ? t("header.menu_close") : t("header.menu_open")}
+              </span>
+            </button>
           </div>
 
-          {/* Col 3: Right: language + client area */}
-          <div className="flex items-center justify-end gap-4 md:gap-6">
+          {/* Center: Logo — absolute so it is always exactly centered */}
+          <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none">
+            <Link to="/" className="flex items-center pointer-events-auto" aria-label="Mariage Afro">
+              <img
+                src={logoColor}
+                alt="Mariage Afro"
+                width={180}
+                height={48}
+                fetchPriority="high"
+                className={`h-9 sm:h-10 md:h-12 w-auto transition-all duration-500 ${
+                  isScrolled || mobileMenuOpen || isOverDark ? "brightness-0 invert" : ""
+                }`}
+              />
+            </Link>
+          </div>
+
+          {/* Right: language switcher (always visible) + CTA + client area (md+) */}
+          <div className="flex items-center gap-3 md:gap-6 z-10">
+            {/* Language switcher — visible on all screen sizes */}
             <div
-              className={`hidden sm:flex items-center gap-2 text-xs font-medium tracking-[0.2em] transition-colors ${
-                isOverDark || isScrolled || mobileMenuOpen ? "text-cream/90" : "text-wine-deep"
+              className={`flex items-center gap-1.5 text-[10px] sm:text-xs font-medium tracking-[0.15em] sm:tracking-[0.2em] transition-colors ${
+                isLight ? "text-wine-deep" : "text-cream/90"
               }`}
             >
               <button
                 onClick={() => changeLanguage("fr")}
                 aria-label="Français"
                 aria-current={i18n.language === "fr" ? "true" : undefined}
-                className={`${goldHover} hover:underline underline-offset-4 transition-colors ${i18n.language === "fr" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
+                className={`${goldHover} transition-colors px-0.5 ${
+                  i18n.language === "fr"
+                    ? `underline underline-offset-4 font-semibold ${isLight ? "text-gold-deep" : "text-gold"}`
+                    : ""
+                }`}
               >
                 FR
               </button>
-              <span className="opacity-50" aria-hidden="true">·</span>
+              <span className="opacity-40" aria-hidden="true">·</span>
               <button
                 onClick={() => changeLanguage("nl")}
                 aria-label="Nederlands"
                 aria-current={i18n.language === "nl" ? "true" : undefined}
-                className={`${goldHover} hover:underline underline-offset-4 transition-colors ${i18n.language === "nl" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
+                className={`${goldHover} transition-colors px-0.5 ${
+                  i18n.language === "nl"
+                    ? `underline underline-offset-4 font-semibold ${isLight ? "text-gold-deep" : "text-gold"}`
+                    : ""
+                }`}
               >
                 NL
               </button>
-              <span className="opacity-50" aria-hidden="true">·</span>
+              <span className="opacity-40" aria-hidden="true">·</span>
               <button
                 onClick={() => changeLanguage("en")}
                 aria-label="English"
                 aria-current={i18n.language === "en" ? "true" : undefined}
-                className={`${goldHover} hover:underline underline-offset-4 transition-colors ${i18n.language === "en" ? `underline underline-offset-4 font-semibold ${isOverDark || isScrolled || mobileMenuOpen ? "text-gold" : "text-gold-deep"}` : ""}`}
+                className={`${goldHover} transition-colors px-0.5 ${
+                  i18n.language === "en"
+                    ? `underline underline-offset-4 font-semibold ${isLight ? "text-gold-deep" : "text-gold"}`
+                    : ""
+                }`}
               >
                 EN
               </button>
@@ -191,9 +205,7 @@ export default function Header() {
             <Link
               to="/espace-client/login"
               className={`hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium transition-colors ${goldHover} hover:underline underline-offset-4 ${
-                isOverDark || isScrolled || mobileMenuOpen
-                  ? "text-cream"
-                  : "text-wine-deep"
+                isLight ? "text-wine-deep" : "text-cream"
               }`}
               aria-label={t("nav.client_area")}
             >
@@ -204,7 +216,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Vertical sidebar — visible on lg+, lamangue style */}
+      {/* Vertical sidebar — visible on lg+ */}
       <aside
         className={`hidden lg:flex fixed left-0 top-0 bottom-0 w-16 z-40 flex-col items-center justify-between py-32 pointer-events-none transition-opacity duration-500 ${
           mobileMenuOpen ? "opacity-0" : "opacity-100"
@@ -225,7 +237,7 @@ export default function Header() {
         </div>
       </aside>
 
-      {/* Fullscreen Menu Overlay (style lamangue : grandes typo serif majuscule) */}
+      {/* Fullscreen Menu Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -233,17 +245,17 @@ export default function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="fixed inset-0 z-[45] bg-wine-deep flex flex-col"
+            className="fixed inset-0 z-[45] bg-wine-deep flex flex-col overflow-y-auto"
           >
-            {/* Bandeau B2B/B2C en haut du menu pour orienter immédiatement */}
+            {/* Bandeau B2B/B2C */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
-              className="pt-24 pb-6 md:pb-8 px-6 md:px-16 lg:px-32 border-b border-cream/10"
+              className="pt-20 sm:pt-24 pb-5 md:pb-8 px-6 md:px-16 lg:px-32 border-b border-cream/10 flex-shrink-0"
             >
               <p className="text-xs tracking-[0.3em] uppercase text-gold mb-3 font-semibold">{t("header.you_are")}</p>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
                 <Link
                   to="/services"
                   onClick={() => setMobileMenuOpen(false)}
@@ -271,12 +283,12 @@ export default function Header() {
               </div>
             </motion.div>
 
-            {/* CTA RDV global — prioritaire en haut du menu mobile */}
+            {/* CTA RDV */}
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.15 }}
-              className="px-6 md:px-16 lg:px-32 pt-6 pb-4 md:pt-8 md:pb-6 border-b border-cream/10"
+              className="px-6 md:px-16 lg:px-32 pt-5 pb-4 md:pt-8 md:pb-6 border-b border-cream/10 flex-shrink-0"
             >
               <Link
                 to="/contact#contact-form"
@@ -290,9 +302,9 @@ export default function Header() {
               </Link>
             </motion.div>
 
-            {/* Menu en 3 colonnes catégorisées : tout visible, jamais de scroll */}
-            <div className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-32 py-8 md:py-12">
-              <nav className="grid grid-cols-1 md:grid-cols-3 gap-x-10 lg:gap-x-16 gap-y-10 md:gap-y-0">
+            {/* Menu links — 3 columns on md+, stacked on mobile */}
+            <div className="flex-shrink-0 px-6 md:px-16 lg:px-32 py-7 md:py-12">
+              <nav className="grid grid-cols-1 md:grid-cols-3 gap-x-10 lg:gap-x-16 gap-y-7 md:gap-y-0">
                 {menuColumns.map((col, ci) => (
                   <motion.div
                     key={col.eyebrow}
@@ -301,10 +313,10 @@ export default function Header() {
                     transition={{ duration: 0.4, delay: 0.2 + ci * 0.08 }}
                     className="flex flex-col"
                   >
-                    <p className="text-[10px] tracking-[0.3em] uppercase text-gold/70 mb-5 md:mb-7">
+                    <p className="text-[10px] tracking-[0.3em] uppercase text-gold/70 mb-4 md:mb-7">
                       {col.eyebrow}
                     </p>
-                    <ul className="flex flex-col gap-2 md:gap-3">
+                    <ul className="flex flex-col gap-1.5 md:gap-3">
                       {col.links.map((link) => (
                         <li key={link.to}>
                           <Link
@@ -325,14 +337,14 @@ export default function Header() {
               </nav>
             </div>
 
-            {/* Footer overlay : CTA secondaires + langues */}
+            {/* Footer overlay: secondary links + language switcher */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.5 }}
-              className="px-6 md:px-16 lg:px-32 py-6 md:py-7 border-t border-cream/10 flex flex-col md:flex-row items-start md:items-center md:justify-between gap-5"
+              className="flex-shrink-0 px-6 md:px-16 lg:px-32 py-6 md:py-7 border-t border-cream/10 flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4"
             >
-              <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <Link
                   to="/espace-client/login"
                   onClick={() => setMobileMenuOpen(false)}
@@ -359,12 +371,21 @@ export default function Header() {
                   <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </Link>
               </div>
-              <div className="flex items-center gap-3 text-cream/50 text-[10px] tracking-[0.25em] uppercase">
-                <button onClick={() => changeLanguage("fr")} className={i18n.language === "fr" ? "text-gold" : "hover:text-gold"}>FR</button>
-                <span className="opacity-50">·</span>
-                <button onClick={() => changeLanguage("nl")} className={i18n.language === "nl" ? "text-gold" : "hover:text-gold"}>NL</button>
-                <span className="opacity-50">·</span>
-                <button onClick={() => changeLanguage("en")} className={i18n.language === "en" ? "text-gold" : "hover:text-gold"}>EN</button>
+              <div className="flex items-center gap-3 text-cream/60 text-[10px] tracking-[0.25em] uppercase">
+                <button
+                  onClick={() => changeLanguage("fr")}
+                  className={`transition-colors ${i18n.language === "fr" ? "text-gold font-semibold" : "hover:text-gold"}`}
+                >FR</button>
+                <span className="opacity-40">·</span>
+                <button
+                  onClick={() => changeLanguage("nl")}
+                  className={`transition-colors ${i18n.language === "nl" ? "text-gold font-semibold" : "hover:text-gold"}`}
+                >NL</button>
+                <span className="opacity-40">·</span>
+                <button
+                  onClick={() => changeLanguage("en")}
+                  className={`transition-colors ${i18n.language === "en" ? "text-gold font-semibold" : "hover:text-gold"}`}
+                >EN</button>
               </div>
             </motion.div>
           </motion.div>
