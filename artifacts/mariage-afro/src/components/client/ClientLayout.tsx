@@ -15,6 +15,9 @@ interface Couple {
   partner1Name: string;
   partner2Name: string;
   weddingDate: string | null;
+  budget: number | null;
+  budgetMode: "libre" | "global";
+  status: string;
   onboardedAt: string | null;
   validatedAt: string | null;
 }

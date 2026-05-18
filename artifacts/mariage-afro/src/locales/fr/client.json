@@ -101,7 +101,19 @@
     "th_amount_actual": "Réel",
     "th_paid": "Payé",
     "empty": "Aucun poste budgétaire",
-    "toggle_paid": "Basculer payé"
+    "toggle_paid": "Basculer payé",
+    "delete": "Supprimer",
+    "mode_label": "Mode budget",
+    "mode_libre": "Budget libre",
+    "mode_global": "Budget global",
+    "mode_libre_desc": "Saisie libre, pas de total global.",
+    "mode_global_desc": "Montant global défini, suivi automatique de l'engagement.",
+    "total_budget": "Budget total",
+    "total_committed": "Engagé",
+    "progress_label": "{{pct}}% du budget engagé",
+    "remaining": "Restant",
+    "warning_estimate": "Les montants saisis sont des estimations indicatives et ne constituent pas des engagements contractuels.",
+    "vendor_sync_note": "Astuce : quand un prestataire passe au statut « Payé » dans l'onglet Prestataires, son montant est automatiquement ajouté ici."
   },
   "invites": {
     "title": "Invités",
@@ -170,6 +182,11 @@
     "delete": "Supprimer",
     "empty": "Aucune tâche",
     "toggle_done": "Basculer terminé",
+    "seed_btn": "Générer un planning type",
+    "seed_confirm": "Cela va ajouter ~15 tâches types basées sur votre date de mariage. Continuer ?",
+    "seed_no_date": "Définissez d'abord votre date de mariage dans votre profil.",
+    "seed_success": "Planning type généré avec succès !",
+    "seed_error": "Erreur lors de la génération du planning.",
     "days": [
       "Lun",
       "Mar",

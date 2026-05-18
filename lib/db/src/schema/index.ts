@@ -76,6 +76,7 @@ export const couplesTable = pgTable("couples", {
   ceremonyVenue: text("ceremony_venue"),
   guestEstimate: integer("guest_estimate"),
   budget: integer("budget"),
+  budgetMode: text("budget_mode").notNull().default("libre"),
   status: text("status").notNull().default("planning"),
   onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
   validatedAt: timestamp("validated_at", { withTimezone: true }),

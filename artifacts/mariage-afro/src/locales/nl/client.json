@@ -101,7 +101,19 @@
     "th_amount_actual": "Werkelijk",
     "th_paid": "Betaald",
     "empty": "Geen budgetposten",
-    "toggle_paid": "Schakel betaald"
+    "toggle_paid": "Schakel betaald",
+    "delete": "Verwijderen",
+    "mode_label": "Budgetmodus",
+    "mode_libre": "Vrij budget",
+    "mode_global": "Globaal budget",
+    "mode_libre_desc": "Vrije invoer, geen globaal totaal.",
+    "mode_global_desc": "Globaal bedrag bepaald, automatische tracking.",
+    "total_budget": "Totaalbudget",
+    "total_committed": "Vastgelegd",
+    "progress_label": "{{pct}}% van budget vastgelegd",
+    "remaining": "Resterend",
+    "warning_estimate": "De ingevoerde bedragen zijn indicatieve schattingen en vormen geen contractuele verplichtingen.",
+    "vendor_sync_note": "Tip: wanneer een leverancier de status 'Betaald' krijgt in het tabblad Leveranciers, wordt het bedrag hier automatisch toegevoegd."
   },
   "invites": {
     "title": "Gasten",
@@ -170,6 +182,11 @@
     "delete": "Verwijderen",
     "empty": "Geen taken",
     "toggle_done": "Schakel voltooid",
+    "seed_btn": "Standaard planning genereren",
+    "seed_confirm": "Dit voegt ~15 standaardtaken toe op basis van uw trouwdatum. Doorgaan?",
+    "seed_no_date": "Stel eerst uw trouwdatum in via uw profiel.",
+    "seed_success": "Standaard planning succesvol aangemaakt!",
+    "seed_error": "Fout bij het genereren van de planning.",
     "days": [
       "Ma",
       "Di",

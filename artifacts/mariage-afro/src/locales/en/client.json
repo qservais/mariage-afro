@@ -101,7 +101,19 @@
     "th_amount_actual": "Actual",
     "th_paid": "Paid",
     "empty": "No budget items",
-    "toggle_paid": "Toggle paid"
+    "toggle_paid": "Toggle paid",
+    "delete": "Delete",
+    "mode_label": "Budget mode",
+    "mode_libre": "Free budget",
+    "mode_global": "Global budget",
+    "mode_libre_desc": "Free entry, no global total.",
+    "mode_global_desc": "Set a total budget and track committed spending automatically.",
+    "total_budget": "Total budget",
+    "total_committed": "Committed",
+    "progress_label": "{{pct}}% of budget committed",
+    "remaining": "Remaining",
+    "warning_estimate": "All amounts entered are indicative estimates and do not constitute contractual commitments.",
+    "vendor_sync_note": "Tip: when a vendor is marked as 'Paid' in the Vendors tab, their amount is automatically added here."
   },
   "invites": {
     "title": "Guests",
@@ -170,6 +182,11 @@
     "delete": "Delete",
     "empty": "No tasks",
     "toggle_done": "Toggle done",
+    "seed_btn": "Generate default planning",
+    "seed_confirm": "This will add ~15 default tasks based on your wedding date. Continue?",
+    "seed_no_date": "Please set your wedding date in your profile first.",
+    "seed_success": "Default planning generated successfully!",
+    "seed_error": "Error generating the planning.",
     "days": [
       "Mon",
       "Tue",

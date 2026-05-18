@@ -123,6 +123,7 @@ const coupleUpdateSchema = z.object({
   ceremonyVenue: z.string().optional().nullable(),
   guestEstimate: z.coerce.number().int().nonnegative().optional().nullable(),
   budget: z.coerce.number().int().nonnegative().optional().nullable(),
+  budgetMode: z.enum(["libre", "global"]).optional(),
   status: z.enum(["planning", "completed"]).optional(),
   onboarded: z.boolean().optional(),
 });
@@ -393,6 +394,53 @@ router.delete("/client/planning/:id", async (req, res) => {
   res.json({ success: true });
 });
 
+// ---------- Planning seed (default 12–18 month template) ----------
+router.post("/client/planning/seed", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+
+  // Fetch wedding date from couple profile
+  const [couple] = await db.select({ weddingDate: couplesTable.weddingDate })
+    .from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+
+  if (!couple?.weddingDate) {
+    res.status(400).json({ error: "Wedding date not set. Please update your profile first." });
+    return;
+  }
+
+  const wedding = new Date(couple.weddingDate);
+
+  function weddingMinus(months: number): string {
+    const d = new Date(wedding);
+    d.setMonth(d.getMonth() - months);
+    return d.toISOString().slice(0, 10);
+  }
+
+  const template: { title: string; dueDate: string; category: string }[] = [
+    { title: "Définir le budget total", dueDate: weddingMinus(18), category: "budget" },
+    { title: "Choisir et réserver la salle de réception", dueDate: weddingMinus(18), category: "lieu" },
+    { title: "Choisir et réserver le lieu de cérémonie", dueDate: weddingMinus(16), category: "lieu" },
+    { title: "Sélectionner et réserver le traiteur", dueDate: weddingMinus(15), category: "traiteur" },
+    { title: "Choisir le DJ / orchestre", dueDate: weddingMinus(14), category: "musique" },
+    { title: "Choisir et réserver le photographe", dueDate: weddingMinus(14), category: "photo" },
+    { title: "Choisir et réserver le vidéaste", dueDate: weddingMinus(12), category: "photo" },
+    { title: "Choisir la robe / tenue de mariée", dueDate: weddingMinus(12), category: "tenue" },
+    { title: "Choisir le costume / tenue du marié", dueDate: weddingMinus(10), category: "tenue" },
+    { title: "Envoyer les save-the-dates", dueDate: weddingMinus(10), category: "invitations" },
+    { title: "Réserver les hébergements pour les invités", dueDate: weddingMinus(9), category: "logistique" },
+    { title: "Finaliser le menu avec le traiteur", dueDate: weddingMinus(6), category: "traiteur" },
+    { title: "Envoyer les invitations officielles", dueDate: weddingMinus(6), category: "invitations" },
+    { title: "Organiser les essayages tenue", dueDate: weddingMinus(4), category: "tenue" },
+    { title: "Confirmer les prestataires et partager le planning Jour J", dueDate: weddingMinus(2), category: "coordination" },
+    { title: "Préparer les valises / lune de miel", dueDate: weddingMinus(1), category: "logistique" },
+  ];
+
+  const inserted = await db.insert(planningTasksTable)
+    .values(template.map((t) => ({ coupleId: r.coupleId, ...t, done: false, assignee: null, notes: null })))
+    .returning();
+
+  res.status(201).json(inserted);
+});
+
 // ---------- Vendors ----------
 const vendorSchema = z.object({
   category: z.string().min(1),
@@ -424,9 +472,41 @@ router.patch("/client/vendors/:id", async (req, res) => {
   const id = Number(req.params.id);
   const parsed = vendorSchema.partial().safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+
+  // Fetch the current vendor to detect status transition → "paid"
+  const [before] = await db.select().from(clientVendorsTable)
+    .where(and(eq(clientVendorsTable.id, id), eq(clientVendorsTable.coupleId, r.coupleId))).limit(1);
+  if (!before) { res.status(404).json({ error: "Not found" }); return; }
+
   const [row] = await db.update(clientVendorsTable).set(parsed.data)
     .where(and(eq(clientVendorsTable.id, id), eq(clientVendorsTable.coupleId, r.coupleId))).returning();
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
+
+  // When a vendor is marked as paid, ensure a matching budget line exists
+  if (parsed.data.status === "paid" && before.status !== "paid") {
+    const amount = parsed.data.amount ?? row.amount ?? 0;
+    // Check if there's already a budget line linked to this vendor name + category
+    const existing = await db.select().from(budgetItemsTable)
+      .where(and(
+        eq(budgetItemsTable.coupleId, r.coupleId),
+        eq(budgetItemsTable.vendor, row.name),
+        eq(budgetItemsTable.category, row.category),
+      )).limit(1);
+    if (existing.length === 0) {
+      await db.insert(budgetItemsTable).values({
+        coupleId: r.coupleId,
+        category: row.category,
+        vendor: row.name,
+        planned: amount,
+        actual: amount,
+        paid: true,
+      });
+    } else {
+      await db.update(budgetItemsTable).set({ actual: amount, paid: true })
+        .where(eq(budgetItemsTable.id, existing[0].id));
+    }
+  }
+
   res.json(row);
 });
 router.delete("/client/vendors/:id", async (req, res) => {

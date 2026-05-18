@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, Check } from "lucide-react";
+import { Plus, Trash2, Check, Info, AlertTriangle } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { BudgetItem as Item, BudgetItemCreate, BudgetItemPatch } from "@/lib/clientTypes";
+import { useCouple } from "@/components/client/ClientLayout";
 
 import { getBudgetChartColors } from "@/lib/brand-colors";
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
@@ -19,6 +20,10 @@ export default function BudgetPage() {
   const fmt = (cents: number) => `${(cents / 100).toLocaleString(locale)} €`;
 
   const qc = useQueryClient();
+  const { data: couple } = useCouple();
+  const budgetMode = couple?.budgetMode ?? "libre";
+  const totalBudgetCents = couple?.budget ?? 0;
+
   const { data: items = [] } = useQuery<Item[]>({
     queryKey: ["client", "budget"],
     queryFn: () => clientApi.get<Item[]>("/api/client/budget"),
@@ -37,10 +42,20 @@ export default function BudgetPage() {
     mutationFn: (id: number) => clientApi.del(`/api/client/budget/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "budget"] }),
   });
+  const updateMode = useMutation({
+    mutationFn: (mode: "libre" | "global") => clientApi.patch("/api/client/me", { budgetMode: mode }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "me"] }),
+  });
 
   const totalPlanned = items.reduce((s, i) => s + i.planned, 0);
   const totalActual = items.reduce((s, i) => s + i.actual, 0);
   const totalPaid = items.filter((i) => i.paid).reduce((s, i) => s + i.actual, 0);
+  const totalCommitted = totalPlanned;
+
+  const progressPct = budgetMode === "global" && totalBudgetCents > 0
+    ? Math.min(100, Math.round((totalCommitted / totalBudgetCents) * 100))
+    : 0;
+  const remaining = totalBudgetCents - totalCommitted;
 
   const chartData = items.reduce<{ name: string; value: number }[]>((acc, i) => {
     const ex = acc.find((x) => x.name === i.category);
@@ -50,11 +65,41 @@ export default function BudgetPage() {
 
   return (
     <div className="space-y-6 max-w-6xl">
-      <div>
-        <h2 className="font-bold text-2xl">{t("budget.title")}</h2>
-        <p className="text-sm text-neutral-600">{t("budget.subtitle")}</p>
+      <div className="flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <h2 className="font-bold text-2xl">{t("budget.title")}</h2>
+          <p className="text-sm text-neutral-600">{t("budget.subtitle")}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs uppercase tracking-widest text-neutral-500">{t("budget.mode_label")} :</span>
+          <div className="inline-flex border border-neutral-300 text-xs uppercase tracking-wider">
+            {(["libre", "global"] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => updateMode.mutate(m)}
+                className={`px-3 py-2 ${budgetMode === m ? "bg-primary text-white" : "bg-white"}`}
+                data-testid={`budget-mode-${m}`}
+              >
+                {t(`budget.mode_${m}`)}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
+      {/* Estimation warning */}
+      <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+        <p>{t("budget.warning_estimate")}</p>
+      </div>
+
+      {/* Vendor sync info */}
+      <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-700">
+        <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+        <p>{t("budget.vendor_sync_note")}</p>
+      </div>
+
+      {/* Stats cards */}
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="bg-white p-4 border border-neutral-200">
           <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.planned")}</p>
@@ -69,6 +114,34 @@ export default function BudgetPage() {
           <p className="text-2xl font-bold mt-1 text-primary">{fmt(totalPaid)}</p>
         </div>
       </div>
+
+      {/* Global budget progress bar */}
+      {budgetMode === "global" && (
+        <div className="bg-white p-6 border border-neutral-200 space-y-4">
+          <div className="flex justify-between items-baseline flex-wrap gap-2">
+            <div>
+              <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.total_committed")}</p>
+              <p className="text-xl font-bold">{fmt(totalCommitted)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.total_budget")}</p>
+              <p className="text-xl font-bold">{fmt(totalBudgetCents)}</p>
+            </div>
+          </div>
+          <div className="w-full bg-neutral-100 h-4 overflow-hidden">
+            <div
+              className={`h-4 transition-all ${progressPct >= 100 ? "bg-rose-500" : progressPct >= 80 ? "bg-amber-400" : "bg-primary"}`}
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-neutral-600">{t("budget.progress_label", { pct: progressPct })}</span>
+            <span className={`font-semibold ${remaining < 0 ? "text-rose-600" : "text-emerald-600"}`}>
+              {t("budget.remaining")}: {fmt(Math.abs(remaining))}{remaining < 0 ? " ⚠" : ""}
+            </span>
+          </div>
+        </div>
+      )}
 
       {chartData.length > 0 && (
         <div className="bg-white p-6 border border-neutral-200">

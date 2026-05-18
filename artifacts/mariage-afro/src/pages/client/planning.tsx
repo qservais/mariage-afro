@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Check, ChevronLeft, ChevronRight, CalendarPlus } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { PlanningTask, PlanningTaskCreate, PlanningTaskPatch } from "@/lib/clientTypes";
+import { useCouple } from "@/components/client/ClientLayout";
+import { useToast } from "@/hooks/use-toast";
 
 type ViewMode = "list" | "week" | "month";
 
@@ -37,6 +39,9 @@ export default function PlanningPage() {
   const days = (t("planning.days", { returnObjects: true }) as unknown as string[]) || ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
   const qc = useQueryClient();
+  const { toast } = useToast();
+  const { data: couple } = useCouple();
+
   const { data: tasks = [] } = useQuery<PlanningTask[]>({
     queryKey: ["client", "planning"],
     queryFn: () => clientApi.get<PlanningTask[]>("/api/client/planning"),
@@ -57,6 +62,23 @@ export default function PlanningPage() {
     mutationFn: (id: number) => clientApi.del(`/api/client/planning/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "planning"] }),
   });
+  const seed = useMutation({
+    mutationFn: () => clientApi.post<PlanningTask[]>("/api/client/planning/seed", {}),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["client", "planning"] });
+      toast({ title: t("planning.seed_success") });
+    },
+    onError: () => toast({ title: t("planning.seed_error"), variant: "destructive" }),
+  });
+
+  function handleSeed() {
+    if (!couple?.weddingDate) {
+      toast({ title: t("planning.seed_no_date"), variant: "destructive" });
+      return;
+    }
+    if (!window.confirm(t("planning.seed_confirm"))) return;
+    seed.mutate();
+  }
 
   const tasksByDate = useMemo(() => {
     const m = new Map<string, PlanningTask[]>();
@@ -94,19 +116,32 @@ export default function PlanningPage() {
           <h2 className="font-bold text-2xl">{t("planning.title")}</h2>
           <p className="text-sm text-neutral-600">{t("planning.subtitle")}</p>
         </div>
-        <div className="inline-flex border border-neutral-300 text-xs uppercase tracking-wider" role="tablist">
-          {(["list", "week", "month"] as ViewMode[]).map((v) => (
-            <button
-              key={v}
-              role="tab"
-              aria-selected={view === v}
-              onClick={() => setView(v)}
-              className={`px-3 py-2 ${view === v ? "bg-primary text-white" : "bg-white"}`}
-              data-testid={`tab-view-${v}`}
-            >
-              {v === "list" ? t("planning.view_list") : v === "week" ? t("planning.view_week") : t("planning.view_month")}
-            </button>
-          ))}
+        <div className="flex items-center gap-3 flex-wrap">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleSeed}
+            disabled={seed.isPending}
+            className="rounded-none uppercase tracking-wider text-xs gap-2 border-primary text-primary hover:bg-primary hover:text-white"
+            data-testid="btn-seed-planning"
+          >
+            <CalendarPlus className="w-3.5 h-3.5" />
+            {t("planning.seed_btn")}
+          </Button>
+          <div className="inline-flex border border-neutral-300 text-xs uppercase tracking-wider" role="tablist">
+            {(["list", "week", "month"] as ViewMode[]).map((v) => (
+              <button
+                key={v}
+                role="tab"
+                aria-selected={view === v}
+                onClick={() => setView(v)}
+                className={`px-3 py-2 ${view === v ? "bg-primary text-white" : "bg-white"}`}
+                data-testid={`tab-view-${v}`}
+              >
+                {v === "list" ? t("planning.view_list") : v === "week" ? t("planning.view_week") : t("planning.view_month")}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
