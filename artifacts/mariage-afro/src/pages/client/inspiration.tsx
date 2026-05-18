@@ -49,6 +49,7 @@ export default function InspirationPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeBoardId, setActiveBoardId] = useState<number | null>(null);
   const [newBoardTitle, setNewBoardTitle] = useState("");
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [invite, setInvite] = useState({ email: "", name: "", role: "viewer" as "viewer" | "editor" });
 
@@ -79,7 +80,13 @@ export default function InspirationPage() {
       uploadFile(file).then((url) =>
         clientApi.post("/api/client/mood-board-images", { boardId, url }),
       ),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "mood-boards"] }),
+    onSuccess: () => {
+      setUploadError(null);
+      qc.invalidateQueries({ queryKey: ["client", "mood-boards"] });
+    },
+    onError: (err: Error) => {
+      setUploadError(err.message || t("inspiration.upload_error"));
+    },
   });
   const deleteImage = useMutation({
     mutationFn: (id: number) => clientApi.del(`/api/client/mood-board-images/${id}`),
@@ -101,6 +108,7 @@ export default function InspirationPage() {
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || !activeBoard) return;
+    setUploadError(null);
     for (const file of Array.from(files)) {
       if (!file.type.startsWith("image/")) continue;
       addImage.mutate({ boardId: activeBoard.id, file });
@@ -167,8 +175,9 @@ export default function InspirationPage() {
           <div className="bg-white border border-neutral-200 p-4 flex items-center justify-between">
             <h3 className="font-medium">{activeBoard.title}</h3>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="rounded-none gap-1 text-xs" onClick={() => fileInputRef.current?.click()} data-testid="btn-upload-image">
-                <ImagePlus className="w-3.5 h-3.5" /> {t("inspiration.add_image")}
+              <Button size="sm" variant="outline" className="rounded-none gap-1 text-xs" disabled={addImage.isPending} onClick={() => fileInputRef.current?.click()} data-testid="btn-upload-image">
+                {addImage.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImagePlus className="w-3.5 h-3.5" />}
+                {t("inspiration.add_image")}
               </Button>
               <Button size="sm" variant="ghost" className="rounded-none text-xs text-rose-600" onClick={() => confirm(t("inspiration.confirm_delete_board")) && deleteBoard.mutate(activeBoard.id)}>
                 <Trash2 className="w-3.5 h-3.5" />
@@ -176,6 +185,15 @@ export default function InspirationPage() {
             </div>
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+          {uploadError && (
+            <div className="flex items-center gap-2 bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700" role="alert">
+              <X className="w-4 h-4 flex-shrink-0" />
+              <span>{uploadError}</span>
+              <button onClick={() => setUploadError(null)} className="ml-auto text-rose-400 hover:text-rose-600" aria-label="Fermer">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
 
           <div
             onDragOver={(e) => e.preventDefault()}

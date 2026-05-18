@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Loader2, Heart, Plus, X } from "lucide-react";
+import { Loader2, Heart, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,8 @@ interface RsvpQuestion {
   required: boolean;
 }
 
+const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
+
 export default function MariageRsvpPage() {
   const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
@@ -27,12 +29,12 @@ export default function MariageRsvpPage() {
 
   const { data: site } = useQuery({
     queryKey: ["wedding-public", slug],
-    queryFn: async () => { const r = await fetch(`/api/wedding/${slug}`); if (!r.ok) throw new Error("nf"); return r.json(); },
+    queryFn: async () => { const r = await fetch(`${BASE}/api/wedding/${slug}`); if (!r.ok) throw new Error("nf"); return r.json(); },
     enabled: !!slug,
   });
   const { data: questions = [] } = useQuery<RsvpQuestion[]>({
     queryKey: ["wedding-questions", slug],
-    queryFn: async () => { const r = await fetch(`/api/wedding/${slug}/rsvp-questions`); if (!r.ok) return []; return r.json(); },
+    queryFn: async () => { const r = await fetch(`${BASE}/api/wedding/${slug}/rsvp-questions`); if (!r.ok) return []; return r.json(); },
     enabled: !!slug,
   });
 
@@ -50,7 +52,7 @@ export default function MariageRsvpPage() {
         message: form.message,
         answers: Object.entries(answers).map(([qid, a]) => ({ questionId: Number(qid), answer: a })).filter((a) => a.answer !== ""),
       };
-      const r = await fetch(`/api/wedding/${slug}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const r = await fetch(`${BASE}/api/wedding/${slug}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!r.ok) throw new Error("err");
     },
     onSuccess: () => setDone(true),
@@ -61,14 +63,81 @@ export default function MariageRsvpPage() {
   }
 
   if (done) {
+    const weddingDate = site.weddingDate
+      ? new Date(site.weddingDate).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })
+      : null;
+
     return (
-      <div className="min-h-screen bg-cream-soft flex items-center justify-center px-6">
-        <div className="bg-white border border-border p-10 text-center max-w-md">
-          <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-4" />
-          <h1 className="text-2xl font-bold font-serif mb-2">{t("mariage_public.rsvp_done_title")}</h1>
-          <p className="text-muted-foreground text-sm mb-6">{t("mariage_public.rsvp_done_desc")}</p>
-          <Link to={`/mariage/${slug}`} className="text-sm text-primary hover:underline">← {t("mariage_cagnotte.back_to_site")}</Link>
-        </div>
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--color-cream-soft, #fff4e4)" }}>
+        {/* Header */}
+        <header className="bg-[#68191e] py-8 px-6 text-center flex-shrink-0">
+          <img
+            src={`${BASE}/logo.svg`}
+            alt="Mariage Afro"
+            className="h-8 w-auto mx-auto mb-4 brightness-0 invert"
+          />
+          {site.title && (
+            <p className="text-white/80 text-sm font-light tracking-widest uppercase">{site.title}</p>
+          )}
+        </header>
+
+        {/* Confirmation card */}
+        <main className="flex-1 flex items-center justify-center px-6 py-12">
+          <div className="bg-white border border-[#e8d5b7] max-w-md w-full text-center shadow-sm">
+            {/* Top ornament */}
+            <div className="bg-[#68191e]/5 py-6 px-8 border-b border-[#e8d5b7]">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <div className="h-px w-12 bg-[#68191e]/30" />
+                <Heart className="w-6 h-6 text-[#68191e] fill-[#68191e]" />
+                <div className="h-px w-12 bg-[#68191e]/30" />
+              </div>
+              <p className="text-[#68191e] text-xs font-semibold uppercase tracking-widest">
+                {t("mariage_public.rsvp_done_eyebrow", { defaultValue: "Confirmation" })}
+              </p>
+            </div>
+
+            {/* Main content */}
+            <div className="px-8 py-8 space-y-4">
+              <h1 className="font-serif text-3xl text-[#68191e] leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                {t("mariage_public.rsvp_done_title")}
+              </h1>
+
+              <div className="w-8 h-px bg-[#68191e]/40 mx-auto" />
+
+              <p className="text-neutral-600 text-sm leading-relaxed">
+                {t("mariage_public.rsvp_done_desc")}
+              </p>
+
+              {(site.title || weddingDate) && (
+                <div className="mt-6 pt-6 border-t border-[#e8d5b7] space-y-1">
+                  {site.title && (
+                    <p className="font-serif text-lg text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                      {site.title}
+                    </p>
+                  )}
+                  {weddingDate && (
+                    <p className="text-sm text-neutral-500 uppercase tracking-wider">{weddingDate}</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-8 pb-8">
+              <Link
+                to={`/mariage/${slug}`}
+                className="inline-flex items-center gap-2 text-[#68191e] text-sm hover:underline underline-offset-4 font-medium"
+              >
+                ← {t("mariage_cagnotte.back_to_site")}
+              </Link>
+            </div>
+
+            {/* Bottom brand strip */}
+            <div className="bg-[#68191e] py-3 px-6">
+              <p className="text-white/60 text-xs tracking-widest uppercase">Mariage Afro</p>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
@@ -78,10 +147,15 @@ export default function MariageRsvpPage() {
 
   return (
     <div className="min-h-screen bg-cream-soft">
-      <section className="py-12 text-center bg-foreground">
-        <Heart className="w-10 h-10 text-primary mx-auto mb-3" />
+      <section className="py-12 text-center bg-[#68191e]">
+        <img
+          src={`${BASE}/logo.svg`}
+          alt="Mariage Afro"
+          className="h-7 w-auto mx-auto mb-4 brightness-0 invert"
+        />
+        <Heart className="w-8 h-8 text-white/40 mx-auto mb-3" />
         <h1 className="text-3xl md:text-4xl font-bold font-serif text-white">{t("mariage_public.rsvp_title")}</h1>
-        {site.title && <p className="text-white/70 text-sm mt-2">{site.title}</p>}
+        {site.title && <p className="text-white/70 text-sm mt-2 tracking-wider">{site.title}</p>}
       </section>
 
       <section className="py-10 px-6 max-w-lg mx-auto">

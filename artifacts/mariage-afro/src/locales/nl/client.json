@@ -482,6 +482,7 @@
     "drop_hint": "Sleep uw afbeeldingen hier of klik op \"Afbeelding toevoegen\".",
     "caption_placeholder": "Bijschrift…",
     "delete_image": "Verwijderen",
+    "upload_error": "Upload mislukt. Controleer uw verbinding en probeer opnieuw.",
     "confirm_delete_board": "Dit bord en alle afbeeldingen verwijderen?",
     "collaborators": "Medewerkers",
     "no_collaborators": "Nog geen medewerkers uitgenodigd.",

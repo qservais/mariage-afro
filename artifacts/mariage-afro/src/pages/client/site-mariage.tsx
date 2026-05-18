@@ -49,6 +49,14 @@ interface WeddingWebsite {
 }
 
 const BASE_URL = import.meta.env.BASE_URL ?? "/";
+const BASE = BASE_URL.replace(/\/$/, "");
+
+function coverImageDisplayUrl(path: string | null): string | null {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  return path;
+}
 
 export default function SiteMariagePage() {
   const { t } = useTranslation();
@@ -649,7 +657,7 @@ export default function SiteMariagePage() {
             {form.coverImage ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={form.coverImage}
+                src={coverImageDisplayUrl(form.coverImage) ?? ""}
                 alt="cover"
                 className="w-full h-full object-cover"
                 data-testid="cover-preview"

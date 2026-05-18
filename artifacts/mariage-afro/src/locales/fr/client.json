@@ -482,6 +482,7 @@
     "drop_hint": "Glissez vos images ici ou cliquez sur \"Ajouter image\".",
     "caption_placeholder": "Légende…",
     "delete_image": "Supprimer",
+    "upload_error": "Échec de l'upload. Vérifiez votre connexion et réessayez.",
     "confirm_delete_board": "Supprimer cette planche et toutes ses images ?",
     "collaborators": "Collaborateurs",
     "no_collaborators": "Aucun collaborateur invité pour le moment.",

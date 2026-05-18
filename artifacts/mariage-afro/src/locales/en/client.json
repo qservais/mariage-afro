@@ -482,6 +482,7 @@
     "drop_hint": "Drag images here or click \"Add image\".",
     "caption_placeholder": "Caption…",
     "delete_image": "Delete",
+    "upload_error": "Upload failed. Check your connection and try again.",
     "confirm_delete_board": "Delete this board and all its images?",
     "collaborators": "Collaborators",
     "no_collaborators": "No collaborators invited yet.",
