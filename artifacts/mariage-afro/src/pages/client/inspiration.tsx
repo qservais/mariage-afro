@@ -189,7 +189,7 @@ export default function InspirationPage() {
             <div className="flex items-center gap-2 bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700" role="alert">
               <X className="w-4 h-4 flex-shrink-0" />
               <span>{uploadError}</span>
-              <button onClick={() => setUploadError(null)} className="ml-auto text-rose-400 hover:text-rose-600" aria-label="Fermer">
+              <button onClick={() => setUploadError(null)} className="ml-auto text-rose-400 hover:text-rose-600" aria-label={t("inspiration.cancel")}>
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
