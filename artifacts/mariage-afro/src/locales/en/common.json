@@ -58,7 +58,8 @@
     "privacy_note": "Your data stays confidential — GDPR-compliant.",
     "success_title": "The guide is on its way!",
     "success_desc": "Check your inbox in a few minutes.",
-    "close": "Close"
+    "close": "Close",
+    "back_to_top": "Back to top"
   },
   "auth": {
     "client": {

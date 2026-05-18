@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function BackToTop() {
+  const { t } = useTranslation("common");
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export default function BackToTop() {
   return (
     <button
       onClick={scrollToTop}
-      aria-label="Retour en haut"
+      aria-label={t("lead_form.back_to_top", "Back to top")}
       className="fixed bottom-6 right-6 z-40 w-11 h-11 bg-wine-deep text-cream border border-gold/30 flex items-center justify-center hover:bg-bordeaux hover:border-bordeaux transition-colors duration-300 shadow-lg"
     >
       <ArrowUp className="w-4 h-4" />

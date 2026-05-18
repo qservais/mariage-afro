@@ -58,7 +58,8 @@
     "privacy_note": "Uw gegevens blijven vertrouwelijk — GDPR-conform.",
     "success_title": "De gids is onderweg!",
     "success_desc": "Controleer uw inbox over enkele minuten.",
-    "close": "Sluiten"
+    "close": "Sluiten",
+    "back_to_top": "Terug naar boven"
   },
   "auth": {
     "client": {

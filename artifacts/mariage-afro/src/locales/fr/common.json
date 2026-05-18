@@ -58,7 +58,8 @@
     "privacy_note": "Vos données restent confidentielles — RGPD conforme.",
     "success_title": "Le guide est en route !",
     "success_desc": "Vérifiez votre boîte mail dans quelques minutes.",
-    "close": "Fermer"
+    "close": "Fermer",
+    "back_to_top": "Retour en haut"
   },
   "auth": {
     "client": {
