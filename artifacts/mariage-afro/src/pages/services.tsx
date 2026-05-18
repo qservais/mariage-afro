@@ -68,7 +68,7 @@ export default function Services() {
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
-            className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] mt-6 mb-8 text-cream text-5xl md:text-7xl lg:text-[6rem]"
+            className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] mt-6 mb-8 text-cream text-4xl md:text-5xl lg:text-6xl"
           >
             {t("services.title")}
           </motion.h1>
@@ -153,7 +153,7 @@ export default function Services() {
               <Globe className="w-3 h-3" />
               {t("destination.section_label")}
             </span>
-            <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-8 leading-[0.95] tracking-tight">
+            <h2 className="font-display uppercase text-cream text-3xl md:text-4xl lg:text-5xl mt-4 mb-8 leading-[0.95] tracking-tight">
               {t("services.item4_title")}
             </h2>
             <p className="text-lg text-cream/70 leading-relaxed mb-10 font-light max-w-2xl mx-auto">

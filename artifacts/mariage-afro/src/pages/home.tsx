@@ -9,13 +9,13 @@ import { Picture } from "@/components/Picture";
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
 import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
 import servicesImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
-import videoSrc from "@assets/Trailer-de-dingue_1776614330311.mp4";
 import { SEO } from "@/components/SEO";
 import { HeroCinematicOverlay, HeroMobileFadeOverlay } from "@/components/home/HeroCinematicIntro";
 import { TrustBar } from "@/components/home/TrustBar";
 import { ProcessTimeline } from "@/components/home/ProcessTimeline";
 import { HeroCursor } from "@/components/HeroCursor";
 
+const videoSrc = "/film-de-miel-2.mp4";
 const filmVideo1 = "/film-de-miel-2.mp4";
 const filmVideo2 = "/film-de-miel-1.mp4";
 
@@ -265,7 +265,7 @@ export default function Home() {
               {t("hero.tagline")}
             </span>
 
-            <h1 className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] text-cream mb-6 md:mb-8 text-[2.2rem] sm:text-4xl md:text-5xl lg:text-[4.2rem] xl:text-[5.2rem]">
+            <h1 className="font-display uppercase font-medium leading-tight tracking-[-0.01em] text-cream mb-6 md:mb-8 text-2xl sm:text-3xl md:text-[2rem] lg:text-[2.5rem] xl:text-[3rem]">
               {t("hero.title")}
             </h1>
 
@@ -461,7 +461,7 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-20 max-w-3xl mx-auto">
             <span className="section-eyebrow mb-6">{t("home.how_label")}</span>
-            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl mt-4 mb-8">
+            <h2 className="section-title-editorial text-3xl md:text-4xl lg:text-5xl mt-4 mb-8">
               {t("home.how_title")}
             </h2>
             <p className="text-lg text-wine-deep/65 leading-relaxed font-light">
@@ -520,7 +520,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
             >
               <span className="section-eyebrow section-eyebrow-left section-eyebrow-light mb-6">{t("platform.label")}</span>
-              <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mt-4 mb-8 leading-[0.95] tracking-tight">
+              <h2 className="font-display uppercase text-cream text-3xl md:text-4xl lg:text-5xl mt-4 mb-8 leading-[0.95] tracking-tight">
                 {t("platform.title")}
               </h2>
               <p className="text-lg text-cream/70 leading-relaxed mb-12 font-light">
@@ -559,7 +559,7 @@ export default function Home() {
       <section className="py-24 md:py-32 bg-cream">
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-20">
-            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl">
+            <h2 className="section-title-editorial text-3xl md:text-4xl lg:text-5xl">
               {t("value_props.title")}
             </h2>
             <div className="w-12 h-px bg-gold mx-auto mt-8"></div>
@@ -592,7 +592,7 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-20">
             <span className="section-eyebrow mb-6">{t("home.services_label")}</span>
-            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl mt-4">
+            <h2 className="section-title-editorial text-3xl md:text-4xl lg:text-5xl mt-4">
               {t("home.services_title")}
             </h2>
           </motion.div>
@@ -649,7 +649,7 @@ export default function Home() {
           >
             <div className="mb-10">
               <span className="section-eyebrow section-eyebrow-light mb-8">{t("film_de_miel.label")}</span>
-              <h3 className="font-display text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[0.9] mt-6 mb-3 text-gold italic">
+              <h3 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[0.9] mt-6 mb-3 text-gold italic">
                 Film de Miel
               </h3>
               <span className="text-[10px] uppercase tracking-[0.4em] text-cream/75 font-medium">
@@ -693,7 +693,7 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-20">
             <span className="section-eyebrow mb-6">{t("testimonials.label")}</span>
-            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl mt-4">
+            <h2 className="section-title-editorial text-3xl md:text-4xl lg:text-5xl mt-4">
               {t("testimonials.title")}
             </h2>
           </motion.div>
@@ -767,7 +767,7 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-20">
             <span className="section-eyebrow mb-6">{t("home.prestations_label")}</span>
-            <h2 className="section-title-editorial text-4xl md:text-6xl lg:text-7xl mt-4">
+            <h2 className="section-title-editorial text-3xl md:text-4xl lg:text-5xl mt-4">
               {t("home.prestations_title")}
             </h2>
           </motion.div>
@@ -828,7 +828,7 @@ export default function Home() {
               className="lg:pl-10"
             >
               <span className="section-eyebrow section-eyebrow-left mb-6">{t("home.about_label")}</span>
-              <h2 className="font-display uppercase text-wine-deep text-4xl md:text-6xl lg:text-7xl mt-4 mb-10 leading-[0.95] tracking-tight">
+              <h2 className="font-display uppercase text-wine-deep text-3xl md:text-4xl lg:text-5xl mt-4 mb-10 leading-[0.95] tracking-tight">
                 {t("home.about_title")}
               </h2>
               <p className="text-lg text-wine-deep/75 leading-relaxed mb-6 font-light">
@@ -853,7 +853,7 @@ export default function Home() {
         <div className="container relative z-10 mx-auto px-6 md:px-12 text-center max-w-4xl">
           <motion.div {...fadeIn}>
             <span className="section-eyebrow section-eyebrow-light mb-8">{t("home.cta_label")}</span>
-            <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-8xl mt-4 mb-10 leading-[0.9] tracking-tight">
+            <h2 className="font-display uppercase text-cream text-3xl md:text-4xl lg:text-5xl mt-4 mb-10 leading-[0.9] tracking-tight">
               {t("home.cta_title")}
             </h2>
             <p className="text-lg md:text-xl text-cream/75 leading-relaxed mb-14 font-light max-w-2xl mx-auto">

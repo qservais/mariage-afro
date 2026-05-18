@@ -898,7 +898,7 @@ export default function Prestations() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] mb-8 text-cream text-5xl md:text-7xl lg:text-[6rem]"
+            className="font-display uppercase font-medium leading-[0.95] tracking-[-0.01em] mb-8 text-cream text-4xl md:text-5xl lg:text-6xl"
           >
             {t("prestations.title")}
           </motion.h1>
@@ -1241,7 +1241,7 @@ export default function Prestations() {
             viewport={{ once: true }}
           >
             <span className="section-eyebrow section-eyebrow-light mb-8">{t("nav.partners")}</span>
-            <h2 className="font-display uppercase text-cream text-4xl md:text-6xl lg:text-7xl mb-8 leading-[0.95] tracking-tight">
+            <h2 className="font-display uppercase text-cream text-3xl md:text-4xl lg:text-5xl mb-8 leading-[0.95] tracking-tight">
               {t("prestations.banner_title")}
             </h2>
             <p className="text-cream/75 text-base md:text-lg leading-relaxed mb-12 max-w-xl mx-auto font-light">
