@@ -114,6 +114,9 @@ const onboardingSchema = z.object({
   website: z.string().optional().nullable(),
   description: z.string().max(2000).optional().default(""),
   locale: z.enum(["fr", "nl", "en"]).optional().default("fr"),
+  photoPath: z.string().max(2000).optional().nullable(),
+  regions: z.array(z.string().max(80)).optional().default([]),
+  specialties: z.array(z.string().max(80)).optional().default([]),
 });
 
 router.post("/vendor/onboarding", async (req, res) => {
@@ -145,6 +148,30 @@ router.post("/vendor/onboarding", async (req, res) => {
 
   const baseSlug = slugify(data.businessName);
 
+  // Process profile photo uploaded via proxy: consume intent and make it public
+  let onboardingLogoUrl: string | null = null;
+  if (data.photoPath && data.photoPath.startsWith("/objects/")) {
+    const intentOk = await consumeUploadIntent(data.photoPath, r.userId);
+    if (intentOk) {
+      try {
+        onboardingLogoUrl = await storageService.trySetObjectEntityAclPolicy(data.photoPath, {
+          owner: r.userId,
+          visibility: "public",
+        });
+      } catch (err) {
+        logger.error({ err }, "Failed to set onboarding photo ACL");
+        onboardingLogoUrl = data.photoPath;
+      }
+    }
+  }
+
+  // Shared extra fields derived from onboarding form selections
+  const onboardingExtras = {
+    ...(onboardingLogoUrl !== null ? { logoUrl: onboardingLogoUrl } : {}),
+    ...(data.specialties && data.specialties.length > 0 ? { culturalStyles: data.specialties } : {}),
+    ...(data.regions && data.regions.length > 0 ? { region: data.regions[0] } : {}),
+  };
+
   if (vendorId) {
     const slug = await resolveVendorSlug(baseSlug, vendorId);
     await db
@@ -159,6 +186,7 @@ router.post("/vendor/onboarding", async (req, res) => {
         phone: data.phone ?? null,
         email: data.email,
         slug,
+        ...onboardingExtras,
       })
       .where(eq(marketplaceVendorsTable.id, vendorId));
   } else {
@@ -184,6 +212,7 @@ router.post("/vendor/onboarding", async (req, res) => {
           phone: data.phone ?? null,
           email: data.email,
           slug,
+          ...onboardingExtras,
         })
         .where(eq(marketplaceVendorsTable.id, invitedVendor.id));
       vendorId = invitedVendor.id;
@@ -211,7 +240,7 @@ router.post("/vendor/onboarding", async (req, res) => {
       const slug = await resolveVendorSlug(baseSlug, vendorId);
       await db
         .update(marketplaceVendorsTable)
-        .set({ slug })
+        .set({ slug, ...onboardingExtras })
         .where(eq(marketplaceVendorsTable.id, vendorId));
     }
   }

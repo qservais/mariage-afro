@@ -365,14 +365,12 @@ export default function VendorOnboardingGate({ account, children }: Props) {
                     website: v.website || null,
                     description: enrichedDescription,
                     locale,
+                    photoPath: v.photoPath || null,
+                    regions: v.regions,
+                    specialties: v.specialties,
                   },
                   { onSuccess: () => resolve(), onError: (err) => reject(err) },
                 );
-                try {
-                  if (v.photoPath) {
-                    localStorage.setItem("vendor:pending_photo", v.photoPath);
-                  }
-                } catch {}
               })
             }
             data-testid="vendor-onboarding-stepper"
@@ -409,19 +407,15 @@ function PhotoUploadField({
     setUploading(true);
     setErr(null);
     try {
-      const intent = await fetch("/api/storage/uploads/request-url", {
+      const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${BASE}/api/storage/uploads/proxy-upload`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, contentType: file.type }),
-      });
-      if (!intent.ok) throw new Error(`HTTP ${intent.status}`);
-      const { uploadURL, objectPath } = await intent.json();
-      const put = await fetch(uploadURL, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
+        credentials: "include",
+        headers: { "x-content-type": file.type || "image/jpeg" },
         body: file,
       });
-      if (!put.ok) throw new Error("Upload failed");
+      if (!res.ok) throw new Error(`Upload failed: HTTP ${res.status}`);
+      const { objectPath } = await res.json();
       onChange(objectPath);
       setPreviewUrl(URL.createObjectURL(file));
     } catch (e) {

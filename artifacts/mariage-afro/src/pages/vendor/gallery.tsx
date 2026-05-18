@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { ObjectUploader } from "@workspace/object-storage-web";
-import { UploadCloud, Trash2, Star, StarOff } from "lucide-react";
-import { vendorApi } from "@/lib/vendorApi";
+import { UploadCloud, Trash2, Star, StarOff, Loader2 } from "lucide-react";
+import { vendorApi, proxyUpload } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 
 interface VendorProfile {
@@ -18,7 +17,9 @@ const displayUrl = (url: string) => (isStoredObject(url) ? `/api/storage${url}` 
 export default function VendorGalleryPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  const objectPathsRef = useRef<Map<string, string>>(new Map());
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const { data: vendor } = useQuery<VendorProfile>({
     queryKey: ["vendor", "profile"],
@@ -54,38 +55,45 @@ export default function VendorGalleryPage() {
       </div>
 
       <div className="bg-white border border-neutral-200 p-6 space-y-5">
-        <ObjectUploader
-          data-testid="button-upload-gallery"
-          buttonClassName="inline-flex items-center gap-2 bg-wine-deep text-cream hover:bg-wine-deep/90 rounded-none uppercase tracking-wider text-xs h-10 px-4"
-          maxNumberOfFiles={10}
-          maxFileSize={10 * 1024 * 1024}
-          onGetUploadParameters={async (file) => {
-            const res = await vendorApi.post<{ uploadURL: string; objectPath: string }>(
-              "/api/storage/uploads/request-url",
-              { name: file.name, size: file.size, contentType: file.type },
-            );
-            if (file.id) objectPathsRef.current.set(file.id, res.objectPath);
-            return {
-              method: "PUT" as const,
-              url: res.uploadURL,
-              headers: { "Content-Type": file.type },
-            };
-          }}
-          onComplete={async (result) => {
-            const newPaths: string[] = [];
-            for (const f of result.successful ?? []) {
-              const objectPath = f.id ? objectPathsRef.current.get(f.id) : undefined;
-              if (!objectPath) continue;
-              newPaths.push(objectPath);
-              if (f.id) objectPathsRef.current.delete(f.id);
-            }
-            if (newPaths.length === 0) return;
-            const next = [...images, ...newPaths];
-            await save.mutateAsync({ images: next, coverImage: cover ?? newPaths[0] });
-          }}
-        >
-          <UploadCloud className="w-4 h-4" /> {t("vendor.gallery.upload")}
-        </ObjectUploader>
+        <div>
+          <label
+            data-testid="button-upload-gallery"
+            className="inline-flex items-center gap-2 bg-wine-deep text-cream hover:bg-wine-deep/90 cursor-pointer uppercase tracking-wider text-xs h-10 px-4"
+          >
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
+            {t("vendor.gallery.upload")}
+            <input
+              ref={galleryInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              disabled={uploading}
+              onChange={async (e) => {
+                const files = e.target.files;
+                if (!files || files.length === 0) return;
+                setUploadError(null);
+                setUploading(true);
+                try {
+                  const newPaths: string[] = [];
+                  for (const file of Array.from(files)) {
+                    const { objectPath } = await proxyUpload(file);
+                    newPaths.push(objectPath);
+                  }
+                  if (newPaths.length === 0) return;
+                  const next = [...images, ...newPaths];
+                  await save.mutateAsync({ images: next, coverImage: cover ?? newPaths[0] });
+                } catch (err) {
+                  setUploadError((err as Error).message);
+                } finally {
+                  setUploading(false);
+                  if (galleryInputRef.current) galleryInputRef.current.value = "";
+                }
+              }}
+            />
+          </label>
+          {uploadError && <p className="text-[11px] text-red-600 mt-2">{uploadError}</p>}
+        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4" data-testid="grid-vendor-gallery">
           {images.length === 0 && (

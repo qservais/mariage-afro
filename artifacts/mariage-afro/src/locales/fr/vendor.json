@@ -257,6 +257,7 @@
       "description_en": "Description en anglais",
       "video_url": "URL vidéo de présentation",
       "video_url_help": "Lien YouTube ou Vimeo (ex: https://youtube.com/watch?v=…)",
+      "upload_video": "Téléverser une vidéo",
       "indicative_price": "Prix indicatif",
       "indicative_price_placeholder": "Ex: à partir de 800 €"
     },

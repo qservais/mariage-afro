@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Loader2, Upload, X } from "lucide-react";
-import { vendorApi } from "@/lib/vendorApi";
+import { vendorApi, proxyUpload } from "@/lib/vendorApi";
 import { prepareImageForUpload, ACCEPTED_IMAGE_ATTR } from "@/lib/image-compress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,8 +57,11 @@ export default function VendorProfilePage() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!vendor) return;
@@ -98,25 +101,29 @@ export default function VendorProfilePage() {
         maxWidth: 600, maxHeight: 600, quality: 0.88, mimeType: "image/jpeg",
       });
       if (error) { setLogoError(error); return; }
-      const intent = await fetch("/api/storage/uploads/request-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
-      });
-      if (!intent.ok) throw new Error(`HTTP ${intent.status}`);
-      const { uploadURL, objectPath } = await intent.json();
-      const put = await fetch(uploadURL, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-      if (!put.ok) throw new Error("Upload failed");
+      const { objectPath } = await proxyUpload(file);
       setLogoUrl(objectPath);
     } catch (err) {
       setLogoError((err as Error).message);
     } finally {
       setLogoUploading(false);
       if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  async function pickVideo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setVideoError(null);
+    setVideoUploading(true);
+    try {
+      const { objectPath } = await proxyUpload(file);
+      setVideoUrl(objectPath);
+    } catch (err) {
+      setVideoError((err as Error).message);
+    } finally {
+      setVideoUploading(false);
+      if (videoRef.current) videoRef.current.value = "";
     }
   }
 
@@ -285,12 +292,28 @@ export default function VendorProfilePage() {
         <div className="border-t border-neutral-100 pt-5 grid sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.video_url")}</label>
-            <Input
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder={t("vendor.profile.video_url_help")}
-              data-testid="input-profile-video-url"
-            />
+            <div className="flex gap-2">
+              <Input
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                placeholder={t("vendor.profile.video_url_help")}
+                data-testid="input-profile-video-url"
+                className="flex-1"
+              />
+              <label className="inline-flex items-center gap-1.5 px-3 h-9 border border-wine-deep text-wine-deep text-[11px] uppercase tracking-wider cursor-pointer hover:bg-wine-deep hover:text-cream transition-colors whitespace-nowrap">
+                {videoUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                {t("vendor.profile.upload_video")}
+                <input
+                  ref={videoRef}
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime,video/mov"
+                  className="hidden"
+                  onChange={pickVideo}
+                  disabled={videoUploading}
+                />
+              </label>
+            </div>
+            {videoError && <p className="text-[11px] text-red-600 mt-1">{videoError}</p>}
             <p className="text-[11px] text-neutral-400 mt-1">{t("vendor.profile.video_url_help")}</p>
           </div>
           <div className="sm:col-span-2">

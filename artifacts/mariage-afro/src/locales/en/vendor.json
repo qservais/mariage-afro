@@ -257,6 +257,7 @@
       "description_en": "Description in English",
       "video_url": "Presentation video URL",
       "video_url_help": "YouTube or Vimeo link (e.g. https://youtube.com/watch?v=…)",
+      "upload_video": "Upload video",
       "indicative_price": "Indicative price",
       "indicative_price_placeholder": "E.g. from €800"
     },
