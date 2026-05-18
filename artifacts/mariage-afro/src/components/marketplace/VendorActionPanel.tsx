@@ -19,6 +19,7 @@ import { comparator } from "@/lib/comparator";
 import {
   getCategoryConfig,
   getCategoryLabel,
+  getCategoryOptions,
   type CategoryField,
 } from "@/lib/vendorCategoryConfig";
 
@@ -387,6 +388,7 @@ function CategoryFieldInput({ field, lang, value, onChange }: CategoryFieldInput
   const id = `cat-field-${field.key}`;
 
   if (field.type === "select" && field.options) {
+    const displayOptions = getCategoryOptions(field, lang);
     return (
       <div>
         <Label htmlFor={id} className="text-xs uppercase tracking-wide">
@@ -400,9 +402,9 @@ function CategoryFieldInput({ field, lang, value, onChange }: CategoryFieldInput
           className="mt-1 w-full px-3 py-2 bg-cream border border-wine-deep/15 text-sm text-wine-deep focus:outline-none focus:ring-1 focus:ring-gold-deep"
         >
           <option value="">—</option>
-          {field.options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
+          {field.options.map((frOpt, i) => (
+            <option key={frOpt} value={frOpt}>
+              {displayOptions[i] ?? frOpt}
             </option>
           ))}
         </select>

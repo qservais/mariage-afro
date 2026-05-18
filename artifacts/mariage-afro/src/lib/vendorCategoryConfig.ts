@@ -7,6 +7,8 @@ export interface CategoryField {
   labelEn: string;
   type: CategoryFieldType;
   options?: string[];
+  optionsNl?: string[];
+  optionsEn?: string[];
   required?: boolean;
   placeholder?: string;
 }
@@ -55,6 +57,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         labelEn: "Photography style",
         type: "select",
         options: ["Reportage naturel", "Studio / posé", "Artistique / éditorial", "Mixte"],
+        optionsNl: ["Natuurlijke reportage", "Studio / geposeerd", "Artistiek / redactioneel", "Mix"],
+        optionsEn: ["Natural reportage", "Studio / posed", "Artistic / editorial", "Mixed"],
       },
       {
         key: "videoAlso",
@@ -63,6 +67,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         labelEn: "Would you also like video?",
         type: "select",
         options: ["Non", "Oui, clip court", "Oui, film complet"],
+        optionsNl: ["Nee", "Ja, korte clip", "Ja, volledige film"],
+        optionsEn: ["No", "Yes, short clip", "Yes, full film"],
       },
     ],
   },
@@ -90,6 +96,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         labelEn: "Desired format",
         type: "select",
         options: ["Clip court (3–5 min)", "Film long (30–60 min)", "Les deux", "À définir"],
+        optionsNl: ["Korte clip (3–5 min)", "Lange film (30–60 min)", "Beide", "Nader te bepalen"],
+        optionsEn: ["Short clip (3–5 min)", "Long film (30–60 min)", "Both", "To be defined"],
       },
       {
         key: "drone",
@@ -98,6 +106,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         labelEn: "Drone desired?",
         type: "select",
         options: ["Non", "Oui"],
+        optionsNl: ["Nee", "Ja"],
+        optionsEn: ["No", "Yes"],
       },
     ],
   },
@@ -133,6 +143,22 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
           "Mix éclectique",
           "Autre",
         ],
+        optionsNl: [
+          "Afrobeats / Afropop",
+          "R&B / Soul",
+          "Dancehall / Reggae",
+          "Coupé-décalé / Rumba",
+          "Eclectische mix",
+          "Andere",
+        ],
+        optionsEn: [
+          "Afrobeats / Afropop",
+          "R&B / Soul",
+          "Dancehall / Reggae",
+          "Coupé-décalé / Rumba",
+          "Eclectic mix",
+          "Other",
+        ],
       },
       {
         key: "ceremony",
@@ -141,6 +167,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         labelEn: "Ceremony sound system included?",
         type: "select",
         options: ["Non", "Oui"],
+        optionsNl: ["Nee", "Ja"],
+        optionsEn: ["No", "Yes"],
       },
     ],
   },
@@ -174,6 +202,20 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
           "Traditionnel africain",
           "Moderne & épuré",
           "Floral & romantique",
+        ],
+        optionsNl: [
+          "Bohemien / Natuurlijk",
+          "Luxe / Glamour",
+          "Traditioneel Afrikaans",
+          "Modern & strak",
+          "Bloemen & romantisch",
+        ],
+        optionsEn: [
+          "Bohemian / Natural",
+          "Luxury / Glamour",
+          "Traditional African",
+          "Modern & minimalist",
+          "Floral & romantic",
         ],
       },
       {
@@ -219,6 +261,20 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
           "Cocktail + Repas",
           "À définir",
         ],
+        optionsNl: [
+          "Enkel cocktail",
+          "Zitdiner",
+          "Dinerbuffet",
+          "Cocktail + Diner",
+          "Nader te bepalen",
+        ],
+        optionsEn: [
+          "Cocktail only",
+          "Seated dinner",
+          "Dinner buffet",
+          "Cocktail + Dinner",
+          "To be defined",
+        ],
       },
       {
         key: "allergies",
@@ -255,6 +311,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         labelEn: "Trial session desired before the wedding day?",
         type: "select",
         options: ["Non", "Oui"],
+        optionsNl: ["Nee", "Ja"],
+        optionsEn: ["No", "Yes"],
       },
       {
         key: "hairType",
@@ -268,6 +326,20 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
           "Extensions",
           "Cheveux lisses / mixtes",
           "Autre",
+        ],
+        optionsNl: [
+          "Natuurlijk afro haar",
+          "Vlechten / gevlochten haar",
+          "Extensions",
+          "Stijl / gemengd haar",
+          "Andere",
+        ],
+        optionsEn: [
+          "Natural afro hair",
+          "Braids / plaits",
+          "Extensions",
+          "Straight / mixed hair",
+          "Other",
         ],
       },
     ],
@@ -296,6 +368,22 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
           "Tenue traditionnelle",
           "Mixte moderne-traditionnel",
         ],
+        optionsNl: [
+          "Prinses / Ballgown",
+          "Zeemeermin / Mermaid",
+          "A-lijn",
+          "Kort / Mini",
+          "Traditionele kledij",
+          "Modern-traditionele mix",
+        ],
+        optionsEn: [
+          "Princess / Ballgown",
+          "Mermaid",
+          "A-line",
+          "Short / Mini",
+          "Traditional outfit",
+          "Modern-traditional mix",
+        ],
       },
       {
         key: "budget",
@@ -323,6 +411,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         labelEn: "Desired vehicle type",
         type: "select",
         options: ["Voiture de prestige", "Limousine", "Vintage / Classique", "Van / Minibus", "Autre"],
+        optionsNl: ["Prestigewagen", "Limousine", "Vintage / Klassiek", "Van / Minibus", "Andere"],
+        optionsEn: ["Prestige car", "Limousine", "Vintage / Classic", "Van / Minibus", "Other"],
       },
       {
         key: "personsCount",
@@ -359,6 +449,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
         labelEn: "Desired format",
         type: "select",
         options: ["Papier imprimé", "Numérique", "Les deux"],
+        optionsNl: ["Gedrukt papier", "Digitaal", "Beide"],
+        optionsEn: ["Printed paper", "Digital", "Both"],
       },
     ],
   },
@@ -376,4 +468,15 @@ export function getCategoryLabel(
   if (l === "nl") return field.labelNl;
   if (l === "en") return field.labelEn;
   return field.labelFr;
+}
+
+export function getCategoryOptions(
+  field: CategoryField,
+  lang: string,
+): string[] {
+  if (!field.options) return [];
+  const l = lang.slice(0, 2);
+  if (l === "nl" && field.optionsNl) return field.optionsNl;
+  if (l === "en" && field.optionsEn) return field.optionsEn;
+  return field.options;
 }
