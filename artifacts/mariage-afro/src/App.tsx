@@ -129,7 +129,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <Footer />
       <ExitIntentPopup />
       <StickyCTA />
-      <BackToTop />
     </div>
   );
 }
@@ -307,6 +306,7 @@ function App() {
         <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <MariageAfroClerkProvider>
             <ScrollToTop />
+            <BackToTop />
             <LangUrlSync>
               <AppRoutes />
             </LangUrlSync>
