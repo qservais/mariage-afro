@@ -245,40 +245,40 @@ export default function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="fixed inset-0 z-[45] bg-wine-deep flex flex-col overflow-y-auto"
+            className="fixed inset-0 z-[45] bg-wine-deep flex flex-col overflow-hidden"
           >
             {/* Bandeau B2B/B2C */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
-              className="pt-20 sm:pt-24 pb-5 md:pb-8 px-6 md:px-16 lg:px-32 border-b border-cream/10 flex-shrink-0"
+              className="pt-16 sm:pt-20 md:pt-24 pb-3 md:pb-5 px-6 md:px-16 lg:px-32 border-b border-cream/10 flex-shrink-0"
             >
-              <p className="text-xs tracking-[0.3em] uppercase text-gold mb-3 font-semibold">{t("header.you_are")}</p>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+              <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-2 font-semibold">{t("header.you_are")}</p>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-6">
                 <Link
                   to="/services"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="group inline-flex items-center gap-3 text-cream hover:text-gold transition-colors"
+                  className="group inline-flex items-center gap-2 text-cream hover:text-gold transition-colors"
                   data-testid="link-menu-b2c"
                 >
-                  <span className="font-display uppercase text-xl md:text-2xl tracking-tight">
+                  <span className="font-display uppercase text-base sm:text-lg md:text-xl tracking-tight">
                     {t("header.b2c_link")}
                   </span>
-                  <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </Link>
                 <span className="hidden sm:block text-cream/30">·</span>
                 <Link
                   to="/espace-pro/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="group inline-flex items-center gap-3 text-cream/80 hover:text-gold transition-colors"
+                  className="group inline-flex items-center gap-2 text-cream/80 hover:text-gold transition-colors"
                   data-testid="link-menu-b2b"
                 >
-                  <Briefcase className="w-4 h-4" />
-                  <span className="font-display uppercase text-xl md:text-2xl tracking-tight">
+                  <Briefcase className="w-3.5 h-3.5" />
+                  <span className="font-display uppercase text-base sm:text-lg md:text-xl tracking-tight">
                     {t("header.b2b_link")}
                   </span>
-                  <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </Link>
               </div>
             </motion.div>
@@ -288,12 +288,12 @@ export default function Header() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.15 }}
-              className="px-6 md:px-16 lg:px-32 pt-5 pb-4 md:pt-8 md:pb-6 border-b border-cream/10 flex-shrink-0"
+              className="px-6 md:px-16 lg:px-32 pt-3 pb-3 md:pt-5 md:pb-4 border-b border-cream/10 flex-shrink-0"
             >
               <Link
                 to="/contact#contact-form"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-bordeaux text-cream border border-bordeaux hover:bg-bordeaux-light hover:border-bordeaux-light transition-colors text-sm uppercase tracking-[0.25em] font-semibold"
+                className="w-full flex items-center justify-center gap-3 px-6 py-3 md:py-4 bg-bordeaux text-cream border border-bordeaux hover:bg-bordeaux-light hover:border-bordeaux-light transition-colors text-sm uppercase tracking-[0.25em] font-semibold"
                 aria-label={t("header.cta_rdv")}
                 data-testid="link-mobile-rdv"
               >
@@ -303,8 +303,8 @@ export default function Header() {
             </motion.div>
 
             {/* Menu links — 3 columns on md+, stacked on mobile */}
-            <div className="flex-shrink-0 px-6 md:px-16 lg:px-32 py-7 md:py-12">
-              <nav className="grid grid-cols-1 md:grid-cols-3 gap-x-10 lg:gap-x-16 gap-y-7 md:gap-y-0">
+            <div className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-32 py-4 md:py-8 min-h-0">
+              <nav className="grid grid-cols-1 md:grid-cols-3 gap-x-10 lg:gap-x-16 gap-y-5 md:gap-y-0">
                 {menuColumns.map((col, ci) => (
                   <motion.div
                     key={col.eyebrow}
@@ -313,16 +313,16 @@ export default function Header() {
                     transition={{ duration: 0.4, delay: 0.2 + ci * 0.08 }}
                     className="flex flex-col"
                   >
-                    <p className="text-[10px] tracking-[0.3em] uppercase text-gold/70 mb-4 md:mb-7">
+                    <p className="text-[9px] tracking-[0.3em] uppercase text-gold/70 mb-2 md:mb-5">
                       {col.eyebrow}
                     </p>
-                    <ul className="flex flex-col gap-1.5 md:gap-3">
+                    <ul className="flex flex-col gap-0.5 md:gap-2">
                       {col.links.map((link) => (
                         <li key={link.to}>
                           <Link
                             to={link.to}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`font-display uppercase text-2xl md:text-3xl lg:text-[2.25rem] tracking-tight leading-tight transition-colors ${
+                            className={`font-display uppercase text-xl md:text-lg lg:text-2xl xl:text-[1.85rem] tracking-tight leading-snug transition-colors ${
                               isActive(link.to) ? "text-gold" : "text-cream hover:text-gold"
                             }`}
                             data-testid={`link-mobile-${link.to.replace(/\//g, "") || "home"}`}
@@ -342,7 +342,7 @@ export default function Header() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.5 }}
-              className="flex-shrink-0 px-6 md:px-16 lg:px-32 py-6 md:py-7 border-t border-cream/10 flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4"
+              className="flex-shrink-0 px-6 md:px-16 lg:px-32 py-4 md:py-5 border-t border-cream/10 flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-3"
             >
               <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <Link
