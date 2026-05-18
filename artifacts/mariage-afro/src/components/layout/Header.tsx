@@ -108,8 +108,8 @@ export default function Header() {
         */}
         <div className="px-5 md:px-10 flex items-center gap-4 md:gap-6">
 
-          {/* Left: hamburger — flex-none */}
-          <div className="flex items-center flex-none">
+          {/* Left: hamburger — flex-1 so it balances the right side */}
+          <div className="flex-1 flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className={`flex items-center gap-3 group transition-colors ${
@@ -128,8 +128,8 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Center: Logo — flex-1, centered in remaining space */}
-          <div className="flex-1 flex justify-center">
+          {/* Center: Logo — flex-none, truly centered between two flex-1 sides */}
+          <div className="flex-none flex justify-center">
             <Link to="/" className="flex items-center" aria-label="Mariage Afro">
               <img
                 src={logoColor}
@@ -144,8 +144,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Right: language switcher (always visible) + CTA + client area (md+) — flex-none */}
-          <div className="flex items-center gap-2 md:gap-4 flex-none">
+          {/* Right: language switcher (always visible) + CTA + client area (md+) — flex-1 justify-end */}
+          <div className="flex-1 flex items-center justify-end gap-2 md:gap-4">
             {/* Language switcher — visible on all screen sizes */}
             <div
               className={`flex items-center gap-1.5 text-[10px] sm:text-xs font-medium tracking-[0.15em] sm:tracking-[0.2em] transition-colors ${
