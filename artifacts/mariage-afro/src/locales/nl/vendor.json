@@ -55,6 +55,8 @@
       "city": "Stad",
       "website": "Website",
       "description": "Beschrijving",
+      "error_generic": "Er is een fout opgetreden. Probeer het opnieuw.",
+      "error_couple_conflict": "Dit account is al gekoppeld aan een koppelaccount. Gebruik een ander e-mailadres voor uw leveranciersaccount.",
       "review_notice": "Uw fiche wordt door ons team beoordeeld vóór publicatie.",
       "submit": "Mijn profiel aanmaken",
       "saving": "Opslaan…",
@@ -151,7 +153,10 @@
       "response_rate": "Antwoordpercentage",
       "leads_chart_title": "Aanvragen over 90 dagen",
       "pending_validation_title": "Uw account wordt gevalideerd",
-      "pending_validation_desc": "Ons team bekijkt uw kandidatuur. Uw profiel wordt zichtbaar in de marketplace na goedkeuring."
+      "pending_validation_desc": "Ons team bekijkt uw kandidatuur. Uw profiel wordt zichtbaar in de marketplace na goedkeuring.",
+      "contact_team_title": "Schrijf naar ons team",
+      "contact_team_desc": "Een vraag of bijzondere behoefte? Ons team luistert naar u.",
+      "contact_team_cta": "Schrijf naar het team"
     },
     "checklist": {
       "title": "Bereid uw profiel voor",
@@ -174,6 +179,10 @@
     "subscription": {
       "title": "Mijn abonnement",
       "subtitle": "Verhoog uw zichtbaarheid in de marketplace. Geen online betaling — ons team neemt contact op om te activeren.",
+      "subtitle_free": "Alle leveranciers profiteren gratis van het Featured-plan tijdens de lanceringsfase.",
+      "free_notice_title": "Featured-formule aangeboden",
+      "free_notice_desc": "Tijdens onze lanceringsfase hebben alle leveranciers gratis toegang tot het Featured-plan — maximale zichtbaarheid in de marketplace. Geen actie vereist.",
+      "contact_team_help": "Een vraag over uw abonnement of zichtbaarheid? Neem contact met ons op.",
       "your_plan": "Uw formule",
       "no_plan": "Geen formule",
       "manage": "Beheren",

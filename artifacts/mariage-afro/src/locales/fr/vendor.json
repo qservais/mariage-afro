@@ -58,6 +58,8 @@
       "review_notice": "Votre fiche sera examinée par notre équipe avant publication.",
       "submit": "Créer ma fiche",
       "saving": "Enregistrement…",
+      "error_generic": "Une erreur est survenue. Veuillez réessayer.",
+      "error_couple_conflict": "Cet identifiant est déjà associé à un compte couple. Veuillez utiliser une adresse email différente pour votre compte prestataire.",
       "steps": {
         "s1_title": "Votre entreprise",
         "s1_desc": "Identité et contact principal.",
@@ -151,7 +153,10 @@
       "response_rate": "Taux de réponse",
       "leads_chart_title": "Demandes sur 90 jours",
       "pending_validation_title": "Votre compte est en cours de validation",
-      "pending_validation_desc": "Notre équipe examine votre candidature. Votre fiche sera visible dans la marketplace dès approbation."
+      "pending_validation_desc": "Notre équipe examine votre candidature. Votre fiche sera visible dans la marketplace dès approbation.",
+      "contact_team_title": "Écrire à notre équipe",
+      "contact_team_desc": "Une question, un besoin particulier ? Notre équipe est à votre écoute.",
+      "contact_team_cta": "Écrire à l'équipe"
     },
     "checklist": {
       "title": "Préparez votre fiche",
@@ -174,6 +179,10 @@
     "subscription": {
       "title": "Mon abonnement",
       "subtitle": "Boostez votre visibilité dans la marketplace. Aucun paiement en ligne — notre équipe vous contacte pour activer.",
+      "subtitle_free": "Tous les prestataires bénéficient gratuitement du plan Featured pendant la période de lancement.",
+      "free_notice_title": "Formule Featured offerte",
+      "free_notice_desc": "Pendant notre période de lancement, tous les prestataires accèdent gratuitement au plan Featured — la visibilité maximale dans la marketplace. Aucune action requise.",
+      "contact_team_help": "Une question sur votre abonnement ou votre visibilité ? Contactez-nous.",
       "your_plan": "Votre formule",
       "no_plan": "Aucune formule",
       "manage": "Gérer",

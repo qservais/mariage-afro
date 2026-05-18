@@ -1,6 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { runVendorFollowupCron } from "./routes/vendor";
+import { runVendorFollowupCron, runVendorFeaturedBackfill } from "./routes/vendor";
 
 const rawPort = process.env["PORT"];
 
@@ -23,6 +23,11 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // One-time backfill: ensure all existing vendors have tier=featured + status=active.
+  runVendorFeaturedBackfill().catch((err) =>
+    logger.warn({ err }, "Featured subscription backfill failed")
+  );
 
   // LOT 8 — daily vendor follow-up cron (with internal throttle).
   const SIX_HOURS = 6 * 60 * 60 * 1000;

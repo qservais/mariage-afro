@@ -55,6 +55,8 @@
       "city": "City",
       "website": "Website",
       "description": "About you",
+      "error_generic": "An error occurred. Please try again.",
+      "error_couple_conflict": "This account is already linked to a couple account. Please use a different email address for your vendor account.",
       "review_notice": "Your profile will be reviewed by our team before publication.",
       "submit": "Create my profile",
       "saving": "Saving…",
@@ -151,7 +153,10 @@
       "response_rate": "Response rate",
       "leads_chart_title": "Inquiries over 90 days",
       "pending_validation_title": "Your account is being reviewed",
-      "pending_validation_desc": "Our team is reviewing your application. Your profile will be visible in the marketplace once approved."
+      "pending_validation_desc": "Our team is reviewing your application. Your profile will be visible in the marketplace once approved.",
+      "contact_team_title": "Write to our team",
+      "contact_team_desc": "A question or specific need? Our team is here for you.",
+      "contact_team_cta": "Write to the team"
     },
     "checklist": {
       "title": "Set up your listing",
@@ -174,6 +179,10 @@
     "subscription": {
       "title": "My subscription",
       "subtitle": "Boost your visibility in the marketplace. No online payment — our team contacts you to activate.",
+      "subtitle_free": "All vendors benefit from the Featured plan for free during the launch period.",
+      "free_notice_title": "Featured plan — complimentary",
+      "free_notice_desc": "During our launch period, all vendors get the Featured plan for free — maximum visibility in the marketplace. No action required.",
+      "contact_team_help": "A question about your subscription or visibility? Get in touch.",
       "your_plan": "Your plan",
       "no_plan": "No plan",
       "manage": "Manage",

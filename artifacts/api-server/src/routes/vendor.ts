@@ -141,6 +141,20 @@ router.post("/vendor/onboarding", async (req, res) => {
   }
   const data = parsed.data;
 
+  // Block if this Clerk user already has a couple account
+  const [existingCouple] = await db
+    .select({ id: couplesTable.id })
+    .from(couplesTable)
+    .where(eq(couplesTable.userId, r.userId))
+    .limit(1);
+  if (existingCouple) {
+    res.status(409).json({
+      error: "couple_account_conflict",
+      message: "Cet email est déjà associé à un compte couple. Utilisez une adresse email différente pour votre compte prestataire.",
+    });
+    return;
+  }
+
   const [existing] = await db
     .select()
     .from(vendorAccountsTable)
@@ -277,6 +291,33 @@ router.post("/vendor/onboarding", async (req, res) => {
     })
     .where(eq(vendorAccountsTable.id, r.vendorAccountId))
     .returning();
+
+  // Auto-grant featured subscription to every new vendor (no charge)
+  const [existingSub] = await db
+    .select({ id: vendorSubscriptionsTable.id })
+    .from(vendorSubscriptionsTable)
+    .where(eq(vendorSubscriptionsTable.vendorAccountId, r.vendorAccountId))
+    .limit(1);
+  if (!existingSub) {
+    await db.insert(vendorSubscriptionsTable).values({
+      vendorAccountId: r.vendorAccountId,
+      vendorId: vendorId ?? undefined,
+      tier: "featured",
+      status: "active",
+      startedAt: new Date(),
+    });
+  } else {
+    await db
+      .update(vendorSubscriptionsTable)
+      .set({
+        tier: "featured",
+        status: "active",
+        startedAt: sql`COALESCE(${vendorSubscriptionsTable.startedAt}, NOW())`,
+        updatedAt: new Date(),
+        vendorId: vendorId ?? undefined,
+      })
+      .where(eq(vendorSubscriptionsTable.id, existingSub.id));
+  }
 
   res.json({ account });
 });
@@ -1122,11 +1163,43 @@ const subscriptionSchema = z.object({
 
 router.get("/vendor/subscription", async (req, res) => {
   const r = req as unknown as AuthedVendorRequest;
-  const [sub] = await db
+  let [sub] = await db
     .select()
     .from(vendorSubscriptionsTable)
     .where(eq(vendorSubscriptionsTable.vendorAccountId, r.vendorAccountId))
     .limit(1);
+
+  // Lazy-upsert: ensure every vendor who logs in ends up with featured+active
+  if (!sub) {
+    const [account] = await db
+      .select({ vendorId: vendorAccountsTable.vendorId })
+      .from(vendorAccountsTable)
+      .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+      .limit(1);
+    [sub] = await db
+      .insert(vendorSubscriptionsTable)
+      .values({
+        vendorAccountId: r.vendorAccountId,
+        vendorId: account?.vendorId ?? undefined,
+        tier: "featured",
+        status: "active",
+        startedAt: new Date(),
+      })
+      .onConflictDoNothing()
+      .returning();
+  } else if (sub.tier !== "featured" || sub.status !== "active") {
+    [sub] = await db
+      .update(vendorSubscriptionsTable)
+      .set({
+        tier: "featured",
+        status: "active",
+        startedAt: sql`COALESCE(${vendorSubscriptionsTable.startedAt}, NOW())`,
+        updatedAt: new Date(),
+      })
+      .where(eq(vendorSubscriptionsTable.id, sub.id))
+      .returning();
+  }
+
   res.json(sub ?? null);
 });
 
@@ -1352,5 +1425,50 @@ router.delete("/vendor/quotes/:id", async (req, res) => {
   await db.delete(vendorQuotesTable).where(eq(vendorQuotesTable.id, id));
   res.json({ success: true });
 });
+
+// ---------------------------------------------------------------------------
+// Featured subscription backfill
+// Run once on startup to ensure ALL vendor accounts have tier=featured + status=active.
+// Safe to call multiple times (idempotent).
+// ---------------------------------------------------------------------------
+export async function runVendorFeaturedBackfill(): Promise<void> {
+  // 1. Upgrade every existing subscription row that is not already featured+active
+  const upgraded = await db
+    .update(vendorSubscriptionsTable)
+    .set({
+      tier: "featured",
+      status: "active",
+      startedAt: sql`COALESCE(${vendorSubscriptionsTable.startedAt}, NOW())`,
+      updatedAt: new Date(),
+    })
+    .where(
+      sql`NOT (${vendorSubscriptionsTable.tier} = 'featured' AND ${vendorSubscriptionsTable.status} = 'active')`
+    )
+    .returning({ id: vendorSubscriptionsTable.id });
+
+  // 2. Insert a featured+active subscription for every vendor_account with no row yet
+  const inserted = await db.execute(sql`
+    INSERT INTO vendor_subscriptions (vendor_account_id, vendor_id, tier, status, started_at, requested_at, created_at, updated_at)
+    SELECT
+      va.id,
+      va.vendor_id,
+      'featured',
+      'active',
+      NOW(),
+      NOW(),
+      NOW(),
+      NOW()
+    FROM vendor_accounts va
+    WHERE NOT EXISTS (
+      SELECT 1 FROM vendor_subscriptions vs WHERE vs.vendor_account_id = va.id
+    )
+    ON CONFLICT DO NOTHING
+  `);
+
+  logger.info(
+    { upgraded: upgraded.length, inserted: (inserted as { rowCount?: number }).rowCount ?? 0 },
+    "Featured subscription backfill complete"
+  );
+}
 
 export default router;

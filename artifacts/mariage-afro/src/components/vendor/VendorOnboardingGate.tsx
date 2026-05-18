@@ -375,14 +375,31 @@ export default function VendorOnboardingGate({ account, children }: Props) {
             }
             data-testid="vendor-onboarding-stepper"
           />
-          {save.isError && (
-            <p
-              className="text-sm text-red-700 mt-4"
-              data-testid="text-onboarding-error"
-            >
-              {(save.error as Error).message}
-            </p>
-          )}
+          {save.isError && (() => {
+            const raw = (save.error as Error).message ?? "";
+            let msg = t("vendor.onboarding.error_generic");
+            if (raw.includes("couple_account_conflict")) {
+              msg = t("vendor.onboarding.error_couple_conflict");
+            } else {
+              try {
+                const jsonStart = raw.indexOf("{");
+                if (jsonStart !== -1) {
+                  const parsed = JSON.parse(raw.slice(jsonStart));
+                  if (parsed.message) msg = parsed.message;
+                }
+              } catch {
+                /* keep default */
+              }
+            }
+            return (
+              <p
+                className="text-sm text-red-700 mt-4"
+                data-testid="text-onboarding-error"
+              >
+                {msg}
+              </p>
+            );
+          })()}
         </FormShell>
       </div>
     </div>

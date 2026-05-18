@@ -5,7 +5,7 @@ import { resolveColor } from "@/lib/brand-colors";
 import {
   Briefcase, Image as ImageIcon, ListChecks, Settings, ExternalLink,
   CalendarDays, Eye, Inbox, MessageCircle, Sparkles, Crown,
-  CheckCircle2, Circle, ArrowRight, Trophy, BarChart3, AlertCircle,
+  CheckCircle2, Circle, ArrowRight, Trophy, BarChart3, AlertCircle, Mail,
 } from "lucide-react";
 import { useVendorMe } from "@/components/vendor/VendorLayout";
 import { vendorApi } from "@/lib/vendorApi";
@@ -74,7 +74,8 @@ export default function VendorDashboard() {
   });
 
   const isPublished = vendor?.verified && vendor?.active;
-  const isPendingValidation = !!account?.onboardedAt && !account?.validatedAt && !vendor?.active;
+  const isApproved = account?.status === "approved" || !!account?.validatedAt;
+  const isPendingValidation = !!account?.onboardedAt && !isApproved && !vendor?.active;
   const tierLabel = sub?.tier ? t(`vendor.subscription.tiers.${sub.tier}.label`) : t("vendor.subscription.no_plan");
   const TierIcon = sub?.tier === "featured" ? Crown : sub?.tier === "premium" ? Sparkles : Briefcase;
 
@@ -285,6 +286,25 @@ export default function VendorDashboard() {
             </Link>
           );
         })}
+      </section>
+
+      {/* Contact team */}
+      <section className="bg-cream border border-gold/30 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="w-10 h-10 bg-wine-deep flex items-center justify-center shrink-0">
+          <Mail className="w-5 h-5 text-gold" />
+        </div>
+        <div className="flex-1">
+          <p className="font-medium text-wine-deep">{t("vendor.dashboard.contact_team_title")}</p>
+          <p className="text-sm text-neutral-600 mt-0.5">{t("vendor.dashboard.contact_team_desc")}</p>
+        </div>
+        <a
+          href="mailto:info@mariage-afro.com"
+          className="inline-flex items-center gap-2 bg-wine-deep text-cream px-5 py-2.5 text-xs uppercase tracking-widest hover:bg-wine-deep/90 transition-colors shrink-0"
+          data-testid="btn-contact-team"
+        >
+          <Mail className="w-3.5 h-3.5" />
+          {t("vendor.dashboard.contact_team_cta")}
+        </a>
       </section>
     </div>
   );

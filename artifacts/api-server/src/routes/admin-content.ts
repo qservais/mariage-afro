@@ -910,7 +910,7 @@ router.post("/content/vendor-accounts/:id/approve", async (req: Request, res: Re
       .where(eq(marketplaceVendorsTable.id, a.vendorId));
   }
   await db.update(vendorAccountsTable)
-    .set({ status: "approved", updatedAt: new Date() })
+    .set({ status: "approved", validatedAt: new Date(), updatedAt: new Date() })
     .where(eq(vendorAccountsTable.id, id));
 
   // Send welcome email only on first approval
