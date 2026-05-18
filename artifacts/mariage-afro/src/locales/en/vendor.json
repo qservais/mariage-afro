@@ -284,9 +284,13 @@
     },
     "services": {
       "title": "My services",
-      "subtitle": "List the services you offer.",
+      "subtitle": "List the services you offer. Pick from the suggestions or add your own.",
+      "suggested_label": "Suggested services for your category",
+      "custom_label": "Add a custom service",
+      "custom_empty": "No custom services added.",
       "add_placeholder": "E.g. 8-hour coverage, Photo album…",
       "empty": "No services added.",
+      "remove": "Remove",
       "save": "Save",
       "saving": "Saving…",
       "saved": "Services saved."

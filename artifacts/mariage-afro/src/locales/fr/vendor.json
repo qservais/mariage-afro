@@ -284,9 +284,13 @@
     },
     "services": {
       "title": "Mes services",
-      "subtitle": "Listez les prestations que vous proposez.",
+      "subtitle": "Listez les prestations que vous proposez. Sélectionnez dans les suggestions ou ajoutez les vôtres.",
+      "suggested_label": "Services suggérés pour votre catégorie",
+      "custom_label": "Ajouter un service personnalisé",
+      "custom_empty": "Aucun service personnalisé ajouté.",
       "add_placeholder": "Ex : Reportage 8 heures, Album photo…",
       "empty": "Aucun service ajouté.",
+      "remove": "Supprimer",
       "save": "Enregistrer",
       "saving": "Enregistrement…",
       "saved": "Services enregistrés."

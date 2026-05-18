@@ -284,9 +284,13 @@
     },
     "services": {
       "title": "Mijn diensten",
-      "subtitle": "Som de diensten op die u aanbiedt.",
+      "subtitle": "Som de diensten op die u aanbiedt. Kies uit de suggesties of voeg uw eigen diensten toe.",
+      "suggested_label": "Voorgestelde diensten voor uw categorie",
+      "custom_label": "Een aangepaste dienst toevoegen",
+      "custom_empty": "Geen aangepaste diensten toegevoegd.",
       "add_placeholder": "Bijv.: 8-uur reportage, Fotoalbum…",
       "empty": "Geen diensten toegevoegd.",
+      "remove": "Verwijderen",
       "save": "Opslaan",
       "saving": "Opslaan…",
       "saved": "Diensten opgeslagen."
