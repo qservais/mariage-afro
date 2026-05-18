@@ -211,6 +211,12 @@ export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
   invitedEmail: text("invited_email"),
   // LOT 128 — URL slug for SEO-friendly vendor detail pages
   slug: text("slug").unique(),
+  // LOT 143 — Social media links
+  instagram: text("instagram"),
+  facebook: text("facebook"),
+  tiktok: text("tiktok"),
+  youtube: text("youtube"),
+  pinterest: text("pinterest"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

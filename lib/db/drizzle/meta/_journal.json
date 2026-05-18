@@ -43,6 +43,13 @@
       "when": 1747407600000,
       "tag": "0009_realisations_double_video",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1747580400000,
+      "tag": "0010_vendor_social_media",
+      "breakpoints": true
     }
   ]
 }

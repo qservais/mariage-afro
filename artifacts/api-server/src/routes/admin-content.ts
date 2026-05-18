@@ -1,6 +1,8 @@
 import QRCode from "qrcode";
-import { Router, Request, Response, NextFunction } from "express";
+import express, { Router, Request, Response, NextFunction } from "express";
 import { db } from "@workspace/db";
+import { ObjectStorageService } from "../lib/objectStorage";
+import { recordUploadIntent } from "../lib/uploadIntents";
 import {
   marketplaceVendorsTable,
   marketplaceVenuesTable,
@@ -27,75 +29,104 @@ function escHtml(s: unknown): string {
     .replace(/"/g, "&quot;");
 }
 
-function contentLayout(title: string, body: string): string {
+function contentLayout(title: string, body: string, toastMsg = ""): string {
   return `<!DOCTYPE html><html lang="fr"><head>
 <meta charset="utf-8"><title>${escHtml(title)} — Admin</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh}
-.topbar{background:#1a1a1a;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:24px}
-.topbar a{color:#e8c88a;text-decoration:none;font-size:13px;opacity:.9}
-.topbar a:hover{opacity:1}
-.topbar .sep{color:#555}
-.container{max-width:1100px;margin:32px auto;padding:0 16px}
-h1{font-size:22px;font-weight:700;margin-bottom:24px}
-h2{font-size:16px;font-weight:600;margin-bottom:16px}
-.card{background:#fff;border:1px solid #e5e5e5;padding:24px;margin-bottom:24px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:24px}
-.item{background:#fff;border:1px solid #e5e5e5;padding:16px}
-.item h3{font-size:15px;font-weight:600;margin-bottom:6px}
-.item p{font-size:13px;color:#555;margin-bottom:8px}
-.item .meta{font-size:12px;color:#888;margin-bottom:12px}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{display:inline-block;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;border:none;text-decoration:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:#f0ede8;color:#1a1a1a;min-height:100vh;font-size:14px;line-height:1.5}
+.topbar{background:#1a1a1a;color:#fff;padding:0 24px;display:flex;align-items:stretch;gap:0;height:50px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.topbar a{color:#e8c88a;text-decoration:none;font-size:12px;font-weight:500;opacity:.85;display:flex;align-items:center;padding:0 12px;letter-spacing:.02em;transition:background .15s,opacity .15s}
+.topbar a:hover{opacity:1;background:rgba(255,255,255,.07)}
+.topbar a.home{font-weight:700;color:#fff;letter-spacing:.04em;padding-right:16px;border-right:1px solid #333}
+.container{max-width:1160px;margin:32px auto;padding:0 20px}
+h1{font-size:20px;font-weight:700;margin-bottom:24px;letter-spacing:-.01em;color:#111}
+h2{font-size:15px;font-weight:600;margin-bottom:14px;color:#222}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.page-header h1{margin-bottom:0}
+.card{background:#fff;border:1px solid #ddd;padding:28px;margin-bottom:24px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;margin-bottom:24px}
+.item{background:#fff;border:1px solid #ddd;padding:18px;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .15s}
+.item:hover{box-shadow:0 3px 8px rgba(0,0,0,.08)}
+.item h3{font-size:15px;font-weight:600;margin-bottom:5px;color:#111}
+.item p{font-size:13px;color:#555;margin-bottom:7px;line-height:1.45}
+.item .meta{font-size:11.5px;color:#888;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;border:none;text-decoration:none;border-radius:4px;transition:opacity .15s,transform .1s;white-space:nowrap}
+.btn:active{transform:scale(.98)}
 .btn.primary{background:#1a1a1a;color:#fff}
+.btn.primary:hover{background:#2d2d2d}
 .btn.danger{background:#c0392b;color:#fff}
-.btn.secondary{background:#e5e5e5;color:#1a1a1a}
-.btn.sm{padding:5px 12px;font-size:12px}
-.btn.success{background:#27ae60;color:#fff}
-form{display:flex;flex-direction:column;gap:12px}
-label{font-size:13px;font-weight:500;display:flex;flex-direction:column;gap:4px}
-input,textarea,select{padding:8px 10px;border:1px solid #ccc;font-size:14px;font-family:inherit;background:#fff;width:100%}
+.btn.danger:hover{background:#a93226}
+.btn.secondary{background:#e8e4df;color:#1a1a1a;border:1px solid #ccc}
+.btn.secondary:hover{background:#ddd8d2}
+.btn.sm{padding:5px 12px;font-size:12px;border-radius:3px}
+.btn.success{background:#2e8b57;color:#fff}
+.btn.success:hover{background:#25704a}
+form{display:flex;flex-direction:column;gap:14px}
+.form-section{background:#faf9f7;border:1px solid #e8e4df;border-radius:5px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.form-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:2px}
+label{font-size:13px;font-weight:500;display:flex;flex-direction:column;gap:5px;color:#333}
+label.inline{flex-direction:row;align-items:center;gap:8px;font-weight:400}
+input,textarea,select{padding:9px 11px;border:1px solid #ccc;font-size:14px;font-family:inherit;background:#fff;width:100%;border-radius:4px;color:#1a1a1a;transition:border-color .15s,box-shadow .15s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#e8c88a;box-shadow:0 0 0 3px rgba(232,200,138,.18)}
 textarea{resize:vertical;min-height:80px}
-.err{background:#fde;border:1px solid #c33;padding:10px 14px;font-size:13px;margin-bottom:16px;color:#c33}
-.ok{background:#dfd;border:1px solid #3a3;padding:10px 14px;font-size:13px;margin-bottom:16px;color:#1a6e1a}
-.badge{display:inline-block;padding:2px 8px;font-size:11px;font-weight:600;border-radius:2px}
-.badge.active{background:#dff0d8;color:#3c763d}
-.badge.inactive{background:#fdf2f8;color:#999}
+.err{background:#fdecea;border:1px solid #e74c3c;padding:12px 16px;font-size:13px;margin-bottom:16px;color:#c0392b;border-radius:4px}
+.ok{background:#eafaf1;border:1px solid #2ecc71;padding:12px 16px;font-size:13px;margin-bottom:16px;color:#1d8348;border-radius:4px}
+.badge{display:inline-block;padding:2px 9px;font-size:11px;font-weight:600;border-radius:12px;letter-spacing:.02em}
+.badge.active{background:#d5f5e3;color:#1d6d3e}
+.badge.inactive{background:#f0f0f0;color:#888}
+.badge.pending{background:#fef9e7;color:#7d6608}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #f0f0f0}
-th{font-weight:600;background:#fafafa;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
-tr:last-child td{border-bottom:none}
+th{text-align:left;padding:10px 14px;background:#faf9f7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#666;border-bottom:2px solid #e8e4df}
+td{text-align:left;padding:11px 14px;border-bottom:1px solid #f0ede8}
+tbody tr:hover td{background:#faf9f7}
+tbody tr:last-child td{border-bottom:none}
 .thread{display:flex;flex-direction:column;gap:12px}
-.msg{padding:12px 16px;max-width:75%}
-.msg.couple{background:#f0f0f0;align-self:flex-start}
+.msg{padding:12px 16px;max-width:75%;border-radius:6px}
+.msg.couple{background:#f0ede8;align-self:flex-start}
 .msg.admin{background:#1a1a1a;color:#fff;align-self:flex-end}
 .msg .meta{font-size:11px;opacity:.6;margin-top:4px}
-.couples-select{margin-bottom:16px}
 .tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid #e5e5e5}
 .tab{padding:10px 20px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;color:#555;border-bottom:2px solid transparent;margin-bottom:-2px}
 .tab.active{color:#1a1a1a;border-bottom-color:#e8c88a}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:14px 20px;border-radius:6px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:9999;max-width:360px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{background:#2e8b57}
+.toast.error{background:#c0392b}
+/* Upload photos */
+.upload-zone{border:2px dashed #ccc;border-radius:6px;padding:24px;text-align:center;background:#faf9f7;cursor:pointer;transition:border-color .2s,background .2s}
+.upload-zone:hover,.upload-zone.drag{border-color:#e8c88a;background:#fffbf0}
+.upload-zone p{font-size:13px;color:#777;margin-top:6px}
+.photo-previews{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.photo-thumb{position:relative;width:80px;height:80px}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;border-radius:4px;border:1px solid #ddd}
+.photo-thumb .remove-btn{position:absolute;top:-6px;right:-6px;background:#c0392b;color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.upload-progress{font-size:12px;color:#777;margin-top:8px}
+.social-field{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:center}
+.social-icon{font-size:18px;text-align:center}
 </style>
 </head><body>
 <div class="topbar">
-  <a href="/admin">← Leads</a>
-  <span class="sep">|</span>
+  <a class="home" href="/admin">Mariage Afro Admin</a>
   <a href="/admin/content/vendors">Partenaires</a>
-  <span class="sep">|</span>
   <a href="/admin/content/venues">Lieux</a>
-  <span class="sep">|</span>
   <a href="/admin/content/realisations">Réalisations</a>
-  <span class="sep">|</span>
   <a href="/admin/content/messages">Messages</a>
-  <span class="sep">|</span>
   <a href="/admin/content/conversations">Conv. Pro</a>
-  <span class="sep">|</span>
   <a href="/admin/content/wedding-websites">Sites mariages</a>
-  <span class="sep">|</span>
   <a href="/admin/content/vendor-accounts">Comptes Pro</a>
 </div>
 <div class="container">${body}</div>
+${toastMsg ? `<div class="toast success show" id="toast">${escHtml(toastMsg)}</div>` : ""}
+<script>
+(function(){
+  var t=document.getElementById("toast");
+  if(t){setTimeout(function(){t.classList.remove("show");},4000);}
+})();
+</script>
 </body></html>`;
 }
 
@@ -103,18 +134,19 @@ tr:last-child td{border-bottom:none}
 
 router.get("/content/vendors", async (_req: Request, res: Response) => {
   const vendors = await db.select().from(marketplaceVendorsTable).orderBy(asc(marketplaceVendorsTable.name));
-  const inviteMsg = _req.query.invite_ok ? `<div style="background:#d4edda;color:#155724;padding:10px 16px;border-radius:4px;margin-bottom:16px;">✓ Invitation envoyée avec succès.</div>` : "";
+  const toast = _req.query.invite_ok ? "Invitation envoyée avec succès." : (_req.query.saved ? "Partenaire enregistré." : "");
   const listHtml = vendors.length === 0
-    ? `<p style="color:#888">Aucun partenaire. Cliquez sur "Ajouter" pour commencer.</p>`
+    ? `<p style="color:#888">Aucun partenaire. Cliquez sur "+ Ajouter" pour commencer.</p>`
     : `<div class="grid">${vendors.map(v => `
       <div class="item">
-        <h3>${escHtml(v.name)} ${v.verified ? "✓" : ""}</h3>
-        <p>${escHtml(v.category)} · ${escHtml(v.city)}</p>
+        <h3>${escHtml(v.name)} ${v.verified ? '<span style="color:#2e8b57;font-size:13px">✓</span>' : ""}</h3>
+        <p style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#888;margin-bottom:6px">${escHtml(v.category)} · ${escHtml(v.city)}</p>
         <p>${escHtml(v.tagline)}</p>
         <div class="meta">
           <span class="badge ${v.active ? "active" : "inactive"}">${v.active ? "Actif" : "Inactif"}</span>
-          &nbsp;${v.services.length} services · Note: ${v.rating}/5
-          ${v.invitedEmail ? `<span style="margin-left:8px;font-size:11px;color:#888;">✉ Invité : ${escHtml(v.invitedEmail)}</span>` : ""}
+          <span>${v.services.length} services</span>
+          <span>Note: ${v.rating}/5</span>
+          ${v.invitedEmail ? `<span>✉ ${escHtml(v.invitedEmail)}</span>` : ""}
         </div>
         <div class="actions">
           <a class="btn sm secondary" href="/admin/content/vendors/${v.id}/edit">Modifier</a>
@@ -122,16 +154,16 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
           <form method="post" action="/admin/content/vendors/${v.id}/toggle" style="display:inline">
             <button class="btn sm ${v.active ? "danger" : "success"}" type="submit">${v.active ? "Désactiver" : "Activer"}</button>
           </form>
-          <form method="post" action="/admin/content/vendors/${v.id}/delete" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+          <form method="post" action="/admin/content/vendors/${v.id}/delete" style="display:inline" onsubmit="return confirm('Supprimer définitivement ce partenaire ?')">
             <button class="btn sm danger" type="submit">Supprimer</button>
           </form>
         </div>
         <details style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
           <summary style="cursor:pointer;font-size:12px;color:#68191e;font-weight:600;letter-spacing:0.05em;">✉ Lier un compte prestataire par email</summary>
           <form method="post" action="/admin/content/vendors/${v.id}/invite" style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <input type="email" name="invited_email" required placeholder="email@prestataire.be" value="${escHtml(v.invitedEmail ?? "")}" style="flex:1;min-width:200px;padding:6px 10px;border:1px solid #ccc;font-size:13px;">
+            <input type="email" name="invited_email" required placeholder="email@prestataire.be" value="${escHtml(v.invitedEmail ?? "")}" style="flex:1;min-width:200px;">
             <label style="display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;">
-              <input type="checkbox" name="send_email" value="1" checked> Envoyer l'email d'invitation
+              <input type="checkbox" name="send_email" value="1" checked> Envoyer l'email
             </label>
             <button class="btn sm primary" type="submit">Lier</button>
           </form>
@@ -140,13 +172,12 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
       </div>`).join("")}</div>`;
 
   const body = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-      <h1>Partenaires Marketplace (${vendors.length})</h1>
+    <div class="page-header">
+      <h1>Partenaires Marketplace <span style="font-size:14px;font-weight:400;color:#888">(${vendors.length})</span></h1>
       <a class="btn primary" href="/admin/content/vendors/new">+ Ajouter un partenaire</a>
     </div>
-    ${inviteMsg}
     ${listHtml}`;
-  res.type("html").send(contentLayout("Partenaires", body));
+  res.type("html").send(contentLayout("Partenaires", body, toast));
 });
 
 router.post("/content/vendors/:id/invite", async (req: Request, res: Response) => {
@@ -164,39 +195,265 @@ router.post("/content/vendors/:id/invite", async (req: Request, res: Response) =
   res.redirect("/admin/content/vendors?invite_ok=1");
 });
 
-function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:string[];images:string[];website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number}> = {}, error = ""): string {
-  const cats = ["Photographie","Vidéo","DJ & Animation","Décoration","Traiteur","Coiffure & Maquillage","Robe de mariée","Transport","Invitations","Autre"];
+function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:string[];images:string[];website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number;instagram:string|null;facebook:string|null;tiktok:string|null;youtube:string|null;pinterest:string|null}> = {}, error = ""): string {
+  const stdCats = ["Photographie","Vidéo","DJ & Animation","Décoration","Traiteur","Coiffure & Maquillage","Robe de mariée","Transport","Invitations","Autre"];
+  const isAutre = v.category ? !stdCats.includes(v.category) || v.category === "Autre" : false;
+  const selectVal = isAutre && v.category !== "Autre" ? "Autre" : (v.category ?? "Photographie");
+  const autreVal = isAutre && v.category !== "Autre" ? (v.category ?? "") : "";
+  const imagesJson = JSON.stringify(v.images ?? []).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
-    <form method="post">
-      <label>Nom *<input name="name" required value="${escHtml(v.name)}"></label>
-      <label>Catégorie *
-        <select name="category" required>
-          ${cats.map(c => `<option value="${escHtml(c)}" ${v.category===c?"selected":""}>${escHtml(c)}</option>`).join("")}
-        </select>
-      </label>
-      <label>Ville *<input name="city" required value="${escHtml(v.city)}"></label>
-      <label>Tagline (résumé court)<input name="tagline" value="${escHtml(v.tagline)}"></label>
-      <label>Description<textarea name="description">${escHtml(v.description)}</textarea></label>
-      <label>Services (un par ligne)<textarea name="services">${(v.services ?? []).join("\n")}</textarea></label>
-      <label>URLs photos (une par ligne)<textarea name="images">${(v.images ?? []).join("\n")}</textarea></label>
-      <label>Site web<input name="website" type="url" value="${escHtml(v.website)}"></label>
-      <label>Téléphone<input name="phone" value="${escHtml(v.phone)}"></label>
-      <label>Email<input name="email" type="email" value="${escHtml(v.email)}"></label>
-      <label>Note (1–5)<input name="rating" type="number" min="1" max="5" value="${v.rating ?? 5}"></label>
-      <label style="flex-direction:row;align-items:center;gap:8px">
-        <input type="checkbox" name="verified" value="1" ${v.verified?"checked":""}> Vérifié
-      </label>
-      <label style="flex-direction:row;align-items:center;gap:8px">
-        <input type="checkbox" name="active" value="1" ${v.active!==false?"checked":""}> Actif
-      </label>
+    <form method="post" id="vendor-form">
+      <input type="hidden" name="images" id="images-hidden" value="${escHtml((v.images ?? []).join("\n"))}">
+
+      <div class="form-section">
+        <div class="form-section-title">Informations générales</div>
+        <label>Nom *<input name="name" required value="${escHtml(v.name)}"></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <label>Catégorie *
+            <select name="category" id="category-select" required onchange="onCatChange(this.value)">
+              ${stdCats.map(c => `<option value="${escHtml(c)}" ${selectVal===c?"selected":""}>${escHtml(c)}</option>`).join("")}
+            </select>
+          </label>
+          <label>Ville *<input name="city" required value="${escHtml(v.city)}"></label>
+        </div>
+        <div id="autre-wrap" style="display:${isAutre ? "flex" : "none"};flex-direction:column;gap:5px">
+          <label>Nom exact de la catégorie *<input name="category_autre" id="category-autre" placeholder="ex: Wedding planner, Fleuriste…" value="${escHtml(autreVal)}"></label>
+        </div>
+        <label>Tagline (résumé court)<input name="tagline" value="${escHtml(v.tagline)}"></label>
+        <label>Description<textarea name="description" style="min-height:100px">${escHtml(v.description)}</textarea></label>
+        <label>Services (un par ligne)<textarea name="services" style="min-height:80px">${(v.services ?? []).join("\n")}</textarea></label>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Photos</div>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('photo-file-input').click()">
+          <div style="font-size:28px">📷</div>
+          <p>Cliquez pour ajouter des photos, ou glissez-déposez ici</p>
+          <p style="font-size:11px;color:#aaa">JPG, PNG, WEBP — max 10 Mo par fichier</p>
+          <input type="file" id="photo-file-input" accept="image/*" multiple style="display:none" onchange="handleFileSelect(this.files)">
+        </div>
+        <div class="photo-previews" id="photo-previews"></div>
+        <div class="upload-progress" id="upload-progress"></div>
+        <p style="font-size:11px;color:#aaa;margin-top:4px">Vous pouvez aussi coller des URLs directement :</p>
+        <label style="font-size:12px">URLs manuelles (une par ligne)<textarea id="images-manual" style="min-height:60px;font-size:12px" placeholder="https://example.com/photo.jpg" onchange="syncManualUrls()">${(v.images ?? []).filter(u => u.startsWith("http")).join("\n")}</textarea></label>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Contact & Web</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <label>Site web<input name="website" type="url" placeholder="https://…" value="${escHtml(v.website)}"></label>
+          <label>Email<input name="email" type="email" value="${escHtml(v.email)}"></label>
+        </div>
+        <label>Téléphone<input name="phone" value="${escHtml(v.phone)}"></label>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Réseaux sociaux (optionnel)</div>
+        <div class="social-field"><span class="social-icon">📸</span><label>Instagram<input name="instagram" placeholder="https://instagram.com/…" value="${escHtml(v.instagram)}"></label></div>
+        <div class="social-field"><span class="social-icon">👤</span><label>Facebook<input name="facebook" placeholder="https://facebook.com/…" value="${escHtml(v.facebook)}"></label></div>
+        <div class="social-field"><span class="social-icon">🎵</span><label>TikTok<input name="tiktok" placeholder="https://tiktok.com/@…" value="${escHtml(v.tiktok)}"></label></div>
+        <div class="social-field"><span class="social-icon">▶️</span><label>YouTube<input name="youtube" placeholder="https://youtube.com/…" value="${escHtml(v.youtube)}"></label></div>
+        <div class="social-field"><span class="social-icon">📌</span><label>Pinterest<input name="pinterest" placeholder="https://pinterest.com/…" value="${escHtml(v.pinterest)}"></label></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Statut & Note</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <label>Note (1–5)<input name="rating" type="number" min="1" max="5" value="${v.rating ?? 5}"></label>
+          <div style="display:flex;gap:20px;align-items:center;padding-top:20px">
+            <label class="inline"><input type="checkbox" name="verified" value="1" ${v.verified?"checked":""}> Vérifié</label>
+            <label class="inline"><input type="checkbox" name="active" value="1" ${v.active!==false?"checked":""}> Actif</label>
+          </div>
+        </div>
+      </div>
+
       <div class="actions">
         <button class="btn primary" type="submit">Enregistrer</button>
         <a class="btn secondary" href="/admin/content/vendors">Annuler</a>
       </div>
     </form>
-    </div>`;
+    </div>
+
+    <script>
+    // --- "Autre" category toggle ---
+    function onCatChange(val) {
+      var wrap = document.getElementById("autre-wrap");
+      var inp = document.getElementById("category-autre");
+      if (val === "Autre") { wrap.style.display = "flex"; inp.required = true; }
+      else { wrap.style.display = "none"; inp.required = false; }
+    }
+
+    // --- Photo upload state ---
+    var uploadedPaths = ${imagesJson}.filter(function(u){ return !u.startsWith("http"); });
+    var manualUrls = ${imagesJson}.filter(function(u){ return u.startsWith("http"); });
+
+    function getAllImages() {
+      return uploadedPaths.concat(manualUrls);
+    }
+    function syncHiddenField() {
+      document.getElementById("images-hidden").value = getAllImages().join("\\n");
+    }
+    function syncManualUrls() {
+      var raw = document.getElementById("images-manual").value;
+      manualUrls = raw.split("\\n").map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+      syncHiddenField();
+    }
+    function safeImgUrl(path) {
+      // Only allow /objects/ paths and https:// URLs — block everything else
+      if (path.startsWith("/objects/")) return window.location.origin + "/api/storage" + path;
+      if (/^https:\/\//i.test(path)) return path;
+      return "";
+    }
+    function renderPreviews() {
+      var container = document.getElementById("photo-previews");
+      container.innerHTML = "";
+      uploadedPaths.forEach(function(path, i) {
+        var safeUrl = safeImgUrl(path);
+        if (!safeUrl) return;
+        var thumb = document.createElement("div");
+        thumb.className = "photo-thumb";
+        var img = document.createElement("img");
+        img.src = safeUrl;
+        img.onerror = function(){ img.style.display = "none"; };
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "remove-btn";
+        btn.textContent = "×";
+        (function(idx){ btn.addEventListener("click", function(){ removeUploaded(idx); }); })(i);
+        thumb.appendChild(img);
+        thumb.appendChild(btn);
+        container.appendChild(thumb);
+      });
+    }
+    function removeUploaded(i) {
+      uploadedPaths.splice(i, 1);
+      renderPreviews();
+      syncHiddenField();
+    }
+    renderPreviews();
+    syncHiddenField();
+
+    // --- Drag & drop ---
+    var zone = document.getElementById("upload-zone");
+    zone.addEventListener("dragover", function(e){ e.preventDefault(); zone.classList.add("drag"); });
+    zone.addEventListener("dragleave", function(){ zone.classList.remove("drag"); });
+    zone.addEventListener("drop", function(e){ e.preventDefault(); zone.classList.remove("drag"); handleFileSelect(e.dataTransfer.files); });
+
+    function handleFileSelect(files) {
+      if (!files || !files.length) return;
+      Array.from(files).forEach(function(file) { uploadFile(file); });
+    }
+    function uploadFile(file) {
+      var progress = document.getElementById("upload-progress");
+      progress.textContent = "Envoi en cours…";
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/admin/content/vendors/upload-photo");
+      xhr.setRequestHeader("x-content-type", file.type || "image/jpeg");
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          uploadedPaths.push(data.objectPath);
+          renderPreviews();
+          syncHiddenField();
+          progress.textContent = "";
+        } else {
+          progress.textContent = "Erreur lors de l\\'upload (" + xhr.status + ")";
+        }
+      };
+      xhr.onerror = function(){ progress.textContent = "Erreur réseau lors de l\\'upload."; };
+      xhr.send(file);
+    }
+
+    // --- Final form submit: resolve "Autre" category ---
+    document.getElementById("vendor-form").addEventListener("submit", function(e) {
+      var sel = document.getElementById("category-select");
+      var autre = document.getElementById("category-autre");
+      if (sel.value === "Autre" && autre.value.trim()) {
+        sel.value = autre.value.trim();
+      }
+    });
+    </script>`;
+}
+
+// ---- Admin photo upload (no Clerk required — uses adminAuth cookie) ----
+const _objectStorageService = new ObjectStorageService();
+
+router.post(
+  "/content/vendors/upload-photo",
+  express.raw({ type: "*/*", limit: "50mb" }),
+  async (req: Request, res: Response) => {
+    const body = req.body as Buffer;
+    if (!Buffer.isBuffer(body) || body.length === 0) {
+      res.status(400).json({ error: "Empty body" });
+      return;
+    }
+    const contentType = (req.headers["x-content-type"] as string) || "image/jpeg";
+    try {
+      const uploadURL = await _objectStorageService.getObjectEntityUploadURL();
+      const objectPath = _objectStorageService.normalizeObjectEntityPath(uploadURL);
+      await recordUploadIntent(objectPath, "admin");
+      const gcsRes = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": contentType },
+        body,
+      });
+      if (!gcsRes.ok) {
+        req.log.error({ status: gcsRes.status }, "Admin photo upload: GCS failed");
+        res.status(502).json({ error: "Storage upload failed" });
+        return;
+      }
+      // Consume the intent and set ACL to public so the photo is publicly readable
+      const finalPath = await _objectStorageService.trySetObjectEntityAclPolicy(objectPath, {
+        owner: "admin",
+        visibility: "public",
+      });
+      res.json({ objectPath: finalPath });
+    } catch (err) {
+      req.log.error({ err }, "Admin photo upload error");
+      res.status(500).json({ error: "Upload failed" });
+    }
+  },
+);
+
+/** Validate an image path: accept /objects/... and https:// URLs only */
+function isSafeImagePath(s: string): boolean {
+  return s.startsWith("/objects/") || /^https:\/\//i.test(s);
+}
+
+/** Validate a social/web URL: must be https:// */
+function isSafeUrl(s: string): boolean {
+  return /^https:\/\//i.test(s);
+}
+
+function parseVendorBody(b: Record<string, string>) {
+  const category = b.category === "Autre" && b.category_autre?.trim()
+    ? b.category_autre.trim()
+    : (b.category ?? "");
+  const rawSocial = (field: string) => b[field]?.trim() && isSafeUrl(b[field].trim()) ? b[field].trim() : null;
+  return {
+    name: b.name ?? "",
+    category,
+    city: b.city ?? "",
+    tagline: b.tagline ?? "",
+    description: b.description ?? "",
+    services: b.services ? b.services.split("\n").map(s=>s.trim()).filter(Boolean) : [],
+    images: b.images
+      ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s))
+      : [],
+    website: b.website?.trim() && isSafeUrl(b.website.trim()) ? b.website.trim() : null,
+    phone: b.phone || null,
+    email: b.email || null,
+    rating: Number(b.rating) || 5,
+    verified: b.verified === "1",
+    active: b.active === "1",
+    instagram: rawSocial("instagram"),
+    facebook: rawSocial("facebook"),
+    tiktok: rawSocial("tiktok"),
+    youtube: rawSocial("youtube"),
+    pinterest: rawSocial("pinterest"),
+  };
 }
 
 router.get("/content/vendors/new", (_req: Request, res: Response) => {
@@ -205,43 +462,27 @@ router.get("/content/vendors/new", (_req: Request, res: Response) => {
 
 router.post("/content/vendors/new", async (req: Request, res: Response) => {
   const b = req.body as Record<string, string>;
-  if (!b.name || !b.city || !b.category) {
+  const parsed = parseVendorBody(b);
+  if (!parsed.name || !parsed.city || !parsed.category) {
     res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm(b, "Nom, ville et catégorie sont requis.")}`));
     return;
   }
-  await db.insert(marketplaceVendorsTable).values({
-    name: b.name, category: b.category, city: b.city,
-    tagline: b.tagline ?? "", description: b.description ?? "",
-    services: b.services ? b.services.split("\n").map(s=>s.trim()).filter(Boolean) : [],
-    images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(Boolean) : [],
-    website: b.website || null, phone: b.phone || null, email: b.email || null,
-    rating: Number(b.rating) || 5,
-    verified: b.verified === "1",
-    active: b.active === "1",
-  });
-  res.redirect("/admin/content/vendors");
+  await db.insert(marketplaceVendorsTable).values(parsed);
+  res.redirect("/admin/content/vendors?saved=1");
 });
 
 router.get("/content/vendors/:id/edit", async (req: Request, res: Response) => {
   const [v] = await db.select().from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.id, Number(req.params.id)));
   if (!v) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
-  res.type("html").send(contentLayout("Modifier partenaire", `<h1>Modifier "${escHtml(v.name)}"</h1>${vendorForm(v)}`));
+  res.type("html").send(contentLayout("Modifier partenaire", `<h1>Modifier <span style="color:#68191e">${escHtml(v.name)}</span></h1>${vendorForm(v)}`));
 });
 
 router.post("/content/vendors/:id/edit", async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const b = req.body as Record<string, string>;
-  await db.update(marketplaceVendorsTable).set({
-    name: b.name, category: b.category, city: b.city,
-    tagline: b.tagline ?? "", description: b.description ?? "",
-    services: b.services ? b.services.split("\n").map(s=>s.trim()).filter(Boolean) : [],
-    images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(Boolean) : [],
-    website: b.website || null, phone: b.phone || null, email: b.email || null,
-    rating: Number(b.rating) || 5,
-    verified: b.verified === "1",
-    active: b.active === "1",
-  }).where(eq(marketplaceVendorsTable.id, id));
-  res.redirect("/admin/content/vendors");
+  const parsed = parseVendorBody(b);
+  await db.update(marketplaceVendorsTable).set(parsed).where(eq(marketplaceVendorsTable.id, id));
+  res.redirect("/admin/content/vendors?saved=1");
 });
 
 router.post("/content/vendors/:id/toggle", async (req: Request, res: Response) => {
@@ -280,8 +521,8 @@ router.get("/content/venues", async (_req: Request, res: Response) => {
       </div>`).join("")}</div>`;
 
   const body = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-      <h1>Lieux (${venues.length})</h1>
+    <div class="page-header">
+      <h1>Lieux <span style="font-size:14px;font-weight:400;color:#888">(${venues.length})</span></h1>
       <a class="btn primary" href="/admin/content/venues/new">+ Ajouter un lieu</a>
     </div>
     ${listHtml}`;
@@ -390,8 +631,8 @@ router.get("/content/realisations", async (_req: Request, res: Response) => {
       </div>`).join("")}</div>`;
 
   const body = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-      <h1>Réalisations (${rows.length})</h1>
+    <div class="page-header">
+      <h1>Réalisations <span style="font-size:14px;font-weight:400;color:#888">(${rows.length})</span></h1>
       <a class="btn primary" href="/admin/content/realisations/new">+ Ajouter une réalisation</a>
     </div>
     ${listHtml}`;

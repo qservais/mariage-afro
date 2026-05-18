@@ -36,6 +36,11 @@ interface VendorDetail {
   averageRating?: number;
   reviewCount?: number;
   indicativePrice?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  tiktok?: string | null;
+  youtube?: string | null;
+  pinterest?: string | null;
 }
 
 const PRICE_LABEL = ["—", "€", "€€", "€€€", "€€€€"];
@@ -405,6 +410,51 @@ export default function PrestataireDetail() {
                 <Mail className="w-4 h-4 shrink-0" />
                 {vendor.email}
               </a>
+            )}
+            {/* Social media links */}
+            {(vendor.instagram || vendor.facebook || vendor.tiktok || vendor.youtube || vendor.pinterest) && (
+              <div className="pt-3 border-t border-wine-deep/10">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
+                  Réseaux sociaux
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {vendor.instagram && (
+                    <a href={vendor.instagram} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
+                      title="Instagram">
+                      <span className="text-base">📸</span> Instagram
+                    </a>
+                  )}
+                  {vendor.facebook && (
+                    <a href={vendor.facebook} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
+                      title="Facebook">
+                      <span className="text-base">👤</span> Facebook
+                    </a>
+                  )}
+                  {vendor.tiktok && (
+                    <a href={vendor.tiktok} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
+                      title="TikTok">
+                      <span className="text-base">🎵</span> TikTok
+                    </a>
+                  )}
+                  {vendor.youtube && (
+                    <a href={vendor.youtube} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
+                      title="YouTube">
+                      <span className="text-base">▶️</span> YouTube
+                    </a>
+                  )}
+                  {vendor.pinterest && (
+                    <a href={vendor.pinterest} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
+                      title="Pinterest">
+                      <span className="text-base">📌</span> Pinterest
+                    </a>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 
