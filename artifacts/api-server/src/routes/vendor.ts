@@ -26,16 +26,29 @@ const router = Router();
 
 /**
  * Generate a slug that is guaranteed unique in the marketplace_vendors table.
- * If `baseSlug` is already taken by a different vendor, appends the numeric id.
+ * Tries: baseSlug → baseSlug-{id} → baseSlug-{id}-2 → baseSlug-{id}-3 …
+ * Loops until a candidate is not taken by any *other* vendor row.
  */
 async function resolveVendorSlug(baseSlug: string, vendorId: number): Promise<string> {
   if (!baseSlug) return `vendor-${vendorId}`;
-  const [collision] = await db
-    .select({ id: marketplaceVendorsTable.id })
-    .from(marketplaceVendorsTable)
-    .where(and(eq(marketplaceVendorsTable.slug, baseSlug), ne(marketplaceVendorsTable.id, vendorId)))
-    .limit(1);
-  return collision ? uniqueSlug(baseSlug, vendorId) : baseSlug;
+
+  const candidates = [
+    baseSlug,
+    `${baseSlug}-${vendorId}`,
+    ...Array.from({ length: 8 }, (_, i) => `${baseSlug}-${vendorId}-${i + 2}`),
+  ];
+
+  for (const candidate of candidates) {
+    const [collision] = await db
+      .select({ id: marketplaceVendorsTable.id })
+      .from(marketplaceVendorsTable)
+      .where(and(eq(marketplaceVendorsTable.slug, candidate), ne(marketplaceVendorsTable.id, vendorId)))
+      .limit(1);
+    if (!collision) return candidate;
+  }
+
+  // Absolute fallback: timestamp suffix is practically unique
+  return `${baseSlug}-${vendorId}-${Date.now()}`;
 }
 const storageService = new ObjectStorageService();
 
