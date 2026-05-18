@@ -34,8 +34,8 @@
     "cta_primary": "Prendre rendez-vous",
     "cta_secondary": "Voir nos services",
     "how_label": "Comment ça marche",
-    "how_title": "La plateforme complète pour votre mariage afro ou mixte",
-    "how_subtitle": "Créez un mariage élégant et parfaitement orchestré : un réseau de prestataires sélectionnés, des outils de gestion intégrés et un accompagnement de bout en bout, fidèle à vos traditions.",
+    "how_title": "Une plateforme complète, pensée pour les mariages afro & mixtes",
+    "how_subtitle": "Créer un mariage afro ou mixte demande plus qu'une simple liste de prestataires. Il faut comprendre les traditions, maîtriser la logistique et coordonner chaque détail. C'est exactement ce que nous faisons.",
     "how_step1_num": "01",
     "how_step1_title": "Consultation gratuite",
     "how_step1_desc": "Nous écoutons votre histoire, vos cultures, vos rêves et votre budget pour comprendre votre projet en profondeur.",
@@ -360,7 +360,9 @@
       "Catering & Traiteur",
       "Coiffure & Maquillage",
       "Location de salle",
-      "Transport & Limousines"
+      "Transport & Limousines",
+      "Coordination & Planning",
+      "Wedding Design"
     ]
   },
   "partners": {
@@ -1029,7 +1031,7 @@
     "feature4": "Documents centralisés",
     "feature5": "Suivi des prestataires",
     "feature6": "Mode coordination Jour J",
-    "cta_title": "Vous êtes déjà client ?",
+    "cta_title": "Vous êtes déjà inscrit(e) ?",
     "cta_desc": "Notre équipe vous accompagne pendant que nous finalisons votre espace personnel. Contactez-nous pour toute demande.",
     "cta_button": "Nous contacter"
   },

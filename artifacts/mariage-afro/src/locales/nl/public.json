@@ -34,8 +34,8 @@
     "cta_primary": "Maak een afspraak",
     "cta_secondary": "Bekijk onze diensten",
     "how_label": "Hoe werkt het",
-    "how_title": "Het complete platform voor jullie Afro of gemengde bruiloft",
-    "how_subtitle": "Organiseer een elegante en perfect georkestreerde bruiloft: een netwerk van geselecteerde leveranciers, geïntegreerde beheertools en een begeleiding van begin tot einde, trouw aan jullie tradities.",
+    "how_title": "Een compleet platform, gemaakt voor Afro & gemengde bruiloften",
+    "how_subtitle": "Een Afro of gemengde bruiloft organiseren vraagt meer dan een lijst leveranciers. Je moet tradities begrijpen, logistiek beheersen en elk detail coördineren. Dat is precies wat wij doen.",
     "how_step1_num": "01",
     "how_step1_title": "Gratis consult",
     "how_step1_desc": "Wij luisteren naar jullie verhaal, jullie culturen, jullie dromen en jullie budget om jullie project diepgaand te begrijpen.",
@@ -360,7 +360,9 @@
       "Catering & Traiteur",
       "Kapper & Make-up",
       "Zaalverhuur",
-      "Vervoer & Limousines"
+      "Vervoer & Limousines",
+      "Coördinatie & Planning",
+      "Wedding Design"
     ]
   },
   "partners": {
@@ -1029,7 +1031,7 @@
     "feature4": "Gecentraliseerde documenten",
     "feature5": "Leveranciersopvolging",
     "feature6": "Coördinatiemodus dag zelf",
-    "cta_title": "Al klant?",
+    "cta_title": "Al ingeschreven?",
     "cta_desc": "Ons team begeleidt jullie terwijl wij jullie persoonlijke ruimte afronden. Contacteer ons voor elke aanvraag.",
     "cta_button": "Contacteer ons"
   },

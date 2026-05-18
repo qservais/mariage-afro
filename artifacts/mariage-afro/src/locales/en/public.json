@@ -34,8 +34,8 @@
     "cta_primary": "Book an appointment",
     "cta_secondary": "View our services",
     "how_label": "How it works",
-    "how_title": "The complete platform for your Afro or mixed wedding",
-    "how_subtitle": "Create an elegant and perfectly orchestrated wedding: a curated vendor network, integrated planning tools and end-to-end support, faithful to your traditions.",
+    "how_title": "A complete platform, designed for Afro & mixed weddings",
+    "how_subtitle": "Creating an Afro or mixed wedding takes more than a list of vendors. It requires understanding traditions, mastering logistics and coordinating every detail. That is exactly what we do.",
     "how_step1_num": "01",
     "how_step1_title": "Free consultation",
     "how_step1_desc": "We listen to your story, your cultures, your dreams and your budget to deeply understand your project.",
@@ -360,7 +360,9 @@
       "Caterer",
       "Hair & Makeup",
       "Venue Rental",
-      "Transport & Limousines"
+      "Transport & Limousines",
+      "Coordination & Planning",
+      "Wedding Design"
     ]
   },
   "partners": {
@@ -1029,7 +1031,7 @@
     "feature4": "Centralized documents",
     "feature5": "Vendor tracking",
     "feature6": "Day-of coordination mode",
-    "cta_title": "Already a client?",
+    "cta_title": "Already registered?",
     "cta_desc": "Our team supports you while we finalize your personal space. Contact us for any request.",
     "cta_button": "Contact us"
   },
