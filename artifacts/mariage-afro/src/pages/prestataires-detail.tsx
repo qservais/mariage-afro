@@ -3,7 +3,7 @@ import type { BreadcrumbItem } from "@/components/SEO";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail } from "lucide-react";
+import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail, Play } from "lucide-react";
 import ReviewsList from "@/components/marketplace/ReviewsList";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
 import VendorActionPanel from "@/components/marketplace/VendorActionPanel";
@@ -11,14 +11,20 @@ import { SEO } from "@/components/SEO";
 
 interface VendorDetail {
   id: number;
+  slug?: string | null;
   name: string;
   category: string;
   city: string;
   tagline: string;
   description: string;
+  descriptionFr?: string | null;
+  descriptionNl?: string | null;
+  descriptionEn?: string | null;
   services: string[];
   images: string[];
   coverImage?: string | null;
+  logoUrl?: string | null;
+  videoUrl?: string | null;
   verified: boolean;
   website?: string | null;
   phone?: string | null;
@@ -29,6 +35,7 @@ interface VendorDetail {
   spokenLanguages?: string[] | null;
   averageRating?: number;
   reviewCount?: number;
+  indicativePrice?: string | null;
 }
 
 const PRICE_LABEL = ["—", "€", "€€", "€€€", "€€€€"];
@@ -40,32 +47,68 @@ function escapeJsonLd(s: string) {
     .replace(/\u2028|\u2029/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
 }
 
+function getYouTubeEmbed(url: string): string | null {
+  try {
+    const u = new URL(url);
+    // youtube.com/watch?v=ID
+    if (u.hostname.includes("youtube.com") && u.searchParams.get("v")) {
+      return `https://www.youtube.com/embed/${u.searchParams.get("v")}`;
+    }
+    // youtu.be/ID
+    if (u.hostname === "youtu.be") {
+      return `https://www.youtube.com/embed${u.pathname}`;
+    }
+    // vimeo.com/ID
+    if (u.hostname.includes("vimeo.com")) {
+      const id = u.pathname.replace(/^\//, "").split("/")[0];
+      if (id && /^\d+$/.test(id)) return `https://player.vimeo.com/video/${id}`;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export default function PrestataireDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id: idParam } = useParams<{ id: string }>();
-  const id = Number(idParam);
 
   const { data: vendor, isLoading, isError } = useQuery<VendorDetail>({
-    queryKey: ["vendor-detail", id],
-    enabled: Number.isFinite(id) && id > 0,
+    queryKey: ["vendor-detail", idParam],
+    enabled: !!idParam,
     retry: 0,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60_000,
     queryFn: async () => {
-      const res = await fetch(`/api/marketplace/vendors/${id}`);
+      const res = await fetch(`/api/marketplace/vendors/${idParam}`);
       if (!res.ok) throw new Error("not_found");
       return res.json();
     },
   });
 
   useEffect(() => {
-    if (!Number.isFinite(id) || id <= 0) return;
-    fetch(`/api/marketplace/vendors/${id}/track-view`, {
+    if (!vendor?.id) return;
+    fetch(`/api/marketplace/vendors/${vendor.id}/track-view`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ source: "detail", referrer: typeof document !== "undefined" ? document.referrer || null : null }),
     }).catch(() => undefined);
-  }, [id]);
+  }, [vendor?.id]);
+
+  // Pick the best description for current language
+  const localizedDescription = useMemo(() => {
+    if (!vendor) return "";
+    const lang = i18n.language?.slice(0, 2) ?? "fr";
+    if (lang === "nl" && vendor.descriptionNl) return vendor.descriptionNl;
+    if (lang === "en" && vendor.descriptionEn) return vendor.descriptionEn;
+    if (vendor.descriptionFr) return vendor.descriptionFr;
+    return vendor.description || vendor.tagline || "";
+  }, [vendor, i18n.language]);
+
+  const embedUrl = useMemo(() => {
+    if (!vendor?.videoUrl) return null;
+    return getYouTubeEmbed(vendor.videoUrl);
+  }, [vendor?.videoUrl]);
 
   const seoTitle = useMemo(
     () =>
@@ -90,7 +133,7 @@ export default function PrestataireDetail() {
         { name: "Prestataires", url: "/partenaires" },
       ];
       if (vendor) {
-        trail.push({ name: vendor.name, url: `/partenaires/${vendor.id}` });
+        trail.push({ name: vendor.name, url: `/partenaires/${vendor.slug || vendor.id}` });
       }
       return trail;
     },
@@ -123,7 +166,7 @@ export default function PrestataireDetail() {
     return escapeJsonLd(JSON.stringify(data));
   }, [vendor]);
 
-  if (!Number.isFinite(id) || id <= 0) {
+  if (!idParam) {
     return (
       <section className="container mx-auto px-6 py-32 text-center">
         <p className="text-wine-deep">{t("vendor_detail.invalid_id")}</p>
@@ -160,6 +203,7 @@ export default function PrestataireDetail() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
       )}
 
+      {/* Hero header */}
       <section className="bg-wine-deep text-cream pt-32 pb-12">
         <div className="container mx-auto px-6 md:px-12 max-w-5xl">
           <Link
@@ -168,37 +212,56 @@ export default function PrestataireDetail() {
           >
             <ArrowLeft className="w-4 h-4" /> {t("vendor_detail.back")}
           </Link>
-          <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-3">{vendor.category}</p>
-          <h1 className="font-display uppercase text-4xl md:text-6xl tracking-[-0.01em] mb-4">
-            {vendor.name}
-          </h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-cream/80">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" />
-              {vendor.city}
-            </span>
-            {vendor.verified && (
-              <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-gold/20 text-gold text-[10px] uppercase tracking-[0.2em]">
-                <CheckCircle2 className="w-3 h-3" /> {t("vendor_detail.verified")}
-              </span>
+
+          <div className="flex items-start gap-6">
+            {/* Logo */}
+            {vendor.logoUrl && (
+              <div className="hidden sm:flex flex-shrink-0 w-20 h-20 bg-cream/10 overflow-hidden items-center justify-center">
+                <img
+                  src={vendor.logoUrl}
+                  alt={`${vendor.name} logo`}
+                  className="w-full h-full object-contain p-1"
+                />
+              </div>
             )}
-            {(vendor.reviewCount ?? 0) > 0 && (vendor.averageRating ?? 0) > 0 && (
-              <span className="inline-flex items-center gap-2">
-                <ReviewStars rating={vendor.averageRating!} size={14} />
-                <span className="text-cream">
-                  {vendor.averageRating!.toFixed(1)} ({t("vendor_detail.review_count", { count: vendor.reviewCount! })})
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-3">{vendor.category}</p>
+              <h1 className="font-display uppercase text-4xl md:text-6xl tracking-[-0.01em] mb-4">
+                {vendor.name}
+              </h1>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-cream/80">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4" />
+                  {vendor.city}
                 </span>
-              </span>
-            )}
-            {vendor.priceTier && (
-              <span className="text-cream font-medium">{PRICE_LABEL[vendor.priceTier]}</span>
-            )}
+                {vendor.verified && (
+                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-gold/20 text-gold text-[10px] uppercase tracking-[0.2em]">
+                    <CheckCircle2 className="w-3 h-3" /> {t("vendor_detail.verified")}
+                  </span>
+                )}
+                {(vendor.reviewCount ?? 0) > 0 && (vendor.averageRating ?? 0) > 0 && (
+                  <span className="inline-flex items-center gap-2">
+                    <ReviewStars rating={vendor.averageRating!} size={14} />
+                    <span className="text-cream">
+                      {vendor.averageRating!.toFixed(1)} ({t("vendor_detail.review_count", { count: vendor.reviewCount! })})
+                    </span>
+                  </span>
+                )}
+                {vendor.priceTier && (
+                  <span className="text-cream font-medium">{PRICE_LABEL[vendor.priceTier]}</span>
+                )}
+                {vendor.indicativePrice && (
+                  <span className="text-cream/80 text-sm">{vendor.indicativePrice}</span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="container mx-auto px-6 md:px-12 max-w-5xl py-12 grid md:grid-cols-3 gap-10">
         <div className="md:col-span-2 space-y-10">
+          {/* Cover image */}
           {vendor.coverImage && (
             <img
               src={vendor.coverImage}
@@ -207,13 +270,15 @@ export default function PrestataireDetail() {
             />
           )}
 
+          {/* Description (localized) */}
           <div>
             <h2 className="font-display uppercase text-2xl text-wine-deep mb-3">{t("vendor_detail.about")}</h2>
             <p className="text-wine-deep/80 leading-relaxed whitespace-pre-wrap">
-              {vendor.description || vendor.tagline}
+              {localizedDescription || vendor.tagline}
             </p>
           </div>
 
+          {/* Services */}
           {vendor.services?.length > 0 && (
             <div>
               <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">{t("vendor_detail.services")}</h3>
@@ -230,6 +295,7 @@ export default function PrestataireDetail() {
             </div>
           )}
 
+          {/* Gallery */}
           {vendor.images && vendor.images.length > 1 && (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {vendor.images.slice(0, 6).map((img) => (
@@ -244,6 +310,38 @@ export default function PrestataireDetail() {
             </div>
           )}
 
+          {/* Video */}
+          {vendor.videoUrl && (
+            <div>
+              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-4 flex items-center gap-2">
+                <Play className="w-3.5 h-3.5" />
+                {t("vendor_detail.video", { defaultValue: "Vidéo de présentation" })}
+              </h3>
+              {embedUrl ? (
+                <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+                  <iframe
+                    src={embedUrl}
+                    title={`${vendor.name} — vidéo`}
+                    className="absolute inset-0 w-full h-full rounded-sm"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <a
+                  href={vendor.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-wine-deep hover:text-gold text-sm underline"
+                >
+                  <Play className="w-4 h-4" />
+                  {vendor.videoUrl}
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Reviews */}
           <div>
             <h2 className="font-display uppercase text-2xl text-wine-deep mb-5">
               {t("vendor_detail.reviews_title")}{" "}

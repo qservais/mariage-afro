@@ -833,7 +833,8 @@
     "languages": "Talen",
     "reviews_title": "Geverifieerde beoordelingen",
     "last_n": "— laatste {{count}}",
-    "actions_title": "Contacteer deze leverancier"
+    "actions_title": "Contacteer deze leverancier",
+    "video": "Presentatievideo"
   },
   "mariage_public": {
     "not_found_title": "Pagina niet gevonden",

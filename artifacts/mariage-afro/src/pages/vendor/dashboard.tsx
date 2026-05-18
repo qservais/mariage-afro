@@ -112,7 +112,7 @@ export default function VendorDashboard() {
           </p>
           {isPublished && vendor && (
             <Link
-              to={`/partenaires/${vendor.id}`}
+              to={`/partenaires/${(vendor as { slug?: string | null }).slug || vendor.id}`}
               className="inline-flex mt-3 items-center gap-2 text-xs uppercase tracking-widest text-gold hover:text-wine-deep"
               data-testid="link-public-marketplace"
             >

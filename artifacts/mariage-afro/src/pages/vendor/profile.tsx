@@ -14,6 +14,11 @@ interface VendorProfile {
   city: string;
   tagline: string;
   description: string;
+  descriptionFr: string;
+  descriptionNl: string;
+  descriptionEn: string;
+  videoUrl: string | null;
+  indicativePrice: string | null;
   website: string | null;
   phone: string | null;
   email: string | null;
@@ -41,6 +46,11 @@ export default function VendorProfilePage() {
   const [city, setCity] = useState("");
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
+  const [descriptionFr, setDescriptionFr] = useState("");
+  const [descriptionNl, setDescriptionNl] = useState("");
+  const [descriptionEn, setDescriptionEn] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [indicativePrice, setIndicativePrice] = useState("");
   const [website, setWebsite] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -57,6 +67,11 @@ export default function VendorProfilePage() {
     setCity(vendor.city || "");
     setTagline(vendor.tagline || "");
     setDescription(vendor.description || "");
+    setDescriptionFr(vendor.descriptionFr || "");
+    setDescriptionNl(vendor.descriptionNl || "");
+    setDescriptionEn(vendor.descriptionEn || "");
+    setVideoUrl(vendor.videoUrl || "");
+    setIndicativePrice(vendor.indicativePrice || "");
     setWebsite(vendor.website || "");
     setPhone(vendor.phone || "");
     setEmail(vendor.email || "");
@@ -118,6 +133,11 @@ export default function VendorProfilePage() {
           e.preventDefault();
           save.mutate({
             name, category, city, tagline, description,
+            descriptionFr: descriptionFr || undefined,
+            descriptionNl: descriptionNl || undefined,
+            descriptionEn: descriptionEn || undefined,
+            videoUrl: videoUrl || null,
+            indicativePrice: indicativePrice || null,
             website: website || null,
             phone: phone || null,
             email: email || undefined,
@@ -180,6 +200,7 @@ export default function VendorProfilePage() {
           </div>
         </div>
 
+        {/* Core fields */}
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.name")}</label>
@@ -209,11 +230,82 @@ export default function VendorProfilePage() {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={6}
+              rows={4}
               className="w-full border border-input bg-background px-3 py-2 text-sm"
               data-testid="textarea-profile-description"
             />
           </div>
+        </div>
+
+        {/* Multilingual descriptions */}
+        <div className="border-t border-neutral-100 pt-5 space-y-4">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-wine-deep font-semibold mb-0.5">{t("vendor.profile.multilingual_title")}</p>
+            <p className="text-xs text-neutral-500">{t("vendor.profile.multilingual_subtitle")}</p>
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
+              🇫🇷 {t("vendor.profile.description_fr")}
+            </label>
+            <textarea
+              value={descriptionFr}
+              onChange={(e) => setDescriptionFr(e.target.value)}
+              rows={5}
+              className="w-full border border-input bg-background px-3 py-2 text-sm"
+              data-testid="textarea-profile-description-fr"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
+              🇧🇪 {t("vendor.profile.description_nl")}
+            </label>
+            <textarea
+              value={descriptionNl}
+              onChange={(e) => setDescriptionNl(e.target.value)}
+              rows={5}
+              className="w-full border border-input bg-background px-3 py-2 text-sm"
+              data-testid="textarea-profile-description-nl"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
+              🇬🇧 {t("vendor.profile.description_en")}
+            </label>
+            <textarea
+              value={descriptionEn}
+              onChange={(e) => setDescriptionEn(e.target.value)}
+              rows={5}
+              className="w-full border border-input bg-background px-3 py-2 text-sm"
+              data-testid="textarea-profile-description-en"
+            />
+          </div>
+        </div>
+
+        {/* Video + price */}
+        <div className="border-t border-neutral-100 pt-5 grid sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.video_url")}</label>
+            <Input
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder={t("vendor.profile.video_url_help")}
+              data-testid="input-profile-video-url"
+            />
+            <p className="text-[11px] text-neutral-400 mt-1">{t("vendor.profile.video_url_help")}</p>
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.indicative_price")}</label>
+            <Input
+              value={indicativePrice}
+              onChange={(e) => setIndicativePrice(e.target.value)}
+              placeholder={t("vendor.profile.indicative_price_placeholder")}
+              data-testid="input-profile-indicative-price"
+            />
+          </div>
+        </div>
+
+        {/* Contact */}
+        <div className="border-t border-neutral-100 pt-5 grid sm:grid-cols-2 gap-4">
           <div>
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.email")}</label>
             <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} data-testid="input-profile-email" />

@@ -259,13 +259,29 @@ router.get("/marketplace/vendors-by-tags", async (req: Request, res: Response) =
 });
 
 router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
-  const [vendor] = await db
-    .select()
-    .from(marketplaceVendorsTable)
-    .where(and(eq(marketplaceVendorsTable.id, id), eq(marketplaceVendorsTable.active, true)));
+  const idParam = String(req.params.id);
+  const numId = Number(idParam);
+  let vendor: typeof marketplaceVendorsTable.$inferSelect | undefined;
+  if (!isNaN(numId) && Number.isFinite(numId)) {
+    [vendor] = await db
+      .select()
+      .from(marketplaceVendorsTable)
+      .where(and(eq(marketplaceVendorsTable.id, numId), eq(marketplaceVendorsTable.active, true)));
+    // Fallback to slug lookup if numeric id not found
+    if (!vendor) {
+      [vendor] = await db
+        .select()
+        .from(marketplaceVendorsTable)
+        .where(and(eq(marketplaceVendorsTable.slug, idParam), eq(marketplaceVendorsTable.active, true)));
+    }
+  } else {
+    [vendor] = await db
+      .select()
+      .from(marketplaceVendorsTable)
+      .where(and(eq(marketplaceVendorsTable.slug, idParam), eq(marketplaceVendorsTable.active, true)));
+  }
   if (!vendor) { res.status(404).json({ error: "Not found" }); return; }
+  const id = vendor.id;
   const aggregates = await aggregateForVendors([id]);
   const recent = await db
     .select({

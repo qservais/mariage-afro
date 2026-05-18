@@ -249,7 +249,16 @@
       "logo_remove": "Retirer",
       "save": "Enregistrer",
       "saving": "Enregistrement…",
-      "saved": "Modifications enregistrées."
+      "saved": "Modifications enregistrées.",
+      "multilingual_title": "Descriptions multilingues",
+      "multilingual_subtitle": "Rédigez votre description dans chaque langue pour maximiser votre visibilité.",
+      "description_fr": "Description en français",
+      "description_nl": "Description en néerlandais",
+      "description_en": "Description en anglais",
+      "video_url": "URL vidéo de présentation",
+      "video_url_help": "Lien YouTube ou Vimeo (ex: https://youtube.com/watch?v=…)",
+      "indicative_price": "Prix indicatif",
+      "indicative_price_placeholder": "Ex: à partir de 800 €"
     },
     "gallery": {
       "title": "Galerie",

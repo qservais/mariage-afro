@@ -833,7 +833,8 @@
     "languages": "Languages",
     "reviews_title": "Verified reviews",
     "last_n": "— last {{count}}",
-    "actions_title": "Contact this vendor"
+    "actions_title": "Contact this vendor",
+    "video": "Presentation video"
   },
   "mariage_public": {
     "not_found_title": "Page not found",

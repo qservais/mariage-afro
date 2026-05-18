@@ -249,7 +249,16 @@
       "logo_remove": "Verwijderen",
       "save": "Opslaan",
       "saving": "Opslaan…",
-      "saved": "Wijzigingen opgeslagen."
+      "saved": "Wijzigingen opgeslagen.",
+      "multilingual_title": "Meertalige beschrijvingen",
+      "multilingual_subtitle": "Schrijf uw beschrijving in elke taal om uw zichtbaarheid te maximaliseren.",
+      "description_fr": "Beschrijving in het Frans",
+      "description_nl": "Beschrijving in het Nederlands",
+      "description_en": "Beschrijving in het Engels",
+      "video_url": "Presentatievideo-URL",
+      "video_url_help": "YouTube- of Vimeo-link (bijv: https://youtube.com/watch?v=…)",
+      "indicative_price": "Indicatieve prijs",
+      "indicative_price_placeholder": "Bijv: vanaf 800 €"
     },
     "gallery": {
       "title": "Galerij",

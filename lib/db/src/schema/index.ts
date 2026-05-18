@@ -208,6 +208,8 @@ export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
   hasFirstPost: boolean("has_first_post").notNull().default(false),
   // Invitation admin : email pré-enregistré pour auto-lier un prestataire à sa fiche
   invitedEmail: text("invited_email"),
+  // LOT 128 — URL slug for SEO-friendly vendor detail pages
+  slug: text("slug").unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

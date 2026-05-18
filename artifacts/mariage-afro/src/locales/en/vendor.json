@@ -249,7 +249,16 @@
       "logo_remove": "Remove",
       "save": "Save",
       "saving": "Saving…",
-      "saved": "Changes saved."
+      "saved": "Changes saved.",
+      "multilingual_title": "Multilingual descriptions",
+      "multilingual_subtitle": "Write your description in each language to maximise visibility.",
+      "description_fr": "Description in French",
+      "description_nl": "Description in Dutch",
+      "description_en": "Description in English",
+      "video_url": "Presentation video URL",
+      "video_url_help": "YouTube or Vimeo link (e.g. https://youtube.com/watch?v=…)",
+      "indicative_price": "Indicative price",
+      "indicative_price_placeholder": "E.g. from €800"
     },
     "gallery": {
       "title": "Gallery",

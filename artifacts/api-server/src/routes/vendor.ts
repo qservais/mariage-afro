@@ -2,6 +2,7 @@ import { Router, type Request, type Response, type NextFunction } from "express"
 import { getAuth } from "@clerk/express";
 import { z } from "zod";
 import { and, asc, desc, eq, inArray, isNull, isNotNull, ne, or, sql } from "drizzle-orm";
+import { slugify } from "../lib/slugify";
 import {
   db,
   vendorAccountsTable,
@@ -128,6 +129,8 @@ router.post("/vendor/onboarding", async (req, res) => {
     if (!existingVendor) vendorId = null;
   }
 
+  const baseSlug = slugify(data.businessName);
+
   if (vendorId) {
     await db
       .update(marketplaceVendorsTable)
@@ -140,6 +143,7 @@ router.post("/vendor/onboarding", async (req, res) => {
         website: data.website ?? null,
         phone: data.phone ?? null,
         email: data.email,
+        slug: baseSlug || `vendor-${vendorId}`,
       })
       .where(eq(marketplaceVendorsTable.id, vendorId));
   } else {
@@ -163,6 +167,7 @@ router.post("/vendor/onboarding", async (req, res) => {
           website: data.website ?? null,
           phone: data.phone ?? null,
           email: data.email,
+          slug: baseSlug || `vendor-${invitedVendor.id}`,
         })
         .where(eq(marketplaceVendorsTable.id, invitedVendor.id));
       vendorId = invitedVendor.id;
@@ -186,6 +191,11 @@ router.post("/vendor/onboarding", async (req, res) => {
         })
         .returning();
       vendorId = vendor.id;
+      // Set slug after insert so we have the id available for uniqueness
+      await db
+        .update(marketplaceVendorsTable)
+        .set({ slug: baseSlug || `vendor-${vendorId}` })
+        .where(eq(marketplaceVendorsTable.id, vendorId));
     }
   }
 
@@ -240,6 +250,12 @@ const profileSchema = z.object({
   city: z.string().min(1).max(80).optional(),
   tagline: z.string().max(200).optional(),
   description: z.string().max(4000).optional(),
+  descriptionFr: z.string().max(4000).optional(),
+  descriptionNl: z.string().max(4000).optional(),
+  descriptionEn: z.string().max(4000).optional(),
+  videoUrl: z.string().max(2000).optional().nullable(),
+  indicativePrice: z.string().max(200).optional().nullable(),
+  coverPhotoUrl: z.string().max(2000).optional().nullable(),
   services: z.array(z.string().max(120)).optional(),
   website: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),

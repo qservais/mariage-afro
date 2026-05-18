@@ -833,7 +833,8 @@
     "languages": "Langues",
     "reviews_title": "Avis vérifiés",
     "last_n": "— derniers {{count}}",
-    "actions_title": "Contacter ce prestataire"
+    "actions_title": "Contacter ce prestataire",
+    "video": "Vidéo de présentation"
   },
   "mariage_public": {
     "not_found_title": "Page introuvable",

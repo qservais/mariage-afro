@@ -173,6 +173,7 @@ const VENDORS = [
 
 interface DisplayVendor {
   id: number;
+  slug?: string | null;
   name: string;
   city: string;
   category: string;
@@ -761,6 +762,7 @@ export default function Prestations() {
       const rows = await res.json();
       return rows.map((v: Record<string, unknown>) => ({
         id: v.id as number,
+        slug: (v.slug as string | null | undefined) ?? null,
         name: v.name as string,
         city: v.city as string,
         category: v.category as string,
@@ -826,8 +828,8 @@ export default function Prestations() {
         position: idx + 1,
         url:
           typeof window !== "undefined"
-            ? `${window.location.origin}/partenaires/${v.id}`
-            : `/partenaires/${v.id}`,
+            ? `${window.location.origin}/partenaires/${v.slug || v.id}`
+            : `/partenaires/${v.slug || v.id}`,
         name: v.name,
       })),
     };
@@ -994,7 +996,7 @@ export default function Prestations() {
                 category: v.category,
                 latitude: v.latitude ?? null,
                 longitude: v.longitude ?? null,
-                href: usingApi ? `/partenaires/${v.id}` : "#",
+                href: usingApi ? `/partenaires/${v.slug || v.id}` : "#",
                 image: v.image,
                 averageRating: v.averageRating,
                 reviewCount: v.reviewCount,
@@ -1067,7 +1069,7 @@ export default function Prestations() {
                       <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight leading-[1] mb-2">
                         {usingApi ? (
                           <Link
-                            to={`/partenaires/${vendor.id}`}
+                            to={`/partenaires/${vendor.slug || vendor.id}`}
                             className="hover:text-gold transition-colors"
                             data-testid={`vendor-link-${vendor.id}`}
                           >
