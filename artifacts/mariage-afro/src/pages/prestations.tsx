@@ -1021,11 +1021,11 @@ export default function Prestations() {
                   transition={{ duration: 0.5, delay: i * 0.06 }}
                   className="card-editorial overflow-hidden flex flex-col relative"
                 >
-                  {/* Full-card link — semantic <a> covering the entire card */}
+                  {/* Full-card link — sits at z-10, above decorative layers */}
                   {usingApi && (
                     <Link
                       to={`/partenaires/${vendor.slug || vendor.id}`}
-                      className="absolute inset-0 z-0"
+                      className="absolute inset-0 z-10"
                       aria-label={vendor.name}
                       tabIndex={-1}
                     />
@@ -1046,7 +1046,7 @@ export default function Prestations() {
                     <span className="badge-editorial-dark absolute top-4 left-4">
                       {vendor.category}
                     </span>
-                    <div className="absolute top-4 right-4 flex flex-col gap-2 items-end relative z-10">
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 items-end relative z-20">
                       {vendor.tier === "featured" && (
                         <span className="badge-editorial bg-gold text-wine-deep border-gold" data-testid={`tier-badge-${vendor.id}`}>
                           <Crown className="w-3 h-3" /> Featured
@@ -1076,7 +1076,7 @@ export default function Prestations() {
                         <Scale className="w-3 h-3" /> Comparer
                       </label>
                     </div>
-                    <div className="absolute bottom-5 left-5 right-5 text-cream relative z-10">
+                    <div className="absolute bottom-5 left-5 right-5 text-cream relative z-20">
                       <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight leading-[1] mb-2">
                         {usingApi ? (
                           <Link
@@ -1124,7 +1124,7 @@ export default function Prestations() {
                     ))}
                   </div>
 
-                  <div className="p-7 md:p-8 flex flex-col flex-grow relative z-10">
+                  <div className="p-7 md:p-8 flex flex-col flex-grow relative z-20">
                     <p className="text-wine-deep/70 text-sm leading-relaxed mb-7 font-light italic">
                       {vendor.tagline}
                     </p>
