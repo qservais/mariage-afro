@@ -344,7 +344,7 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
            *          story panel below at full width                           *
            * Mobile:  videoCouple → videoTeaser → story, each full-width       */
           <div className="flex flex-col">
-            <div className="flex flex-col sm:flex-row">
+            <div className="relative flex flex-col sm:flex-row">
               <VideoPlayer
                 url={r.videoCouple!}
                 label={t("realisations.video_couple_label")}
@@ -355,6 +355,16 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
                 label={t("realisations.video_teaser_label")}
                 className="flex-1 aspect-video"
               />
+              {/* Preserve featured badge parity with single-media layout */}
+              {r.featured && (
+                <span className="badge-editorial-dark absolute top-4 left-4 z-10">
+                  À la une
+                </span>
+              )}
+              <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-wine-deep/70 text-cream text-[10px] uppercase tracking-[0.25em] px-3 py-2 backdrop-blur-sm font-medium z-10">
+                <Film className="w-3 h-3" />
+                Film
+              </div>
             </div>
             {storyPanel}
           </div>
