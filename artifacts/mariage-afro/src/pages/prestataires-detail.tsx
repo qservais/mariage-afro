@@ -1,12 +1,13 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { BreadcrumbItem } from "@/components/SEO";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail, Play } from "lucide-react";
+import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail, Play, MessageCircle, X, ChevronLeft, ChevronRight, CalendarCheck } from "lucide-react";
 import ReviewsList from "@/components/marketplace/ReviewsList";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
 import VendorActionPanel from "@/components/marketplace/VendorActionPanel";
+import VendorAvailabilityCalendar from "@/components/VendorAvailabilityCalendar";
 import { SEO } from "@/components/SEO";
 import { getCategoryConfig } from "@/lib/vendorCategoryConfig";
 
@@ -156,6 +157,29 @@ export default function PrestataireDetail() {
     [vendor]
   );
 
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  const closeLightbox = useCallback(() => setLightboxIdx(null), []);
+  const prevLightbox = useCallback(() => {
+    if (!vendor?.images) return;
+    setLightboxIdx((i) => (i === null ? null : (i - 1 + vendor.images.length) % vendor.images.length));
+  }, [vendor?.images]);
+  const nextLightbox = useCallback(() => {
+    if (!vendor?.images) return;
+    setLightboxIdx((i) => (i === null ? null : (i + 1) % vendor.images.length));
+  }, [vendor?.images]);
+
+  useEffect(() => {
+    if (lightboxIdx === null) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") prevLightbox();
+      if (e.key === "ArrowRight") nextLightbox();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIdx, closeLightbox, prevLightbox, nextLightbox]);
+
   const jsonLdString = useMemo(() => {
     if (!vendor) return "";
     const data: Record<string, unknown> = {
@@ -181,6 +205,27 @@ export default function PrestataireDetail() {
     }
     return escapeJsonLd(JSON.stringify(data));
   }, [vendor]);
+
+  const galleryImages = useMemo(
+    () => (vendor?.images && vendor.images.length > 1 ? vendor.images.slice(0, 6) : []),
+    [vendor]
+  );
+
+  const seoImage = useMemo(() => {
+    const raw = vendor?.coverImage || vendor?.images?.[0];
+    if (!raw) return undefined;
+    const u = objectUrl(raw);
+    if (!u) return undefined;
+    if (u.startsWith("http")) return u;
+    return typeof window !== "undefined" ? `${window.location.origin}${u}` : undefined;
+  }, [vendor]);
+
+  const whatsappHref = useMemo(() => {
+    if (!vendor?.phone) return null;
+    const cleaned = vendor.phone.replace(/\D/g, "");
+    if (!cleaned) return null;
+    return `https://wa.me/${cleaned}`;
+  }, [vendor?.phone]);
 
   if (!idParam) {
     return (
@@ -214,7 +259,7 @@ export default function PrestataireDetail() {
 
   return (
     <div className="bg-cream min-h-screen">
-      <SEO title={seoTitle} description={seoDescription} breadcrumbs={seoBreadcrumbs} />
+      <SEO title={seoTitle} description={seoDescription} breadcrumbs={seoBreadcrumbs} image={seoImage} />
       {jsonLdString && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
       )}
@@ -378,18 +423,28 @@ export default function PrestataireDetail() {
             );
           })()}
 
-          {/* Gallery */}
-          {vendor.images && vendor.images.length > 1 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {vendor.images.slice(0, 6).map((img) => (
-                <img
-                  key={img}
-                  src={objectUrl(img)}
-                  alt={vendor.name}
-                  className="w-full h-40 object-cover rounded-sm"
-                  loading="lazy"
-                />
-              ))}
+          {/* Gallery — click to open lightbox */}
+          {galleryImages.length > 0 && (
+            <div>
+              <h2 className="font-display uppercase text-2xl text-wine-deep mb-3">{t("vendor_detail.gallery", { defaultValue: "Galerie" })}</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {galleryImages.map((img, idx) => (
+                  <button
+                    key={img}
+                    type="button"
+                    onClick={() => setLightboxIdx(idx)}
+                    className="block w-full overflow-hidden rounded-sm focus:outline-none focus:ring-2 focus:ring-gold group"
+                    aria-label={`${vendor.name} — photo ${idx + 1}`}
+                  >
+                    <img
+                      src={objectUrl(img)}
+                      alt={`${vendor.name} ${idx + 1}`}
+                      className="w-full h-40 object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
@@ -432,6 +487,15 @@ export default function PrestataireDetail() {
             </div>
           )}
 
+          {/* Availability calendar */}
+          <div>
+            <h2 className="font-display uppercase text-2xl text-wine-deep mb-5 flex items-center gap-3">
+              <CalendarCheck className="w-5 h-5 text-gold" />
+              {t("marketplace.availability.title", { defaultValue: "Disponibilités (6 mois)" })}
+            </h2>
+            <VendorAvailabilityCalendar vendorId={vendor.id} months={6} />
+          </div>
+
           {/* Reviews */}
           <div>
             <h2 className="font-display uppercase text-2xl text-wine-deep mb-5">
@@ -468,6 +532,17 @@ export default function PrestataireDetail() {
               >
                 <Phone className="w-4 h-4 shrink-0" />
                 {vendor.phone}
+              </a>
+            )}
+            {whatsappHref && (
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-[#25D366] hover:text-green-700 text-sm font-medium"
+              >
+                <MessageCircle className="w-4 h-4 shrink-0" />
+                WhatsApp
               </a>
             )}
             {vendor.email && (
@@ -558,6 +633,64 @@ export default function PrestataireDetail() {
           ) : null}
         </aside>
       </section>
+
+      {/* Lightbox */}
+      {lightboxIdx !== null && galleryImages[lightboxIdx] && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90"
+          onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${vendor.name} — photo ${lightboxIdx + 1} / ${galleryImages.length}`}
+        >
+          {/* Close */}
+          <button
+            type="button"
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 p-2 text-white/80 hover:text-white"
+            aria-label="Fermer"
+          >
+            <X className="w-7 h-7" />
+          </button>
+
+          {/* Prev */}
+          {galleryImages.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); prevLightbox(); }}
+              className="absolute left-4 p-2 text-white/80 hover:text-white"
+              aria-label="Photo précédente"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+          )}
+
+          {/* Image */}
+          <img
+            src={objectUrl(galleryImages[lightboxIdx])}
+            alt={`${vendor.name} ${lightboxIdx + 1}`}
+            className="max-h-[88vh] max-w-[90vw] object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {/* Next */}
+          {galleryImages.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); nextLightbox(); }}
+              className="absolute right-4 p-2 text-white/80 hover:text-white"
+              aria-label="Photo suivante"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+          )}
+
+          {/* Counter */}
+          <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-xs tracking-widest">
+            {lightboxIdx + 1} / {galleryImages.length}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
