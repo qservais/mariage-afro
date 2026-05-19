@@ -188,8 +188,10 @@ router.get("/marketplace/vendors", async (req: Request, res: Response) => {
     .from(marketplaceVendorsTable)
     .where(and(...conds))
     .orderBy(asc(marketplaceVendorsTable.name));
-  const aggregates = await aggregateForVendors(vendors.map((v) => v.id));
-  const tiers = await tierByVendorId(vendors.map((v) => v.id));
+  const [aggregates, tiers] = await Promise.all([
+    aggregateForVendors(vendors.map((v) => v.id)),
+    tierByVendorId(vendors.map((v) => v.id)),
+  ]);
   const sorted = [...vendors].sort((a, b) => {
     const wa = tierWeight(tiers.get(a.id));
     const wb = tierWeight(tiers.get(b.id));

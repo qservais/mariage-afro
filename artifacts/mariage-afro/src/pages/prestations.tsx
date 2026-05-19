@@ -52,124 +52,11 @@ import { useToast } from "@/hooks/use-toast";
 
 import VendorActionModal, { type VendorAction } from "@/components/VendorActionModal";
 
-import img1 from "@assets/pexels-nudethephotographer-34543838_1776285262172.jpg";
-import img2 from "@assets/pexels-darina-belonogova-7193204_1776285262172.jpg";
-import img3 from "@assets/pexels-darina-belonogova-7193167_1776285262172.jpg";
-import img4 from "@assets/pexels-pavel-danilyuk-8815279_1776285262172.jpg";
-import img5 from "@assets/pexels-is0-shot-2150184196-31518214_1776285262172.jpg";
-import img6 from "@assets/pexels-innocent-kapesa-760824113-18751317_1776285262172.jpg";
-import img7 from "@assets/pexels-angel-ayala-321556-28976221_1776285262171.jpg";
-import img8 from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
+import fallbackImg from "@assets/pexels-nudethephotographer-34543838_1776285262172.jpg";
 import bannerImg from "@assets/New-Project-12_1776614330308.png";
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 
-const VENDORS = [
-  {
-    id: 1,
-    name: "Aminata Photography",
-    city: "Bruxelles",
-    categoryIndex: 0,
-    tagline:
-      "Spécialiste des mariages afro et mixtes depuis 8 ans. Portraits authentiques chargés d'émotion et de couleurs.",
-    services: ["Reportage cérémonie", "Séance couple", "Album premium", "Tirages fine art"],
-    rating: 5,
-    image: img1,
-    gallery: [img2, img4, img7],
-    verified: true,
-  },
-  {
-    id: 2,
-    name: "Film de Miel",
-    city: "Bruxelles · Anvers",
-    categoryIndex: 1,
-    tagline:
-      "Films cinématographiques de mariage d'exception. Chaque image raconte une histoire unique et intemporelle.",
-    services: ["Film highlight 5 min", "Documentaire 30 min", "Drone 4K", "Live multicam"],
-    rating: 5,
-    image: img2,
-    gallery: [img4, img8, img1],
-    verified: true,
-  },
-  {
-    id: 3,
-    name: "DJ Koffi",
-    city: "Liège · Bruxelles",
-    categoryIndex: 2,
-    tagline:
-      "Ambiances afrobeats, coupe-décalé, afropop et afrotrap. Des sets sur mesure pour vos mariages mixtes.",
-    services: ["DJ set 6h", "MC bilingue", "Sono & lumières", "Animation cérémonie"],
-    rating: 5,
-    image: img3,
-    gallery: [img5, img6, img8],
-    verified: true,
-  },
-  {
-    id: 4,
-    name: "Fleurs d'Afrique",
-    city: "Bruxelles",
-    categoryIndex: 3,
-    tagline:
-      "Compositions florales inspirées des traditions africaines. Couleurs vibrantes, textures riches, élégance contemporaine.",
-    services: ["Bouquet mariée", "Décor cérémonie", "Centre de table", "Arche florale"],
-    rating: 5,
-    image: img4,
-    gallery: [img1, img7, img5],
-    verified: true,
-  },
-  {
-    id: 5,
-    name: "Saveurs du Monde",
-    city: "Gand · Bruxelles",
-    categoryIndex: 4,
-    tagline:
-      "Cuisine fusion afro-européenne raffinée. Cocktails dinatoires, buffets et repas assis pour vos réceptions.",
-    services: ["Buffet afro-fusion", "Repas assis 5 services", "Cocktail dinatoire", "Bar mixologie"],
-    rating: 4,
-    image: img5,
-    gallery: [img6, img2, img4],
-    verified: true,
-  },
-  {
-    id: 6,
-    name: "Beauty by Ama",
-    city: "Bruxelles",
-    categoryIndex: 5,
-    tagline:
-      "Coiffures afro, tresses, chignons élaborés et maquillage de mariée. Sublimez votre beauté naturelle.",
-    services: ["Coiffure mariée", "Maquillage HD", "Essai inclus", "Retouches journée"],
-    rating: 5,
-    image: img6,
-    gallery: [img1, img8, img7],
-    verified: true,
-  },
-  {
-    id: 7,
-    name: "Domaine des Palmes",
-    city: "Waterloo · Namur",
-    categoryIndex: 6,
-    tagline:
-      "Domaine de prestige pour 50 à 500 invités. Espaces modulables, jardins et décoration premium inclus.",
-    services: ["Salle 500 invités", "Jardin & terrasse", "Hébergement 30 pers.", "Parking 200 places"],
-    rating: 4,
-    image: img7,
-    gallery: [img4, img5, img1],
-    verified: true,
-  },
-  {
-    id: 8,
-    name: "Elite Prestige",
-    city: "Bruxelles",
-    categoryIndex: 7,
-    tagline:
-      "Limousines, berlines de luxe et bus décoré pour cortège nuptial. Ponctualité et élégance garanties.",
-    services: ["Limousine mariés", "Berline témoins", "Bus 50 invités", "Décor véhicule"],
-    rating: 5,
-    image: img8,
-    gallery: [img3, img6, img2],
-    verified: false,
-  },
-];
 
 interface DisplayVendor {
   id: number;
@@ -771,7 +658,7 @@ export default function Prestations() {
           typeof s === "string" ? { name: s } : (s as { name: string; price?: number; price_unit?: string })
         ),
         rating: v.rating as number,
-        image: (v.coverImage as string | null) || ((v.images as string[]) ?? [])[0] || img1,
+        image: (v.coverImage as string | null) || ((v.images as string[]) ?? [])[0] || fallbackImg,
         gallery: ((v.images as string[]) ?? []).slice(0, 3),
         verified: v.verified as boolean,
         averageRating: typeof v.averageRating === "number" ? v.averageRating : 0,
@@ -787,15 +674,7 @@ export default function Prestations() {
     },
   });
 
-  const usingApi = apiVendors.length > 0;
-  const displayVendors: DisplayVendor[] = useMemo(() => {
-    if (usingApi) return apiVendors;
-    return VENDORS.map((v) => ({
-      ...v,
-      category: categories[v.categoryIndex] ?? "",
-      services: v.services.map((s) => ({ name: s })),
-    }));
-  }, [apiVendors, categories, usingApi]);
+  const displayVendors: DisplayVendor[] = useMemo(() => apiVendors, [apiVendors]);
 
   const uniqueCategories = useMemo(
     () => [...new Set(displayVendors.map((v) => v.category))].filter(Boolean),
@@ -803,14 +682,12 @@ export default function Prestations() {
   );
 
 
-  // Quand on a l'API, le filtrage est server-side ; en fallback on filtre sur la catégorie locale.
-  const filtered = usingApi
-    ? displayVendors
-    : (filters.category ? displayVendors.filter((v) => v.category === filters.category) : displayVendors);
+  // Le filtrage est server-side via les query params transmis à l'API
+  const filtered = displayVendors;
 
   // Track listing impressions once per page-load (LOT 8: source=listing)
   useEffect(() => {
-    if (!usingApi || filtered.length === 0) return;
+    if (filtered.length === 0) return;
     const ids = filtered.slice(0, 24).map((v) => v.id);
     ids.forEach((id) => {
       fetch(`/api/marketplace/vendors/${id}/track-view`, {
@@ -821,7 +698,7 @@ export default function Prestations() {
       }).catch(() => undefined);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiQueryString, usingApi]);
+  }, [apiQueryString]);
 
   // JSON-LD ItemList des prestataires affichés (l'AggregateRating est désormais sur la fiche détail)
   const jsonLdString = useMemo(() => {
@@ -1002,7 +879,7 @@ export default function Prestations() {
                 category: v.category,
                 latitude: v.latitude ?? null,
                 longitude: v.longitude ?? null,
-                href: usingApi ? `/partenaires/${v.slug || v.id}` : "#",
+                href: `/partenaires/${v.slug || v.id}`,
                 image: v.image,
                 averageRating: v.averageRating,
                 reviewCount: v.reviewCount,
@@ -1082,17 +959,13 @@ export default function Prestations() {
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 text-cream z-20">
                       <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight leading-[1] mb-2">
-                        {usingApi ? (
-                          <Link
-                            to={`/partenaires/${vendor.slug || vendor.id}`}
-                            className="hover:text-gold transition-colors"
-                            data-testid={`vendor-link-${vendor.id}`}
-                          >
-                            {vendor.name}
-                          </Link>
-                        ) : (
-                          <span data-testid={`vendor-link-${vendor.id}`}>{vendor.name}</span>
-                        )}
+                        <Link
+                          to={`/partenaires/${vendor.slug || vendor.id}`}
+                          className="hover:text-gold transition-colors"
+                          data-testid={`vendor-link-${vendor.id}`}
+                        >
+                          {vendor.name}
+                        </Link>
                       </h3>
                       <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] flex-wrap">
                         <span className="flex items-center gap-1.5 text-cream/80">
