@@ -21,7 +21,7 @@ interface VendorDetail {
   descriptionFr?: string | null;
   descriptionNl?: string | null;
   descriptionEn?: string | null;
-  services: Array<{ name: string; price?: number; price_unit?: string }>;
+  services: Array<{ name: string; price?: number; price_unit?: string; price_on_request?: boolean }>;
   images: string[];
   coverImage?: string | null;
   logoUrl?: string | null;
@@ -304,22 +304,30 @@ export default function PrestataireDetail() {
 
             const formatPrice = (price: number, unit?: string) => {
               const amount = price.toLocaleString("fr-BE", { minimumFractionDigits: 0 });
-              if (!unit || unit === "forfait") return `à partir de ${amount} €`;
+              if (!unit || unit === "forfait") return t("vendor.services.price_from", { amount: `${amount} €` });
               if (unit === "pers") return `${amount} € / pers.`;
               if (unit === "heure") return `${amount} € / h`;
               if (unit === "nuit") return `${amount} € / nuit`;
               if (unit === "table") return `${amount} € / table`;
-              return `à partir de ${amount} €`;
+              return t("vendor.services.price_from", { amount: `${amount} €` });
             };
 
-            const ServiceChip = ({ svc }: { svc: { name: string; price?: number; price_unit?: string } }) => (
+            const ServiceChip = ({
+              svc,
+            }: {
+              svc: { name: string; price?: number; price_unit?: string; price_on_request?: boolean };
+            }) => (
               <li className="flex items-center gap-2 px-3 py-1.5 bg-wine-deep/10 text-wine-deep text-xs border border-wine-deep/10">
                 <span className="uppercase tracking-[0.15em]">{svc.name}</span>
-                {svc.price != null && (
+                {svc.price != null ? (
                   <span className="text-wine-deep/70 font-semibold whitespace-nowrap">
                     {formatPrice(svc.price, svc.price_unit)}
                   </span>
-                )}
+                ) : svc.price_on_request ? (
+                  <span className="text-wine-deep/50 italic whitespace-nowrap">
+                    {t("vendor.services.price_on_request")}
+                  </span>
+                ) : null}
               </li>
             );
 

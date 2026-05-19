@@ -296,6 +296,8 @@
       "saving": "Saving…",
       "saved": "Services saved.",
       "price_placeholder": "Price (€)",
+      "price_from": "from {{amount}}",
+      "price_on_request": "Price on request",
       "show_price": "Show price",
       "hide_price": "Hide price",
       "price_public": "Public",

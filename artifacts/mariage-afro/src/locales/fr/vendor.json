@@ -296,6 +296,8 @@
       "saving": "Enregistrement…",
       "saved": "Services enregistrés.",
       "price_placeholder": "Prix (€)",
+      "price_from": "à partir de {{amount}}",
+      "price_on_request": "Prix sur demande",
       "show_price": "Afficher le prix",
       "hide_price": "Masquer le prix",
       "price_public": "Public",

@@ -296,6 +296,8 @@
       "saving": "Opslaan…",
       "saved": "Diensten opgeslagen.",
       "price_placeholder": "Prijs (€)",
+      "price_from": "vanaf {{amount}}",
+      "price_on_request": "Prijs op aanvraag",
       "show_price": "Prijs weergeven",
       "hide_price": "Prijs verbergen",
       "price_public": "Publiek",

@@ -146,14 +146,30 @@ async function tierByVendorId(vendorIds: number[]): Promise<Map<number, string>>
   return map;
 }
 
-/** Strip hidden price data from services before sending to any public endpoint. */
-function toPublicServices(raw: unknown): Array<{ name: string; price?: number; price_unit?: string }> {
+/** Strip hidden price data from services before sending to any public endpoint.
+ * When price_visible=true but price is null, emits price_on_request=true so the
+ * client can display a "Prix sur demande" label. */
+function toPublicServices(
+  raw: unknown,
+): Array<{ name: string; price?: number; price_unit?: string; price_on_request?: true }> {
   if (!Array.isArray(raw)) return [];
   return raw.map((s: unknown) => {
     if (typeof s === "string") return { name: s };
-    const item = s as { name: string; price?: number | null; price_unit?: string | null; price_visible?: boolean };
-    if (item.price_visible && item.price != null) {
-      return { name: item.name, price: item.price, ...(item.price_unit ? { price_unit: item.price_unit } : {}) };
+    const item = s as {
+      name: string;
+      price?: number | null;
+      price_unit?: string | null;
+      price_visible?: boolean;
+    };
+    if (item.price_visible) {
+      if (item.price != null) {
+        return {
+          name: item.name,
+          price: item.price,
+          ...(item.price_unit ? { price_unit: item.price_unit } : {}),
+        };
+      }
+      return { name: item.name, price_on_request: true as const };
     }
     return { name: item.name };
   });
