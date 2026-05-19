@@ -338,13 +338,13 @@ async function getMyVendor(accountId: number) {
   return vendor ?? null;
 }
 
-function normalizeServices(raw: unknown): Array<{ name: string; price: number | null; price_unit: string | null; price_visible: boolean }> {
+function normalizeServices(raw: unknown): Array<{ name: string; price: number | null; price_unit: string; price_visible: boolean }> {
   if (!Array.isArray(raw)) return [];
-  return raw.map((s: unknown) =>
-    typeof s === "string"
-      ? { name: s, price: null, price_unit: null, price_visible: false }
-      : (s as { name: string; price: number | null; price_unit: string | null; price_visible: boolean }),
-  );
+  return raw.map((s: unknown) => {
+    if (typeof s === "string") return { name: s, price: null, price_unit: "forfait", price_visible: false };
+    const o = s as { name: string; price?: number | null; price_unit?: string | null; price_visible?: boolean };
+    return { name: o.name, price: o.price ?? null, price_unit: o.price_unit ?? "forfait", price_visible: o.price_visible ?? false };
+  });
 }
 
 router.get("/vendor/profile", async (req, res) => {
@@ -1503,7 +1503,7 @@ export async function runServicesObjectMigration(): Promise<void> {
           THEN jsonb_build_object(
             'name', elem #>> '{}',
             'price', NULL,
-            'price_unit', NULL,
+            'price_unit', 'forfait',
             'price_visible', false
           )
           ELSE elem

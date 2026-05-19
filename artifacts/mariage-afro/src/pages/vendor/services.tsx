@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Plus, X, Check, Eye, EyeOff } from "lucide-react";
+import { Plus, X, Check } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import { CATEGORY_CONFIG } from "@/lib/vendorCategoryConfig";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ type PriceUnit = "forfait" | "pers" | "heure" | "nuit" | "table";
 interface ServiceItem {
   name: string;
   price: number | null;
-  price_unit: PriceUnit | null;
+  price_unit: PriceUnit;
   price_visible: boolean;
 }
 
@@ -38,7 +38,12 @@ export default function VendorServicesPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setServices(vendor?.services ?? []);
+    setServices(
+      (vendor?.services ?? []).map((s) => ({
+        ...s,
+        price_unit: (s.price_unit as PriceUnit) ?? "forfait",
+      })),
+    );
   }, [vendor]);
 
   const save = useMutation({
@@ -61,7 +66,7 @@ export default function VendorServicesPage() {
     } else {
       setServices((prev) => [
         ...prev,
-        { name, price: null, price_unit: null, price_visible: false },
+        { name, price: null, price_unit: "forfait", price_visible: false },
       ]);
     }
   };
@@ -71,13 +76,19 @@ export default function VendorServicesPage() {
     if (!trimmed || selectedNames.has(trimmed)) return;
     setServices((prev) => [
       ...prev,
-      { name: trimmed, price: null, price_unit: null, price_visible: false },
+      { name: trimmed, price: null, price_unit: "forfait", price_visible: false },
     ]);
     setDraft("");
   };
 
   const removeService = (name: string) => {
     setServices((prev) => prev.filter((s) => s.name !== name));
+  };
+
+  const updateServiceName = (oldName: string, newName: string) => {
+    setServices((prev) =>
+      prev.map((s) => (s.name === oldName ? { ...s, name: newName } : s)),
+    );
   };
 
   const updateServicePrice = (name: string, value: string) => {
@@ -91,17 +102,21 @@ export default function VendorServicesPage() {
     );
   };
 
-  const updateServiceUnit = (name: string, unit: PriceUnit | "") => {
-    setServices((prev) =>
-      prev.map((s) =>
-        s.name === name ? { ...s, price_unit: unit || null } : s,
-      ),
-    );
+  const updateServiceUnit = (name: string, unit: PriceUnit) => {
+    setServices((prev) => prev.map((s) => (s.name === name ? { ...s, price_unit: unit } : s)));
   };
 
-  const togglePriceVisible = (name: string) => {
+  /** Toggle whether this service shows a price publicly. When enabled, price_visible=true
+   *  and the price/unit fields become visible. When disabled, price is cleared. */
+  const toggleShowPrice = (name: string) => {
     setServices((prev) =>
-      prev.map((s) => (s.name === name ? { ...s, price_visible: !s.price_visible } : s)),
+      prev.map((s) => {
+        if (s.name !== name) return s;
+        if (s.price_visible) {
+          return { ...s, price: null, price_visible: false };
+        }
+        return { ...s, price_visible: true };
+      }),
     );
   };
 
@@ -147,20 +162,26 @@ export default function VendorServicesPage() {
           </div>
         )}
 
-        {/* Active services list with price editing */}
+        {/* Active services list with editable names and toggle-driven price fields */}
         {services.length > 0 && (
           <div className="space-y-3">
             <p className="text-sm font-semibold text-neutral-700 uppercase tracking-wider">
               {t("vendor.services.active_label")}
             </p>
-            <ul className="space-y-2" data-testid="list-services">
+            <ul className="space-y-3" data-testid="list-services">
               {services.map((svc) => (
                 <li
                   key={svc.name}
-                  className="bg-cream/40 border border-neutral-200 px-3 py-2.5 space-y-2"
+                  className="bg-cream/40 border border-neutral-200 px-3 py-3 space-y-2"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm font-medium flex-1 truncate">{svc.name}</span>
+                  {/* Row 1: editable name + remove */}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={svc.name}
+                      onChange={(e) => updateServiceName(svc.name, e.target.value)}
+                      className="text-sm h-8 flex-1"
+                      data-testid={`input-name-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                    />
                     <button
                       type="button"
                       onClick={() => removeService(svc.name)}
@@ -171,65 +192,51 @@ export default function VendorServicesPage() {
                       <X className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <div className="relative w-[120px]">
-                      <Input
-                        type="number"
-                        min="0"
-                        step="1"
-                        value={svc.price ?? ""}
-                        onChange={(e) => updateServicePrice(svc.name, e.target.value)}
-                        placeholder={t("vendor.services.price_placeholder")}
-                        className="pr-8 text-sm h-8"
-                        data-testid={`input-price-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                      />
-                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-neutral-400 pointer-events-none">
-                        €
-                      </span>
-                    </div>
-                    <select
-                      value={svc.price_unit ?? ""}
-                      onChange={(e) => updateServiceUnit(svc.name, e.target.value as PriceUnit | "")}
-                      disabled={svc.price == null}
-                      className="h-8 text-xs border border-neutral-300 bg-white px-2 py-0 text-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed"
-                      data-testid={`select-unit-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                    >
-                      <option value="">{t("vendor.services.unit_none")}</option>
-                      {PRICE_UNITS.map((u) => (
-                        <option key={u} value={u}>
-                          {t(`vendor.services.unit_${u}`)}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      onClick={() => togglePriceVisible(svc.name)}
-                      disabled={svc.price == null}
-                      title={
-                        svc.price_visible
-                          ? t("vendor.services.hide_price")
-                          : t("vendor.services.show_price")
-                      }
-                      className={[
-                        "inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] border transition-colors h-8",
-                        svc.price_visible
-                          ? "bg-wine-deep/10 text-wine-deep border-wine-deep/30"
-                          : "bg-white text-neutral-500 border-neutral-300",
-                        svc.price == null ? "opacity-40 cursor-not-allowed" : "hover:border-wine-deep/60",
-                      ].join(" ")}
-                      aria-pressed={svc.price_visible}
+
+                  {/* Row 2: show-price toggle */}
+                  <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={svc.price_visible}
+                      onChange={() => toggleShowPrice(svc.name)}
+                      className="w-3.5 h-3.5 accent-wine-deep"
                       data-testid={`toggle-price-visible-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                    >
-                      {svc.price_visible ? (
-                        <Eye className="w-3.5 h-3.5" aria-hidden="true" />
-                      ) : (
-                        <EyeOff className="w-3.5 h-3.5" aria-hidden="true" />
-                      )}
-                      {svc.price_visible
-                        ? t("vendor.services.price_public")
-                        : t("vendor.services.price_hidden")}
-                    </button>
-                  </div>
+                    />
+                    <span className="text-xs text-neutral-600">{t("vendor.services.show_price")}</span>
+                  </label>
+
+                  {/* Row 3: price + unit — only shown when price_visible is ON */}
+                  {svc.price_visible && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="relative w-[120px]">
+                        <Input
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={svc.price ?? ""}
+                          onChange={(e) => updateServicePrice(svc.name, e.target.value)}
+                          placeholder={t("vendor.services.price_placeholder")}
+                          className="pr-8 text-sm h-8"
+                          data-testid={`input-price-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                        />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-neutral-400 pointer-events-none">
+                          €
+                        </span>
+                      </div>
+                      <select
+                        value={svc.price_unit}
+                        onChange={(e) => updateServiceUnit(svc.name, e.target.value as PriceUnit)}
+                        className="h-8 text-xs border border-neutral-300 bg-white px-2 py-0 text-neutral-700"
+                        data-testid={`select-unit-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                      >
+                        {PRICE_UNITS.map((u) => (
+                          <option key={u} value={u}>
+                            {t(`vendor.services.unit_${u}`)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

@@ -304,12 +304,12 @@ export default function PrestataireDetail() {
 
             const formatPrice = (price: number, unit?: string) => {
               const amount = price.toLocaleString("fr-BE", { minimumFractionDigits: 0 });
-              if (!unit || unit === "forfait") return `${amount} €`;
+              if (!unit || unit === "forfait") return `à partir de ${amount} €`;
               if (unit === "pers") return `${amount} € / pers.`;
               if (unit === "heure") return `${amount} € / h`;
               if (unit === "nuit") return `${amount} € / nuit`;
               if (unit === "table") return `${amount} € / table`;
-              return `${amount} €`;
+              return `à partir de ${amount} €`;
             };
 
             const ServiceChip = ({ svc }: { svc: { name: string; price?: number; price_unit?: string } }) => (
