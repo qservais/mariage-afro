@@ -161,12 +161,18 @@ export default function PrestataireDetail() {
 
   const closeLightbox = useCallback(() => setLightboxIdx(null), []);
   const prevLightbox = useCallback(() => {
-    if (!vendor?.images) return;
-    setLightboxIdx((i) => (i === null ? null : (i - 1 + vendor.images.length) % vendor.images.length));
+    setLightboxIdx((i) => {
+      if (i === null) return null;
+      const len = (vendor?.images && vendor.images.length > 1 ? vendor.images.slice(0, 6) : []).length;
+      return len ? (i - 1 + len) % len : null;
+    });
   }, [vendor?.images]);
   const nextLightbox = useCallback(() => {
-    if (!vendor?.images) return;
-    setLightboxIdx((i) => (i === null ? null : (i + 1) % vendor.images.length));
+    setLightboxIdx((i) => {
+      if (i === null) return null;
+      const len = (vendor?.images && vendor.images.length > 1 ? vendor.images.slice(0, 6) : []).length;
+      return len ? (i + 1) % len : null;
+    });
   }, [vendor?.images]);
 
   useEffect(() => {
