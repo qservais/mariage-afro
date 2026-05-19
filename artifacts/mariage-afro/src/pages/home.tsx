@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Quote, ChevronDown, ArrowRight, Heart, Briefcase, Building2, ChefHat, Wine, GlassWater, Users, UserCheck, Sparkles as SparklesIcon } from "lucide-react";
+import { Quote, ChevronDown, ArrowRight, Heart, Briefcase, Building2, ChefHat, Wine, GlassWater, Users, UserCheck, Sparkles as SparklesIcon, Camera, Music2 } from "lucide-react";
 import { Picture } from "@/components/Picture";
 
 import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
@@ -163,6 +163,8 @@ export default function Home() {
     { icon: <Users className="w-7 h-7" />, label: t("home.partner5") },
     { icon: <UserCheck className="w-7 h-7" />, label: t("home.partner6") },
     { icon: <SparklesIcon className="w-7 h-7" />, label: t("home.partner7") },
+    { icon: <Camera className="w-7 h-7" />, label: t("home.partner8") },
+    { icon: <Music2 className="w-7 h-7" />, label: t("home.partner9") },
   ];
 
   const platformPoints = [
