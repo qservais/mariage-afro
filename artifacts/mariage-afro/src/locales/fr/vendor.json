@@ -286,6 +286,7 @@
       "title": "Mes services",
       "subtitle": "Listez les prestations que vous proposez. Sélectionnez dans les suggestions ou ajoutez les vôtres.",
       "suggested_label": "Services suggérés pour votre catégorie",
+      "active_label": "Services sélectionnés",
       "custom_label": "Ajouter un service personnalisé",
       "custom_empty": "Aucun service personnalisé ajouté.",
       "add_placeholder": "Ex : Reportage 8 heures, Album photo…",
@@ -293,7 +294,12 @@
       "remove": "Supprimer",
       "save": "Enregistrer",
       "saving": "Enregistrement…",
-      "saved": "Services enregistrés."
+      "saved": "Services enregistrés.",
+      "price_placeholder": "Prix (€)",
+      "show_price": "Afficher le prix",
+      "hide_price": "Masquer le prix",
+      "price_public": "Public",
+      "price_hidden": "Privé"
     },
     "settings": {
       "title": "Paramètres",

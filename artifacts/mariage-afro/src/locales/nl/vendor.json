@@ -286,6 +286,7 @@
       "title": "Mijn diensten",
       "subtitle": "Som de diensten op die u aanbiedt. Kies uit de suggesties of voeg uw eigen diensten toe.",
       "suggested_label": "Voorgestelde diensten voor uw categorie",
+      "active_label": "Geselecteerde diensten",
       "custom_label": "Een aangepaste dienst toevoegen",
       "custom_empty": "Geen aangepaste diensten toegevoegd.",
       "add_placeholder": "Bijv.: 8-uur reportage, Fotoalbum…",
@@ -293,7 +294,12 @@
       "remove": "Verwijderen",
       "save": "Opslaan",
       "saving": "Opslaan…",
-      "saved": "Diensten opgeslagen."
+      "saved": "Diensten opgeslagen.",
+      "price_placeholder": "Prijs (€)",
+      "show_price": "Prijs weergeven",
+      "hide_price": "Prijs verbergen",
+      "price_public": "Publiek",
+      "price_hidden": "Privé"
     },
     "settings": {
       "title": "Instellingen",

@@ -338,10 +338,20 @@ async function getMyVendor(accountId: number) {
   return vendor ?? null;
 }
 
+function normalizeServices(raw: unknown): Array<{ name: string; price: number | null; currency: string | null; price_visible: boolean }> {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((s: unknown) =>
+    typeof s === "string"
+      ? { name: s, price: null, currency: "EUR", price_visible: false }
+      : (s as { name: string; price: number | null; currency: string | null; price_visible: boolean }),
+  );
+}
+
 router.get("/vendor/profile", async (req, res) => {
   const r = req as unknown as AuthedVendorRequest;
   const vendor = await getMyVendor(r.vendorAccountId);
-  res.json(vendor);
+  if (!vendor) { res.json(null); return; }
+  res.json({ ...vendor, services: normalizeServices(vendor.services) });
 });
 
 const profileSchema = z.object({
@@ -356,7 +366,12 @@ const profileSchema = z.object({
   videoUrl: z.string().max(2000).optional().nullable(),
   indicativePrice: z.string().max(200).optional().nullable(),
   coverPhotoUrl: z.string().max(2000).optional().nullable(),
-  services: z.array(z.string().max(120)).optional(),
+  services: z.array(z.object({
+    name: z.string().min(1).max(120),
+    price: z.number().min(0).max(9999999).optional().nullable(),
+    currency: z.string().max(10).optional().nullable(),
+    price_visible: z.boolean().default(false),
+  })).optional(),
   website: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
   email: z.string().email().optional(),

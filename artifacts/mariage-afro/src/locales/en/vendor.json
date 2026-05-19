@@ -286,6 +286,7 @@
       "title": "My services",
       "subtitle": "List the services you offer. Pick from the suggestions or add your own.",
       "suggested_label": "Suggested services for your category",
+      "active_label": "Selected services",
       "custom_label": "Add a custom service",
       "custom_empty": "No custom services added.",
       "add_placeholder": "E.g. 8-hour coverage, Photo album…",
@@ -293,7 +294,12 @@
       "remove": "Remove",
       "save": "Save",
       "saving": "Saving…",
-      "saved": "Services saved."
+      "saved": "Services saved.",
+      "price_placeholder": "Price (€)",
+      "show_price": "Show price",
+      "hide_price": "Hide price",
+      "price_public": "Public",
+      "price_hidden": "Private"
     },
     "settings": {
       "title": "Settings",

@@ -297,8 +297,17 @@ router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
     .where(and(eq(vendorReviewsTable.vendorId, id), eq(vendorReviewsTable.status, "published")))
     .orderBy(desc(vendorReviewsTable.createdAt))
     .limit(10);
+  const publicServices = (Array.isArray(vendor.services) ? vendor.services : []).map((s: unknown) => {
+    if (typeof s === "string") return { name: s };
+    const item = s as { name: string; price?: number | null; currency?: string | null; price_visible?: boolean };
+    if (item.price_visible && item.price != null) {
+      return { name: item.name, price: item.price, currency: item.currency ?? "EUR" };
+    }
+    return { name: item.name };
+  });
   res.json({
     ...vendor,
+    services: publicServices,
     reviewCount: aggregates.get(id)?.count ?? 0,
     averageRating: aggregates.get(id)?.average ?? 0,
     reviews: recent,

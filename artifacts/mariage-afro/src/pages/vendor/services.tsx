@@ -1,16 +1,23 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Plus, X, Check } from "lucide-react";
+import { Plus, X, Check, Eye, EyeOff } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import { CATEGORY_CONFIG } from "@/lib/vendorCategoryConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+interface ServiceItem {
+  name: string;
+  price: number | null;
+  currency: string | null;
+  price_visible: boolean;
+}
+
 interface VendorProfile {
   id: number;
   category: string;
-  services: string[];
+  services: ServiceItem[];
 }
 
 export default function VendorServicesPage() {
@@ -22,7 +29,7 @@ export default function VendorServicesPage() {
     queryFn: () => vendorApi.get<VendorProfile>("/api/vendor/profile"),
   });
 
-  const [services, setServices] = useState<string[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [draft, setDraft] = useState("");
   const [saved, setSaved] = useState(false);
 
@@ -31,7 +38,7 @@ export default function VendorServicesPage() {
   }, [vendor]);
 
   const save = useMutation({
-    mutationFn: (b: { services: string[] }) => vendorApi.patch("/api/vendor/profile", b),
+    mutationFn: (b: { services: ServiceItem[] }) => vendorApi.patch("/api/vendor/profile", b),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["vendor", "profile"] });
       setSaved(true);
@@ -42,24 +49,49 @@ export default function VendorServicesPage() {
   const suggestedServices: string[] =
     vendor?.category ? (CATEGORY_CONFIG[vendor.category]?.suggestedServices ?? []) : [];
 
-  const toggleSuggested = (service: string) => {
-    setServices((prev) =>
-      prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service],
-    );
+  const selectedNames = new Set(services.map((s) => s.name));
+
+  const toggleSuggested = (name: string) => {
+    if (selectedNames.has(name)) {
+      setServices((prev) => prev.filter((s) => s.name !== name));
+    } else {
+      setServices((prev) => [
+        ...prev,
+        { name, price: null, currency: "EUR", price_visible: false },
+      ]);
+    }
   };
 
   const addCustomService = () => {
     const trimmed = draft.trim();
-    if (!trimmed || services.includes(trimmed)) return;
-    setServices([...services, trimmed]);
+    if (!trimmed || selectedNames.has(trimmed)) return;
+    setServices((prev) => [
+      ...prev,
+      { name: trimmed, price: null, currency: "EUR", price_visible: false },
+    ]);
     setDraft("");
   };
 
-  const removeService = (s: string) => {
-    setServices(services.filter((x) => x !== s));
+  const removeService = (name: string) => {
+    setServices((prev) => prev.filter((s) => s.name !== name));
   };
 
-  const customServices = services.filter((s) => !suggestedServices.includes(s));
+  const updateServicePrice = (name: string, price: string) => {
+    const parsed = price === "" ? null : parseFloat(price);
+    setServices((prev) =>
+      prev.map((s) =>
+        s.name === name ? { ...s, price: parsed !== null && !isNaN(parsed) ? parsed : null } : s,
+      ),
+    );
+  };
+
+  const togglePriceVisible = (name: string) => {
+    setServices((prev) =>
+      prev.map((s) => (s.name === name ? { ...s, price_visible: !s.price_visible } : s)),
+    );
+  };
+
+  const customServices = services.filter((s) => !suggestedServices.includes(s.name));
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -76,15 +108,15 @@ export default function VendorServicesPage() {
               {t("vendor.services.suggested_label")}
             </p>
             <div className="flex flex-wrap gap-2" data-testid="suggested-services">
-              {suggestedServices.map((s) => {
-                const active = services.includes(s);
+              {suggestedServices.map((name) => {
+                const active = selectedNames.has(name);
                 return (
                   <button
-                    key={s}
+                    key={name}
                     type="button"
-                    onClick={() => toggleSuggested(s)}
+                    onClick={() => toggleSuggested(name)}
                     aria-pressed={active}
-                    data-testid={`suggested-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                    data-testid={`suggested-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                     className={[
                       "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border transition-colors",
                       active
@@ -93,7 +125,7 @@ export default function VendorServicesPage() {
                     ].join(" ")}
                   >
                     {active && <Check className="w-3 h-3" aria-hidden="true" />}
-                    {s}
+                    {name}
                   </button>
                 );
               })}
@@ -101,11 +133,90 @@ export default function VendorServicesPage() {
           </div>
         )}
 
+        {/* Active services list with price editing */}
+        {services.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-sm font-semibold text-neutral-700 uppercase tracking-wider">
+              {t("vendor.services.active_label")}
+            </p>
+            <ul className="space-y-2" data-testid="list-services">
+              {services.map((svc) => (
+                <li
+                  key={svc.name}
+                  className="bg-cream/40 border border-neutral-200 px-3 py-2.5 space-y-2"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium flex-1 truncate">{svc.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeService(svc.name)}
+                      className="text-neutral-400 hover:text-red-600 shrink-0"
+                      aria-label={t("vendor.services.remove")}
+                      data-testid={`button-service-remove-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                    >
+                      <X className="w-4 h-4" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1 max-w-[160px]">
+                      <Input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={svc.price ?? ""}
+                        onChange={(e) => updateServicePrice(svc.name, e.target.value)}
+                        placeholder={t("vendor.services.price_placeholder")}
+                        className="pr-10 text-sm h-8"
+                        data-testid={`input-price-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 pointer-events-none">
+                        €
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => togglePriceVisible(svc.name)}
+                      disabled={svc.price == null}
+                      title={
+                        svc.price_visible
+                          ? t("vendor.services.hide_price")
+                          : t("vendor.services.show_price")
+                      }
+                      className={[
+                        "inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] border transition-colors",
+                        svc.price_visible
+                          ? "bg-wine-deep/10 text-wine-deep border-wine-deep/30"
+                          : "bg-white text-neutral-500 border-neutral-300",
+                        svc.price == null ? "opacity-40 cursor-not-allowed" : "hover:border-wine-deep/60",
+                      ].join(" ")}
+                      aria-pressed={svc.price_visible}
+                      data-testid={`toggle-price-visible-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                    >
+                      {svc.price_visible ? (
+                        <Eye className="w-3.5 h-3.5" aria-hidden="true" />
+                      ) : (
+                        <EyeOff className="w-3.5 h-3.5" aria-hidden="true" />
+                      )}
+                      {svc.price_visible
+                        ? t("vendor.services.price_public")
+                        : t("vendor.services.price_hidden")}
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {services.length === 0 && (
+          <p className="text-sm text-neutral-400 italic">{t("vendor.services.empty")}</p>
+        )}
+
+        {/* Add custom service */}
         <div className="space-y-3">
           <p className="text-sm font-semibold text-neutral-700 uppercase tracking-wider">
             {t("vendor.services.custom_label")}
           </p>
-
           <div className="flex gap-2">
             <Input
               value={draft}
@@ -128,29 +239,6 @@ export default function VendorServicesPage() {
               <Plus className="w-4 h-4" />
             </Button>
           </div>
-
-          {customServices.length > 0 && (
-            <ul className="space-y-2" data-testid="list-services">
-              {customServices.map((s) => (
-                <li
-                  key={s}
-                  className="flex items-center justify-between bg-cream/40 px-3 py-2 border border-neutral-200"
-                >
-                  <span className="text-sm">{s}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeService(s)}
-                    className="text-neutral-400 hover:text-red-600"
-                    aria-label={t("vendor.services.remove", { defaultValue: "Supprimer" })}
-                    data-testid={`button-service-remove-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                  >
-                    <X className="w-4 h-4" aria-hidden="true" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-
           {customServices.length === 0 && (
             <p className="text-sm text-neutral-400 italic">{t("vendor.services.custom_empty")}</p>
           )}

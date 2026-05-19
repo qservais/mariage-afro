@@ -21,7 +21,7 @@ interface VendorDetail {
   descriptionFr?: string | null;
   descriptionNl?: string | null;
   descriptionEn?: string | null;
-  services: string[];
+  services: Array<{ name: string; price?: number; currency?: string }>;
   images: string[];
   coverImage?: string | null;
   logoUrl?: string | null;
@@ -299,8 +299,19 @@ export default function PrestataireDetail() {
             const catConfig = getCategoryConfig(vendor.category);
             const suggestedSet = new Set(catConfig?.suggestedServices ?? []);
 
-            const suggestedServices = vendor.services.filter((s) => suggestedSet.has(s));
-            const otherServices = vendor.services.filter((s) => !suggestedSet.has(s));
+            const suggestedServices = vendor.services.filter((s) => suggestedSet.has(s.name));
+            const otherServices = vendor.services.filter((s) => !suggestedSet.has(s.name));
+
+            const ServiceChip = ({ svc }: { svc: { name: string; price?: number; currency?: string } }) => (
+              <li className="flex items-center gap-2 px-3 py-1.5 bg-wine-deep/10 text-wine-deep text-xs border border-wine-deep/10">
+                <span className="uppercase tracking-[0.15em]">{svc.name}</span>
+                {svc.price != null && (
+                  <span className="text-wine-deep/70 font-semibold whitespace-nowrap">
+                    {svc.price.toLocaleString("fr-BE", { minimumFractionDigits: 0 })} {svc.currency ?? "€"}
+                  </span>
+                )}
+              </li>
+            );
 
             if (catConfig && suggestedServices.length > 0) {
               return (
@@ -311,12 +322,7 @@ export default function PrestataireDetail() {
                     </h3>
                     <ul className="flex flex-wrap gap-2">
                       {suggestedServices.map((s) => (
-                        <li
-                          key={s}
-                          className="px-3 py-1.5 bg-wine-deep/10 text-wine-deep text-xs uppercase tracking-[0.15em] border border-wine-deep/10"
-                        >
-                          {s}
-                        </li>
+                        <ServiceChip key={s.name} svc={s} />
                       ))}
                     </ul>
                   </div>
@@ -327,12 +333,7 @@ export default function PrestataireDetail() {
                       </h3>
                       <ul className="flex flex-wrap gap-2">
                         {otherServices.map((s) => (
-                          <li
-                            key={s}
-                            className="px-3 py-1.5 bg-wine-deep/5 text-wine-deep text-xs uppercase tracking-[0.15em]"
-                          >
-                            {s}
-                          </li>
+                          <ServiceChip key={s.name} svc={s} />
                         ))}
                       </ul>
                     </div>
@@ -348,12 +349,7 @@ export default function PrestataireDetail() {
                 </h3>
                 <ul className="flex flex-wrap gap-2">
                   {vendor.services.map((s) => (
-                    <li
-                      key={s}
-                      className="px-3 py-1.5 bg-wine-deep/5 text-wine-deep text-xs uppercase tracking-[0.15em]"
-                    >
-                      {s}
-                    </li>
+                    <ServiceChip key={s.name} svc={s} />
                   ))}
                 </ul>
               </div>
