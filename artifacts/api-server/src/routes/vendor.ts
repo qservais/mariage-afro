@@ -1486,4 +1486,42 @@ export async function runVendorFeaturedBackfill(): Promise<void> {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Services string→object migration
+// Converts any marketplace_vendors rows whose services column still contains
+// plain JSON strings (legacy format) into the structured object format:
+//   { name, price: null, price_unit: null, price_visible: false }
+// Safe to call multiple times (idempotent — skips rows already in object form).
+// ---------------------------------------------------------------------------
+export async function runServicesObjectMigration(): Promise<void> {
+  const result = await db.execute(sql`
+    UPDATE marketplace_vendors
+    SET services = (
+      SELECT jsonb_agg(
+        CASE
+          WHEN jsonb_typeof(elem) = 'string'
+          THEN jsonb_build_object(
+            'name', elem #>> '{}',
+            'price', NULL,
+            'price_unit', NULL,
+            'price_visible', false
+          )
+          ELSE elem
+        END
+      )
+      FROM jsonb_array_elements(services) AS elem
+    )
+    WHERE services IS NOT NULL
+      AND jsonb_typeof(services) = 'array'
+      AND EXISTS (
+        SELECT 1 FROM jsonb_array_elements(services) AS elem
+        WHERE jsonb_typeof(elem) = 'string'
+      )
+  `);
+  logger.info(
+    { migrated: (result as { rowCount?: number }).rowCount ?? 0 },
+    "Services object migration complete"
+  );
+}
+
 export default router;

@@ -18,7 +18,7 @@ interface Vendor {
   city: string;
   tagline: string;
   description: string;
-  services: string[];
+  services: Array<{ name: string; price?: number; price_unit?: string }>;
   images: string[];
   coverImage: string | null;
   rating: number;
@@ -253,9 +253,9 @@ export default function Comparateur() {
                 <Cell key={v.id}>
                   <ul className="space-y-1">
                     {(v.services || []).slice(0, 6).map((s) => (
-                      <li key={s} className="text-xs text-wine-deep/80 flex items-start gap-2">
+                      <li key={s.name} className="text-xs text-wine-deep/80 flex items-start gap-2">
                         <span className="block w-2 h-px bg-gold flex-shrink-0 mt-2" />
-                        <span>{s}</span>
+                        <span>{s.name}</span>
                       </li>
                     ))}
                   </ul>

@@ -1,6 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { runVendorFollowupCron, runVendorFeaturedBackfill } from "./routes/vendor";
+import { runVendorFollowupCron, runVendorFeaturedBackfill, runServicesObjectMigration } from "./routes/vendor";
 
 const rawPort = process.env["PORT"];
 
@@ -27,6 +27,11 @@ app.listen(port, (err) => {
   // One-time backfill: ensure all existing vendors have tier=featured + status=active.
   runVendorFeaturedBackfill().catch((err) =>
     logger.warn({ err }, "Featured subscription backfill failed")
+  );
+
+  // One-time migration: convert legacy string services to object format.
+  runServicesObjectMigration().catch((err) =>
+    logger.warn({ err }, "Services object migration failed")
   );
 
   // LOT 8 — daily vendor follow-up cron (with internal throttle).

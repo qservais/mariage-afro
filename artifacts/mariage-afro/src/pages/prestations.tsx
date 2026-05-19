@@ -178,7 +178,7 @@ interface DisplayVendor {
   city: string;
   category: string;
   tagline: string;
-  services: string[];
+  services: Array<{ name: string; price?: number; price_unit?: string }>;
   rating: number;
   image: string;
   gallery: string[];
@@ -767,7 +767,9 @@ export default function Prestations() {
         city: v.city as string,
         category: v.category as string,
         tagline: v.tagline as string,
-        services: v.services as string[],
+        services: ((v.services as Array<unknown>) ?? []).map((s) =>
+          typeof s === "string" ? { name: s } : (s as { name: string; price?: number; price_unit?: string })
+        ),
         rating: v.rating as number,
         image: (v.coverImage as string | null) || ((v.images as string[]) ?? [])[0] || img1,
         gallery: ((v.images as string[]) ?? []).slice(0, 3),
@@ -788,7 +790,11 @@ export default function Prestations() {
   const usingApi = apiVendors.length > 0;
   const displayVendors: DisplayVendor[] = useMemo(() => {
     if (usingApi) return apiVendors;
-    return VENDORS.map((v) => ({ ...v, category: categories[v.categoryIndex] ?? "" }));
+    return VENDORS.map((v) => ({
+      ...v,
+      category: categories[v.categoryIndex] ?? "",
+      services: v.services.map((s) => ({ name: s })),
+    }));
   }, [apiVendors, categories, usingApi]);
 
   const uniqueCategories = useMemo(
@@ -1134,11 +1140,11 @@ export default function Prestations() {
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
                         {vendor.services.map((s) => (
                           <li
-                            key={s}
+                            key={s.name}
                             className="flex items-start gap-2 text-sm text-wine-deep/85 font-light"
                           >
                             <span className="block w-3 h-px bg-gold flex-shrink-0 mt-2.5" />
-                            <span>{s}</span>
+                            <span>{s.name}</span>
                           </li>
                         ))}
                       </ul>
