@@ -182,31 +182,85 @@ function serviceNames(raw: unknown): string[] {
 }
 
 router.get("/marketplace/vendors", async (req: Request, res: Response) => {
+  const PAGE_SIZE_DEFAULT = 20;
+  const PAGE_SIZE_MAX = 50;
+  const page = Math.max(1, parseInt(String(req.query.page ?? "1"), 10) || 1);
+  const limit = Math.min(PAGE_SIZE_MAX, Math.max(1, parseInt(String(req.query.limit ?? String(PAGE_SIZE_DEFAULT)), 10) || PAGE_SIZE_DEFAULT));
+  const offset = (page - 1) * limit;
+
   const conds = buildVendorFilters(req);
-  const vendors = await db
-    .select()
-    .from(marketplaceVendorsTable)
-    .where(and(...conds))
-    .orderBy(asc(marketplaceVendorsTable.name));
-  const [aggregates, tiers] = await Promise.all([
-    aggregateForVendors(vendors.map((v) => v.id)),
-    tierByVendorId(vendors.map((v) => v.id)),
+
+  // Minimal columns for listing — heavy detail fields stay on the detail endpoint
+  const listFields = {
+    id: marketplaceVendorsTable.id,
+    slug: marketplaceVendorsTable.slug,
+    name: marketplaceVendorsTable.name,
+    category: marketplaceVendorsTable.category,
+    city: marketplaceVendorsTable.city,
+    tagline: marketplaceVendorsTable.tagline,
+    services: marketplaceVendorsTable.services,
+    images: marketplaceVendorsTable.images,
+    coverImage: marketplaceVendorsTable.coverImage,
+    verified: marketplaceVendorsTable.verified,
+    rating: marketplaceVendorsTable.rating,
+    latitude: marketplaceVendorsTable.latitude,
+    longitude: marketplaceVendorsTable.longitude,
+    region: marketplaceVendorsTable.region,
+    priceTier: marketplaceVendorsTable.priceTier,
+    culturalStyles: marketplaceVendorsTable.culturalStyles,
+    spokenLanguages: marketplaceVendorsTable.spokenLanguages,
+  };
+
+  // Run total count and first-pass for sorting in parallel
+  const [countResult, allForSort] = await Promise.all([
+    db.select({ count: sql<number>`count(*)::int` }).from(marketplaceVendorsTable).where(and(...conds)),
+    db.select({ id: marketplaceVendorsTable.id, name: marketplaceVendorsTable.name })
+      .from(marketplaceVendorsTable)
+      .where(and(...conds)),
   ]);
-  const sorted = [...vendors].sort((a, b) => {
-    const wa = tierWeight(tiers.get(a.id));
-    const wb = tierWeight(tiers.get(b.id));
-    if (wa !== wb) return wb - wa;
-    return a.name.localeCompare(b.name);
-  });
-  res.json(
-    sorted.map((v) => ({
+  const total = countResult[0]?.count ?? 0;
+
+  // Fetch tiers for all matching IDs to sort featured/premium first, then paginate
+  const allIds = allForSort.map((v) => v.id);
+  const tiers = await tierByVendorId(allIds);
+  const sortedIds = [...allForSort]
+    .sort((a, b) => {
+      const wa = tierWeight(tiers.get(a.id));
+      const wb = tierWeight(tiers.get(b.id));
+      if (wa !== wb) return wb - wa;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(offset, offset + limit)
+    .map((v) => v.id);
+
+  if (sortedIds.length === 0) {
+    res.json({ vendors: [], total, page, limit, totalPages: Math.ceil(total / limit) });
+    return;
+  }
+
+  // Fetch only the current-page vendors (minimal columns) + their aggregates in parallel
+  const [pageVendors, aggregates] = await Promise.all([
+    db.select(listFields).from(marketplaceVendorsTable).where(inArray(marketplaceVendorsTable.id, sortedIds)),
+    aggregateForVendors(sortedIds),
+  ]);
+
+  // Re-apply sort order (inArray does not guarantee order)
+  const idOrder = new Map(sortedIds.map((id, i) => [id, i]));
+  const sorted = [...pageVendors].sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
+
+  res.json({
+    vendors: sorted.map((v) => ({
       ...v,
       services: toPublicServices(v.services),
       tier: tiers.get(v.id) ?? "basic",
       reviewCount: aggregates.get(v.id)?.count ?? 0,
       averageRating: aggregates.get(v.id)?.average ?? 0,
     })),
-  );
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  });
 });
 
 const VIEW_SOURCES = ["detail", "listing", "comparator"] as const;

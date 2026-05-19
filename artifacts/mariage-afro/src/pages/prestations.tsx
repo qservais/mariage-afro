@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -641,40 +641,91 @@ export default function Prestations() {
   const filters = useMemo(() => readFiltersFromSearch(searchParams), [searchParams]);
   const [view, setView] = useState<"list" | "map">("list");
 
-  const { data: apiVendors = [], isLoading: apiLoading } = useQuery<DisplayVendor[]>({
-    queryKey: ["marketplace-vendors", apiQueryString],
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page to 1 when filters change
+  const prevQueryString = useRef(apiQueryString);
+  useEffect(() => {
+    if (prevQueryString.current !== apiQueryString) {
+      prevQueryString.current = apiQueryString;
+      setCurrentPage(1);
+      setAccumulatedVendors([]);
+    }
+  }, [apiQueryString]);
+
+  const [accumulatedVendors, setAccumulatedVendors] = useState<DisplayVendor[]>([]);
+
+  function mapVendorRow(v: Record<string, unknown>): DisplayVendor {
+    return {
+      id: v.id as number,
+      slug: (v.slug as string | null | undefined) ?? null,
+      name: v.name as string,
+      city: v.city as string,
+      category: v.category as string,
+      tagline: v.tagline as string,
+      services: ((v.services as Array<unknown>) ?? []).map((s) =>
+        typeof s === "string" ? { name: s } : (s as { name: string; price?: number; price_unit?: string })
+      ),
+      rating: v.rating as number,
+      image: (v.coverImage as string | null) || ((v.images as string[]) ?? [])[0] || fallbackImg,
+      gallery: ((v.images as string[]) ?? []).slice(0, 3),
+      verified: v.verified as boolean,
+      averageRating: typeof v.averageRating === "number" ? v.averageRating : 0,
+      reviewCount: typeof v.reviewCount === "number" ? v.reviewCount : 0,
+      latitude: (v.latitude as string | null) ?? null,
+      longitude: (v.longitude as string | null) ?? null,
+      region: (v.region as string | null) ?? null,
+      priceTier: (v.priceTier as number | null) ?? null,
+      culturalStyles: (v.culturalStyles as string[] | undefined) ?? [],
+      spokenLanguages: (v.spokenLanguages as string[] | undefined) ?? [],
+      tier: (v.tier as string | null | undefined) ?? null,
+    };
+  }
+
+  const { data: apiPage, isLoading: apiLoading } = useQuery<{
+    vendors: DisplayVendor[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>({
+    queryKey: ["marketplace-vendors", apiQueryString, currentPage],
     queryFn: async () => {
-      const res = await fetch(`/api/marketplace/vendors${apiQueryString ? `?${apiQueryString}` : ""}`);
-      if (!res.ok) return [];
-      const rows = await res.json();
-      return rows.map((v: Record<string, unknown>) => ({
-        id: v.id as number,
-        slug: (v.slug as string | null | undefined) ?? null,
-        name: v.name as string,
-        city: v.city as string,
-        category: v.category as string,
-        tagline: v.tagline as string,
-        services: ((v.services as Array<unknown>) ?? []).map((s) =>
-          typeof s === "string" ? { name: s } : (s as { name: string; price?: number; price_unit?: string })
-        ),
-        rating: v.rating as number,
-        image: (v.coverImage as string | null) || ((v.images as string[]) ?? [])[0] || fallbackImg,
-        gallery: ((v.images as string[]) ?? []).slice(0, 3),
-        verified: v.verified as boolean,
-        averageRating: typeof v.averageRating === "number" ? v.averageRating : 0,
-        reviewCount: typeof v.reviewCount === "number" ? v.reviewCount : 0,
-        latitude: (v.latitude as string | null) ?? null,
-        longitude: (v.longitude as string | null) ?? null,
-        region: (v.region as string | null) ?? null,
-        priceTier: (v.priceTier as number | null) ?? null,
-        culturalStyles: (v.culturalStyles as string[] | undefined) ?? [],
-        spokenLanguages: (v.spokenLanguages as string[] | undefined) ?? [],
-        tier: (v.tier as string | null | undefined) ?? null,
-      }));
+      const qs = new URLSearchParams(apiQueryString);
+      qs.set("page", String(currentPage));
+      qs.set("limit", "20");
+      const res = await fetch(`/api/marketplace/vendors?${qs.toString()}`);
+      if (!res.ok) return { vendors: [], total: 0, page: 1, limit: 20, totalPages: 0 };
+      const body = await res.json();
+      const rows: Record<string, unknown>[] = Array.isArray(body) ? body : (body.vendors ?? []);
+      return {
+        vendors: rows.map(mapVendorRow),
+        total: body.total ?? rows.length,
+        page: body.page ?? currentPage,
+        limit: body.limit ?? 20,
+        totalPages: body.totalPages ?? 1,
+      };
     },
   });
 
-  const displayVendors: DisplayVendor[] = useMemo(() => apiVendors, [apiVendors]);
+  // Accumulate vendors across pages (append on load more)
+  useEffect(() => {
+    if (!apiPage) return;
+    if (apiPage.page === 1) {
+      setAccumulatedVendors(apiPage.vendors);
+    } else {
+      setAccumulatedVendors((prev) => {
+        const existingIds = new Set(prev.map((v) => v.id));
+        const newOnes = apiPage.vendors.filter((v) => !existingIds.has(v.id));
+        return [...prev, ...newOnes];
+      });
+    }
+  }, [apiPage]);
+
+  const hasMore = apiPage ? apiPage.page < apiPage.totalPages : false;
+  const totalVendors = apiPage?.total ?? 0;
+
+  const displayVendors: DisplayVendor[] = accumulatedVendors;
 
   const uniqueCategories = useMemo(
     () => [...new Set(displayVendors.map((v) => v.category))].filter(Boolean),
@@ -840,7 +891,7 @@ export default function Prestations() {
         <MarketplaceFilters
           showCategory
           categoryOptions={uniqueCategories}
-          totalResults={filtered.length}
+          totalResults={totalVendors}
         />
         <div className="bg-cream border-b border-wine-deep/10">
           <div className="container mx-auto px-4 md:px-12 py-2 flex items-center justify-end gap-1">
@@ -1086,9 +1137,27 @@ export default function Prestations() {
           </AnimatePresence>
           )}
 
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !apiLoading && (
             <div className="text-center py-24 text-muted-foreground">
               <p className="text-lg">{t("partners.empty")}</p>
+            </div>
+          )}
+
+          {hasMore && (
+            <div className="flex justify-center py-12">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => p + 1)}
+                disabled={apiLoading}
+                className="btn-editorial-outline px-10 py-4 text-xs uppercase tracking-[0.2em] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                data-testid="load-more"
+              >
+                {apiLoading ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Chargement…</>
+                ) : (
+                  `Charger plus (${totalVendors - filtered.length} restants)`
+                )}
+              </button>
             </div>
           )}
         </div>
