@@ -75,6 +75,28 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          // Core React runtime — always needed, cached long-term
+          if (
+            id.includes("/react/") ||
+            id.includes("/react-dom/") ||
+            id.includes("/react-router") ||
+            id.includes("/scheduler/")
+          ) return "vendor-react";
+          // Animation — large, changes independently of app code
+          if (id.includes("/framer-motion/")) return "vendor-motion";
+          // Server-state cache
+          if (id.includes("/@tanstack/")) return "vendor-query";
+          // Auth — updates on its own release cycle
+          if (id.includes("/@clerk/")) return "vendor-clerk";
+          // i18n
+          if (id.includes("/i18next") || id.includes("/react-i18next/")) return "vendor-i18n";
+        },
+      },
+    },
   },
   server: {
     port,

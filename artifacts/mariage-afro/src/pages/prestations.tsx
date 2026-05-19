@@ -690,6 +690,8 @@ export default function Prestations() {
     totalPages: number;
   }>({
     queryKey: ["marketplace-vendors", apiQueryString, currentPage],
+    staleTime: 3 * 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const qs = new URLSearchParams(apiQueryString);
       qs.set("page", String(currentPage));

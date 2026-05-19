@@ -109,7 +109,7 @@ export function HeroCinematicOverlay({
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           className="w-full h-full object-cover"
           aria-hidden="true"
         />

@@ -248,6 +248,7 @@ router.get("/marketplace/vendors", async (req: Request, res: Response) => {
   const idOrder = new Map(sortedIds.map((id, i) => [id, i]));
   const sorted = [...pageVendors].sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
 
+  res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
   res.json({
     vendors: sorted.map((v) => ({
       ...v,
@@ -389,6 +390,7 @@ router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
     .where(and(eq(vendorReviewsTable.vendorId, id), eq(vendorReviewsTable.status, "published")))
     .orderBy(desc(vendorReviewsTable.createdAt))
     .limit(10);
+  res.set("Cache-Control", "public, max-age=30, stale-while-revalidate=120");
   res.json({
     ...vendor,
     services: toPublicServices(vendor.services),
@@ -499,6 +501,7 @@ router.get("/marketplace/realisations", async (_req: Request, res: Response) => 
     .from(realisationsTable)
     .where(eq(realisationsTable.active, true))
     .orderBy(asc(realisationsTable.createdAt));
+  res.set("Cache-Control", "public, max-age=120, stale-while-revalidate=600");
   res.json(
     rows.map((r) => ({
       id: r.id,
