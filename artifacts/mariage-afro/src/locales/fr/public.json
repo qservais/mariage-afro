@@ -514,7 +514,8 @@
     },
     "add_to_project": "Ajouter à mon projet",
     "in_my_project": "Dans mon projet",
-    "add_to_project_max": "Limite atteinte (3 prestataires max)"
+    "add_to_project_max": "Limite atteinte (3 prestataires max)",
+    "view_profile": "Voir la fiche complète"
   },
   "marketplace": {
     "availability": {

@@ -514,7 +514,8 @@
     },
     "add_to_project": "Add to my project",
     "in_my_project": "In my project",
-    "add_to_project_max": "Limit reached (max 3 vendors)"
+    "add_to_project_max": "Limit reached (max 3 vendors)",
+    "view_profile": "View full profile"
   },
   "marketplace": {
     "availability": {

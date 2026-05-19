@@ -219,56 +219,68 @@ export default function PrestataireDetail() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
       )}
 
-      {/* Hero header */}
-      <section className="bg-wine-deep text-cream pt-32 pb-12">
-        <div className="container mx-auto px-6 md:px-12 max-w-5xl">
-          <Link
-            to="/partenaires"
-            className="inline-flex items-center gap-2 text-gold hover:text-cream text-xs uppercase tracking-[0.3em] mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" /> {t("vendor_detail.back")}
-          </Link>
+      {/* Full-width hero with cover photo */}
+      <section className="relative min-h-[70vh] flex items-end bg-wine-deep overflow-hidden">
+        {vendor.coverImage ? (
+          <img
+            src={objectUrl(vendor.coverImage)}
+            alt={vendor.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : null}
+        {/* Gradient overlay — stronger at bottom where text lives */}
+        <div className="absolute inset-0 bg-gradient-to-t from-wine-deep via-wine-deep/65 to-wine-deep/25" />
 
-          <div className="flex items-start gap-6">
-            {/* Logo */}
-            {vendor.logoUrl && (
-              <div className="hidden sm:flex flex-shrink-0 w-20 h-20 bg-cream/10 overflow-hidden items-center justify-center">
-                <img
-                  src={objectUrl(vendor.logoUrl)}
-                  alt={`${vendor.name} logo`}
-                  className="w-full h-full object-contain p-1"
-                />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-3">{vendor.category}</p>
-              <h1 className="font-display uppercase text-4xl md:text-6xl tracking-[-0.01em] mb-4">
-                {vendor.name}
-              </h1>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-cream/80">
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4" />
-                  {vendor.city}
-                </span>
-                {vendor.verified && (
-                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-gold/20 text-gold text-[10px] uppercase tracking-[0.2em]">
-                    <CheckCircle2 className="w-3 h-3" /> {t("vendor_detail.verified")}
+        <div className="relative z-10 w-full pt-28 pb-14">
+          <div className="container mx-auto px-6 md:px-12 max-w-5xl">
+            <Link
+              to="/partenaires"
+              className="inline-flex items-center gap-2 text-gold hover:text-cream text-xs uppercase tracking-[0.3em] mb-8"
+            >
+              <ArrowLeft className="w-4 h-4" /> {t("vendor_detail.back")}
+            </Link>
+
+            <div className="flex items-end gap-6">
+              {/* Logo */}
+              {vendor.logoUrl && (
+                <div className="hidden sm:flex flex-shrink-0 w-20 h-20 bg-cream/10 overflow-hidden items-center justify-center border border-cream/20">
+                  <img
+                    src={objectUrl(vendor.logoUrl)}
+                    alt={`${vendor.name} logo`}
+                    className="w-full h-full object-contain p-1"
+                  />
+                </div>
+              )}
+              <div className="flex-1 min-w-0 text-cream">
+                <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-3">{vendor.category}</p>
+                <h1 className="font-display uppercase text-4xl md:text-6xl tracking-[-0.01em] mb-4 drop-shadow-sm">
+                  {vendor.name}
+                </h1>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-cream/85">
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4" />
+                    {vendor.city}
                   </span>
-                )}
-                {(vendor.reviewCount ?? 0) > 0 && (vendor.averageRating ?? 0) > 0 && (
-                  <span className="inline-flex items-center gap-2">
-                    <ReviewStars rating={vendor.averageRating!} size={14} />
-                    <span className="text-cream">
-                      {vendor.averageRating!.toFixed(1)} ({t("vendor_detail.review_count", { count: vendor.reviewCount! })})
+                  {vendor.verified && (
+                    <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-gold/25 text-gold text-[10px] uppercase tracking-[0.2em] border border-gold/30">
+                      <CheckCircle2 className="w-3 h-3" /> {t("vendor_detail.verified")}
                     </span>
-                  </span>
-                )}
-                {vendor.priceTier && (
-                  <span className="text-cream font-medium">{PRICE_LABEL[vendor.priceTier]}</span>
-                )}
-                {vendor.indicativePrice && (
-                  <span className="text-cream/80 text-sm">{vendor.indicativePrice}</span>
-                )}
+                  )}
+                  {(vendor.reviewCount ?? 0) > 0 && (vendor.averageRating ?? 0) > 0 && (
+                    <span className="inline-flex items-center gap-2">
+                      <ReviewStars rating={vendor.averageRating!} size={14} />
+                      <span>
+                        {vendor.averageRating!.toFixed(1)} ({t("vendor_detail.review_count", { count: vendor.reviewCount! })})
+                      </span>
+                    </span>
+                  )}
+                  {vendor.priceTier && (
+                    <span className="font-medium">{PRICE_LABEL[vendor.priceTier]}</span>
+                  )}
+                  {vendor.indicativePrice && (
+                    <span className="text-cream/80 text-sm">{vendor.indicativePrice}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -277,14 +289,6 @@ export default function PrestataireDetail() {
 
       <section className="container mx-auto px-6 md:px-12 max-w-5xl py-12 grid md:grid-cols-3 gap-10">
         <div className="md:col-span-2 space-y-10">
-          {/* Cover image */}
-          {vendor.coverImage && (
-            <img
-              src={objectUrl(vendor.coverImage)}
-              alt={vendor.name}
-              className="w-full h-80 object-cover rounded-sm"
-            />
-          )}
 
           {/* Description (localized) */}
           <div>

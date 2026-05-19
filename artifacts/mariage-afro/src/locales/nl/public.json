@@ -514,7 +514,8 @@
     },
     "add_to_project": "Toevoegen aan mijn project",
     "in_my_project": "In mijn project",
-    "add_to_project_max": "Limiet bereikt (max. 3 leveranciers)"
+    "add_to_project_max": "Limiet bereikt (max. 3 leveranciers)",
+    "view_profile": "Volledige fiche bekijken"
   },
   "marketplace": {
     "availability": {

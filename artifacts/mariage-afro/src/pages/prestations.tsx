@@ -1129,6 +1129,13 @@ export default function Prestations() {
                           </button>
                         ))}
                       </div>
+                      <Link
+                        to={`/partenaires/${vendor.slug || vendor.id}`}
+                        className="btn-editorial-outline w-full justify-center text-[10px] mt-1"
+                        data-testid={`view-detail-${vendor.id}`}
+                      >
+                        {t("partners.view_profile")}
+                      </Link>
                     </div>
                   </div>
                 </motion.article>
