@@ -7,10 +7,12 @@ import { CATEGORY_CONFIG } from "@/lib/vendorCategoryConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+type PriceUnit = "forfait" | "pers" | "heure" | "nuit" | "table";
+
 interface ServiceItem {
   name: string;
   price: number | null;
-  currency: string | null;
+  price_unit: PriceUnit | null;
   price_visible: boolean;
 }
 
@@ -19,6 +21,8 @@ interface VendorProfile {
   category: string;
   services: ServiceItem[];
 }
+
+const PRICE_UNITS: PriceUnit[] = ["forfait", "pers", "heure", "nuit", "table"];
 
 export default function VendorServicesPage() {
   const { t } = useTranslation();
@@ -57,7 +61,7 @@ export default function VendorServicesPage() {
     } else {
       setServices((prev) => [
         ...prev,
-        { name, price: null, currency: "EUR", price_visible: false },
+        { name, price: null, price_unit: null, price_visible: false },
       ]);
     }
   };
@@ -67,7 +71,7 @@ export default function VendorServicesPage() {
     if (!trimmed || selectedNames.has(trimmed)) return;
     setServices((prev) => [
       ...prev,
-      { name: trimmed, price: null, currency: "EUR", price_visible: false },
+      { name: trimmed, price: null, price_unit: null, price_visible: false },
     ]);
     setDraft("");
   };
@@ -76,11 +80,21 @@ export default function VendorServicesPage() {
     setServices((prev) => prev.filter((s) => s.name !== name));
   };
 
-  const updateServicePrice = (name: string, price: string) => {
-    const parsed = price === "" ? null : parseFloat(price);
+  const updateServicePrice = (name: string, value: string) => {
+    const parsed = value === "" ? null : parseFloat(value);
     setServices((prev) =>
       prev.map((s) =>
-        s.name === name ? { ...s, price: parsed !== null && !isNaN(parsed) ? parsed : null } : s,
+        s.name === name
+          ? { ...s, price: parsed !== null && !isNaN(parsed) ? parsed : null }
+          : s,
+      ),
+    );
+  };
+
+  const updateServiceUnit = (name: string, unit: PriceUnit | "") => {
+    setServices((prev) =>
+      prev.map((s) =>
+        s.name === name ? { ...s, price_unit: unit || null } : s,
       ),
     );
   };
@@ -157,8 +171,8 @@ export default function VendorServicesPage() {
                       <X className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="relative flex-1 max-w-[160px]">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="relative w-[120px]">
                       <Input
                         type="number"
                         min="0"
@@ -166,13 +180,27 @@ export default function VendorServicesPage() {
                         value={svc.price ?? ""}
                         onChange={(e) => updateServicePrice(svc.name, e.target.value)}
                         placeholder={t("vendor.services.price_placeholder")}
-                        className="pr-10 text-sm h-8"
+                        className="pr-8 text-sm h-8"
                         data-testid={`input-price-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 pointer-events-none">
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-neutral-400 pointer-events-none">
                         €
                       </span>
                     </div>
+                    <select
+                      value={svc.price_unit ?? ""}
+                      onChange={(e) => updateServiceUnit(svc.name, e.target.value as PriceUnit | "")}
+                      disabled={svc.price == null}
+                      className="h-8 text-xs border border-neutral-300 bg-white px-2 py-0 text-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                      data-testid={`select-unit-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                    >
+                      <option value="">{t("vendor.services.unit_none")}</option>
+                      {PRICE_UNITS.map((u) => (
+                        <option key={u} value={u}>
+                          {t(`vendor.services.unit_${u}`)}
+                        </option>
+                      ))}
+                    </select>
                     <button
                       type="button"
                       onClick={() => togglePriceVisible(svc.name)}
@@ -183,7 +211,7 @@ export default function VendorServicesPage() {
                           : t("vendor.services.show_price")
                       }
                       className={[
-                        "inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] border transition-colors",
+                        "inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] border transition-colors h-8",
                         svc.price_visible
                           ? "bg-wine-deep/10 text-wine-deep border-wine-deep/30"
                           : "bg-white text-neutral-500 border-neutral-300",

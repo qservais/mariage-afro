@@ -21,7 +21,7 @@ interface VendorDetail {
   descriptionFr?: string | null;
   descriptionNl?: string | null;
   descriptionEn?: string | null;
-  services: Array<{ name: string; price?: number; currency?: string }>;
+  services: Array<{ name: string; price?: number; price_unit?: string }>;
   images: string[];
   coverImage?: string | null;
   logoUrl?: string | null;
@@ -302,12 +302,22 @@ export default function PrestataireDetail() {
             const suggestedServices = vendor.services.filter((s) => suggestedSet.has(s.name));
             const otherServices = vendor.services.filter((s) => !suggestedSet.has(s.name));
 
-            const ServiceChip = ({ svc }: { svc: { name: string; price?: number; currency?: string } }) => (
+            const formatPrice = (price: number, unit?: string) => {
+              const amount = price.toLocaleString("fr-BE", { minimumFractionDigits: 0 });
+              if (!unit || unit === "forfait") return `${amount} €`;
+              if (unit === "pers") return `${amount} € / pers.`;
+              if (unit === "heure") return `${amount} € / h`;
+              if (unit === "nuit") return `${amount} € / nuit`;
+              if (unit === "table") return `${amount} € / table`;
+              return `${amount} €`;
+            };
+
+            const ServiceChip = ({ svc }: { svc: { name: string; price?: number; price_unit?: string } }) => (
               <li className="flex items-center gap-2 px-3 py-1.5 bg-wine-deep/10 text-wine-deep text-xs border border-wine-deep/10">
                 <span className="uppercase tracking-[0.15em]">{svc.name}</span>
                 {svc.price != null && (
                   <span className="text-wine-deep/70 font-semibold whitespace-nowrap">
-                    {svc.price.toLocaleString("fr-BE", { minimumFractionDigits: 0 })} {svc.currency ?? "€"}
+                    {formatPrice(svc.price, svc.price_unit)}
                   </span>
                 )}
               </li>

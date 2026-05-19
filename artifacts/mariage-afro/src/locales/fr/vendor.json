@@ -299,7 +299,13 @@
       "show_price": "Afficher le prix",
       "hide_price": "Masquer le prix",
       "price_public": "Public",
-      "price_hidden": "Privé"
+      "price_hidden": "Privé",
+      "unit_none": "— unité",
+      "unit_forfait": "forfait",
+      "unit_pers": "/ pers.",
+      "unit_heure": "/ heure",
+      "unit_nuit": "/ nuit",
+      "unit_table": "/ table"
     },
     "settings": {
       "title": "Paramètres",

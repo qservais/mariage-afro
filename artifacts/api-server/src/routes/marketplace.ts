@@ -146,6 +146,25 @@ async function tierByVendorId(vendorIds: number[]): Promise<Map<number, string>>
   return map;
 }
 
+/** Strip hidden price data from services before sending to any public endpoint. */
+function toPublicServices(raw: unknown): Array<{ name: string; price?: number; price_unit?: string }> {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((s: unknown) => {
+    if (typeof s === "string") return { name: s };
+    const item = s as { name: string; price?: number | null; price_unit?: string | null; price_visible?: boolean };
+    if (item.price_visible && item.price != null) {
+      return { name: item.name, price: item.price, ...(item.price_unit ? { price_unit: item.price_unit } : {}) };
+    }
+    return { name: item.name };
+  });
+}
+
+/** Extract service name strings for text-matching (handles both legacy strings and new objects). */
+function serviceNames(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((s: unknown) => (typeof s === "string" ? s : (s as { name: string }).name ?? "")).filter(Boolean);
+}
+
 router.get("/marketplace/vendors", async (req: Request, res: Response) => {
   const conds = buildVendorFilters(req);
   const vendors = await db
@@ -164,6 +183,7 @@ router.get("/marketplace/vendors", async (req: Request, res: Response) => {
   res.json(
     sorted.map((v) => ({
       ...v,
+      services: toPublicServices(v.services),
       tier: tiers.get(v.id) ?? "basic",
       reviewCount: aggregates.get(v.id)?.count ?? 0,
       averageRating: aggregates.get(v.id)?.average ?? 0,
@@ -231,7 +251,7 @@ router.get("/marketplace/vendors-by-tags", async (req: Request, res: Response) =
     .map((v) => {
       const haystack = [
         v.category,
-        ...(v.services ?? []),
+        ...serviceNames(v.services),
         ...(v.culturalStyles ?? []),
         v.tagline,
         v.description,
@@ -297,17 +317,9 @@ router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
     .where(and(eq(vendorReviewsTable.vendorId, id), eq(vendorReviewsTable.status, "published")))
     .orderBy(desc(vendorReviewsTable.createdAt))
     .limit(10);
-  const publicServices = (Array.isArray(vendor.services) ? vendor.services : []).map((s: unknown) => {
-    if (typeof s === "string") return { name: s };
-    const item = s as { name: string; price?: number | null; currency?: string | null; price_visible?: boolean };
-    if (item.price_visible && item.price != null) {
-      return { name: item.name, price: item.price, currency: item.currency ?? "EUR" };
-    }
-    return { name: item.name };
-  });
   res.json({
     ...vendor,
-    services: publicServices,
+    services: toPublicServices(vendor.services),
     reviewCount: aggregates.get(id)?.count ?? 0,
     averageRating: aggregates.get(id)?.average ?? 0,
     reviews: recent,

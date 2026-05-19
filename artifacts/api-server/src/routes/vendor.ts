@@ -338,12 +338,12 @@ async function getMyVendor(accountId: number) {
   return vendor ?? null;
 }
 
-function normalizeServices(raw: unknown): Array<{ name: string; price: number | null; currency: string | null; price_visible: boolean }> {
+function normalizeServices(raw: unknown): Array<{ name: string; price: number | null; price_unit: string | null; price_visible: boolean }> {
   if (!Array.isArray(raw)) return [];
   return raw.map((s: unknown) =>
     typeof s === "string"
-      ? { name: s, price: null, currency: "EUR", price_visible: false }
-      : (s as { name: string; price: number | null; currency: string | null; price_visible: boolean }),
+      ? { name: s, price: null, price_unit: null, price_visible: false }
+      : (s as { name: string; price: number | null; price_unit: string | null; price_visible: boolean }),
   );
 }
 
@@ -369,7 +369,7 @@ const profileSchema = z.object({
   services: z.array(z.object({
     name: z.string().min(1).max(120),
     price: z.number().min(0).max(9999999).optional().nullable(),
-    currency: z.string().max(10).optional().nullable(),
+    price_unit: z.enum(["forfait", "pers", "heure", "nuit", "table"]).optional().nullable(),
     price_visible: z.boolean().default(false),
   })).optional(),
   website: z.string().optional().nullable(),

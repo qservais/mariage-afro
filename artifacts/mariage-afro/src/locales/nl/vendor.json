@@ -299,7 +299,13 @@
       "show_price": "Prijs weergeven",
       "hide_price": "Prijs verbergen",
       "price_public": "Publiek",
-      "price_hidden": "Privé"
+      "price_hidden": "Privé",
+      "unit_none": "— eenheid",
+      "unit_forfait": "forfait",
+      "unit_pers": "/ pers.",
+      "unit_heure": "/ uur",
+      "unit_nuit": "/ nacht",
+      "unit_table": "/ tafel"
     },
     "settings": {
       "title": "Instellingen",
