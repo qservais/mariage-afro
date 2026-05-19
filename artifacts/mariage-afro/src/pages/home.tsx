@@ -12,8 +12,8 @@ import { TrustBar } from "@/components/home/TrustBar";
 import { ProcessTimeline } from "@/components/home/ProcessTimeline";
 import { HeroCursor } from "@/components/HeroCursor";
 
-const videoSrc = "/videos/sm-j1-compressed.mp4";
-const heroImage = "/images/sm-hero-poster.webp";
+const videoSrc = "/trailer-hero.mp4";
+const heroImage = "/images/g-m-00756.webp";
 const aboutImage = "/images/dsc05077.webp";
 const servicesImg = "/images/m-sj2-05790.webp";
 const filmVideo1 = "/film-de-miel-2.mp4";
