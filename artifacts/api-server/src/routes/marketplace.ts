@@ -443,7 +443,22 @@ router.get("/marketplace/realisations", async (_req: Request, res: Response) => 
     .from(realisationsTable)
     .where(eq(realisationsTable.active, true))
     .orderBy(asc(realisationsTable.createdAt));
-  res.json(rows);
+  res.json(
+    rows.map((r) => ({
+      id: r.id,
+      coupleName: `${r.brideName} & ${r.groomName}`,
+      weddingDate: r.weddingDate ?? null,
+      location: r.city ?? null,
+      type: r.weddingType ?? null,
+      story: r.description ?? null,
+      coverImage: r.coverImage ?? null,
+      gallery: r.gallery ?? [],
+      videoUrl: null,
+      videoCouple: r.videoCouple ?? null,
+      videoTeaser: r.videoTeaser ?? null,
+      featured: r.featured,
+    })),
+  );
 });
 
 const leadSchema = z.object({
