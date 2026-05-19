@@ -105,7 +105,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
                 }`}
                 data-testid={`link-client-${item.to.split("/").pop()}`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4" aria-hidden="true" />
                 {t(item.labelKey)}
               </Link>
             );
@@ -116,7 +116,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
           className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-neutral-600 hover:text-primary border-t border-neutral-200"
           data-testid="button-signout"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4" aria-hidden="true" />
           {t("client_layout.signout")}
         </button>
       </aside>
@@ -141,7 +141,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-3 px-6 py-4 text-base font-medium ${active ? "text-primary bg-background" : "text-neutral-700"}`}
                 >
-                  <Icon className="w-5 h-5" /> {t(item.labelKey)}
+                  <Icon className="w-5 h-5" aria-hidden="true" /> {t(item.labelKey)}
                 </Link>
               );
             })}
@@ -149,7 +149,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
               onClick={handleSignOut}
               className="flex items-center gap-3 px-6 py-4 text-base text-neutral-600 w-full text-left border-t mt-2"
             >
-              <LogOut className="w-5 h-5" /> {t("client_layout.signout")}
+              <LogOut className="w-5 h-5" aria-hidden="true" /> {t("client_layout.signout")}
             </button>
           </nav>
         </div>

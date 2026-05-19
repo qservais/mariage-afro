@@ -108,6 +108,10 @@ export default function ClientDevisPage() {
                   <tr
                     key={q.id}
                     onClick={() => setSelectedId(q.id === selectedId ? null : q.id)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedId(q.id === selectedId ? null : q.id); } }}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={selectedId === q.id}
                     className={`border-b border-neutral-100 cursor-pointer hover:bg-amber-50/40 transition-colors ${selectedId === q.id ? "bg-amber-50/60" : ""} ${q.status === "sent" ? "font-semibold" : ""}`}
                     data-testid={`row-devis-${q.id}`}
                   >
@@ -193,7 +197,9 @@ export default function ClientDevisPage() {
               {selected.status === "sent" && (
                 <div className="space-y-3 pt-2 border-t border-neutral-100">
                   <p className="text-xs uppercase tracking-widest text-neutral-500">{t("devis.your_response")}</p>
+                  <label htmlFor="devis-reply" className="sr-only">{t("devis.your_response")}</label>
                   <Textarea
+                    id="devis-reply"
                     rows={3}
                     value={replyMsg}
                     onChange={(e) => setReplyMsg(e.target.value)}

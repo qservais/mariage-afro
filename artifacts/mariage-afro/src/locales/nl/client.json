@@ -83,7 +83,9 @@
       "disable": "Deactiveren",
       "view": "Pagina bekijken",
       "edit": "Inhoud bewerken"
-    }
+    },
+    "qr_alt": "QR-code voor de trouwdagpagina van {{names}}",
+    "qr_alt_generic": "QR-code voor de trouwdagpagina"
   },
   "budget": {
     "title": "Budget",
@@ -111,6 +113,8 @@
     "total_budget": "Totaalbudget",
     "total_committed": "Vastgelegd",
     "progress_label": "{{pct}}% van budget vastgelegd",
+    "progress_over_budget": "Budget overschreden",
+    "over_budget_text": "(overschreden)",
     "remaining": "Resterend",
     "warning_estimate": "De ingevoerde bedragen zijn indicatieve schattingen en vormen geen contractuele verplichtingen.",
     "vendor_sync_note": "Tip: wanneer een leverancier de status 'Betaald' krijgt in het tabblad Leveranciers, wordt het bedrag hier automatisch toegevoegd."
@@ -164,7 +168,8 @@
     "guest_total": "Totaal gasten",
     "filter_all": "Alle",
     "filter_attending": "Aanwezig",
-    "filter_declined": "Afgemeld"
+    "filter_declined": "Afgemeld",
+    "rsvp_for": "RSVP van {{name}}"
   },
   "planning": {
     "title": "Planning",
@@ -307,7 +312,8 @@
     "leave_review": "Beoordeling achterlaten",
     "after_wedding": "Na de bruiloft",
     "empty": "Geen leveranciers",
-    "my_reviews": "Mijn gepubliceerde beoordelingen"
+    "my_reviews": "Mijn gepubliceerde beoordelingen",
+    "rating_label": "Beoordeling: {{rating}} van 5"
   },
   "seating": {
     "title": "Tafelschikking",
@@ -383,7 +389,9 @@
       "link_label": "Openbare link",
       "copy": "Kopiëren",
       "copied": "Gekopieerd!",
-      "download_qr": "QR-code downloaden"
+      "download_qr": "QR-code downloaden",
+      "qr_alt": "QR-code voor de trouwsite {{title}}",
+      "qr_alt_generic": "QR-code voor de trouwsite"
     },
     "save": "Wijzigingen opslaan",
     "slug_prefix": "…/mariage/",
@@ -531,7 +539,9 @@
     "save": "Opslaan",
     "create": "Aanmaken",
     "empty": "Nog geen geldpot aangemaakt.",
-    "confirm_delete": "Deze geldpot verwijderen?"
+    "confirm_delete": "Deze geldpot verwijderen?",
+    "qr_alt": "IBAN QR-code voor {{title}} — {{names}}",
+    "qr_alt_generic": "IBAN QR-code voor {{title}}"
   },
   "mariage_cagnotte": {
     "title": "Onze geldpot",

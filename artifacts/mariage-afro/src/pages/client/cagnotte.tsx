@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useCouple } from "@/components/client/ClientLayout";
 
 interface Cagnotte {
   id: number;
@@ -35,17 +36,18 @@ async function uploadFile(file: File): Promise<string> {
 
 const empty = { title: "", description: "", iban: "", externalUrl: "", photo: null as string | null, active: true };
 
-function QrPreview({ value }: { value: string }) {
+function QrPreview({ value, alt }: { value: string; alt: string }) {
   const [src, setSrc] = useState("");
   useEffect(() => {
     QRCode.toDataURL(value, { margin: 1, width: 160 }).then(setSrc).catch(() => setSrc(""));
   }, [value]);
-  return src ? <img src={src} alt="QR code IBAN" width={128} height={128} loading="lazy" decoding="async" className="w-32 h-32 border border-neutral-200" /> : null;
+  return src ? <img src={src} alt={alt} width={128} height={128} loading="lazy" decoding="async" className="w-32 h-32 border border-neutral-200" /> : null;
 }
 
 export default function CagnottePage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
+  const { data: couple } = useCouple();
   const fileRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState<number | null>(null);
   const [form, setForm] = useState(empty);
@@ -171,7 +173,14 @@ export default function CagnottePage() {
                 </a>
               )}
             </div>
-            {c.iban && <QrPreview value={`BCD\n002\n1\nSCT\n\n${c.iban.replace(/\s/g, "")}`} />}
+            {c.iban && (
+              <QrPreview
+                value={`BCD\n002\n1\nSCT\n\n${c.iban.replace(/\s/g, "")}`}
+                alt={couple?.partner1Name && couple?.partner2Name
+                  ? t("cagnotte.qr_alt", { title: c.title, names: `${couple.partner1Name} & ${couple.partner2Name}` })
+                  : t("cagnotte.qr_alt_generic", { title: c.title })}
+              />
+            )}
           </div>
         ))}
       </div>

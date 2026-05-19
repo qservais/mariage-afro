@@ -221,6 +221,7 @@ export default function InspirationPage() {
                       defaultValue={img.caption}
                       onBlur={(e) => e.target.value !== img.caption && updateImage.mutate({ id: img.id, body: { caption: e.target.value } })}
                       placeholder={t("inspiration.caption_placeholder")}
+                      aria-label={t("inspiration.caption_aria_label", { defaultValue: "Légende de l'image" })}
                       className="w-full text-xs px-2 py-1 border-t border-neutral-200 bg-neutral-50 focus:outline-none focus:bg-white"
                     />
                   </div>

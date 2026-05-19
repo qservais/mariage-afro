@@ -83,7 +83,9 @@
       "disable": "Disable",
       "view": "View page",
       "edit": "Edit content"
-    }
+    },
+    "qr_alt": "QR code for the wedding day page of {{names}}",
+    "qr_alt_generic": "QR code for the wedding day page"
   },
   "budget": {
     "title": "Budget",
@@ -111,6 +113,8 @@
     "total_budget": "Total budget",
     "total_committed": "Committed",
     "progress_label": "{{pct}}% of budget committed",
+    "progress_over_budget": "Over budget",
+    "over_budget_text": "(over budget)",
     "remaining": "Remaining",
     "warning_estimate": "All amounts entered are indicative estimates and do not constitute contractual commitments.",
     "vendor_sync_note": "Tip: when a vendor is marked as 'Paid' in the Vendors tab, their amount is automatically added here."
@@ -164,7 +168,8 @@
     "guest_total": "Total guests",
     "filter_all": "All",
     "filter_attending": "Attending",
-    "filter_declined": "Declined"
+    "filter_declined": "Declined",
+    "rsvp_for": "RSVP for {{name}}"
   },
   "planning": {
     "title": "Planning",
@@ -307,7 +312,8 @@
     "leave_review": "Leave a review",
     "after_wedding": "After the wedding",
     "empty": "No vendors",
-    "my_reviews": "My published reviews"
+    "my_reviews": "My published reviews",
+    "rating_label": "Rating: {{rating}} out of 5"
   },
   "seating": {
     "title": "Seating chart",
@@ -383,7 +389,9 @@
       "link_label": "Public link",
       "copy": "Copy",
       "copied": "Copied!",
-      "download_qr": "Download QR code"
+      "download_qr": "Download QR code",
+      "qr_alt": "QR code for the wedding website {{title}}",
+      "qr_alt_generic": "QR code for the wedding website"
     },
     "save": "Save changes",
     "slug_prefix": "…/mariage/",
@@ -531,7 +539,9 @@
     "save": "Save",
     "create": "Create",
     "empty": "No fund created yet.",
-    "confirm_delete": "Delete this fund?"
+    "confirm_delete": "Delete this fund?",
+    "qr_alt": "IBAN QR code for {{title}} — {{names}}",
+    "qr_alt_generic": "IBAN QR code for {{title}}"
   },
   "mariage_cagnotte": {
     "title": "Our wedding fund",

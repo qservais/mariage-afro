@@ -132,8 +132,10 @@ export default function PlanningPage() {
             {(["list", "week", "month"] as ViewMode[]).map((v) => (
               <button
                 key={v}
+                id={`tab-planning-${v}`}
                 role="tab"
                 aria-selected={view === v}
+                aria-controls={`panel-planning-${v}`}
                 onClick={() => setView(v)}
                 className={`px-3 py-2 ${view === v ? "bg-primary text-white" : "bg-white"}`}
                 data-testid={`tab-view-${v}`}
@@ -160,10 +162,19 @@ export default function PlanningPage() {
           });
         }}
       >
-        <Input placeholder={t("planning.task")} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required data-testid="input-task-title" />
-        <Input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
-        <Input placeholder={t("planning.assignee")} value={form.assignee} onChange={(e) => setForm({ ...form, assignee: e.target.value })} />
-        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" /> {t("planning.add")}</Button>
+        <div>
+          <label htmlFor="task-title" className="sr-only">{t("planning.task")}</label>
+          <Input id="task-title" placeholder={t("planning.task")} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required data-testid="input-task-title" />
+        </div>
+        <div>
+          <label htmlFor="task-date" className="sr-only">{t("planning.due_date_label", { defaultValue: "Date" })}</label>
+          <Input id="task-date" type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
+        </div>
+        <div>
+          <label htmlFor="task-assignee" className="sr-only">{t("planning.assignee")}</label>
+          <Input id="task-assignee" placeholder={t("planning.assignee")} value={form.assignee} onChange={(e) => setForm({ ...form, assignee: e.target.value })} />
+        </div>
+        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" aria-hidden="true" /> {t("planning.add")}</Button>
       </form>
 
       {view !== "list" && (
@@ -179,7 +190,7 @@ export default function PlanningPage() {
       )}
 
       {view === "list" && (
-        <div className="bg-white border border-neutral-200">
+        <div id="panel-planning-list" role="tabpanel" aria-labelledby="tab-planning-list" className="bg-white border border-neutral-200">
           {sorted.map((tk) => (
             <div key={tk.id} className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0">
               <button
@@ -204,7 +215,7 @@ export default function PlanningPage() {
       )}
 
       {view === "week" && (
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
+        <div id="panel-planning-week" role="tabpanel" aria-labelledby="tab-planning-week" className="grid grid-cols-1 md:grid-cols-7 gap-2">
           {weekDays.map((d, i) => {
             const list = tasksByDate.get(ymd(d)) ?? [];
             return (
@@ -225,7 +236,7 @@ export default function PlanningPage() {
       )}
 
       {view === "month" && (
-        <div>
+        <div id="panel-planning-month" role="tabpanel" aria-labelledby="tab-planning-month">
           <div className="grid grid-cols-7 gap-px bg-neutral-200 border border-neutral-200">
             {days.map((d) => (
               <div key={d} className="bg-background/40 px-2 py-1 text-xs uppercase tracking-widest text-neutral-600">{d}</div>

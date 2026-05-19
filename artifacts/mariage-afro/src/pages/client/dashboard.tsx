@@ -147,7 +147,15 @@ export default function ClientDashboard() {
           <p className="text-sm font-bold text-primary">{t("client_dashboard.progress_count", { pct, done, total })}</p>
         </div>
         <div className="h-2 bg-neutral-100 overflow-hidden">
-          <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+          <div
+            className="h-full bg-primary transition-all"
+            style={{ width: `${pct}%` }}
+            role="progressbar"
+            aria-valuenow={pct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={t("client_dashboard.progress_title")}
+          />
         </div>
         {nextTask && (
           <p className="text-sm text-neutral-600 mt-3">
@@ -184,7 +192,9 @@ export default function ClientDashboard() {
               <div className="shrink-0">
                 <img
                   src={jourJCfg.qrDataUrl}
-                  alt="QR Code Jour-J"
+                  alt={couple?.partner1Name && couple?.partner2Name
+                    ? t("client_dashboard.qr_alt", { names: `${couple.partner1Name} & ${couple.partner2Name}` })
+                    : t("client_dashboard.qr_alt_generic")}
                   className="w-[84px] h-[84px] border border-neutral-200"
                 />
               </div>

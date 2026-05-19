@@ -164,15 +164,27 @@ export default function GuestsPage() {
         className="bg-white p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.firstName) return; create.mutate({ ...form, table: form.table || null }); }}
       >
-        <Input placeholder={t("invites.first_name")} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} required data-testid="input-guest-firstname" />
-        <Input placeholder={t("invites.last_name")} value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
-        <select className="border border-neutral-300 px-3 text-sm h-10" value={form.side} onChange={(e) => setForm({ ...form, side: e.target.value })}>
-          <option value="partner1">{SIDE_LABELS.partner1}</option>
-          <option value="partner2">{SIDE_LABELS.partner2}</option>
-          <option value="shared">{SIDE_LABELS.shared}</option>
-        </select>
-        <Input placeholder={t("invites.table")} value={form.table} onChange={(e) => setForm({ ...form, table: e.target.value })} />
-        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" /> {t("invites.add")}</Button>
+        <div>
+          <label htmlFor="guest-firstname" className="sr-only">{t("invites.first_name")}</label>
+          <Input id="guest-firstname" placeholder={t("invites.first_name")} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} required data-testid="input-guest-firstname" />
+        </div>
+        <div>
+          <label htmlFor="guest-lastname" className="sr-only">{t("invites.last_name")}</label>
+          <Input id="guest-lastname" placeholder={t("invites.last_name")} value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
+        </div>
+        <div>
+          <label htmlFor="guest-side" className="sr-only">{t("invites.th_side")}</label>
+          <select id="guest-side" aria-label={t("invites.th_side")} className="border border-neutral-300 px-3 text-sm h-10 w-full" value={form.side} onChange={(e) => setForm({ ...form, side: e.target.value })}>
+            <option value="partner1">{SIDE_LABELS.partner1}</option>
+            <option value="partner2">{SIDE_LABELS.partner2}</option>
+            <option value="shared">{SIDE_LABELS.shared}</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="guest-table" className="sr-only">{t("invites.table")}</label>
+          <Input id="guest-table" placeholder={t("invites.table")} value={form.table} onChange={(e) => setForm({ ...form, table: e.target.value })} />
+        </div>
+        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" aria-hidden="true" /> {t("invites.add")}</Button>
       </form>
 
       <div className="bg-white border border-neutral-200 overflow-x-auto">
@@ -197,6 +209,7 @@ export default function GuestsPage() {
                     value={g.rsvp}
                     onChange={(e) => update.mutate({ id: g.id, body: { rsvp: e.target.value } })}
                     className={`text-xs px-2 py-1 ${RSVP_COLORS[g.rsvp]}`}
+                    aria-label={t("invites.rsvp_for", { name: `${g.firstName} ${g.lastName}` })}
                   >
                     {Object.entries(RSVP_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                   </select>

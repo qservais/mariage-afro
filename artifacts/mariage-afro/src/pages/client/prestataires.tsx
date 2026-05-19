@@ -199,7 +199,7 @@ export default function VendorsPage() {
                       <span className="text-neutral-400">—</span>
                     ) : myReview ? (
                       <div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1" aria-label={t("vendors_page.rating_label", { rating: myReview.rating })}>
                           <ReviewStars rating={myReview.rating} size={12} />
                         </div>
                         <div className="text-[10px] text-neutral-500 mt-0.5">{REVIEW_STATUS_LABEL[myReview.status]}</div>

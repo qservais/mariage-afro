@@ -111,10 +111,19 @@ export default function JourJPage() {
         className="bg-white p-4 border border-neutral-200 grid grid-cols-1 lg:grid-cols-4 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.title) return; create.mutate({ time: form.time, title: form.title, responsible: form.responsible || null }); }}
       >
-        <Input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} required />
-        <Input placeholder={t("jour_j.event")} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="lg:col-span-2" data-testid="input-event-title" />
-        <Input placeholder={t("jour_j.responsible")} value={form.responsible} onChange={(e) => setForm({ ...form, responsible: e.target.value })} />
-        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2 lg:col-span-4"><Plus className="w-3 h-3" /> {t("jour_j.add_to_timeline")}</Button>
+        <div>
+          <label htmlFor="event-time" className="sr-only">{t("jour_j.time_label", { defaultValue: "Heure" })}</label>
+          <Input id="event-time" type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} required />
+        </div>
+        <div className="lg:col-span-2">
+          <label htmlFor="event-title" className="sr-only">{t("jour_j.event")}</label>
+          <Input id="event-title" placeholder={t("jour_j.event")} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required data-testid="input-event-title" />
+        </div>
+        <div>
+          <label htmlFor="event-responsible" className="sr-only">{t("jour_j.responsible")}</label>
+          <Input id="event-responsible" placeholder={t("jour_j.responsible")} value={form.responsible} onChange={(e) => setForm({ ...form, responsible: e.target.value })} />
+        </div>
+        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2 lg:col-span-4"><Plus className="w-3 h-3" aria-hidden="true" /> {t("jour_j.add_to_timeline")}</Button>
       </form>
 
       <div className="bg-white border border-neutral-200">
@@ -178,7 +187,7 @@ export default function JourJPage() {
             <div className="flex flex-wrap gap-6 items-start">
               {qrDataUrl && (
                 <div className="shrink-0 text-center">
-                  <img src={qrDataUrl} alt="QR Code Jour-J" className="w-[140px] h-[140px] border border-neutral-200" />
+                  <img src={qrDataUrl} alt={t("jour_j_public.qr_alt", { defaultValue: "QR code vers la page Jour-J publique" })} className="w-[140px] h-[140px] border border-neutral-200" />
                   <p className="text-xs text-neutral-500 mt-2">{t("jour_j_public.qr_desc")}</p>
                 </div>
               )}

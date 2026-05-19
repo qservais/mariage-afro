@@ -83,7 +83,9 @@
       "disable": "Désactiver",
       "view": "Voir la page",
       "edit": "Modifier le contenu"
-    }
+    },
+    "qr_alt": "QR code de la page Jour-J de {{names}}",
+    "qr_alt_generic": "QR code de la page Jour-J"
   },
   "budget": {
     "title": "Budget",
@@ -111,6 +113,8 @@
     "total_budget": "Budget total",
     "total_committed": "Engagé",
     "progress_label": "{{pct}}% du budget engagé",
+    "progress_over_budget": "Budget dépassé",
+    "over_budget_text": "(dépassé)",
     "remaining": "Restant",
     "warning_estimate": "Les montants saisis sont des estimations indicatives et ne constituent pas des engagements contractuels.",
     "vendor_sync_note": "Astuce : quand un prestataire passe au statut « Payé » dans l'onglet Prestataires, son montant est automatiquement ajouté ici."
@@ -164,7 +168,8 @@
     "guest_total": "Convives totaux",
     "filter_all": "Tous",
     "filter_attending": "Présents",
-    "filter_declined": "Absents"
+    "filter_declined": "Absents",
+    "rsvp_for": "RSVP de {{name}}"
   },
   "planning": {
     "title": "Planning",
@@ -307,7 +312,8 @@
     "leave_review": "Laisser un avis",
     "after_wedding": "Après le mariage",
     "empty": "Aucun prestataire",
-    "my_reviews": "Mes avis publiés"
+    "my_reviews": "Mes avis publiés",
+    "rating_label": "Note : {{rating}} sur 5"
   },
   "seating": {
     "title": "Plan de table",
@@ -383,7 +389,9 @@
       "link_label": "Lien public",
       "copy": "Copier",
       "copied": "Copié !",
-      "download_qr": "Télécharger le QR code"
+      "download_qr": "Télécharger le QR code",
+      "qr_alt": "QR code vers le site mariage {{title}}",
+      "qr_alt_generic": "QR code vers le site mariage"
     },
     "save": "Enregistrer les modifications",
     "slug_prefix": "…/mariage/",
@@ -531,7 +539,9 @@
     "save": "Enregistrer",
     "create": "Créer",
     "empty": "Aucune cagnotte créée pour le moment.",
-    "confirm_delete": "Supprimer cette cagnotte ?"
+    "confirm_delete": "Supprimer cette cagnotte ?",
+    "qr_alt": "QR code IBAN pour {{title}} — {{names}}",
+    "qr_alt_generic": "QR code IBAN pour {{title}}"
   },
   "mariage_cagnotte": {
     "title": "Notre cagnotte",

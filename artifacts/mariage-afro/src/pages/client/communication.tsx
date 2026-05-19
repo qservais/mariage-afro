@@ -142,7 +142,7 @@ export default function CommunicationPage() {
           <p className="text-sm text-muted-foreground">{t("client.conversations.subtitle")}</p>
         </div>
         <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1">
-          <ShieldCheck className="w-3 h-3" />
+          <ShieldCheck className="w-3 h-3" aria-hidden="true" />
           {t("client.conversations.secure")}
         </span>
       </div>
@@ -318,7 +318,7 @@ export default function CommunicationPage() {
                     {msg.content}
                   </div>
                   <div className="flex items-center gap-1.5 mt-1 text-[11px] text-muted-foreground">
-                    <Clock className="w-3 h-3" />
+                    <Clock className="w-3 h-3" aria-hidden="true" />
                     <span>{authorLabel}</span>
                     <span>·</span>
                     <span>{fmtTime(msg.createdAt)}</span>
@@ -333,7 +333,9 @@ export default function CommunicationPage() {
           {activeConvId && (
             <div className="border-t border-border p-3">
               <div className="flex gap-3 items-end">
+                <label htmlFor="message-textarea" className="sr-only">{t("client.conversations.placeholder")}</label>
                 <Textarea
+                  id="message-textarea"
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   onKeyDown={handleKeyDown}

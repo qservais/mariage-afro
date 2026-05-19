@@ -126,18 +126,26 @@ export default function DocumentsPage() {
               create.mutate({ name: form.name, url: form.url, category: form.category });
             }}
           >
-            <Input
-              placeholder={t("documents.name")}
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              data-testid="input-doc-name"
-            />
-            <Input
-              placeholder="URL (https://...)"
-              type="url"
-              value={form.url}
-              onChange={(e) => setForm({ ...form, url: e.target.value })}
-            />
+            <div>
+              <label htmlFor="doc-name" className="sr-only">{t("documents.name")}</label>
+              <Input
+                id="doc-name"
+                placeholder={t("documents.name")}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                data-testid="input-doc-name"
+              />
+            </div>
+            <div>
+              <label htmlFor="doc-url" className="sr-only">URL</label>
+              <Input
+                id="doc-url"
+                placeholder="URL (https://...)"
+                type="url"
+                value={form.url}
+                onChange={(e) => setForm({ ...form, url: e.target.value })}
+              />
+            </div>
             <Button type="submit" className="rounded-none uppercase tracking-wider text-xs">
               {t("documents.add_link")}
             </Button>

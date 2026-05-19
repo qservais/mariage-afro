@@ -320,7 +320,9 @@ export default function SiteMariagePage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={qrDataUrl}
-                    alt="QR code"
+                    alt={site?.title
+                      ? t("site_mariage.share.qr_alt", { title: site.title })
+                      : t("site_mariage.share.qr_alt_generic")}
                     width={120}
                     height={120}
                     className="block"

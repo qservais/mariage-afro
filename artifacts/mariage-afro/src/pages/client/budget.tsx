@@ -132,12 +132,18 @@ export default function BudgetPage() {
             <div
               className={`h-4 transition-all ${progressPct >= 100 ? "bg-rose-500" : progressPct >= 80 ? "bg-amber-400" : "bg-primary"}`}
               style={{ width: `${progressPct}%` }}
+              role="progressbar"
+              aria-valuenow={progressPct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={progressPct >= 100 ? t("budget.progress_over_budget") : t("budget.progress_label", { pct: progressPct })}
             />
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-neutral-600">{t("budget.progress_label", { pct: progressPct })}</span>
             <span className={`font-semibold ${remaining < 0 ? "text-rose-600" : "text-emerald-600"}`}>
-              {t("budget.remaining")}: {fmt(Math.abs(remaining))}{remaining < 0 ? " ⚠" : ""}
+              {t("budget.remaining")}: {fmt(Math.abs(remaining))}
+              {remaining < 0 && <span className="ml-1 font-bold">{t("budget.over_budget_text")}</span>}
             </span>
           </div>
         </div>
@@ -163,11 +169,23 @@ export default function BudgetPage() {
         className="bg-white p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.category) return; create.mutate({ category: form.category, vendor: form.vendor || null, planned: Math.round(Number(form.planned || 0) * 100), actual: Math.round(Number(form.actual || 0) * 100) }); }}
       >
-        <Input placeholder={t("budget.category")} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required data-testid="input-budget-category" />
-        <Input placeholder={t("budget.vendor")} value={form.vendor} onChange={(e) => setForm({ ...form, vendor: e.target.value })} />
-        <Input placeholder={t("budget.planned_eur")} type="number" min="0" value={form.planned} onChange={(e) => setForm({ ...form, planned: e.target.value })} />
-        <Input placeholder={t("budget.actual_eur")} type="number" min="0" value={form.actual} onChange={(e) => setForm({ ...form, actual: e.target.value })} />
-        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" /> {t("budget.add")}</Button>
+        <div>
+          <label htmlFor="budget-category" className="sr-only">{t("budget.category")}</label>
+          <Input id="budget-category" placeholder={t("budget.category")} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required data-testid="input-budget-category" />
+        </div>
+        <div>
+          <label htmlFor="budget-vendor" className="sr-only">{t("budget.vendor")}</label>
+          <Input id="budget-vendor" placeholder={t("budget.vendor")} value={form.vendor} onChange={(e) => setForm({ ...form, vendor: e.target.value })} />
+        </div>
+        <div>
+          <label htmlFor="budget-planned" className="sr-only">{t("budget.planned_eur")}</label>
+          <Input id="budget-planned" placeholder={t("budget.planned_eur")} type="number" min="0" value={form.planned} onChange={(e) => setForm({ ...form, planned: e.target.value })} />
+        </div>
+        <div>
+          <label htmlFor="budget-actual" className="sr-only">{t("budget.actual_eur")}</label>
+          <Input id="budget-actual" placeholder={t("budget.actual_eur")} type="number" min="0" value={form.actual} onChange={(e) => setForm({ ...form, actual: e.target.value })} />
+        </div>
+        <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" aria-hidden="true" /> {t("budget.add")}</Button>
       </form>
 
       <div className="bg-white border border-neutral-200 overflow-x-auto">
