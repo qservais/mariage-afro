@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Quote, ChevronDown, ArrowRight, Heart, Briefcase, Building2, ChefHat, Wine, GlassWater, Users, UserCheck, Sparkles as SparklesIcon, Camera, Music2 } from "lucide-react";
 import { Picture } from "@/components/Picture";
 
-import heroImage from "@assets/GM-00756.jpg_1776614313614.jpeg";
-import aboutImage from "@assets/pexels-rimiscky-34747069_1776285262172.jpg";
-import servicesImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import { SEO } from "@/components/SEO";
 import { HeroCinematicOverlay, HeroMobileFadeOverlay } from "@/components/home/HeroCinematicIntro";
 import { TrustBar } from "@/components/home/TrustBar";
 import { ProcessTimeline } from "@/components/home/ProcessTimeline";
 import { HeroCursor } from "@/components/HeroCursor";
 
-const videoSrc = "/trailer-hero.mp4";
+const videoSrc = "/videos/sm-j1-compressed.mp4";
+const heroImage = "/images/sm-hero-poster.webp";
+const aboutImage = "/images/dsc05077.webp";
+const servicesImg = "/images/m-sj2-05790.webp";
 const filmVideo1 = "/film-de-miel-2.mp4";
 const filmVideo2 = "/film-de-miel-1.mp4";
 

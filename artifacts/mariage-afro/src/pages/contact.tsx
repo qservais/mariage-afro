@@ -23,7 +23,7 @@ import {
   type StepContentContext,
 } from "@/components/forms";
 
-import contactImg from "@assets/MielMagGM-156of162.jpg_1776614313614.jpeg";
+const contactImg = "/images/mielmagg-m-162of162-1.webp";
 
 interface ContactValues extends Record<string, unknown> {
   name: string;

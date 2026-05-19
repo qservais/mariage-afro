@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Picture } from "@/components/Picture";
-import bannerImg from "@assets/MielmagMS-48of267.jpg_1776614313615.jpeg";
 import { SEO } from "@/components/SEO";
+
+const bannerImg = "/images/dsc05154.webp";
 
 export default function About() {
   const { t } = useTranslation();

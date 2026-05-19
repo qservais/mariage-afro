@@ -5,15 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Heart, Images, ChevronLeft, ChevronRight, X, Play, Film } from "lucide-react";
 import { Picture } from "@/components/Picture";
 
-import img1 from "@assets/WhatsApp-Image-2025-10-30-at-17.42.50_1776614313615.jpeg";
-import img2 from "@assets/GM-00679.jpg_1776614313614.jpeg";
-import img3 from "@assets/GM-00719.jpg_1776614313614.jpeg";
-import img4 from "@assets/GM-01293.jpg_1776614313614.jpeg";
-import img5 from "@assets/DSC05396.jpg_1776614313613.jpeg";
-import img6 from "@assets/New-Project-42.jpg_1776614313615.jpeg";
-import img7 from "@assets/MielmagMS-48of267.jpg_1776614313615.jpeg";
-import img8 from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
 import { SEO } from "@/components/SEO";
+
+const img1 = "/images/g-m-01264.webp";
+const img2 = "/images/g-m-00756.webp";
+const img3 = "/images/g-m-00838.webp";
+const img4 = "/images/g-m-00895.webp";
+const img5 = "/images/dsc05353.webp";
+const img6 = "/images/new-project-42.webp";
+const img7 = "/images/mielmaggm-156of162.webp";
+const img8 = "/images/m-sj2-05876.webp";
 
 const FALLBACK_IMAGES = [img1, img2, img3, img4, img5, img6, img7, img8];
 
