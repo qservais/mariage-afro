@@ -100,6 +100,12 @@
       "sourceType": "github",
       "computedHash": "535c07f27fc92339bd3e1c4c9eb1a3e1d129180358fb78915df5933ea361c383"
     },
+    "dependency-updater": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/dependency-updater/SKILL.md",
+      "computedHash": "dc7f34bfa7a1371852fa6f640e14364c52f11fa8303d301ceeb2920623e92157"
+    },
     "difficult-workplace-conversations": {
       "source": "softaworks/agent-toolkit",
       "sourceType": "github",
@@ -111,6 +117,12 @@
       "sourceType": "github",
       "skillPath": "plugins/dotnet-contribution/skills/dotnet-backend-patterns/SKILL.md",
       "computedHash": "b9af7afad1aba77bf12adfc523062292b11f629de5c4595a68ae0bb2103f0a28"
+    },
+    "error-handling-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-essentials/skills/error-handling-patterns/SKILL.md",
+      "computedHash": "824c53fa080765f05862d3ec0ef829aaff9f8d544f9de0039b8fcafa6bc1a899"
     },
     "fastapi-templates": {
       "source": "wshobson/agents",
@@ -295,6 +307,12 @@
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
       "sourceType": "github",
       "computedHash": "0a413bf988d06481f69bb81df2070741c3ba12dd9f1be2706d57f259c905992d"
+    },
+    "using-superpowers": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/using-superpowers/SKILL.md",
+      "computedHash": "de10fd3ff46d797acc92b9df6b3ea456a5cd1d095b73c90bc921e83cce4c5bb9"
     },
     "vercel-composition-patterns": {
       "source": "vercel-labs/agent-skills",

@@ -57,7 +57,19 @@
     "partner4": "Cocktail Bar",
     "partner5": "Waitstaff",
     "partner6": "Hostesses",
-    "partner7": "Wedding Planner"
+    "partner7": "Wedding Planner",
+    "audience_section_aria": "Choose your path",
+    "audience_eyebrow": "You are",
+    "audience_title": "What are you looking for today?",
+    "audience_desc": "Mariage Afro is both a platform for couples getting married and a network of professional vendors.",
+    "b2c_num": "01 — Individual",
+    "b2c_title": "I'm getting married",
+    "b2c_desc": "Discover our accompaniment packages, access a network of selected vendors and organise your Afro or mixed wedding on our dedicated platform.",
+    "b2c_cta": "See our services",
+    "b2b_num": "02 — Professional",
+    "b2b_title": "I'm a vendor",
+    "b2b_desc": "Photographers, caterers, venues, DJs, florists... Join the Mariage Afro network to offer your services and receive qualified leads from Afro and mixed couples across Europe and Africa.",
+    "b2b_cta": "Become a partner"
   },
   "destination": {
     "section_label": "Destination Wedding",

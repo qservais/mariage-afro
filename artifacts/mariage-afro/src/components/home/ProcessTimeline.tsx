@@ -1,39 +1,6 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
-const steps = [
-  {
-    num: "01",
-    label: "Consultation",
-    desc: "Un échange personnalisé pour comprendre votre vision, votre budget et vos besoins culturels.",
-    icon: "◎",
-  },
-  {
-    num: "02",
-    label: "Sélection",
-    desc: "Accès à notre réseau de prestataires triés sur le volet, spécialisés mariage afro & mixte.",
-    icon: "◈",
-  },
-  {
-    num: "03",
-    label: "Planification",
-    desc: "Suivi complet sur notre plateforme : budget, invités, planning, documents en un seul endroit.",
-    icon: "◇",
-  },
-  {
-    num: "04",
-    label: "Coordination",
-    desc: "Nos équipes orchestrent chaque prestataire pour garantir une cohérence parfaite le grand jour.",
-    icon: "◆",
-  },
-  {
-    num: "05",
-    label: "Jour J",
-    desc: "Vivez pleinement votre mariage. Nous gérons les imprévus, vous créez les souvenirs.",
-    icon: "★",
-  },
-];
-
 /**
  * ProcessTimeline — 5-step « Comment ça marche » section.
  * Horizontal timeline on desktop, vertical on mobile.
@@ -41,6 +8,14 @@ const steps = [
  */
 export function ProcessTimeline() {
   const { t } = useTranslation();
+
+  const steps = [
+    { num: "01", label: t("process.step1_label"), desc: t("process.step1_desc"), icon: "◎" },
+    { num: "02", label: t("process.step2_label"), desc: t("process.step2_desc"), icon: "◈" },
+    { num: "03", label: t("process.step3_label"), desc: t("process.step3_desc"), icon: "◇" },
+    { num: "04", label: t("process.step4_label"), desc: t("process.step4_desc"), icon: "◆" },
+    { num: "05", label: t("process.step5_label"), desc: t("process.step5_desc"), icon: "★" },
+  ];
 
   return (
     <section
@@ -58,17 +33,17 @@ export function ProcessTimeline() {
         >
           <span className="inline-flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.4em] text-accent font-medium mb-5">
             <span className="block w-8 h-px bg-accent" />
-            {t("process.label", "Notre méthode")}
+            {t("process.label")}
             <span className="block w-8 h-px bg-accent" />
           </span>
           <h2
             id="process-title"
             className="font-display uppercase text-4xl md:text-6xl lg:text-7xl text-surface leading-[0.95] tracking-tight mt-4"
           >
-            {t("process.title", "Comment ça marche")}
+            {t("process.title")}
           </h2>
           <p className="text-surface/60 max-w-xl mx-auto mt-6 text-sm md:text-base font-light leading-relaxed">
-            {t("process.subtitle", "De la première rencontre jusqu'au jour J, un accompagnement sur-mesure.")}
+            {t("process.subtitle")}
           </p>
         </motion.div>
 

@@ -47,7 +47,10 @@
     "cookies": "Cookiebeleid",
     "rights": "Alle rechten voorbehouden.",
     "signature_eyebrow": "Mariage Afro",
-    "signature": "Een viering op maat, twee culturen verenigd."
+    "signature": "Een viering op maat, twee culturen verenigd.",
+    "instagram_soon": "Instagram (binnenkort beschikbaar)",
+    "facebook_soon": "Facebook (binnenkort beschikbaar)",
+    "tiktok_soon": "TikTok (binnenkort beschikbaar)"
   },
   "popup": {
     "eyebrow": "Gratis gids",
@@ -277,5 +280,28 @@
         }
       ]
     }
+  },
+  "process": {
+    "label": "Onze methode",
+    "title": "Hoe werkt het",
+    "subtitle": "Van de eerste ontmoeting tot de trouwdag, een op maat begeleiding.",
+    "step1_label": "Consult",
+    "step1_desc": "Een persoonlijk gesprek om uw visie, budget en culturele wensen te begrijpen.",
+    "step2_label": "Selectie",
+    "step2_desc": "Toegang tot ons netwerk van zorgvuldig geselecteerde leveranciers, gespecialiseerd in afro & gemengde bruiloften.",
+    "step3_label": "Planning",
+    "step3_desc": "Volledig overzicht op ons platform: budget, gasten, planning en documenten op één plek.",
+    "step4_label": "Coördinatie",
+    "step4_desc": "Ons team coördineert elke leverancier voor een perfecte samenhang op de grote dag.",
+    "step5_label": "Trouwdag",
+    "step5_desc": "Geniet voluit van uw bruiloft. Wij beheren de onverwachte situaties, u creëert de herinneringen."
+  },
+  "trust_bar": {
+    "aria_label": "Kerncijfers Mariage Afro",
+    "label": "De referentie voor afro & gemengde bruiloften — wereldwijd",
+    "metric1_label": "Geverifieerde leveranciers",
+    "metric2_label": "Landen vertegenwoordigd",
+    "metric3_label": "Bruiloften begeleid",
+    "metric4_label": "Beschikbare talen"
   }
 }

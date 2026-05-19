@@ -47,7 +47,10 @@
     "cookies": "Politique cookies",
     "rights": "Tous droits réservés.",
     "signature_eyebrow": "Mariage Afro",
-    "signature": "Une célébration sur mesure, deux cultures réunies."
+    "signature": "Une célébration sur mesure, deux cultures réunies.",
+    "instagram_soon": "Instagram (bientôt disponible)",
+    "facebook_soon": "Facebook (bientôt disponible)",
+    "tiktok_soon": "TikTok (bientôt disponible)"
   },
   "popup": {
     "eyebrow": "Guide gratuit",
@@ -277,5 +280,28 @@
         }
       ]
     }
+  },
+  "process": {
+    "label": "Notre méthode",
+    "title": "Comment ça marche",
+    "subtitle": "De la première rencontre jusqu'au jour J, un accompagnement sur-mesure.",
+    "step1_label": "Consultation",
+    "step1_desc": "Un échange personnalisé pour comprendre votre vision, votre budget et vos besoins culturels.",
+    "step2_label": "Sélection",
+    "step2_desc": "Accès à notre réseau de prestataires triés sur le volet, spécialisés mariage afro & mixte.",
+    "step3_label": "Planification",
+    "step3_desc": "Suivi complet sur notre plateforme : budget, invités, planning, documents en un seul endroit.",
+    "step4_label": "Coordination",
+    "step4_desc": "Nos équipes orchestrent chaque prestataire pour garantir une cohérence parfaite le grand jour.",
+    "step5_label": "Jour J",
+    "step5_desc": "Vivez pleinement votre mariage. Nous gérons les imprévus, vous créez les souvenirs."
+  },
+  "trust_bar": {
+    "aria_label": "Chiffres clés Mariage Afro",
+    "label": "La référence du mariage afro & mixte — partout dans le monde",
+    "metric1_label": "Prestataires vérifiés",
+    "metric2_label": "Pays représentés",
+    "metric3_label": "Mariages accompagnés",
+    "metric4_label": "Langues disponibles"
   }
 }

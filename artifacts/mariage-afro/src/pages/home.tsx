@@ -369,22 +369,21 @@ export default function Home() {
       {/* Choix B2B / B2C — orientation immédiate du visiteur */}
       <section
         className="relative bg-cream py-20 md:py-28 border-t border-wine-deep/10"
-        aria-label="Choisissez votre parcours"
+        aria-label={t("home.audience_section_aria")}
         data-testid="section-audience-choice"
       >
         <div className="max-w-6xl mx-auto px-6 md:px-10">
           <motion.div {...fadeIn} className="text-center mb-12 md:mb-16">
             <span className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.4em] text-gold-deep font-semibold mb-5">
               <span className="block w-8 h-px bg-gold-deep" />
-              Vous êtes
+              {t("home.audience_eyebrow")}
               <span className="block w-8 h-px bg-gold-deep" />
             </span>
             <h2 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl text-wine-deep tracking-tight leading-tight">
-              Que recherchez-vous aujourd'hui&nbsp;?
+              {t("home.audience_title")}
             </h2>
             <p className="text-wine-deep/60 max-w-xl mx-auto mt-5 text-sm md:text-base font-light">
-              Mariage Afro est à la fois une plateforme pour les couples qui se marient
-              et un réseau de prestataires professionnels.
+              {t("home.audience_desc")}
             </p>
           </motion.div>
 
@@ -398,18 +397,18 @@ export default function Home() {
               >
                 <div className="flex items-start justify-between mb-10 md:mb-14">
                   <span className="text-xs uppercase tracking-[0.3em] text-gold-deep group-hover:text-gold font-semibold transition-colors">
-                    01 — Particulier
+                    {t("home.b2c_num")}
                   </span>
                   <Heart className="w-5 h-5 text-gold-deep group-hover:text-gold transition-all group-hover:scale-110" strokeWidth={1.5} />
                 </div>
                 <h3 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl text-wine-deep group-hover:text-cream transition-colors leading-[1.05] tracking-tight mb-5">
-                  Je me marie
+                  {t("home.b2c_title")}
                 </h3>
                 <p className="text-wine-deep/65 group-hover:text-cream/75 transition-colors text-sm md:text-base font-light leading-relaxed mb-10 max-w-md">
-                  Découvrez nos formules d'accompagnement, accédez à un réseau de prestataires sélectionnés et organisez votre mariage afro ou mixte sur notre plateforme dédiée.
+                  {t("home.b2c_desc")}
                 </p>
                 <div className="flex items-center gap-3 text-xs uppercase tracking-[0.25em] font-semibold text-gold-deep group-hover:text-gold transition-colors">
-                  <span>Voir nos services</span>
+                  <span>{t("home.b2c_cta")}</span>
                   <span className="block w-8 h-px bg-gold-deep group-hover:bg-gold transition-all group-hover:w-14" />
                 </div>
               </Link>
@@ -424,18 +423,18 @@ export default function Home() {
               >
                 <div className="flex items-start justify-between mb-10 md:mb-14">
                   <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-medium">
-                    02 — Professionnel
+                    {t("home.b2b_num")}
                   </span>
                   <Briefcase className="w-5 h-5 text-gold transition-transform group-hover:scale-110" strokeWidth={1.5} />
                 </div>
                 <h3 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl text-cream leading-[1.05] tracking-tight mb-5">
-                  Je suis prestataire
+                  {t("home.b2b_title")}
                 </h3>
                 <p className="text-cream/70 text-sm md:text-base font-light leading-relaxed mb-10 max-w-md">
-                  Photographes, traiteurs, lieux, DJs, fleuristes... Rejoignez le réseau Mariage Afro pour proposer vos services et recevoir des leads qualifiés de couples afro et mixtes à travers l'Europe et l'Afrique.
+                  {t("home.b2b_desc")}
                 </p>
                 <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] font-medium text-gold">
-                  <span>Devenir partenaire</span>
+                  <span>{t("home.b2b_cta")}</span>
                   <span className="block w-8 h-px bg-gold transition-all group-hover:w-14" />
                 </div>
               </Link>

@@ -47,7 +47,10 @@
     "cookies": "Cookie Policy",
     "rights": "All rights reserved.",
     "signature_eyebrow": "Mariage Afro",
-    "signature": "A bespoke celebration, two cultures united."
+    "signature": "A bespoke celebration, two cultures united.",
+    "instagram_soon": "Instagram (coming soon)",
+    "facebook_soon": "Facebook (coming soon)",
+    "tiktok_soon": "TikTok (coming soon)"
   },
   "popup": {
     "eyebrow": "Free guide",
@@ -277,5 +280,28 @@
         }
       ]
     }
+  },
+  "process": {
+    "label": "Our method",
+    "title": "How it works",
+    "subtitle": "From the first meeting to the wedding day, a bespoke accompaniment.",
+    "step1_label": "Consultation",
+    "step1_desc": "A personalised exchange to understand your vision, budget and cultural needs.",
+    "step2_label": "Selection",
+    "step2_desc": "Access to our hand-picked network of vendors specialised in Afro & mixed weddings.",
+    "step3_label": "Planning",
+    "step3_desc": "Complete overview on our platform: budget, guests, schedule and documents in one place.",
+    "step4_label": "Coordination",
+    "step4_desc": "Our teams orchestrate every vendor to guarantee perfect cohesion on the big day.",
+    "step5_label": "Wedding Day",
+    "step5_desc": "Live your wedding to the fullest. We handle the unexpected, you create the memories."
+  },
+  "trust_bar": {
+    "aria_label": "Mariage Afro key figures",
+    "label": "The reference for Afro & mixed weddings — worldwide",
+    "metric1_label": "Verified vendors",
+    "metric2_label": "Countries represented",
+    "metric3_label": "Weddings accompanied",
+    "metric4_label": "Available languages"
   }
 }

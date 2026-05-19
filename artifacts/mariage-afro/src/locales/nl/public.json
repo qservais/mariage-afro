@@ -57,7 +57,19 @@
     "partner4": "Cocktailbar",
     "partner5": "Bediening",
     "partner6": "Hostesses",
-    "partner7": "Wedding Planner"
+    "partner7": "Wedding Planner",
+    "audience_section_aria": "Kies uw traject",
+    "audience_eyebrow": "U bent",
+    "audience_title": "Wat zoekt u vandaag?",
+    "audience_desc": "Mariage Afro is tegelijk een platform voor koppels die trouwen en een netwerk van professionele leveranciers.",
+    "b2c_num": "01 — Particulier",
+    "b2c_title": "Ik trouw",
+    "b2c_desc": "Ontdek onze begeleidingsformules, krijg toegang tot een netwerk van geselecteerde leveranciers en organiseer uw afro of gemengde bruiloft op ons speciale platform.",
+    "b2c_cta": "Bekijk onze diensten",
+    "b2b_num": "02 — Professional",
+    "b2b_title": "Ik ben leverancier",
+    "b2b_desc": "Fotografen, cateraars, locaties, DJ's, bloemisten... Sluit u aan bij het Mariage Afro-netwerk om uw diensten aan te bieden en gekwalificeerde leads te ontvangen van afro en gemengde koppels in Europa en Afrika.",
+    "b2b_cta": "Partner worden"
   },
   "destination": {
     "section_label": "Destination Wedding",
