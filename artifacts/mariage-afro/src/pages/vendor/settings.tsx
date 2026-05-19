@@ -136,7 +136,8 @@ export default function VendorSettingsPage() {
             type="button"
             onClick={toggleAutoFollowup}
             disabled={save.isPending}
-            aria-pressed={autoFollowup}
+            role="switch"
+            aria-checked={autoFollowup}
             data-testid="toggle-auto-followup"
             className={`relative inline-flex h-7 w-12 shrink-0 items-center transition-colors ${
               autoFollowup ? "bg-wine-deep" : "bg-neutral-300"

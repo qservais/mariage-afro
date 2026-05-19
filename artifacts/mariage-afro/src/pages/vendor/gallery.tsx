@@ -60,7 +60,7 @@ export default function VendorGalleryPage() {
             data-testid="button-upload-gallery"
             className="inline-flex items-center gap-2 bg-wine-deep text-cream hover:bg-wine-deep/90 cursor-pointer uppercase tracking-wider text-xs h-10 px-4"
           >
-            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <UploadCloud className="w-4 h-4" aria-hidden="true" />}
             {t("vendor.gallery.upload")}
             <input
               ref={galleryInputRef}
@@ -122,7 +122,7 @@ export default function VendorGalleryPage() {
                     {t("vendor.gallery.cover_badge")}
                   </span>
                 )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 group-focus-within:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
                   <button
                     type="button"
                     onClick={() => {
@@ -134,7 +134,7 @@ export default function VendorGalleryPage() {
                     aria-label={isCover ? t("vendor.gallery.unset_cover") : t("vendor.gallery.set_cover")}
                     data-testid={`button-cover-${idx}`}
                   >
-                    {isCover ? <StarOff className="w-4 h-4" /> : <Star className="w-4 h-4" />}
+                    {isCover ? <StarOff className="w-4 h-4" aria-hidden="true" /> : <Star className="w-4 h-4" aria-hidden="true" />}
                   </button>
                   <button
                     type="button"
@@ -149,7 +149,7 @@ export default function VendorGalleryPage() {
                     aria-label={t("vendor.gallery.remove")}
                     data-testid={`button-remove-${idx}`}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               </div>

@@ -236,10 +236,11 @@ export default function VendorQuotesPage() {
                     type="button"
                     onClick={() => removeService(idx)}
                     disabled={form.services.length <= 1}
+                    aria-label={t("vendor.quotes.remove_service", { defaultValue: "Supprimer la ligne" })}
                     className="p-1 text-neutral-400 hover:text-rose-600 disabled:opacity-30"
                     data-testid={`button-remove-service-${idx}`}
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               ))}
@@ -365,20 +366,20 @@ export default function VendorQuotesPage() {
                             <button
                               onClick={(e) => { e.stopPropagation(); sendMutation.mutate(q.id); }}
                               disabled={sendMutation.isPending}
-                              title={t("vendor.quotes.send_btn")}
+                              aria-label={t("vendor.quotes.send_btn")}
                               className="p-1.5 border border-wine-deep text-wine-deep hover:bg-wine-deep hover:text-cream transition-colors"
                               data-testid={`button-send-${q.id}`}
                             >
-                              <Send className="w-3.5 h-3.5" />
+                              <Send className="w-3.5 h-3.5" aria-hidden="true" />
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); if (confirm(t("vendor.quotes.delete_confirm"))) deleteMutation.mutate(q.id); }}
                               disabled={deleteMutation.isPending}
-                              title={t("vendor.quotes.delete_btn")}
+                              aria-label={t("vendor.quotes.delete_btn")}
                               className="p-1.5 border border-neutral-300 text-neutral-500 hover:border-rose-500 hover:text-rose-600 transition-colors"
                               data-testid={`button-delete-${q.id}`}
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                             </button>
                           </>
                         )}
@@ -404,8 +405,12 @@ export default function VendorQuotesPage() {
                   <h3 className="font-display text-lg text-wine-deep">{selected.recipientName || selected.recipientEmail}</h3>
                   {selected.recipientName && <p className="text-xs text-neutral-500">{selected.recipientEmail}</p>}
                 </div>
-                <button onClick={() => setSelectedId(null)} className="p-1 text-neutral-400 hover:text-wine-deep">
-                  <X className="w-4 h-4" />
+                <button
+                  onClick={() => setSelectedId(null)}
+                  aria-label={t("vendor.quotes.close", { defaultValue: "Fermer" })}
+                  className="p-1 text-neutral-400 hover:text-wine-deep"
+                >
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 

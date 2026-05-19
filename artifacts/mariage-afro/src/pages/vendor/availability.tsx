@@ -146,17 +146,17 @@ export default function VendorAvailabilityPage() {
       </header>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 text-xs text-neutral-700">
-        <span className="inline-flex items-center gap-2">
-          <span className="w-3 h-3 bg-emerald-100 border border-emerald-300" />
+      <div className="flex flex-wrap gap-4 text-xs text-neutral-700" role="list" aria-label={t("vendor.availability.legend_label", { defaultValue: "Légende" })}>
+        <span className="inline-flex items-center gap-2" role="listitem">
+          <span className="w-3 h-3 bg-emerald-100 border border-emerald-300" aria-hidden="true" />
           {t("vendor.availability.legend_free")}
         </span>
-        <span className="inline-flex items-center gap-2">
-          <span className="w-3 h-3 bg-amber-100 border border-amber-300" />
+        <span className="inline-flex items-center gap-2" role="listitem">
+          <span className="w-3 h-3 bg-amber-100 border border-amber-300" aria-hidden="true" />
           {t("vendor.availability.legend_blocked")}
         </span>
-        <span className="inline-flex items-center gap-2">
-          <span className="w-3 h-3 bg-rose-100 border border-rose-300" />
+        <span className="inline-flex items-center gap-2" role="listitem">
+          <span className="w-3 h-3 bg-rose-100 border border-rose-300" aria-hidden="true" />
           {t("vendor.availability.legend_booked")}
         </span>
       </div>
@@ -201,14 +201,7 @@ export default function VendorAvailabilityPage() {
                     isToday ? "ring-2 ring-wine-deep ring-offset-1" : ""
                   }`}
                   data-testid={`day-${dateStr}`}
-                  aria-label={dateStr}
-                  title={
-                    row?.status === "booked"
-                      ? t("vendor.availability.legend_booked")
-                      : row?.status === "blocked"
-                        ? t("vendor.availability.legend_blocked")
-                        : t("vendor.availability.legend_free")
-                  }
+                  aria-label={`${new Date(dateStr).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })} — ${row?.status === "booked" ? t("vendor.availability.legend_booked") : row?.status === "blocked" ? t("vendor.availability.legend_blocked") : t("vendor.availability.legend_free")}`}
                 >
                   <span className="font-medium">{cell.date.getDate()}</span>
                   {row?.status === "booked" && (

@@ -153,6 +153,9 @@ export function FormStepper<TValues extends Record<string, unknown>>({
       aria-labelledby={titleId}
       className={cn("space-y-8", className)}
     >
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {labels.step} {stepIndex + 1} {labels.of} {totalSteps}: {currentStep.title}
+      </div>
       <div data-testid="stepper-progress">
         <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-wine-deep/65 font-medium mb-3">
           <span id={titleId}>

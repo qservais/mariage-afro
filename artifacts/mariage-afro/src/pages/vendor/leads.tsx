@@ -214,7 +214,7 @@ export default function VendorLeadsPage() {
         <span className="text-xs text-neutral-500 ml-auto">
           {t("vendor.leads.count", { count: filtered.length })}
         </span>
-        <div className="inline-flex border border-neutral-300 bg-white" role="tablist" aria-label="View toggle">
+        <div className="inline-flex border border-neutral-300 bg-white" role="group" aria-label={t("vendor.leads.view_toggle_label", { defaultValue: "Changer la vue" })}>
           <button
             onClick={() => setViewMode("table")}
             className={`px-3 py-2 text-xs uppercase tracking-wider flex items-center gap-1.5 ${viewMode === "table" ? "bg-wine-deep text-cream" : "text-wine-deep"}`}
@@ -266,6 +266,7 @@ export default function VendorLeadsPage() {
                           onClick={() => openLead(lead)}
                           draggable
                           onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(lead.id)); e.dataTransfer.effectAllowed = "move"; }}
+                          aria-label={`${lead.name} — ${t(`vendor.leads.type.${lead.requestType}`)} — ${t(`vendor.leads.status.${lead.status}`)}`}
                           className={`w-full text-left bg-white border p-2.5 hover:border-wine-deep transition-colors cursor-grab active:cursor-grabbing ${selectedId === lead.id ? "border-wine-deep" : "border-neutral-200"}`}
                           data-testid={`kanban-card-${lead.id}`}
                         >
@@ -429,6 +430,7 @@ export default function VendorLeadsPage() {
                       key={s}
                       onClick={() => setStatus(selected, s)}
                       disabled={updateMutation.isPending && updateMutation.variables?.id === selected.id}
+                      aria-pressed={selected.status === s}
                       className={`text-xs uppercase tracking-wider px-2 py-2 border transition-colors ${
                         selected.status === s
                           ? "bg-wine-deep text-cream border-wine-deep"
@@ -454,6 +456,7 @@ export default function VendorLeadsPage() {
                         key={tag}
                         onClick={() => toggleTag(selected, tag)}
                         disabled={updateMutation.isPending}
+                        aria-pressed={active}
                         className={`text-[11px] uppercase tracking-wider px-2.5 py-1 border transition-colors ${
                           active
                             ? "bg-gold/20 border-gold text-wine-deep"
@@ -472,6 +475,7 @@ export default function VendorLeadsPage() {
                         key={`custom-${tag}`}
                         onClick={() => toggleTag(selected, tag)}
                         disabled={updateMutation.isPending}
+                        aria-pressed={active}
                         className={`text-[11px] uppercase tracking-wider px-2.5 py-1 border transition-colors ${
                           active
                             ? "bg-gold/30 border-gold text-wine-deep"
@@ -522,7 +526,7 @@ export default function VendorLeadsPage() {
                   className="w-full bg-wine-deep text-cream hover:bg-wine-deep/90 rounded-none uppercase tracking-wider gap-2 text-xs"
                   data-testid="button-send-quote"
                 >
-                  <FileText className="w-3.5 h-3.5" />
+                  <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                   {t("vendor.leads.send_quote", { defaultValue: "Envoyer un devis" })}
                 </Button>
               </div>

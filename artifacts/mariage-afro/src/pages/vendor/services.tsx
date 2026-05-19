@@ -83,6 +83,7 @@ export default function VendorServicesPage() {
                     key={s}
                     type="button"
                     onClick={() => toggleSuggested(s)}
+                    aria-pressed={active}
                     data-testid={`suggested-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                     className={[
                       "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border transition-colors",

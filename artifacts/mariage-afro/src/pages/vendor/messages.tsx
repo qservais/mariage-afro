@@ -96,7 +96,7 @@ export default function VendorMessagesPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto h-[calc(100vh-220px)] flex flex-col">
+    <div className="max-w-6xl mx-auto min-h-[420px] h-[calc(100vh-220px)] flex flex-col">
       <div className="flex items-center gap-3 mb-4 pb-4 border-b border-neutral-200">
         <MessageCircle className="w-6 h-6 text-wine-deep" />
         <div>
@@ -216,10 +216,11 @@ export default function VendorMessagesPage() {
                 <Button
                   onClick={handleSend}
                   disabled={!draft.trim() || sendMutation.isPending}
+                  aria-label={t("vendor.messages.send_label", { defaultValue: "Envoyer le message" })}
                   className="rounded-none bg-wine-deep hover:bg-wine-deep/90 h-[70px] px-5 text-cream"
                   data-testid="vendor-button-send-message"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-5 h-5" aria-hidden="true" />
                 </Button>
               </div>
             </div>

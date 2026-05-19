@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useUser, useClerk } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
@@ -61,6 +61,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const mobileMenuBtnRef = useRef<HTMLButtonElement>(null);
   const { data } = useVendorMe();
   const { data: unseen } = useVendorUnseenLeadsCount();
 
@@ -97,7 +98,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
       <aside className="hidden lg:flex fixed top-0 left-0 bottom-0 w-64 bg-wine-deep border-r border-gold/20 flex-col z-30">
         <div className="px-6 py-6 border-b border-gold/20">
           <Link to="/" className="flex items-center gap-2 text-gold font-bold tracking-widest text-sm uppercase">
-            <Heart className="w-4 h-4 fill-gold" />
+            <Heart className="w-4 h-4 fill-gold" aria-hidden="true" />
             <span className="text-cream">Mariage Afro</span>
           </Link>
           <p className="text-[10px] uppercase tracking-[0.3em] text-gold/70 mt-2">{t("vendor.layout.pro_space")}</p>
@@ -110,6 +111,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
               <Link
                 key={item.to}
                 to={item.to}
+                aria-current={active ? "page" : undefined}
                 className={`flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 transition-colors ${
                   active
                     ? "border-gold bg-wine-deep/60 text-gold"
@@ -117,7 +119,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
                 }`}
                 data-testid={`link-vendor-${item.to.split("/").pop()}`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4" aria-hidden="true" />
                 <span className="flex-1">{item.label}</span>
                 {item.badge > 0 && (
                   <span
@@ -136,7 +138,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
           className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-cream/70 hover:text-gold border-t border-gold/20"
           data-testid="button-vendor-signout"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4" aria-hidden="true" />
           {t("vendor.layout.signout")}
         </button>
       </aside>
@@ -144,13 +146,20 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-wine-deep border-b border-gold/20 h-16 flex items-center justify-between px-4">
         <Link to="/" className="text-gold font-bold tracking-widest text-xs uppercase">Mariage Afro Pro</Link>
-        <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu" className="p-2 text-cream">
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+        <button
+          ref={mobileMenuBtnRef}
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? t("vendor.layout.close_menu", { defaultValue: "Fermer le menu" }) : t("vendor.layout.open_menu", { defaultValue: "Ouvrir le menu" })}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-nav"
+          className="p-2 text-cream"
+        >
+          {mobileOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
         </button>
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-wine-deep z-30 overflow-y-auto">
+        <div id="mobile-nav" className="lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-wine-deep z-30 overflow-y-auto">
           <nav className="py-4">
             {NAV.map((item) => {
               const Icon = item.icon;
@@ -159,12 +168,16 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
                 <Link
                   key={item.to}
                   to={item.to}
-                  onClick={() => setMobileOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => {
+                    setMobileOpen(false);
+                    mobileMenuBtnRef.current?.focus();
+                  }}
                   className={`flex items-center gap-3 px-6 py-4 text-base font-medium ${
                     active ? "text-gold bg-wine-deep/60" : "text-cream/80"
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-5 h-5" aria-hidden="true" />
                   <span className="flex-1">{item.label}</span>
                   {item.badge > 0 && (
                     <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-gold text-wine-deep">
@@ -178,7 +191,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
               onClick={handleSignOut}
               className="flex items-center gap-3 px-6 py-4 text-base text-cream/70 w-full text-left border-t border-gold/20 mt-2"
             >
-              <LogOut className="w-5 h-5" /> {t("vendor.layout.signout")}
+              <LogOut className="w-5 h-5" aria-hidden="true" /> {t("vendor.layout.signout")}
             </button>
           </nav>
         </div>
@@ -198,7 +211,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
               {vendor.verified && vendor.active ? (
                 <>
                   <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> {t("vendor.layout.status_published")}
+                    <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" /> {t("vendor.layout.status_published")}
                   </span>
                   {account?.vendorId && (
                     <a
@@ -208,13 +221,13 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
                       className="flex items-center gap-1.5 text-wine-deep border border-wine-deep/30 bg-white hover:bg-wine-deep hover:text-white transition-colors px-3 py-1.5"
                       data-testid="link-vendor-public-profile"
                     >
-                      <ExternalLink className="w-3.5 h-3.5" /> {t("vendor.dashboard.view_public")}
+                      <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" /> {t("vendor.dashboard.view_public")}
                     </a>
                   )}
                 </>
               ) : (
                 <span className="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-3 py-1.5">
-                  <AlertCircle className="w-3.5 h-3.5" /> {t("vendor.layout.status_pending")}
+                  <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" /> {t("vendor.layout.status_pending")}
                 </span>
               )}
             </div>
