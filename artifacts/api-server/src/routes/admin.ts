@@ -16,6 +16,7 @@ import {
   vendorLeadsTable,
 } from "@workspace/db";
 import { adminAuth, ADMIN_COOKIE, isAuthed } from "../middlewares/adminAuth";
+import { generateCsrfToken, requireCsrf, csrfAutoInjectorScript, CSRF_FIELD } from "../middlewares/adminCsrf";
 import {
   notifyVendorSubscriptionActivated,
   notifyVendorApproved,
@@ -25,6 +26,8 @@ import {
 } from "../lib/email";
 
 const router = Router();
+// CSRF validation on all admin POST routes (JSON and upload-photo endpoints are excluded inside requireCsrf)
+router.use(requireCsrf);
 
 const STATUSES = ["new", "in_progress", "done"] as const;
 type Status = (typeof STATUSES)[number];
@@ -158,27 +161,37 @@ async function getPendingCount(): Promise<number> {
   return (cp?.count ?? 0) + (va?.count ?? 0);
 }
 
-function layout(title: string, body: string, showNav = true, pendingBadge = 0): string {
+function layout(title: string, body: string, showNav = true, pendingBadge = 0, csrfToken = "", currentSection = ""): string {
   const badge = (n: number) => n > 0
     ? ` <sup style="background:#c08800;color:#fff;padding:1px 5px;font-size:9px;vertical-align:super;font-weight:700;">${n}</sup>`
     : "";
+  const navLink = (href: string, label: string, section: string) => {
+    const active = currentSection === section;
+    return `<a href="${href}"${active ? ' aria-current="page"' : ""}>${label}</a>`;
+  };
   const nav = showNav ? `
-    <div class="topbar">
-      <h1><a href="/admin" style="color:inherit;">Mariage Afro · Admin</a></h1>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <a href="/admin">Demandes</a>
-        <a href="/admin/reviews">Avis</a>
-        <a href="/admin/subscriptions">Abonnements</a>
-        <a href="/admin/accounts">Comptes${badge(pendingBadge)}</a>
-        <a href="/admin/couples">Couples</a>
-        <a href="/admin/devis">Devis</a>
-        <a href="/admin/content/vendors">Prestataires</a>
-        <form method="POST" action="/admin/logout" style="margin:0;">
-          <button type="submit">Déconnexion</button>
-        </form>
-      </div>
-    </div>` : "";
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} — Mariage Afro Admin</title><style>${css}</style></head><body>${nav}${body}</body></html>`;
+    <header>
+      <nav class="topbar" aria-label="Administration">
+        <h1><a href="/admin" style="color:inherit;">Mariage Afro · Admin</a></h1>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          ${navLink("/admin", "Demandes", "leads")}
+          ${navLink("/admin/reviews", "Avis", "reviews")}
+          ${navLink("/admin/subscriptions", "Abonnements", "subscriptions")}
+          ${navLink("/admin/accounts", `Comptes${badge(pendingBadge)}`, "accounts")}
+          ${navLink("/admin/couples", "Couples", "couples")}
+          ${navLink("/admin/devis", "Devis", "devis")}
+          ${navLink("/admin/content/vendors", "Prestataires", "content")}
+          <form method="POST" action="/admin/logout" style="margin:0;">
+            <input type="hidden" name="${CSRF_FIELD}" value="${escapeHtml(csrfToken)}">
+            <button type="submit">Déconnexion</button>
+          </form>
+        </div>
+      </nav>
+    </header>` : "";
+  const csrfMeta = csrfToken
+    ? `<meta name="csrf-token" content="${escapeHtml(csrfToken)}">`
+    : "";
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} — Mariage Afro Admin</title>${csrfMeta}<style>${css}</style><script>${csrfAutoInjectorScript}</script></head><body>${nav}<main id="main-content">${body}</main></body></html>`;
 }
 
 // ---------- Reviews moderation ----------
@@ -259,6 +272,7 @@ router.get("/reviews", adminAuth, async (req, res) => {
         </tr>`).join("");
 
   const pendingBadge = await getPendingCount();
+  const csrfToken = generateCsrfToken(req, res);
 
   res.type("html").send(layout("Avis", `
     <div class="container">
@@ -272,7 +286,7 @@ router.get("/reviews", adminAuth, async (req, res) => {
         <tbody>${tableBody}</tbody>
       </table>
     </div>
-  `, true, pendingBadge));
+  `, true, pendingBadge, csrfToken, "reviews"));
 });
 
 router.post("/reviews/:id/status", adminAuth, async (req, res) => {
@@ -295,17 +309,19 @@ router.get("/login", (req, res) => {
     res.redirect("/admin");
     return;
   }
+  const csrfToken = generateCsrfToken(req, res);
   const err = req.query.err === "1" ? `<div class="err">Mot de passe incorrect.</div>` : "";
   res.type("html").send(layout("Connexion", `
     <div class="login-page"><div class="login-card">
       <h1>Connexion Admin</h1>
       ${err}
       <form method="POST" action="/admin/login">
-        <input type="password" name="password" placeholder="Mot de passe" required autofocus />
+        <input type="password" name="password" placeholder="Mot de passe" autocomplete="current-password" required autofocus />
+        <input type="hidden" name="${CSRF_FIELD}" value="${escapeHtml(csrfToken)}">
         <button type="submit" class="btn primary">Se connecter</button>
       </form>
     </div></div>
-  `, false));
+  `, false, 0, csrfToken));
 });
 
 router.post("/login", (req, res) => {
@@ -538,6 +554,7 @@ router.get("/", adminAuth, async (req, res) => {
       }).join("")}
     </div>` : "";
 
+  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(layout("Tableau de bord", `
     <div class="container">
       ${stats}
@@ -548,7 +565,7 @@ router.get("/", adminAuth, async (req, res) => {
       </table>
       ${pagination}
     </div>
-  `, true, pendingTotal));
+  `, true, pendingTotal, csrfToken, "leads"));
 });
 
 router.get("/leads/:type/:id", adminAuth, async (req, res) => {
@@ -649,6 +666,7 @@ router.get("/leads/:type/:id", adminAuth, async (req, res) => {
       <button class="btn ${s === r.status ? "primary" : ""}" type="submit">${STATUS_LABEL[s]}</button>
     </form>`).join("");
 
+  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(layout(`Demande #${id}`, `
     <div class="container">
       <p style="margin-bottom:16px;"><a href="/admin">← Retour</a></p>
@@ -665,7 +683,7 @@ router.get("/leads/:type/:id", adminAuth, async (req, res) => {
         </form>
       </div>
     </div>
-  `));
+  `, true, 0, csrfToken, "leads"));
 });
 
 router.post("/leads/:type/:id/status", adminAuth, async (req, res) => {
@@ -811,12 +829,13 @@ router.get("/subscriptions", adminAuth, async (_req, res, next) => {
           <td>${r.sub.endsAt ? escapeHtml(new Date(r.sub.endsAt as Date).toISOString().slice(0,10)) : "—"}</td>
           <td><a class="btn" href="/admin/vendors/${r.sub.vendorAccountId}/subscription">Gérer</a></td>
         </tr>`).join("");
+  const csrfToken = generateCsrfToken(_req, res);
   res.type("html").send(layout("Abonnements", `
     <div class="container">
       <h2>Abonnements vendeurs</h2>
       <table><thead><tr><th>Demandé</th><th>Vendeur</th><th>Tier</th><th>Statut</th><th>Fin</th><th></th></tr></thead><tbody>${tabRows}</tbody></table>
     </div>
-  `));
+  `, true, 0, csrfToken, "subscriptions"));
 });
 
 router.get("/vendors/:accountId/subscription", adminAuth, async (req, res) => {
@@ -829,6 +848,7 @@ router.get("/vendors/:accountId/subscription", adminAuth, async (req, res) => {
   const history = subs.length === 0
     ? `<tr><td colspan="4" class="empty">Aucun historique.</td></tr>`
     : subs.map((s) => `<tr><td>${escapeHtml(new Date(s.requestedAt as Date).toISOString().slice(0,10))}</td><td>${escapeHtml(TIER_LABEL[s.tier] ?? s.tier)}</td><td>${escapeHtml(s.status)}</td><td>${s.endsAt ? escapeHtml(new Date(s.endsAt as Date).toISOString().slice(0,10)) : "—"}</td></tr>`).join("");
+  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(layout(`Abonnement — ${account.businessName ?? account.contactName ?? "#"+accountId}`, `
     <div class="container">
       <p><a href="/admin/subscriptions">← Abonnements</a></p>
@@ -852,7 +872,7 @@ router.get("/vendors/:accountId/subscription", adminAuth, async (req, res) => {
       <h3 style="margin-top:24px;">Historique</h3>
       <table><thead><tr><th>Demandé</th><th>Tier</th><th>Statut</th><th>Fin</th></tr></thead><tbody>${history}</tbody></table>
     </div>
-  `));
+  `, true, 0, csrfToken, "subscriptions"));
 });
 
 router.post("/vendors/:accountId/subscription/activate", adminAuth, async (req, res) => {
@@ -906,7 +926,7 @@ router.post("/subscriptions/:id/cancel-html", adminAuth, async (req, res) => {
 
 // ---------- LOT 10 — Compte management (Couples & Vendors) ----------
 
-router.get("/accounts", adminAuth, async (_req, res) => {
+router.get("/accounts", adminAuth, async (req, res) => {
   const couples = await db
     .select({
       id: couplesTable.id,
@@ -984,6 +1004,7 @@ router.get("/accounts", adminAuth, async (_req, res) => {
 
   const pendingBadge = couples.length + vendors.length;
 
+  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(layout("Comptes en attente", `
     <div class="container">
       <h2 style="margin-bottom:24px;font-size:22px;color:#68191e;">Validation des comptes</h2>
@@ -1001,7 +1022,7 @@ router.get("/accounts", adminAuth, async (_req, res) => {
       </table>
     </div>
     <script>function confirmReject(){return confirm("Confirmer le rejet de ce compte ?");}</script>
-  `, true, pendingBadge));
+  `, true, pendingBadge, csrfToken, "accounts"));
 });
 
 router.post("/accounts/couples/:id/approve", adminAuth, async (req, res) => {
@@ -1184,6 +1205,7 @@ router.get("/couples", adminAuth, async (req, res) => {
 
   const pendingBadge = await getPendingCount();
 
+  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(layout("Couples", `
     <div class="container">
       <h2 style="font-size:22px;font-weight:700;color:#68191e;margin-bottom:24px;">Couples (${count})</h2>
@@ -1206,7 +1228,7 @@ router.get("/couples", adminAuth, async (req, res) => {
       </table>
       ${pagination}
     </div>
-  `, true, pendingBadge));
+  `, true, pendingBadge, csrfToken, "couples"));
 });
 
 // ============ DEVIS (vendor_leads agrégés) ============
@@ -1398,6 +1420,7 @@ router.get("/devis", adminAuth, async (req, res) => {
   const vendorOpts = `<option value="">Tous les prestataires</option>` +
     vendors.map(v => `<option value="${v.id}"${filterVendorId === v.id ? " selected" : ""}>${escapeHtml(v.name)}</option>`).join("");
 
+  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(layout("Devis prestataires", `
     <div class="container">
       <h2 style="font-size:22px;font-weight:700;color:#68191e;margin-bottom:8px;">Devis prestataires (${count})</h2>
@@ -1425,7 +1448,7 @@ router.get("/devis", adminAuth, async (req, res) => {
       </table>
       ${pagination}
     </div>
-  `, true, pendingBadge));
+  `, true, pendingBadge, csrfToken, "devis"));
 });
 
 export default router;

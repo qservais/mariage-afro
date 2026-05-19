@@ -16,10 +16,13 @@ import {
 } from "@workspace/db";
 import { eq, desc, asc, sql, and, isNull, isNotNull } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
+import { generateCsrfToken, requireCsrf, csrfAutoInjectorScript, CSRF_FIELD } from "../middlewares/adminCsrf";
 import { notifyVendorApproved, notifyConversationMessage, notifyVendorInvitation } from "../lib/email";
 
 const router = Router();
 router.use(adminAuth);
+// CSRF validation on all admin-content POST routes (upload-photo excluded inside requireCsrf)
+router.use(requireCsrf);
 
 function escHtml(s: unknown): string {
   return String(s ?? "")
@@ -29,16 +32,22 @@ function escHtml(s: unknown): string {
     .replace(/"/g, "&quot;");
 }
 
-function contentLayout(title: string, body: string, toastMsg = ""): string {
+function contentLayout(title: string, body: string, toastMsg = "", csrfToken = "", currentPath = ""): string {
+  const navLink = (href: string, label: string) => {
+    const active = currentPath ? href.endsWith(currentPath) || currentPath.startsWith(href.replace("/admin", "")) : false;
+    return `<a href="${href}"${active ? ' aria-current="page"' : ""}>${label}</a>`;
+  };
+  const csrfMeta = csrfToken ? `<meta name="csrf-token" content="${escHtml(csrfToken)}">` : "";
   return `<!DOCTYPE html><html lang="fr"><head>
 <meta charset="utf-8"><title>${escHtml(title)} — Admin</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
+${csrfMeta}<style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:#f0ede8;color:#1a1a1a;min-height:100vh;font-size:14px;line-height:1.5}
 .topbar{background:#1a1a1a;color:#fff;padding:0 24px;display:flex;align-items:stretch;gap:0;height:50px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .topbar a{color:#e8c88a;text-decoration:none;font-size:12px;font-weight:500;opacity:.85;display:flex;align-items:center;padding:0 12px;letter-spacing:.02em;transition:background .15s,opacity .15s}
 .topbar a:hover{opacity:1;background:rgba(255,255,255,.07)}
+.topbar a[aria-current="page"]{opacity:1;background:rgba(255,255,255,.12);border-bottom:2px solid #e8c88a}
 .topbar a.home{font-weight:700;color:#fff;letter-spacing:.04em;padding-right:16px;border-right:1px solid #333}
 .container{max-width:1160px;margin:32px auto;padding:0 20px}
 h1{font-size:20px;font-weight:700;margin-bottom:24px;letter-spacing:-.01em;color:#111}
@@ -109,23 +118,26 @@ tbody tr:last-child td{border-bottom:none}
 .social-icon{font-size:18px;text-align:center}
 </style>
 </head><body>
-<div class="topbar">
+<nav class="topbar" aria-label="Administration">
   <a class="home" href="/admin">Mariage Afro Admin</a>
-  <a href="/admin/content/vendors">Partenaires</a>
-  <a href="/admin/content/venues">Lieux</a>
-  <a href="/admin/content/realisations">Réalisations</a>
-  <a href="/admin/content/messages">Messages</a>
-  <a href="/admin/content/conversations">Conv. Pro</a>
-  <a href="/admin/content/wedding-websites">Sites mariages</a>
-  <a href="/admin/content/vendor-accounts">Comptes Pro</a>
-</div>
+  ${navLink("/admin/content/vendors", "Partenaires")}
+  ${navLink("/admin/content/venues", "Lieux")}
+  ${navLink("/admin/content/realisations", "Réalisations")}
+  ${navLink("/admin/content/messages", "Messages")}
+  ${navLink("/admin/content/conversations", "Conv. Pro")}
+  ${navLink("/admin/content/wedding-websites", "Sites mariages")}
+  ${navLink("/admin/content/vendor-accounts", "Comptes Pro")}
+</nav>
+<main id="main-content">
 <div class="container">${body}</div>
+</main>
 ${toastMsg ? `<div class="toast success show" id="toast">${escHtml(toastMsg)}</div>` : ""}
 <script>
 (function(){
   var t=document.getElementById("toast");
   if(t){setTimeout(function(){t.classList.remove("show");},4000);}
 })();
+${csrfAutoInjectorScript}
 </script>
 </body></html>`;
 }
@@ -135,6 +147,7 @@ ${toastMsg ? `<div class="toast success show" id="toast">${escHtml(toastMsg)}</d
 router.get("/content/vendors", async (_req: Request, res: Response) => {
   const vendors = await db.select().from(marketplaceVendorsTable).orderBy(asc(marketplaceVendorsTable.name));
   const toast = _req.query.invite_ok ? "Invitation envoyée avec succès." : (_req.query.saved ? "Partenaire enregistré." : "");
+  const csrfToken = generateCsrfToken(_req, res);
   const listHtml = vendors.length === 0
     ? `<p style="color:#888">Aucun partenaire. Cliquez sur "+ Ajouter" pour commencer.</p>`
     : `<div class="grid">${vendors.map(v => `
@@ -177,7 +190,7 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
       <a class="btn primary" href="/admin/content/vendors/new">+ Ajouter un partenaire</a>
     </div>
     ${listHtml}`;
-  res.type("html").send(contentLayout("Partenaires", body, toast));
+  res.type("html").send(contentLayout("Partenaires", body, toast, csrfToken, "/content/vendors"));
 });
 
 router.post("/content/vendors/:id/invite", async (req: Request, res: Response) => {
@@ -235,7 +248,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
           <input type="file" id="photo-file-input" accept="image/*" multiple style="display:none" onchange="handleFileSelect(this.files)">
         </div>
         <div class="photo-previews" id="photo-previews"></div>
-        <div class="upload-progress" id="upload-progress"></div>
+        <div id="upload-status" role="status" aria-live="assertive" aria-atomic="true" class="upload-progress"></div>
         <p style="font-size:11px;color:#aaa;margin-top:4px">Vous pouvez aussi coller des URLs directement :</p>
         <label style="font-size:12px">URLs manuelles (une par ligne)<textarea id="images-manual" style="min-height:60px;font-size:12px" placeholder="https://example.com/photo.jpg" onchange="syncManualUrls()">${(v.images ?? []).filter(u => u.startsWith("http")).join("\n")}</textarea></label>
       </div>
@@ -347,8 +360,8 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
       Array.from(files).forEach(function(file) { uploadFile(file); });
     }
     function uploadFile(file) {
-      var progress = document.getElementById("upload-progress");
-      progress.textContent = "Envoi en cours…";
+      var status = document.getElementById("upload-status");
+      status.textContent = "Upload en cours…";
       var xhr = new XMLHttpRequest();
       xhr.open("POST", "/admin/content/vendors/upload-photo");
       xhr.setRequestHeader("x-content-type", file.type || "image/jpeg");
@@ -358,12 +371,13 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
           uploadedPaths.push(data.objectPath);
           renderPreviews();
           syncHiddenField();
-          progress.textContent = "";
+          status.textContent = "Photo ajoutée avec succès.";
+          setTimeout(function(){ status.textContent = ""; }, 3000);
         } else {
-          progress.textContent = "Erreur lors de l\\'upload (" + xhr.status + ")";
+          status.textContent = "Erreur lors de l\\'upload (" + xhr.status + ").";
         }
       };
-      xhr.onerror = function(){ progress.textContent = "Erreur réseau lors de l\\'upload."; };
+      xhr.onerror = function(){ status.textContent = "Erreur réseau lors de l\\'upload."; };
       xhr.send(file);
     }
 
@@ -458,14 +472,16 @@ function parseVendorBody(b: Record<string, string>) {
 }
 
 router.get("/content/vendors/new", (_req: Request, res: Response) => {
-  res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm({active:true, verified:true})}`));
+  const csrfToken = generateCsrfToken(_req, res);
+  res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm({active:true, verified:true})}`, "", csrfToken, "/content/vendors"));
 });
 
 router.post("/content/vendors/new", async (req: Request, res: Response) => {
   const b = req.body as Record<string, string>;
   const parsed = parseVendorBody(b);
   if (!parsed.name || !parsed.city || !parsed.category) {
-    res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm(b, "Nom, ville et catégorie sont requis.")}`));
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm(b, "Nom, ville et catégorie sont requis.")}`, "", csrfToken, "/content/vendors"));
     return;
   }
   await db.insert(marketplaceVendorsTable).values(parsed);
@@ -475,7 +491,8 @@ router.post("/content/vendors/new", async (req: Request, res: Response) => {
 router.get("/content/vendors/:id/edit", async (req: Request, res: Response) => {
   const [v] = await db.select().from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.id, Number(req.params.id)));
   if (!v) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
-  res.type("html").send(contentLayout("Modifier partenaire", `<h1>Modifier <span style="color:#68191e">${escHtml(v.name)}</span></h1>${vendorForm(v)}`));
+  const csrfToken = generateCsrfToken(req, res);
+  res.type("html").send(contentLayout("Modifier partenaire", `<h1>Modifier <span style="color:#68191e">${escHtml(v.name)}</span></h1>${vendorForm(v)}`, "", csrfToken, "/content/vendors"));
 });
 
 router.post("/content/vendors/:id/edit", async (req: Request, res: Response) => {
@@ -521,13 +538,14 @@ router.get("/content/venues", async (_req: Request, res: Response) => {
         </div>
       </div>`).join("")}</div>`;
 
+  const csrfToken = generateCsrfToken(_req, res);
   const body = `
     <div class="page-header">
       <h1>Lieux <span style="font-size:14px;font-weight:400;color:#888">(${venues.length})</span></h1>
       <a class="btn primary" href="/admin/content/venues/new">+ Ajouter un lieu</a>
     </div>
     ${listHtml}`;
-  res.type("html").send(contentLayout("Lieux", body));
+  res.type("html").send(contentLayout("Lieux", body, "", csrfToken, "/content/venues"));
 });
 
 function venueForm(v: Partial<{name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean}> = {}, error = ""): string {
@@ -554,13 +572,15 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
 }
 
 router.get("/content/venues/new", (_req: Request, res: Response) => {
-  res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm({active:true})}`));
+  const csrfToken = generateCsrfToken(_req, res);
+  res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm({active:true})}`, "", csrfToken, "/content/venues"));
 });
 
 router.post("/content/venues/new", async (req: Request, res: Response) => {
   const b = req.body as Record<string, string>;
   if (!b.name || !b.city) {
-    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom et ville sont requis.")}`));
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom et ville sont requis.")}`, "", csrfToken, "/content/venues"));
     return;
   }
   await db.insert(marketplaceVenuesTable).values({
@@ -576,7 +596,8 @@ router.post("/content/venues/new", async (req: Request, res: Response) => {
 router.get("/content/venues/:id/edit", async (req: Request, res: Response) => {
   const [v] = await db.select().from(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.id, Number(req.params.id)));
   if (!v) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
-  res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier "${escHtml(v.name)}"</h1>${venueForm(v)}`));
+  const csrfToken = generateCsrfToken(req, res);
+  res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier "${escHtml(v.name)}"</h1>${venueForm(v)}`, "", csrfToken, "/content/venues"));
 });
 
 router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
@@ -631,13 +652,14 @@ router.get("/content/realisations", async (_req: Request, res: Response) => {
         </div>
       </div>`).join("")}</div>`;
 
+  const csrfToken = generateCsrfToken(_req, res);
   const body = `
     <div class="page-header">
       <h1>Réalisations <span style="font-size:14px;font-weight:400;color:#888">(${rows.length})</span></h1>
       <a class="btn primary" href="/admin/content/realisations/new">+ Ajouter une réalisation</a>
     </div>
     ${listHtml}`;
-  res.type("html").send(contentLayout("Réalisations", body));
+  res.type("html").send(contentLayout("Réalisations", body, "", csrfToken, "/content/realisations"));
 });
 
 function realisationForm(r: Partial<{brideName:string;groomName:string;weddingType:string;venueName:string;city:string;weddingDate:string|null;description:string;coverImage:string|null;gallery:string[];videoCouple:string|null;videoTeaser:string|null;active:boolean;featured:boolean}> = {}, error = ""): string {
@@ -673,13 +695,15 @@ function realisationForm(r: Partial<{brideName:string;groomName:string;weddingTy
 }
 
 router.get("/content/realisations/new", (_req: Request, res: Response) => {
-  res.type("html").send(contentLayout("Nouvelle réalisation", `<h1>Nouvelle réalisation</h1>${realisationForm({active:true})}`));
+  const csrfToken = generateCsrfToken(_req, res);
+  res.type("html").send(contentLayout("Nouvelle réalisation", `<h1>Nouvelle réalisation</h1>${realisationForm({active:true})}`, "", csrfToken, "/content/realisations"));
 });
 
 router.post("/content/realisations/new", async (req: Request, res: Response) => {
   const b = req.body as Record<string, string>;
   if (!b.brideName || !b.groomName) {
-    res.type("html").send(contentLayout("Nouvelle réalisation", `<h1>Nouvelle réalisation</h1>${realisationForm(b, "Prénoms requis.")}`));
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Nouvelle réalisation", `<h1>Nouvelle réalisation</h1>${realisationForm(b, "Prénoms requis.")}`, "", csrfToken, "/content/realisations"));
     return;
   }
   await db.insert(realisationsTable).values({
@@ -699,7 +723,8 @@ router.post("/content/realisations/new", async (req: Request, res: Response) => 
 router.get("/content/realisations/:id/edit", async (req: Request, res: Response) => {
   const [r] = await db.select().from(realisationsTable).where(eq(realisationsTable.id, Number(req.params.id)));
   if (!r) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
-  res.type("html").send(contentLayout("Modifier réalisation", `<h1>Modifier ${escHtml(r.brideName)} & ${escHtml(r.groomName)}</h1>${realisationForm(r)}`));
+  const csrfToken = generateCsrfToken(req, res);
+  res.type("html").send(contentLayout("Modifier réalisation", `<h1>Modifier ${escHtml(r.brideName)} & ${escHtml(r.groomName)}</h1>${realisationForm(r)}`, "", csrfToken, "/content/realisations"));
 });
 
 router.post("/content/realisations/:id/edit", async (req: Request, res: Response) => {
@@ -788,7 +813,8 @@ router.get("/content/messages", async (_req: Request, res: Response) => {
       </tbody></table>
       <div style="margin-top:32px"><a class="btn secondary sm" href="/admin/content/conversations">→ Conversations Couple ↔ Prestataire (modération)</a></div>`;
 
-  res.type("html").send(contentLayout("Messages", `<h1>Messages couples (admin)</h1>${listHtml}`));
+  const csrfToken = generateCsrfToken(_req, res);
+  res.type("html").send(contentLayout("Messages", `<h1>Messages couples (admin)</h1>${listHtml}`, "", csrfToken, "/content/messages"));
 });
 
 router.get("/content/messages/:coupleId", async (req: Request, res: Response) => {
@@ -823,11 +849,13 @@ router.get("/content/messages/:coupleId", async (req: Request, res: Response) =>
       </form>
     </div>`;
 
+  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(contentLayout(
     `Messages — ${couple.partner1Name} & ${couple.partner2Name}`,
     `<h1>Conversation avec ${escHtml(couple.partner1Name || "—")} & ${escHtml(couple.partner2Name || "—")}</h1>
      <a class="btn secondary sm" href="/admin/content/messages" style="margin-bottom:20px;display:inline-block">← Retour</a>
-     ${threadHtml}${replyForm}`
+     ${threadHtml}${replyForm}`,
+    "", csrfToken, "/content/messages"
   ));
 });
 
@@ -898,7 +926,8 @@ router.get("/content/conversations", async (_req: Request, res: Response) => {
     <h1>Conversations Couple ↔ Prestataire</h1>
     <p style="font-size:13px;color:#555;margin-bottom:16px">Vue de modération en lecture seule. Pour répondre à un couple en tant qu'équipe Mariage Afro, utilisez <a href="/admin/content/messages">Messages</a>.</p>
     ${listHtml}`;
-  res.type("html").send(contentLayout("Conversations Couple ↔ Pro", body));
+  const csrfToken = generateCsrfToken(_req, res);
+  res.type("html").send(contentLayout("Conversations Couple ↔ Pro", body, "", csrfToken, "/content/conversations"));
 });
 
 router.get("/content/conversations/:id", async (req: Request, res: Response) => {
@@ -977,7 +1006,8 @@ router.get("/content/wedding-websites", async (_req: Request, res: Response) => 
       </tr>`).join("")}
       </tbody></table>`;
 
-  res.type("html").send(contentLayout("Sites mariages", `<h1>Sites mariage des couples</h1>${listHtml}`));
+  const csrfToken = generateCsrfToken(_req, res);
+  res.type("html").send(contentLayout("Sites mariages", `<h1>Sites mariage des couples</h1>${listHtml}`, "", csrfToken, "/content/wedding-websites"));
 });
 
 router.post("/content/wedding-websites/:id/toggle", async (req: Request, res: Response) => {
@@ -1045,7 +1075,8 @@ router.get("/content/wedding-websites/:slug/jour-j", async (req: Request, res: R
       </div>
     </div>`;
 
-  res.type("html").send(contentLayout(`Jour-J — ${site.slug}`, body));
+  const csrfToken = generateCsrfToken(req, res);
+  res.type("html").send(contentLayout(`Jour-J — ${site.slug}`, body, "", csrfToken, "/content/wedding-websites"));
 });
 
 router.post("/content/wedding-websites/:slug/jour-j", async (req: Request, res: Response) => {
@@ -1138,7 +1169,8 @@ router.get("/content/vendor-accounts", async (_req: Request, res: Response) => {
     ${renderSection("En attente de validation", pending)}
     ${renderSection("Approuvés", approved)}
     ${renderSection("Rejetés", rejected)}`;
-  res.type("html").send(contentLayout("Comptes Pro", body));
+  const csrfToken = generateCsrfToken(_req, res);
+  res.type("html").send(contentLayout("Comptes Pro", body, "", csrfToken, "/content/vendor-accounts"));
 });
 
 router.post("/content/vendor-accounts/:id/approve", async (req: Request, res: Response) => {
@@ -1230,7 +1262,8 @@ router.get("/test-email", (_req: Request, res: Response) => {
       <button type="submit" class="btn primary">Envoyer le test</button>
     </form>
   </div>`;
-  res.type("html").send(contentLayout("Test emails", `<h1>Test des notifications email</h1>${status}${form}`));
+  const csrfToken = generateCsrfToken(_req, res);
+  res.type("html").send(contentLayout("Test emails", `<h1>Test des notifications email</h1>${status}${form}`, "", csrfToken, "/test-email"));
 });
 
 router.post("/test-email", async (req: Request, res: Response) => {
