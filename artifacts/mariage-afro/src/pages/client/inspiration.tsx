@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, ImagePlus, Mail, Loader2, X } from "lucide-react";
+import { Plus, Trash2, ImagePlus, Mail, Loader2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { clientApi, clientFetch, clientProxyUpload } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -120,6 +120,27 @@ export default function InspirationPage() {
     handleFiles(e.dataTransfer.files);
   };
 
+  /**
+   * Reorder images in the active board by swapping two adjacent items.
+   * Uses sequential index-based positions so the order is always deterministic.
+   */
+  function moveImage(imgId: number, direction: "left" | "right") {
+    if (!activeBoard) return;
+    const sorted = [...activeBoard.images].sort(
+      (a, b) => a.position - b.position || a.id - b.id,
+    );
+    const idx = sorted.findIndex((i) => i.id === imgId);
+    if (idx === -1) return;
+    const targetIdx = direction === "left" ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= sorted.length) return;
+
+    const imgA = sorted[idx];
+    const imgB = sorted[targetIdx];
+
+    updateImage.mutate({ id: imgA.id, body: { position: targetIdx * 10 } });
+    updateImage.mutate({ id: imgB.id, body: { position: idx * 10 } });
+  }
+
   if (isLoading) {
     return <div className="flex justify-center py-24"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
@@ -207,25 +228,62 @@ export default function InspirationPage() {
               </div>
             ) : (
               <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 [column-fill:_balance]">
-                {activeBoard.images.map((img) => (
-                  <div key={img.id} className="mb-3 break-inside-avoid relative group">
-                    <img src={objectUrl(img.url)} alt={img.caption || "Inspiration"} loading="lazy" decoding="async" className="w-full block" />
-                    <button
-                      onClick={() => deleteImage.mutate(img.id)}
-                      className="absolute top-2 right-2 bg-white/90 p-1 opacity-0 group-hover:opacity-100 hover:bg-primary hover:text-white"
-                      title={t("inspiration.delete_image")}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                    <input
-                      defaultValue={img.caption}
-                      onBlur={(e) => e.target.value !== img.caption && updateImage.mutate({ id: img.id, body: { caption: e.target.value } })}
-                      placeholder={t("inspiration.caption_placeholder")}
-                      aria-label={t("inspiration.caption_aria_label", { defaultValue: "Légende de l'image" })}
-                      className="w-full text-xs px-2 py-1 border-t border-neutral-200 bg-neutral-50 focus:outline-none focus:bg-white"
-                    />
-                  </div>
-                ))}
+                {[...activeBoard.images]
+                  .sort((a, b) => a.position - b.position || a.id - b.id)
+                  .map((img, idx, arr) => (
+                    <div key={img.id} className="mb-3 break-inside-avoid relative group focus-within:ring-2 focus-within:ring-primary/40">
+                      <img
+                        src={objectUrl(img.url)}
+                        alt={img.caption || t("inspiration.image_alt", { defaultValue: "Image d'inspiration" })}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full block"
+                      />
+
+                      {/* Reorder controls — always accessible via keyboard focus, visible on hover */}
+                      <div
+                        className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity"
+                        role="group"
+                        aria-label={t("inspiration.reorder_label", { defaultValue: "Réorganiser" })}
+                      >
+                        <button
+                          onClick={() => moveImage(img.id, "left")}
+                          disabled={idx === 0 || updateImage.isPending}
+                          aria-label={t("inspiration.move_left", { defaultValue: "Déplacer vers la gauche" })}
+                          className="bg-white/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          data-testid={`btn-img-move-left-${img.id}`}
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
+                        </button>
+                        <button
+                          onClick={() => moveImage(img.id, "right")}
+                          disabled={idx === arr.length - 1 || updateImage.isPending}
+                          aria-label={t("inspiration.move_right", { defaultValue: "Déplacer vers la droite" })}
+                          className="bg-white/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          data-testid={`btn-img-move-right-${img.id}`}
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
+                        </button>
+                      </div>
+
+                      {/* Delete button */}
+                      <button
+                        onClick={() => deleteImage.mutate(img.id)}
+                        className="absolute top-2 right-2 bg-white/90 p-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-primary hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        aria-label={t("inspiration.delete_image")}
+                      >
+                        <X className="w-4 h-4" aria-hidden="true" />
+                      </button>
+
+                      <input
+                        defaultValue={img.caption}
+                        onBlur={(e) => e.target.value !== img.caption && updateImage.mutate({ id: img.id, body: { caption: e.target.value } })}
+                        placeholder={t("inspiration.caption_placeholder")}
+                        aria-label={t("inspiration.caption_aria_label", { defaultValue: "Légende de l'image" })}
+                        className="w-full text-xs px-2 py-1 border-t border-neutral-200 bg-neutral-50 focus:outline-none focus:bg-white"
+                      />
+                    </div>
+                  ))}
               </div>
             )}
           </div>
@@ -287,4 +345,3 @@ export default function InspirationPage() {
     </div>
   );
 }
-

@@ -2,7 +2,19 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Mail, Phone, Calendar, MessageSquare, X, LayoutGrid, List, FileText, Tag } from "lucide-react";
+import { Loader2, Mail, Phone, Calendar, MessageSquare, X, LayoutGrid, List, FileText, Tag, GripVertical } from "lucide-react";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  useDraggable,
+  useDroppable,
+} from "@dnd-kit/core";
+import type { KeyboardCoordinateGetter, SensorContext } from "@dnd-kit/core";
 import { vendorApi } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -90,6 +102,150 @@ function formatDate(iso: string) {
   }
 }
 
+/**
+ * Custom keyboard coordinate getter for column-to-column kanban navigation.
+ * ArrowLeft/ArrowRight move the dragged card to adjacent columns.
+ */
+const kanbanKeyboardCoordinateGetter: KeyboardCoordinateGetter = (
+  event: KeyboardEvent,
+  { context: { droppableRects, over, active } }: { active: string | number; currentCoordinates: { x: number; y: number }; context: SensorContext },
+) => {
+  if (!["ArrowLeft", "ArrowRight"].includes(event.code)) return undefined;
+  event.preventDefault();
+
+  const columns = [...KANBAN_STATUSES] as string[];
+  const currentId =
+    (over?.id as string | undefined) ??
+    (active?.data?.current?.currentStatus as string | undefined);
+  const currentIdx = currentId ? columns.indexOf(currentId) : -1;
+
+  let targetIdx = currentIdx;
+  if (event.code === "ArrowLeft") targetIdx = Math.max(0, currentIdx <= 0 ? 0 : currentIdx - 1);
+  if (event.code === "ArrowRight")
+    targetIdx = Math.min(columns.length - 1, currentIdx < 0 ? 0 : currentIdx + 1);
+
+  if (targetIdx === currentIdx && currentIdx !== -1) return undefined;
+  const effectiveIdx = targetIdx < 0 ? 0 : targetIdx;
+
+  const rect = droppableRects.get(columns[effectiveIdx]);
+  if (!rect) return undefined;
+  return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+}
+
+// ─── Sub-components for Kanban ────────────────────────────────────────────────
+
+interface KanbanCardProps {
+  lead: VendorLead;
+  selectedId: number | null;
+  colStatus: string;
+  colIndex: number;
+  colTotal: number;
+  onOpen: (lead: VendorLead) => void;
+  t: (key: string, opts?: Record<string, unknown>) => string;
+}
+
+function KanbanCard({ lead, selectedId, colStatus, colIndex, colTotal, onOpen, t }: KanbanCardProps) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: String(lead.id),
+    data: { leadId: lead.id, currentStatus: colStatus },
+  });
+
+  const style = transform
+    ? { transform: `translate3d(${transform.x}px,${transform.y}px,0)` }
+    : undefined;
+
+  const cardAriaLabel = `${lead.name} — ${t(`vendor.leads.status.${colStatus}`)}, position ${colIndex + 1} sur ${colTotal}`;
+  const handleAriaLabel = `${t("vendor.leads.drag_handle", { defaultValue: "Déplacer" })} ${lead.name} — ${t(`vendor.leads.status.${colStatus}`)}, ${colIndex + 1}/${colTotal}. Espace pour saisir, flèches pour changer de colonne, Échap pour annuler.`;
+
+  return (
+    <div
+      role="listitem"
+      style={style}
+      aria-label={cardAriaLabel}
+      className={`relative bg-white border transition-colors ${isDragging ? "opacity-40 border-wine-deep" : selectedId === lead.id ? "border-wine-deep" : "border-neutral-200"}`}
+      data-testid={`kanban-card-${lead.id}`}
+    >
+      {/* Drag handle — keyboard-focusable, activates @dnd-kit drag */}
+      <button
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
+        aria-label={handleAriaLabel}
+        className="absolute top-2 left-1.5 p-0.5 text-neutral-300 hover:text-neutral-600 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-deep focus-visible:ring-offset-1"
+        tabIndex={0}
+      >
+        <GripVertical className="w-3 h-3" aria-hidden="true" />
+      </button>
+
+      {/* Card body — opens detail panel */}
+      <button
+        onClick={() => onOpen(lead)}
+        className="w-full text-left pl-6 pr-2.5 py-2.5 hover:bg-amber-50/30 focus:outline-none focus-visible:bg-amber-50/40"
+        tabIndex={0}
+        aria-label={`${t("vendor.leads.open_lead", { defaultValue: "Ouvrir" })} ${lead.name}`}
+      >
+        <p className="text-xs text-neutral-500">{formatDate(lead.createdAt)}</p>
+        <p className="text-sm font-medium text-wine-deep mt-0.5">{lead.name}</p>
+        <p className="text-[11px] text-neutral-500 mt-1">{t(`vendor.leads.type.${lead.requestType}`)}</p>
+        {(lead.tags ?? []).length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1.5">
+            {(lead.tags ?? []).map((tag) => (
+              <span key={tag} className="text-[10px] bg-gold/15 text-wine-deep px-1.5 py-0.5">
+                {t(`vendor.leads.tags.${tag}`, { defaultValue: tag })}
+              </span>
+            ))}
+          </div>
+        )}
+      </button>
+    </div>
+  );
+}
+
+interface KanbanColumnProps {
+  status: string;
+  leads: VendorLead[];
+  selectedId: number | null;
+  onOpen: (lead: VendorLead) => void;
+  t: (key: string, opts?: Record<string, unknown>) => string;
+}
+
+function KanbanColumn({ status, leads, selectedId, onOpen, t }: KanbanColumnProps) {
+  const { setNodeRef, isOver } = useDroppable({ id: status });
+
+  return (
+    <div
+      ref={setNodeRef}
+      role="list"
+      aria-label={`${t(`vendor.leads.status.${status}`)} — ${leads.length} carte${leads.length !== 1 ? "s" : ""}`}
+      className={`bg-neutral-50 border p-2 min-h-[20rem] transition-colors ${isOver ? "border-wine-deep/60 bg-wine-deep/5" : "border-neutral-200"}`}
+      data-testid={`kanban-col-${status}`}
+    >
+      <div className="flex items-center justify-between mb-2 px-1">
+        <span className={`inline-block text-[10px] uppercase tracking-widest border px-2 py-1 ${STATUS_BADGE[status] ?? ""}`}>
+          {t(`vendor.leads.status.${status}`)}
+        </span>
+        <span className="text-xs text-neutral-500" aria-hidden="true">{leads.length}</span>
+      </div>
+      <div className="space-y-2">
+        {leads.map((lead, i) => (
+          <KanbanCard
+            key={lead.id}
+            lead={lead}
+            selectedId={selectedId}
+            colStatus={status}
+            colIndex={i}
+            colTotal={leads.length}
+            onOpen={onOpen}
+            t={t}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main page ────────────────────────────────────────────────────────────────
+
 export default function VendorLeadsPage() {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -101,6 +257,7 @@ export default function VendorLeadsPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [noteDraft, setNoteDraft] = useState<string>("");
   const [viewMode, setViewMode] = useState<"table" | "kanban">("table");
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
 
   const { data: leads = [], isLoading } = useQuery<VendorLead[]>({
     queryKey: ["vendor", "leads"],
@@ -170,6 +327,26 @@ export default function VendorLeadsPage() {
     updateMutation.mutate({ id: lead.id, tags: next });
   }
 
+  // dnd-kit sensors: pointer (mouse/touch) + keyboard
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: kanbanKeyboardCoordinateGetter }),
+  );
+
+  function handleDragEnd(event: DragEndEvent) {
+    setActiveDragId(null);
+    const { active, over } = event;
+    if (!over) return;
+    const leadId = Number(active.id);
+    const newStatus = over.id as string;
+    const lead = leads.find((l) => l.id === leadId);
+    if (lead && lead.status !== newStatus) {
+      updateMutation.mutate({ id: leadId, status: newStatus });
+    }
+  }
+
+  const activeDragLead = activeDragId ? leads.find((l) => l.id === Number(activeDragId)) ?? null : null;
+
   return (
     <div className="space-y-6 max-w-7xl">
       <header>
@@ -236,60 +413,41 @@ export default function VendorLeadsPage() {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_24rem]">
         {viewMode === "kanban" ? (
-          <div className="overflow-x-auto" data-testid="kanban-board">
-            <div className="grid grid-flow-col auto-cols-[15rem] gap-3">
-              {KANBAN_STATUSES.map((s) => {
-                const col = filtered.filter((l) => l.status === s || (s === "new" && l.status === "seen"));
-                return (
-                  <div
-                    key={s}
-                    className="bg-neutral-50 border border-neutral-200 p-2 min-h-[20rem]"
-                    data-testid={`kanban-col-${s}`}
-                    onDragOver={(e) => { e.preventDefault(); }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      const id = Number(e.dataTransfer.getData("text/plain"));
-                      const lead = leads.find((l) => l.id === id);
-                      if (lead && lead.status !== s) updateMutation.mutate({ id, status: s });
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-2 px-1">
-                      <span className={`inline-block text-[10px] uppercase tracking-widest border px-2 py-1 ${STATUS_BADGE[s] ?? ""}`}>
-                        {t(`vendor.leads.status.${s}`)}
-                      </span>
-                      <span className="text-xs text-neutral-500">{col.length}</span>
-                    </div>
-                    <div className="space-y-2">
-                      {col.map((lead) => (
-                        <button
-                          key={lead.id}
-                          onClick={() => openLead(lead)}
-                          draggable
-                          onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(lead.id)); e.dataTransfer.effectAllowed = "move"; }}
-                          aria-label={`${lead.name} — ${t(`vendor.leads.type.${lead.requestType}`)} — ${t(`vendor.leads.status.${lead.status}`)}`}
-                          className={`w-full text-left bg-white border p-2.5 hover:border-wine-deep transition-colors cursor-grab active:cursor-grabbing ${selectedId === lead.id ? "border-wine-deep" : "border-neutral-200"}`}
-                          data-testid={`kanban-card-${lead.id}`}
-                        >
-                          <p className="text-xs text-neutral-500">{formatDate(lead.createdAt)}</p>
-                          <p className="text-sm font-medium text-wine-deep mt-0.5">{lead.name}</p>
-                          <p className="text-[11px] text-neutral-500 mt-1">{t(`vendor.leads.type.${lead.requestType}`)}</p>
-                          {(lead.tags ?? []).length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-1.5">
-                              {(lead.tags ?? []).map((tag) => (
-                                <span key={tag} className="text-[10px] bg-gold/15 text-wine-deep px-1.5 py-0.5">
-                                  {t(`vendor.leads.tags.${tag}`, tag)}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+          <DndContext
+            sensors={sensors}
+            onDragStart={(e) => setActiveDragId(String(e.active.id))}
+            onDragCancel={() => setActiveDragId(null)}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="overflow-x-auto" data-testid="kanban-board">
+              <div className="grid grid-flow-col auto-cols-[15rem] gap-3">
+                {KANBAN_STATUSES.map((s) => {
+                  const col = filtered.filter((l) => l.status === s || (s === "new" && l.status === "seen"));
+                  return (
+                    <KanbanColumn
+                      key={s}
+                      status={s}
+                      leads={col}
+                      selectedId={selectedId}
+                      onOpen={openLead}
+                      t={t as (key: string, opts?: Record<string, unknown>) => string}
+                    />
+                  );
+                })}
+              </div>
             </div>
-          </div>
+
+            {/* Overlay shown while dragging (mouse) */}
+            <DragOverlay>
+              {activeDragLead ? (
+                <div className="bg-white border border-wine-deep shadow-lg p-2.5 w-[14rem] opacity-95 rotate-1">
+                  <p className="text-xs text-neutral-500">{formatDate(activeDragLead.createdAt)}</p>
+                  <p className="text-sm font-medium text-wine-deep mt-0.5">{activeDragLead.name}</p>
+                  <p className="text-[11px] text-neutral-500 mt-1">{t(`vendor.leads.type.${activeDragLead.requestType}`)}</p>
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         ) : (
         <div className="bg-white border border-neutral-200 overflow-hidden">
           {isLoading ? (
