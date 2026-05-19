@@ -15,7 +15,7 @@ import { TrustBar } from "@/components/home/TrustBar";
 import { ProcessTimeline } from "@/components/home/ProcessTimeline";
 import { HeroCursor } from "@/components/HeroCursor";
 
-const videoSrc = "/film-de-miel-2.mp4";
+const videoSrc = "/trailer-hero.mp4";
 const filmVideo1 = "/film-de-miel-2.mp4";
 const filmVideo2 = "/film-de-miel-1.mp4";
 
