@@ -868,7 +868,10 @@
     "reviews_title": "Verified reviews",
     "last_n": "— last {{count}}",
     "actions_title": "Contact this vendor",
-    "video": "Presentation video"
+    "video": "Presentation video",
+    "gallery": "Gallery",
+    "other_services": "Additional services",
+    "title_fallback": "Vendor"
   },
   "mariage_public": {
     "not_found_title": "Page not found",

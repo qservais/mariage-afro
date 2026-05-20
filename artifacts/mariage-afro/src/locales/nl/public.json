@@ -868,7 +868,10 @@
     "reviews_title": "Geverifieerde beoordelingen",
     "last_n": "— laatste {{count}}",
     "actions_title": "Contacteer deze leverancier",
-    "video": "Presentatievideo"
+    "video": "Presentatievideo",
+    "gallery": "Galerij",
+    "other_services": "Extra diensten",
+    "title_fallback": "Leverancier"
   },
   "mariage_public": {
     "not_found_title": "Pagina niet gevonden",

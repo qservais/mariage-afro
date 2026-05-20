@@ -868,7 +868,10 @@
     "reviews_title": "Avis vérifiés",
     "last_n": "— derniers {{count}}",
     "actions_title": "Contacter ce prestataire",
-    "video": "Vidéo de présentation"
+    "video": "Vidéo de présentation",
+    "gallery": "Galerie",
+    "other_services": "Prestations supplémentaires",
+    "title_fallback": "Prestataire"
   },
   "mariage_public": {
     "not_found_title": "Page introuvable",
