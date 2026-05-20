@@ -1,13 +1,17 @@
+import { getAuthToken } from "@/lib/tokenStore";
+
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export async function vendorFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
+  const token = await getAuthToken();
   const res = await fetch(`${BASE}${path}`, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
     ...options,
@@ -26,10 +30,14 @@ export async function vendorFetch<T = unknown>(
  * perform the actual PUT to Google Cloud Storage.
  */
 export async function proxyUpload(file: File): Promise<{ objectPath: string }> {
+  const token = await getAuthToken();
   const res = await fetch(`${BASE}/api/storage/uploads/proxy-upload`, {
     method: "POST",
     credentials: "include",
-    headers: { "x-content-type": file.type || "application/octet-stream" },
+    headers: {
+      "x-content-type": file.type || "application/octet-stream",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: file,
   });
   if (!res.ok) {

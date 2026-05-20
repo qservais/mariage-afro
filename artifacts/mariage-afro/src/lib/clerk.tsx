@@ -1,8 +1,9 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { ClerkProvider, useClerk } from "@clerk/react";
+import { ClerkProvider, useClerk, useAuth } from "@clerk/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { getClerkVariables } from "@/lib/brand-colors";
+import { setTokenGetter } from "@/lib/tokenStore";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
@@ -86,6 +87,20 @@ function ClerkQueryClientCacheInvalidator() {
   return null;
 }
 
+/**
+ * Registers the Clerk getToken function into the module-level token store
+ * so non-React modules (clientApi, vendorApi) can attach the Bearer token
+ * to every authenticated API request.
+ */
+function ClerkTokenSync() {
+  const { getToken } = useAuth();
+  useEffect(() => {
+    setTokenGetter(getToken);
+    return () => setTokenGetter(() => Promise.resolve(null));
+  }, [getToken]);
+  return null;
+}
+
 export function MariageAfroClerkProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   useLocation();
@@ -104,6 +119,7 @@ export function MariageAfroClerkProvider({ children }: { children: ReactNode }) 
       routerReplace={(to) => navigate(stripBase(to), { replace: true })}
     >
       <ClerkQueryClientCacheInvalidator />
+      <ClerkTokenSync />
       {children}
     </ClerkProvider>
   );
