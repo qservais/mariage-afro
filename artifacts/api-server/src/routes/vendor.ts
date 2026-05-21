@@ -20,7 +20,7 @@ import {
 import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendorLeadFollowup, notifyQuoteReceived, notifyQuoteResponded } from "../lib/email";
+import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendorLeadFollowup, notifyQuoteReceived, notifyQuoteResponded, sendPartnerApplicationEmails } from "../lib/email";
 import { translateDescription } from "../lib/translate";
 import { logger } from "../lib/logger";
 
@@ -328,6 +328,24 @@ router.post("/vendor/onboarding", async (req, res) => {
       })
       .where(eq(vendorSubscriptionsTable.id, existingSub.id));
   }
+
+  void sendPartnerApplicationEmails({
+    businessName: data.businessName,
+    contactName: data.contactName,
+    email: data.email,
+    phone: data.phone,
+    category: data.category,
+    city: data.city,
+    website: data.website,
+    description: data.description,
+    locale: data.locale,
+    instagram: data.instagram,
+    facebook: data.facebook,
+    tiktok: data.tiktok,
+    youtube: data.youtube,
+  }, req.log).catch((err) => {
+    req.log.error({ err }, "Vendor onboarding saved but email failed");
+  });
 
   res.json({ account });
 });

@@ -504,11 +504,31 @@ export interface NotifyPartnerApplicationPayload {
   contactName: string;
   businessName: string;
   category?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  description?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  tiktok?: string | null;
+  youtube?: string | null;
+  city?: string | null;
 }
 
 export async function notifyPartnerApplicationReceived(p: NotifyPartnerApplicationPayload, log = logger): Promise<void> {
   const locale = normalizeLocale(p.locale);
   const T = dict.partnerReceived;
+  const L = (fr: string, nl: string, en: string) => ({ fr, nl, en }[locale]);
+  const rows =
+    row("Business", p.businessName) +
+    row(L("Catégorie", "Categorie", "Category"), p.category ?? undefined) +
+    row(L("Téléphone", "Telefoon", "Phone"), p.phone ?? undefined) +
+    row(L("Ville / Région", "Stad / Regio", "City / Region"), p.city ?? undefined) +
+    row("Site web", p.website ?? undefined) +
+    row("Instagram", p.instagram ?? undefined) +
+    row("Facebook", p.facebook ?? undefined) +
+    row("TikTok", p.tiktok ?? undefined) +
+    row(L("Chaîne YouTube", "YouTube-kanaal", "YouTube channel"), p.youtube ?? undefined) +
+    row(L("Présentation", "Omschrijving", "Description"), p.description ?? undefined);
   await sendOne({
     to: p.to,
     subject: pick(T.subject, locale),
@@ -516,7 +536,7 @@ export async function notifyPartnerApplicationReceived(p: NotifyPartnerApplicati
       title: pick(T.title, locale),
       intro: pick(T.intro(p.contactName), locale),
       bodyHtml: `<p>${esc(pick(T.body, locale))}</p>`,
-      rows: row("Business", p.businessName) + row({ fr: "Catégorie", nl: "Categorie", en: "Category" }[locale], p.category ?? undefined),
+      rows,
       locale,
     }),
   }, log);
@@ -715,6 +735,12 @@ export interface PartnerApplicationEmailPayload {
   category: string;
   website?: string | null;
   description?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  tiktok?: string | null;
+  youtube?: string | null;
+  locale?: string | null;
+  city?: string | null;
 }
 
 export interface NotifyAdminSubscriptionRequestPayload {
@@ -843,7 +869,12 @@ export async function sendPartnerApplicationEmails(p: PartnerApplicationEmailPay
     row("Email", p.email) +
     row("Téléphone", p.phone) +
     row("Catégorie", p.category) +
+    row("Ville / Région", p.city) +
     row("Site web", p.website) +
+    row("Instagram", p.instagram) +
+    row("Facebook", p.facebook) +
+    row("TikTok", p.tiktok) +
+    row("YouTube", p.youtube) +
     row("Présentation", p.description);
 
   await sendOne({
@@ -852,12 +883,20 @@ export async function sendPartnerApplicationEmails(p: PartnerApplicationEmailPay
     html: wrap({ title: "Nouvelle candidature partenaire", rows, locale: "fr" }),
   }, log);
 
-  // Confirmation to applicant via the i18n notify function (defaults to FR)
   await notifyPartnerApplicationReceived({
     to: p.email,
+    locale: p.locale,
     contactName: p.contactName,
     businessName: p.businessName,
     category: p.category,
+    phone: p.phone,
+    city: p.city,
+    website: p.website,
+    description: p.description,
+    instagram: p.instagram,
+    facebook: p.facebook,
+    tiktok: p.tiktok,
+    youtube: p.youtube,
   }, log);
 }
 

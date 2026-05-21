@@ -86,6 +86,10 @@ const partnerApplicationSchema = z.object({
   category: z.string().min(1),
   website: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
+  instagram: z.string().max(200).optional().nullable(),
+  facebook: z.string().max(200).optional().nullable(),
+  tiktok: z.string().max(200).optional().nullable(),
+  youtube: z.string().max(200).optional().nullable(),
 });
 
 router.post("/lead", async (req, res) => {
@@ -545,6 +549,10 @@ router.post("/become-partner", async (req, res) => {
       category: data.category,
       website: data.website ?? null,
       description: data.description ?? null,
+      instagram: data.instagram ?? null,
+      facebook: data.facebook ?? null,
+      tiktok: data.tiktok ?? null,
+      youtube: data.youtube ?? null,
     }).returning();
     void sendPartnerApplicationEmails(data, req.log).catch((err) => {
       req.log.error({ err }, "Partner application saved but email failed");
