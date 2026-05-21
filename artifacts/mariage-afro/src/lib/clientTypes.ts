@@ -28,6 +28,7 @@ export interface Guest {
   diet: string | null;
   email: string | null;
   notes: string | null;
+  source: "manual" | "personal_invite" | "from_rsvp";
 }
 export interface GuestCreate {
   firstName: string;

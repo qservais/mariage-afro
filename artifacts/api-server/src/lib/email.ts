@@ -1069,6 +1069,44 @@ export async function sendContactFormEmail(p: ContactFormPayload, log = logger):
   }, log);
 }
 
+// ---- Personal guest invitation (couple → guest) ----
+export interface NotifyPersonalInvitationPayload {
+  to: string;
+  guestName: string;
+  coupleName: string;
+  siteUrl: string;
+  locale?: string | null;
+}
+
+export async function notifyPersonalInvitation(p: NotifyPersonalInvitationPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const subject = {
+    fr: `${p.coupleName} vous invitent à leur mariage`,
+    nl: `${p.coupleName} nodigen u uit voor hun huwelijk`,
+    en: `${p.coupleName} invite you to their wedding`,
+  }[locale];
+  const title = {
+    fr: "Invitation au mariage",
+    nl: "Huwelijksuitnodiging",
+    en: "Wedding invitation",
+  }[locale];
+  const intro = {
+    fr: `Bonjour ${p.guestName},\n\n${p.coupleName} ont le plaisir de vous inviter à leur mariage. Retrouvez toutes les informations et confirmez votre présence via le lien ci-dessous.`,
+    nl: `Beste ${p.guestName},\n\n${p.coupleName} nodigen u met plezier uit voor hun huwelijk. Bekijk alle informatie en bevestig uw aanwezigheid via de onderstaande link.`,
+    en: `Dear ${p.guestName},\n\n${p.coupleName} are delighted to invite you to their wedding. Find all the details and confirm your attendance via the link below.`,
+  }[locale];
+  const ctaLabel = {
+    fr: "Voir le site mariage",
+    nl: "Trouwsite bekijken",
+    en: "View wedding site",
+  }[locale];
+  await sendOne({
+    to: p.to,
+    subject,
+    html: wrap({ title, intro: intro.replace(/\n/g, "<br>"), ctaLabel, ctaUrl: p.siteUrl, locale }),
+  }, log);
+}
+
 // ---- Vendor invitation (admin → prestataire existant) ----
 export interface NotifyVendorInvitationPayload {
   to: string;

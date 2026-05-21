@@ -31,7 +31,7 @@ import {
 } from "@workspace/db";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage, notifyMoodBoardInvite, notifyQuoteResponded, notifyQuoteAccepted, appUrl } from "../lib/email";
+import { notifyConversationMessage, notifyMoodBoardInvite, notifyQuoteResponded, notifyQuoteAccepted, notifyPersonalInvitation, appUrl } from "../lib/email";
 import { nanoid } from "nanoid";
 
 const router = Router();
@@ -289,6 +289,56 @@ router.delete("/client/guests/:id", async (req, res) => {
   await db.delete(guestsTable)
     .where(and(eq(guestsTable.id, id), eq(guestsTable.coupleId, r.coupleId)));
   res.json({ success: true });
+});
+
+// ---------- Personal invitation ----------
+const personalInviteSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().optional().default(""),
+  email: z.string().email().optional().nullable(),
+  side: z.enum(["partner1", "partner2", "shared"]).optional().default("partner1"),
+});
+
+router.post("/client/guests/invite", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const parsed = personalInviteSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+
+  const [guest] = await db.insert(guestsTable).values({
+    coupleId: r.coupleId,
+    firstName: parsed.data.firstName,
+    lastName: parsed.data.lastName,
+    side: parsed.data.side,
+    email: parsed.data.email ?? null,
+    source: "personal_invite",
+    rsvp: "pending",
+  }).returning();
+
+  if (parsed.data.email) {
+    const [couple] = await db.select({
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+      locale: couplesTable.locale,
+    }).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+
+    const [site] = await db.select({ slug: weddingWebsitesTable.slug })
+      .from(weddingWebsitesTable)
+      .where(eq(weddingWebsitesTable.coupleId, r.coupleId))
+      .limit(1);
+
+    const coupleName = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || "Le couple";
+    const siteUrl = site?.slug ? `${appUrl()}/${site.slug}` : appUrl();
+
+    void notifyPersonalInvitation({
+      to: parsed.data.email,
+      guestName: `${parsed.data.firstName} ${parsed.data.lastName}`.trim(),
+      coupleName,
+      siteUrl,
+      locale: couple?.locale,
+    }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to send personal invitation email"));
+  }
+
+  res.status(201).json(guest);
 });
 
 // ---------- Guest Tables (seating) ----------
@@ -1425,6 +1475,38 @@ router.get("/client/rsvps", async (req, res) => {
     }
   }
   res.json({ rsvps, answers });
+});
+
+// ---------- RSVP approval ----------
+router.patch("/client/rsvps/:id/status", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const id = Number(req.params.id);
+  const parsed = z.object({ status: z.enum(["accepted", "rejected"]) }).safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
+
+  const siteId = await getOwnedWeddingSiteId(r.coupleId);
+  if (!siteId) { res.status(404).json({ error: "Wedding site not found" }); return; }
+
+  const [rsvp] = await db.update(weddingRsvpsTable)
+    .set({ status: parsed.data.status })
+    .where(and(eq(weddingRsvpsTable.id, id), eq(weddingRsvpsTable.weddingWebsiteId, siteId)))
+    .returning();
+  if (!rsvp) { res.status(404).json({ error: "RSVP not found" }); return; }
+
+  if (parsed.data.status === "accepted" && rsvp.attending) {
+    const firstName = rsvp.firstName || rsvp.name.split(" ")[0] || rsvp.name;
+    const lastName = rsvp.firstName ? rsvp.lastName : rsvp.name.split(" ").slice(1).join(" ");
+    await db.insert(guestsTable).values({
+      coupleId: r.coupleId,
+      firstName,
+      lastName,
+      email: rsvp.email ?? null,
+      source: "from_rsvp",
+      rsvp: "confirmed",
+    });
+  }
+
+  res.json(rsvp);
 });
 
 // ---------- Client Quotes (Devis reçus) ----------

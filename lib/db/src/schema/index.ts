@@ -112,6 +112,7 @@ export const guestsTable = pgTable("guests", {
   diet: text("diet"),
   email: text("email"),
   notes: text("notes"),
+  source: text("source").notNull().default("manual"), // manual | personal_invite | from_rsvp
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -440,6 +441,7 @@ export const weddingRsvpsTable = pgTable("wedding_rsvps", {
   companionFirstName: text("companion_first_name"),
   companionLastName: text("companion_last_name"),
   message: text("message"),
+  status: text("status").notNull().default("pending"), // pending | accepted | rejected
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
