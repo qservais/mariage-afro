@@ -128,7 +128,17 @@
         "luxe": "Luxury events",
         "intime": "Intimate weddings (<50)",
         "grand_format": "Large weddings (200+)"
-      }
+      },
+      "social_title": "Social media",
+      "social_subtitle": "Optional — this information will appear on your profile.",
+      "instagram": "Instagram",
+      "instagram_placeholder": "https://instagram.com/yourhandle",
+      "facebook": "Facebook",
+      "facebook_placeholder": "https://facebook.com/yourpage",
+      "tiktok": "TikTok",
+      "tiktok_placeholder": "https://tiktok.com/@yourhandle",
+      "youtube_channel": "YouTube channel",
+      "youtube_channel_placeholder": "https://youtube.com/@yourchannel"
     },
     "dashboard": {
       "profile_status": "Profile status",
@@ -267,7 +277,16 @@
       "indicative_price_placeholder": "E.g. from €800",
       "description_auto_hint": "Your description will be automatically translated into French, Dutch and English.",
       "video_preview_btn": "Preview",
-      "video_preview_invalid": "URL not recognised. Please check the YouTube, Vimeo link or uploaded video."
+      "video_preview_invalid": "URL not recognised. Please check the YouTube, Vimeo link or uploaded video.",
+      "social_title": "Social media",
+      "instagram": "Instagram",
+      "instagram_placeholder": "https://instagram.com/yourhandle",
+      "facebook": "Facebook",
+      "facebook_placeholder": "https://facebook.com/yourpage",
+      "tiktok": "TikTok",
+      "tiktok_placeholder": "https://tiktok.com/@yourhandle",
+      "youtube_channel": "YouTube channel",
+      "youtube_channel_placeholder": "https://youtube.com/@yourchannel"
     },
     "gallery": {
       "title": "Gallery",

@@ -128,7 +128,17 @@
         "luxe": "Événements luxe",
         "intime": "Mariages intimes (<50)",
         "grand_format": "Grands formats (200+)"
-      }
+      },
+      "social_title": "Réseaux sociaux",
+      "social_subtitle": "Facultatif — ces informations apparaîtront sur votre fiche.",
+      "instagram": "Instagram",
+      "instagram_placeholder": "https://instagram.com/votrecompte",
+      "facebook": "Facebook",
+      "facebook_placeholder": "https://facebook.com/votrepage",
+      "tiktok": "TikTok",
+      "tiktok_placeholder": "https://tiktok.com/@votrecompte",
+      "youtube_channel": "Chaîne YouTube",
+      "youtube_channel_placeholder": "https://youtube.com/@votrechaine"
     },
     "dashboard": {
       "profile_status": "Statut de votre fiche",
@@ -267,7 +277,16 @@
       "indicative_price_placeholder": "Ex: à partir de 800 €",
       "description_auto_hint": "Votre description sera automatiquement traduite en français, néerlandais et anglais.",
       "video_preview_btn": "Prévisualiser",
-      "video_preview_invalid": "URL non reconnue. Vérifiez le lien YouTube, Vimeo ou la vidéo téléversée."
+      "video_preview_invalid": "URL non reconnue. Vérifiez le lien YouTube, Vimeo ou la vidéo téléversée.",
+      "social_title": "Réseaux sociaux",
+      "instagram": "Instagram",
+      "instagram_placeholder": "https://instagram.com/votrecompte",
+      "facebook": "Facebook",
+      "facebook_placeholder": "https://facebook.com/votrepage",
+      "tiktok": "TikTok",
+      "tiktok_placeholder": "https://tiktok.com/@votrecompte",
+      "youtube_channel": "Chaîne YouTube",
+      "youtube_channel_placeholder": "https://youtube.com/@votrechaine"
     },
     "gallery": {
       "title": "Galerie",

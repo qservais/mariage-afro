@@ -19,6 +19,10 @@ interface VendorProfile {
   website: string | null;
   phone: string | null;
   email: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  tiktok: string | null;
+  youtube: string | null;
   logoUrl: string | null;
   services: string[];
 }
@@ -57,6 +61,10 @@ export default function VendorProfilePage() {
   const [indicativePrice, setIndicativePrice] = useState("");
   const [website, setWebsite] = useState("");
   const [phone, setPhone] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [tiktok, setTiktok] = useState("");
+  const [youtubeChannel, setYoutubeChannel] = useState("");
   const [email, setEmail] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
@@ -79,6 +87,10 @@ export default function VendorProfilePage() {
     setIndicativePrice(vendor.indicativePrice || "");
     setWebsite(vendor.website || "");
     setPhone(vendor.phone || "");
+    setInstagram(vendor.instagram || "");
+    setFacebook(vendor.facebook || "");
+    setTiktok(vendor.tiktok || "");
+    setYoutubeChannel(vendor.youtube || "");
     setEmail(vendor.email || "");
     setLogoUrl(vendor.logoUrl || null);
   }, [vendor]);
@@ -148,6 +160,10 @@ export default function VendorProfilePage() {
             phone: phone || null,
             email: email || undefined,
             logoUrl: logoUrl || null,
+            instagram: instagram || null,
+            facebook: facebook || null,
+            tiktok: tiktok || null,
+            youtube: youtubeChannel || null,
           });
         }}
       >
@@ -333,6 +349,29 @@ export default function VendorProfilePage() {
           <div className="sm:col-span-2">
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.website")}</label>
             <Input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://" data-testid="input-profile-website" />
+          </div>
+        </div>
+
+        {/* Social media */}
+        <div className="border-t border-neutral-100 pt-5 space-y-3">
+          <p className="text-xs uppercase tracking-wider text-wine-deep font-semibold">{t("vendor.profile.social_title")}</p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.instagram")}</label>
+              <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder={t("vendor.profile.instagram_placeholder")} data-testid="input-profile-instagram" />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.facebook")}</label>
+              <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder={t("vendor.profile.facebook_placeholder")} data-testid="input-profile-facebook" />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.tiktok")}</label>
+              <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder={t("vendor.profile.tiktok_placeholder")} data-testid="input-profile-tiktok" />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.youtube_channel")}</label>
+              <Input value={youtubeChannel} onChange={(e) => setYoutubeChannel(e.target.value)} placeholder={t("vendor.profile.youtube_channel_placeholder")} data-testid="input-profile-youtube" />
+            </div>
           </div>
         </div>
 

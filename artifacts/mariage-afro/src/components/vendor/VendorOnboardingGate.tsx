@@ -75,6 +75,10 @@ interface VendorValues extends Record<string, unknown> {
   photoPath: string;
   website: string;
   description: string;
+  instagram: string;
+  facebook: string;
+  tiktok: string;
+  youtube: string;
 }
 
 export default function VendorOnboardingGate({ account, children }: Props) {
@@ -96,6 +100,10 @@ export default function VendorOnboardingGate({ account, children }: Props) {
     photoPath: "",
     website: "",
     description: "",
+    instagram: "",
+    facebook: "",
+    tiktok: "",
+    youtube: "",
   });
   const [ready, setReady] = useState(false);
 
@@ -111,6 +119,10 @@ export default function VendorOnboardingGate({ account, children }: Props) {
       regions: account.city ? account.city.split(",").map((s) => s.trim()).filter(Boolean) : [],
       website: account.website || "",
       description: account.description || "",
+      instagram: "",
+      facebook: "",
+      tiktok: "",
+      youtube: "",
     }));
     setReady(true);
   }, [account, user]);
@@ -290,6 +302,48 @@ export default function VendorOnboardingGate({ account, children }: Props) {
               onChange={(e) => setValue("website", e.target.value)}
               data-testid="input-vendor-website"
             />
+            <div className="border-t border-wine-deep/10 pt-4 space-y-3">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-wine-deep/60 font-medium">
+                {t("vendor.onboarding.social_title")}
+              </p>
+              <p className="text-[11px] text-wine-deep/50 font-light -mt-1">
+                {t("vendor.onboarding.social_subtitle")}
+              </p>
+              <FormFieldGroup columns={2}>
+                <TextField
+                  name="instagram"
+                  label={t("vendor.onboarding.instagram")}
+                  placeholder={t("vendor.onboarding.instagram_placeholder")}
+                  value={values.instagram}
+                  onChange={(e) => setValue("instagram", e.target.value)}
+                  data-testid="input-vendor-instagram"
+                />
+                <TextField
+                  name="facebook"
+                  label={t("vendor.onboarding.facebook")}
+                  placeholder={t("vendor.onboarding.facebook_placeholder")}
+                  value={values.facebook}
+                  onChange={(e) => setValue("facebook", e.target.value)}
+                  data-testid="input-vendor-facebook"
+                />
+                <TextField
+                  name="tiktok"
+                  label={t("vendor.onboarding.tiktok")}
+                  placeholder={t("vendor.onboarding.tiktok_placeholder")}
+                  value={values.tiktok}
+                  onChange={(e) => setValue("tiktok", e.target.value)}
+                  data-testid="input-vendor-tiktok"
+                />
+                <TextField
+                  name="youtube"
+                  label={t("vendor.onboarding.youtube_channel")}
+                  placeholder={t("vendor.onboarding.youtube_channel_placeholder")}
+                  value={values.youtube}
+                  onChange={(e) => setValue("youtube", e.target.value)}
+                  data-testid="input-vendor-youtube"
+                />
+              </FormFieldGroup>
+            </div>
             <TextareaField
               name="description"
               label={t("vendor.onboarding.description")}
@@ -368,6 +422,10 @@ export default function VendorOnboardingGate({ account, children }: Props) {
                     photoPath: v.photoPath || null,
                     regions: v.regions,
                     specialties: v.specialties,
+                    instagram: v.instagram || null,
+                    facebook: v.facebook || null,
+                    tiktok: v.tiktok || null,
+                    youtube: v.youtube || null,
                   },
                   { onSuccess: () => resolve(), onError: (err) => reject(err) },
                 );

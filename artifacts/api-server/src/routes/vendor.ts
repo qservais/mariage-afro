@@ -132,6 +132,10 @@ const onboardingSchema = z.object({
   photoPath: z.string().max(2000).optional().nullable(),
   regions: z.array(z.string().max(80)).optional().default([]),
   specialties: z.array(z.string().max(80)).optional().default([]),
+  instagram: z.string().max(200).optional().nullable(),
+  facebook: z.string().max(200).optional().nullable(),
+  tiktok: z.string().max(200).optional().nullable(),
+  youtube: z.string().max(200).optional().nullable(),
 });
 
 router.post("/vendor/onboarding", async (req, res) => {
@@ -199,6 +203,10 @@ router.post("/vendor/onboarding", async (req, res) => {
     ...(onboardingLogoUrl !== null ? { logoUrl: onboardingLogoUrl } : {}),
     ...(data.specialties && data.specialties.length > 0 ? { culturalStyles: data.specialties } : {}),
     ...(data.regions && data.regions.length > 0 ? { region: data.regions[0] } : {}),
+    instagram: data.instagram ?? null,
+    facebook: data.facebook ?? null,
+    tiktok: data.tiktok ?? null,
+    youtube: data.youtube ?? null,
   };
 
   if (vendorId) {
@@ -375,6 +383,10 @@ const profileSchema = z.object({
   phone: z.string().optional().nullable(),
   email: z.string().email().optional(),
   logoUrl: z.string().max(2000).optional().nullable(),
+  instagram: z.string().max(200).optional().nullable(),
+  facebook: z.string().max(200).optional().nullable(),
+  tiktok: z.string().max(200).optional().nullable(),
+  youtube: z.string().max(200).optional().nullable(),
 });
 
 router.patch("/vendor/profile", async (req, res) => {
