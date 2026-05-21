@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Plus, X, Check } from "lucide-react";
@@ -16,6 +16,8 @@ interface ServiceItem {
   price_visible: boolean;
 }
 
+type ServiceItemWithId = ServiceItem & { _id: number };
+
 interface VendorProfile {
   id: number;
   category: string;
@@ -27,13 +29,14 @@ const PRICE_UNITS: PriceUnit[] = ["forfait", "pers", "heure", "nuit", "table"];
 export default function VendorServicesPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
+  const idRef = useRef(0);
 
   const { data: vendor } = useQuery<VendorProfile>({
     queryKey: ["vendor", "profile"],
     queryFn: () => vendorApi.get<VendorProfile>("/api/vendor/profile"),
   });
 
-  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [services, setServices] = useState<ServiceItemWithId[]>([]);
   const [draft, setDraft] = useState("");
   const [saved, setSaved] = useState(false);
 
@@ -41,6 +44,7 @@ export default function VendorServicesPage() {
     setServices(
       (vendor?.services ?? []).map((s) => ({
         ...s,
+        _id: ++idRef.current,
         price_unit: (s.price_unit as PriceUnit) ?? "forfait",
       })),
     );
@@ -66,7 +70,7 @@ export default function VendorServicesPage() {
     } else {
       setServices((prev) => [
         ...prev,
-        { name, price: null, price_unit: "forfait", price_visible: false },
+        { name, price: null, price_unit: "forfait", price_visible: false, _id: ++idRef.current },
       ]);
     }
   };
@@ -76,7 +80,7 @@ export default function VendorServicesPage() {
     if (!trimmed || selectedNames.has(trimmed)) return;
     setServices((prev) => [
       ...prev,
-      { name: trimmed, price: null, price_unit: "forfait", price_visible: false },
+      { name: trimmed, price: null, price_unit: "forfait", price_visible: false, _id: ++idRef.current },
     ]);
     setDraft("");
   };
@@ -171,7 +175,7 @@ export default function VendorServicesPage() {
             <ul className="space-y-3" data-testid="list-services">
               {services.map((svc) => (
                 <li
-                  key={svc.name}
+                  key={svc._id}
                   className="bg-cream/40 border border-neutral-200 px-3 py-3 space-y-2"
                 >
                   {/* Row 1: editable name + remove */}
@@ -282,7 +286,7 @@ export default function VendorServicesPage() {
         <div className="flex items-center gap-4 pt-2 border-t border-neutral-200">
           <Button
             type="button"
-            onClick={() => save.mutate({ services })}
+            onClick={() => save.mutate({ services: services.map(({ name, price, price_unit, price_visible }) => ({ name, price, price_unit, price_visible })) })}
             className="rounded-none uppercase tracking-wider text-xs bg-wine-deep text-cream hover:bg-wine-deep/90"
             disabled={save.isPending}
             data-testid="button-services-save"

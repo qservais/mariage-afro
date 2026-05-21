@@ -88,7 +88,7 @@ export default function VendorOnboardingGate({ account, children }: Props) {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
 
-  const needsOnboarding = account !== undefined && !account.onboardedAt;
+  const needsOnboarding = account !== undefined && account.onboardedAt == null;
 
   const [initialValues, setInitialValues] = useState<VendorValues>({
     businessName: "",
@@ -404,7 +404,12 @@ export default function VendorOnboardingGate({ account, children }: Props) {
   const locale = (i18n.language?.slice(0, 2) ?? "fr") as "fr" | "nl" | "en";
 
   return (
-    <div className="fixed inset-0 z-50 bg-wine-deep/90 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={t("vendor.onboarding.title")}
+      className="fixed inset-0 z-50 bg-wine-deep/90 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+    >
       <div className="w-full max-w-2xl my-8">
         <FormShell
           variant="modal"

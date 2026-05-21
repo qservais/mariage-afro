@@ -297,15 +297,27 @@ export default function GuestsPage() {
           <p className="text-xs text-neutral-500 mt-1">{t("invites.custom_questions_desc")}</p>
         </div>
         <form className="grid sm:grid-cols-12 gap-2" onSubmit={(e) => { e.preventDefault(); if (qForm.label.trim()) createQ.mutate(); }}>
-          <Input placeholder={t("invites.question_label")} value={qForm.label} onChange={(e) => setQForm({ ...qForm, label: e.target.value })} className="sm:col-span-5 rounded-none" data-testid="input-question-label" />
-          <select value={qForm.type} onChange={(e) => setQForm({ ...qForm, type: e.target.value as "text" | "yesno" | "choice" })} className="sm:col-span-2 border border-neutral-300 h-10 px-2 text-sm">
-            <option value="text">{t("invites.q_type_text")}</option>
-            <option value="yesno">{t("invites.q_type_yesno")}</option>
-            <option value="choice">{t("invites.q_type_choice")}</option>
-          </select>
-          <Input placeholder={t("invites.options_csv")} value={qForm.options} onChange={(e) => setQForm({ ...qForm, options: e.target.value })} className="sm:col-span-3 rounded-none" disabled={qForm.type !== "choice"} />
-          <label className="flex items-center gap-1 text-xs sm:col-span-1"><input type="checkbox" checked={qForm.required} onChange={(e) => setQForm({ ...qForm, required: e.target.checked })} /> {t("invites.required")}</label>
-          <Button type="submit" className="sm:col-span-1 rounded-none gap-1"><Plus className="w-3 h-3" /></Button>
+          <div className="sm:col-span-5">
+            <label htmlFor="q-label" className="sr-only">{t("invites.question_label")}</label>
+            <Input id="q-label" placeholder={t("invites.question_label")} value={qForm.label} onChange={(e) => setQForm({ ...qForm, label: e.target.value })} className="rounded-none w-full" data-testid="input-question-label" />
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="q-type" className="sr-only">{t("invites.q_type_label", { defaultValue: "Type de question" })}</label>
+            <select id="q-type" value={qForm.type} onChange={(e) => setQForm({ ...qForm, type: e.target.value as "text" | "yesno" | "choice" })} className="border border-neutral-300 h-10 px-2 text-sm w-full">
+              <option value="text">{t("invites.q_type_text")}</option>
+              <option value="yesno">{t("invites.q_type_yesno")}</option>
+              <option value="choice">{t("invites.q_type_choice")}</option>
+            </select>
+          </div>
+          <div className="sm:col-span-3">
+            <label htmlFor="q-options" className="sr-only">{t("invites.options_csv")}</label>
+            <Input id="q-options" placeholder={t("invites.options_csv")} value={qForm.options} onChange={(e) => setQForm({ ...qForm, options: e.target.value })} className="rounded-none w-full" disabled={qForm.type !== "choice"} aria-disabled={qForm.type !== "choice"} />
+          </div>
+          <label className="flex items-center gap-1 text-xs sm:col-span-1">
+            <input type="checkbox" checked={qForm.required} onChange={(e) => setQForm({ ...qForm, required: e.target.checked })} />
+            {t("invites.required")}
+          </label>
+          <Button type="submit" className="sm:col-span-1 rounded-none gap-1" aria-label={t("invites.add_question", { defaultValue: "Ajouter la question" })}><Plus className="w-3 h-3" aria-hidden="true" /></Button>
         </form>
         <ul className="divide-y divide-neutral-100">
           {sortedQuestions.map((q, idx) => (
@@ -447,7 +459,7 @@ export default function GuestsPage() {
                   if (!inviteForm.firstName) return;
                   sendInvite.mutate({
                     firstName: inviteForm.firstName,
-                    lastName: inviteForm.lastName || undefined,
+                    lastName: inviteForm.lastName,
                     email: inviteForm.email || null,
                     side: inviteForm.side,
                   });

@@ -57,7 +57,7 @@ export default function OnboardingGate({ couple, children }: Props) {
   const { user } = useUser();
   const qc = useQueryClient();
 
-  const needsOnboarding = couple !== undefined && !couple.onboardedAt;
+  const needsOnboarding = couple !== undefined && couple.onboardedAt == null;
 
   const [initialValues, setInitialValues] = useState<CoupleValues>({
     partner1Name: "",
@@ -238,7 +238,12 @@ export default function OnboardingGate({ couple, children }: Props) {
   if (!ready) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-wine-deep/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={t("onboarding.title")}
+      className="fixed inset-0 z-50 bg-wine-deep/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+    >
       <div className="w-full max-w-2xl my-8">
         <FormShell
           variant="modal"
