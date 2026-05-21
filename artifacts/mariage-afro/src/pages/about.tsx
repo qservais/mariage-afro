@@ -1,35 +1,9 @@
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
-
-const bannerImg = "/images/dsc05154.webp";
 
 export default function About() {
   const { t } = useTranslation();
-
-
-  const team = [
-    {
-      name: t("about.team_member1_name"),
-      role: t("about.team_member1_role"),
-      initial: "AD",
-      bio: t("about.team_member1_bio")
-    },
-    {
-      name: t("about.team_member2_name"),
-      role: t("about.team_member2_role"),
-      initial: "CM",
-      bio: t("about.team_member2_bio")
-    },
-    {
-      name: t("about.team_member3_name"),
-      role: t("about.team_member3_role"),
-      initial: "IF",
-      bio: t("about.team_member3_bio")
-    }
-  ];
 
   return (
     <div className="w-full pt-28">
@@ -91,44 +65,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-6 md:px-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block text-xs uppercase tracking-[0.3em] text-primary font-bold mb-4">{t("about.team_label")}</span>
-            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground">
-              {t("about.team_title")}
-            </h2>
-            <div className="w-16 h-1 bg-primary mx-auto mt-8"></div>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-10 max-w-5xl mx-auto">
-            {team.map((member, i) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.12 }}
-                className="flex flex-col items-center text-center bg-white border border-border p-10 shadow-sm"
-              >
-                <div className="w-24 h-24 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center mb-6">
-                  <span className="text-2xl font-bold text-primary font-serif">{member.initial}</span>
-                </div>
-                <h3 className="text-xl font-bold font-serif text-foreground mb-1">{member.name}</h3>
-                <p className="text-xs uppercase tracking-widest text-primary font-bold mb-4">{member.role}</p>
-                <div className="w-10 h-0.5 bg-primary mb-4"></div>
-                <p className="text-muted-foreground text-sm leading-relaxed">{member.bio}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
