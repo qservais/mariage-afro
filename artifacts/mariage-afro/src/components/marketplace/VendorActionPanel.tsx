@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import {
   CalendarCheck2,
@@ -201,7 +202,7 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
     }
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[110] flex items-center justify-center bg-wine-deep/70 backdrop-blur-sm p-4"
       role="dialog"
@@ -372,7 +373,8 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
