@@ -21,6 +21,7 @@ import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
 import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendorLeadFollowup, notifyQuoteReceived, notifyQuoteResponded } from "../lib/email";
+import { translateDescription } from "../lib/translate";
 import { logger } from "../lib/logger";
 
 const router = Router();
@@ -361,9 +362,6 @@ const profileSchema = z.object({
   city: z.string().min(1).max(80).optional(),
   tagline: z.string().max(200).optional(),
   description: z.string().max(4000).optional(),
-  descriptionFr: z.string().max(4000).optional(),
-  descriptionNl: z.string().max(4000).optional(),
-  descriptionEn: z.string().max(4000).optional(),
   videoUrl: z.string().max(2000).optional().nullable(),
   indicativePrice: z.string().max(200).optional().nullable(),
   coverPhotoUrl: z.string().max(2000).optional().nullable(),
@@ -434,6 +432,21 @@ router.patch("/vendor/profile", async (req, res) => {
   } else if (typeof data.videoUrl === "string" && data.videoUrl.includes("/.private/")) {
     res.status(400).json({ error: "Invalid url" });
     return;
+  }
+
+  // Auto-translate description to FR/NL/EN when it has changed
+  if (typeof data.description === "string" && data.description !== vendor.description) {
+    const translations = await translateDescription(data.description, req.log ?? logger);
+    if (translations) {
+      (data as Record<string, unknown>).descriptionFr = translations.fr;
+      (data as Record<string, unknown>).descriptionNl = translations.nl;
+      (data as Record<string, unknown>).descriptionEn = translations.en;
+    } else {
+      // Fallback: use the provided description for all languages
+      (data as Record<string, unknown>).descriptionFr = data.description;
+      (data as Record<string, unknown>).descriptionNl = data.description;
+      (data as Record<string, unknown>).descriptionEn = data.description;
+    }
   }
 
   const [updated] = await db
@@ -1133,9 +1146,7 @@ router.get("/vendor/onboarding-checklist", async (req, res) => {
 
   const logo = !!vendor?.logoUrl;
   const cover = !!(vendor?.coverPhotoUrl || vendor?.coverImage);
-  const descriptionFr = !!(vendor?.descriptionFr && vendor.descriptionFr.length >= 200);
-  const descriptionNl = !!(vendor?.descriptionNl && vendor.descriptionNl.length >= 200);
-  const descriptionEn = !!(vendor?.descriptionEn && vendor.descriptionEn.length >= 200);
+  const descriptionDone = !!(vendor?.description && vendor.description.length >= 200);
   const photos5 = (vendor?.images?.length ?? 0) >= 5;
   const indicativePrice = !!(vendor?.indicativePrice && vendor.indicativePrice.length > 0);
   const video = !!vendor?.videoUrl;
@@ -1157,9 +1168,7 @@ router.get("/vendor/onboarding-checklist", async (req, res) => {
     { key: "onboarding", done: !!account.onboardedAt },
     { key: "logo", done: logo },
     { key: "cover_photo", done: cover },
-    { key: "description_fr", done: descriptionFr, count: vendor?.descriptionFr?.length ?? 0 },
-    { key: "description_nl", done: descriptionNl, count: vendor?.descriptionNl?.length ?? 0 },
-    { key: "description_en", done: descriptionEn, count: vendor?.descriptionEn?.length ?? 0 },
+    { key: "description", done: descriptionDone, count: vendor?.description?.length ?? 0 },
     { key: "indicative_price", done: indicativePrice },
     { key: "photos_5", done: photos5, count: vendor?.images?.length ?? 0 },
     { key: "video", done: video },

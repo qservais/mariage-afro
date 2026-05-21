@@ -14,9 +14,6 @@ interface VendorProfile {
   city: string;
   tagline: string;
   description: string;
-  descriptionFr: string;
-  descriptionNl: string;
-  descriptionEn: string;
   videoUrl: string | null;
   indicativePrice: string | null;
   website: string | null;
@@ -46,9 +43,6 @@ export default function VendorProfilePage() {
   const [city, setCity] = useState("");
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
-  const [descriptionFr, setDescriptionFr] = useState("");
-  const [descriptionNl, setDescriptionNl] = useState("");
-  const [descriptionEn, setDescriptionEn] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [indicativePrice, setIndicativePrice] = useState("");
   const [website, setWebsite] = useState("");
@@ -70,9 +64,6 @@ export default function VendorProfilePage() {
     setCity(vendor.city || "");
     setTagline(vendor.tagline || "");
     setDescription(vendor.description || "");
-    setDescriptionFr(vendor.descriptionFr || "");
-    setDescriptionNl(vendor.descriptionNl || "");
-    setDescriptionEn(vendor.descriptionEn || "");
     setVideoUrl(vendor.videoUrl || "");
     setIndicativePrice(vendor.indicativePrice || "");
     setWebsite(vendor.website || "");
@@ -140,9 +131,6 @@ export default function VendorProfilePage() {
           e.preventDefault();
           save.mutate({
             name, category, city, tagline, description,
-            descriptionFr: descriptionFr || undefined,
-            descriptionNl: descriptionNl || undefined,
-            descriptionEn: descriptionEn || undefined,
             videoUrl: videoUrl || null,
             indicativePrice: indicativePrice || null,
             website: website || null,
@@ -237,54 +225,13 @@ export default function VendorProfilePage() {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={4}
+              rows={6}
               className="w-full border border-input bg-background px-3 py-2 text-sm"
               data-testid="textarea-profile-description"
             />
-          </div>
-        </div>
-
-        {/* Multilingual descriptions */}
-        <div className="border-t border-neutral-100 pt-5 space-y-4">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-wine-deep font-semibold mb-0.5">{t("vendor.profile.multilingual_title")}</p>
-            <p className="text-xs text-neutral-500">{t("vendor.profile.multilingual_subtitle")}</p>
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
-              🇫🇷 {t("vendor.profile.description_fr")}
-            </label>
-            <textarea
-              value={descriptionFr}
-              onChange={(e) => setDescriptionFr(e.target.value)}
-              rows={5}
-              className="w-full border border-input bg-background px-3 py-2 text-sm"
-              data-testid="textarea-profile-description-fr"
-            />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
-              🇧🇪 {t("vendor.profile.description_nl")}
-            </label>
-            <textarea
-              value={descriptionNl}
-              onChange={(e) => setDescriptionNl(e.target.value)}
-              rows={5}
-              className="w-full border border-input bg-background px-3 py-2 text-sm"
-              data-testid="textarea-profile-description-nl"
-            />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">
-              🇬🇧 {t("vendor.profile.description_en")}
-            </label>
-            <textarea
-              value={descriptionEn}
-              onChange={(e) => setDescriptionEn(e.target.value)}
-              rows={5}
-              className="w-full border border-input bg-background px-3 py-2 text-sm"
-              data-testid="textarea-profile-description-en"
-            />
+            <p className="text-[11px] text-neutral-400 mt-1 flex items-center gap-1">
+              <span>🌐</span> {t("vendor.profile.description_auto_hint")}
+            </p>
           </div>
         </div>
 

@@ -168,15 +168,13 @@
         "onboarding": "Onboarding voltooien",
         "logo": "Logo toevoegen",
         "cover_photo": "Coverfoto",
-        "description_fr": "Beschrijving in het Frans (≥ 200 tekens)",
-        "description_nl": "Beschrijving in het Nederlands (≥ 200 tekens)",
-        "description_en": "Beschrijving in het Engels (≥ 200 tekens)",
         "indicative_price": "Geef een richtprijs op",
         "photos_5": "Minstens 5 foto's in de galerij",
         "video": "Voeg een presentatievideo toe",
         "first_post": "Publiceer uw eerste post",
         "availability": "Stel uw beschikbaarheid in",
-        "tier": "Kies een abonnementsformule"
+        "tier": "Kies een abonnementsformule",
+        "description": "Schrijf uw beschrijving (≥ 200 tekens)"
       }
     },
     "subscription": {
@@ -262,16 +260,12 @@
       "save": "Opslaan",
       "saving": "Opslaan…",
       "saved": "Wijzigingen opgeslagen.",
-      "multilingual_title": "Meertalige beschrijvingen",
-      "multilingual_subtitle": "Schrijf uw beschrijving in elke taal om uw zichtbaarheid te maximaliseren.",
-      "description_fr": "Beschrijving in het Frans",
-      "description_nl": "Beschrijving in het Nederlands",
-      "description_en": "Beschrijving in het Engels",
       "video_url": "Presentatievideo-URL",
       "video_url_help": "YouTube- of Vimeo-link (bijv: https://youtube.com/watch?v=…)",
       "upload_video": "Video uploaden",
       "indicative_price": "Indicatieve prijs",
-      "indicative_price_placeholder": "Bijv: vanaf 800 €"
+      "indicative_price_placeholder": "Bijv: vanaf 800 €",
+      "description_auto_hint": "Uw beschrijving wordt automatisch vertaald naar Frans, Nederlands en Engels."
     },
     "gallery": {
       "title": "Galerij",

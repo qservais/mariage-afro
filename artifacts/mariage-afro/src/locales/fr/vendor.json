@@ -168,15 +168,13 @@
         "onboarding": "Compléter l'onboarding",
         "logo": "Ajouter votre logo",
         "cover_photo": "Photo de couverture",
-        "description_fr": "Description en français (≥ 200 car.)",
-        "description_nl": "Description en néerlandais (≥ 200 car.)",
-        "description_en": "Description en anglais (≥ 200 car.)",
         "indicative_price": "Indiquer un prix indicatif",
         "photos_5": "5 photos minimum dans la galerie",
         "video": "Ajouter une vidéo de présentation",
         "first_post": "Publier votre premier post",
         "availability": "Définir vos disponibilités",
-        "tier": "Choisir une formule d'abonnement"
+        "tier": "Choisir une formule d'abonnement",
+        "description": "Rédiger votre description (≥ 200 car.)"
       }
     },
     "subscription": {
@@ -262,16 +260,12 @@
       "save": "Enregistrer",
       "saving": "Enregistrement…",
       "saved": "Modifications enregistrées.",
-      "multilingual_title": "Descriptions multilingues",
-      "multilingual_subtitle": "Rédigez votre description dans chaque langue pour maximiser votre visibilité.",
-      "description_fr": "Description en français",
-      "description_nl": "Description en néerlandais",
-      "description_en": "Description en anglais",
       "video_url": "URL vidéo de présentation",
       "video_url_help": "Lien YouTube ou Vimeo (ex: https://youtube.com/watch?v=…)",
       "upload_video": "Téléverser une vidéo",
       "indicative_price": "Prix indicatif",
-      "indicative_price_placeholder": "Ex: à partir de 800 €"
+      "indicative_price_placeholder": "Ex: à partir de 800 €",
+      "description_auto_hint": "Votre description sera automatiquement traduite en français, néerlandais et anglais."
     },
     "gallery": {
       "title": "Galerie",
