@@ -2,6 +2,7 @@ import { Router, type Request, type Response, type NextFunction } from "express"
 import { getAuth } from "@clerk/express";
 import { z } from "zod";
 import { and, asc, desc, eq, inArray, isNull, isNotNull, ne, or, sql } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import { slugify, uniqueSlug } from "../lib/slugify";
 import {
   db,
@@ -1360,6 +1361,7 @@ router.post("/vendor/quotes", async (req, res) => {
     amountHt,
     amountTtc,
     status: "draft",
+    viewToken: nanoid(24),
   }).returning();
   res.status(201).json(row);
 });
@@ -1424,6 +1426,7 @@ router.post("/vendor/quotes/:id/send", async (req, res) => {
     amountTtc: quote.amountTtc,
     validityDays: quote.validityDays,
     quoteId: id,
+    viewToken: quote.viewToken,
     isRegisteredCouple: !!sendCoupleId,
   }, req.log).catch((err) => req.log?.error?.({ err }, "Failed to send quote email"));
   res.json(updated);

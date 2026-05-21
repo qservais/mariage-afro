@@ -399,6 +399,7 @@ export const vendorQuotesTable = pgTable("vendor_quotes", {
   sentAt: timestamp("sent_at", { withTimezone: true }),
   respondedAt: timestamp("responded_at", { withTimezone: true }),
   respondMessage: text("respond_message"),
+  viewToken: text("view_token").unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

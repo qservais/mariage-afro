@@ -950,6 +950,7 @@ export interface NotifyQuoteReceivedPayload {
   amountTtc: number;
   validityDays: number;
   quoteId: number;
+  viewToken?: string | null;
   /** Pass true only when the recipient is a registered couple with a client space. */
   isRegisteredCouple?: boolean;
 }
@@ -969,6 +970,9 @@ export async function notifyQuoteReceived(p: NotifyQuoteReceivedPayload, log = l
     row(amtLabel, fmtEur(p.amountTtc / 100)) +
     row(validLabel, daysLabel) +
     row({ fr: "Message", nl: "Bericht", en: "Message" }[locale], p.message || undefined);
+  // Direct link via viewToken always takes priority; fallback to espace-client for registered couples
+  const directUrl = p.viewToken ? `${appUrl()}/devis/${p.viewToken}` : null;
+  const ctaUrl = directUrl ?? (p.isRegisteredCouple ? `${appUrl()}/espace-client/devis` : undefined);
   await sendOne({
     to: p.to,
     subject: `[Mariage Afro] ${title} — ${p.vendorName}`,
@@ -976,8 +980,8 @@ export async function notifyQuoteReceived(p: NotifyQuoteReceivedPayload, log = l
       title,
       intro: greeting ? `${greeting}\n${intro}` : intro,
       rows,
-      ctaLabel: p.isRegisteredCouple ? ctaLabel : undefined,
-      ctaUrl: p.isRegisteredCouple ? `${appUrl()}/espace-client/devis` : undefined,
+      ctaLabel: ctaUrl ? ctaLabel : undefined,
+      ctaUrl,
       locale,
     }),
   }, log);

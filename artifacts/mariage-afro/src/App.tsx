@@ -65,6 +65,7 @@ const MariageRsvpPage = lazy(() => import("@/pages/mariage-rsvp"));
 const MariageCagnottePage = lazy(() => import("@/pages/mariage-cagnotte"));
 const MariageJourJPage = lazy(() => import("@/pages/mariage-jour-j"));
 const MoodBoardSharedPage = lazy(() => import("@/pages/mood-board-shared"));
+const QuoteViewPage = lazy(() => import("@/pages/public/QuoteViewPage"));
 
 // Espace Pro (lazy — never loaded for couples or anonymous)
 const VendorLayout = lazy(() => import("@/components/vendor/VendorLayout"));
@@ -188,6 +189,7 @@ function AppRoutes() {
   const isWeddingPage = pathname.startsWith("/mariage/");
   const isSharedBoard = pathname.startsWith("/mood-board/shared/");
   const isInternalGuide = pathname.startsWith("/_interne/");
+  const isQuoteView = pathname.startsWith("/devis/");
 
   if (isInternalGuide) {
     return (
@@ -204,6 +206,16 @@ function AppRoutes() {
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/mood-board/shared/:token" element={<MoodBoardSharedPage />} />
+        </Routes>
+      </Suspense>
+    );
+  }
+
+  if (isQuoteView) {
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route path="/devis/:token" element={<QuoteViewPage />} />
         </Routes>
       </Suspense>
     );

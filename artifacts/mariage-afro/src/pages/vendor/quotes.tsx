@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Plus, Trash2, Send, X, ChevronDown, ChevronUp, FileText } from "lucide-react";
+import { Loader2, Plus, Trash2, Send, X, ChevronDown, ChevronUp, FileText, Eye } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,7 @@ interface VendorQuote {
   sentAt: string | null;
   respondedAt: string | null;
   respondMessage: string | null;
+  viewToken: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -493,6 +494,18 @@ export default function VendorQuotesPage() {
                 >
                   {sendMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4" /> {t("vendor.quotes.send_btn")}</>}
                 </Button>
+              )}
+              {selected.viewToken && selected.status !== "draft" && (
+                <a
+                  href={`/devis/${selected.viewToken}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full border border-wine-deep text-wine-deep hover:bg-wine-deep hover:text-cream transition-colors px-4 py-2 text-xs uppercase tracking-wider"
+                  data-testid="button-view-quote"
+                >
+                  <Eye className="w-4 h-4" />
+                  {t("vendor.quotes.view_btn", { defaultValue: "Voir le devis" })}
+                </a>
               )}
             </div>
           )}
