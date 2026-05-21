@@ -23,6 +23,16 @@ interface VendorProfile {
   services: string[];
 }
 
+function parseVideoEmbed(url: string): { embedUrl: string | null; type: "youtube" | "vimeo" | "upload" | null } {
+  if (!url) return { embedUrl: null, type: null };
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) return { embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`, type: "youtube" };
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) return { embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}`, type: "vimeo" };
+  if (url.startsWith("/objects/") || url.match(/\.(mp4|webm|mov)$/i)) return { embedUrl: url, type: "upload" };
+  return { embedUrl: null, type: null };
+}
+
 const CATEGORIES = [
   "Photographie", "Vidéo", "DJ & Animation", "Décoration", "Traiteur",
   "Coiffure & Maquillage", "Robe de mariée", "Transport", "Invitations",
@@ -53,6 +63,7 @@ export default function VendorProfilePage() {
   const [logoError, setLogoError] = useState<string | null>(null);
   const [videoUploading, setVideoUploading] = useState(false);
   const [videoError, setVideoError] = useState<string | null>(null);
+  const [showVideoPreview, setShowVideoPreview] = useState(false);
   const [saved, setSaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLInputElement>(null);
@@ -242,11 +253,21 @@ export default function VendorProfilePage() {
             <div className="flex gap-2">
               <Input
                 value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
+                onChange={(e) => { setVideoUrl(e.target.value); setShowVideoPreview(false); }}
                 placeholder={t("vendor.profile.video_url_help")}
                 data-testid="input-profile-video-url"
                 className="flex-1"
               />
+              {videoUrl && (
+                <button
+                  type="button"
+                  onClick={() => setShowVideoPreview((v) => !v)}
+                  className="px-3 h-9 border border-neutral-300 text-neutral-700 text-[11px] uppercase tracking-wider hover:border-wine-deep hover:text-wine-deep transition-colors whitespace-nowrap"
+                  data-testid="button-video-preview"
+                >
+                  {t("vendor.profile.video_preview_btn")}
+                </button>
+              )}
               <label className="inline-flex items-center gap-1.5 px-3 h-9 border border-wine-deep text-wine-deep text-[11px] uppercase tracking-wider cursor-pointer hover:bg-wine-deep hover:text-cream transition-colors whitespace-nowrap">
                 {videoUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
                 {t("vendor.profile.upload_video")}
@@ -262,6 +283,31 @@ export default function VendorProfilePage() {
             </div>
             {videoError && <p className="text-[11px] text-red-600 mt-1">{videoError}</p>}
             <p className="text-[11px] text-neutral-400 mt-1">{t("vendor.profile.video_url_help")}</p>
+            {showVideoPreview && (() => {
+              const { embedUrl, type } = parseVideoEmbed(videoUrl);
+              if (!embedUrl) return (
+                <p className="text-[11px] text-red-500 mt-2">{t("vendor.profile.video_preview_invalid")}</p>
+              );
+              if (type === "upload") return (
+                <video
+                  src={embedUrl}
+                  controls
+                  className="mt-3 w-full max-w-sm aspect-video bg-black"
+                  data-testid="video-preview-player"
+                />
+              );
+              return (
+                <div className="mt-3 w-full max-w-sm aspect-video" data-testid="video-preview-embed">
+                  <iframe
+                    src={embedUrl}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Video preview"
+                  />
+                </div>
+              );
+            })()}
           </div>
           <div className="sm:col-span-2">
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.indicative_price")}</label>

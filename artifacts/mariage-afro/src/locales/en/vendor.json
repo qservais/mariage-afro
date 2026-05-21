@@ -265,7 +265,9 @@
       "upload_video": "Upload video",
       "indicative_price": "Indicative price",
       "indicative_price_placeholder": "E.g. from €800",
-      "description_auto_hint": "Your description will be automatically translated into French, Dutch and English."
+      "description_auto_hint": "Your description will be automatically translated into French, Dutch and English.",
+      "video_preview_btn": "Preview",
+      "video_preview_invalid": "URL not recognised. Please check the YouTube, Vimeo link or uploaded video."
     },
     "gallery": {
       "title": "Gallery",

@@ -265,7 +265,9 @@
       "upload_video": "Téléverser une vidéo",
       "indicative_price": "Prix indicatif",
       "indicative_price_placeholder": "Ex: à partir de 800 €",
-      "description_auto_hint": "Votre description sera automatiquement traduite en français, néerlandais et anglais."
+      "description_auto_hint": "Votre description sera automatiquement traduite en français, néerlandais et anglais.",
+      "video_preview_btn": "Prévisualiser",
+      "video_preview_invalid": "URL non reconnue. Vérifiez le lien YouTube, Vimeo ou la vidéo téléversée."
     },
     "gallery": {
       "title": "Galerie",

@@ -265,7 +265,9 @@
       "upload_video": "Video uploaden",
       "indicative_price": "Indicatieve prijs",
       "indicative_price_placeholder": "Bijv: vanaf 800 €",
-      "description_auto_hint": "Uw beschrijving wordt automatisch vertaald naar Frans, Nederlands en Engels."
+      "description_auto_hint": "Uw beschrijving wordt automatisch vertaald naar Frans, Nederlands en Engels.",
+      "video_preview_btn": "Voorvertoning",
+      "video_preview_invalid": "URL niet herkend. Controleer de YouTube-, Vimeo-link of de geüploade video."
     },
     "gallery": {
       "title": "Galerij",
