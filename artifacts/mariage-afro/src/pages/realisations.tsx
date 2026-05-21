@@ -18,6 +18,13 @@ const img8 = "/images/m-sj2-05876.webp";
 
 const FALLBACK_IMAGES = [img1, img2, img3, img4, img5, img6, img7, img8];
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+function objectUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  return path;
+}
+
 interface Realisation {
   id: number;
   coupleName: string;
@@ -199,8 +206,8 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const galleryImages = r.gallery?.length ? r.gallery : r.coverImage ? [r.coverImage] : [];
-  const cover = r.coverImage || galleryImages[0] || FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
+  const galleryImages = (r.gallery?.length ? r.gallery : r.coverImage ? [r.coverImage] : []).map((p) => objectUrl(p) ?? p);
+  const cover = objectUrl(r.coverImage) ?? galleryImages[0] ?? FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
   const isReversed = index % 2 === 1;
 
   // Double-video mode: both videoCouple AND videoTeaser are set

@@ -57,6 +57,13 @@ import bannerImg from "@assets/New-Project-12_1776614330308.png";
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+function objectUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  return path;
+}
+
 
 interface DisplayVendor {
   id: number;
@@ -667,8 +674,8 @@ export default function Prestations() {
         typeof s === "string" ? { name: s } : (s as { name: string; price?: number; price_unit?: string })
       ),
       rating: v.rating as number,
-      image: (v.coverImage as string | null) || ((v.images as string[]) ?? [])[0] || fallbackImg,
-      gallery: ((v.images as string[]) ?? []).slice(0, 3),
+      image: objectUrl(v.coverImage as string | null) ?? objectUrl(((v.images as string[]) ?? [])[0]) ?? (fallbackImg as unknown as string),
+      gallery: ((v.images as string[]) ?? []).slice(0, 3).map((img) => objectUrl(img) ?? img),
       verified: v.verified as boolean,
       averageRating: typeof v.averageRating === "number" ? v.averageRating : 0,
       reviewCount: typeof v.reviewCount === "number" ? v.reviewCount : 0,

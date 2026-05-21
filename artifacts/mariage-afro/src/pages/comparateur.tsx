@@ -11,6 +11,13 @@ import { ReviewStars } from "@/components/marketplace/ReviewStars";
 import { comparator } from "@/lib/comparator";
 import { SEO } from "@/components/SEO";
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+function objectUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  return path;
+}
+
 interface Vendor {
   id: number;
   name: string;
@@ -182,7 +189,7 @@ export default function Comparateur() {
                     <X className="w-4 h-4" />
                   </button>
                   <img
-                    src={v.coverImage || v.images[0] || ""}
+                    src={objectUrl(v.coverImage) ?? objectUrl(v.images[0]) ?? ""}
                     alt={v.name}
                     className="w-full h-40 object-cover mb-3"
                   />
