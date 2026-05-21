@@ -63,6 +63,37 @@ async function fetchClerkContact(userId: string, log: Request["log"]): Promise<{
   }
 }
 
+// Stable couple columns — excludes budgetMode which was added in dev but not yet
+// applied to production. Use _safeCoupleSelect everywhere until the next Publish
+// syncs the schema, then revert to plain db.select().
+const _safeCoupleSelect = {
+  id: couplesTable.id,
+  userId: couplesTable.userId,
+  partner1Name: couplesTable.partner1Name,
+  partner2Name: couplesTable.partner2Name,
+  email: couplesTable.email,
+  locale: couplesTable.locale,
+  weddingDate: couplesTable.weddingDate,
+  ceremonyCity: couplesTable.ceremonyCity,
+  ceremonyVenue: couplesTable.ceremonyVenue,
+  guestEstimate: couplesTable.guestEstimate,
+  budget: couplesTable.budget,
+  status: couplesTable.status,
+  onboardedAt: couplesTable.onboardedAt,
+  validatedAt: couplesTable.validatedAt,
+  validatedBy: couplesTable.validatedBy,
+  createdAt: couplesTable.createdAt,
+  updatedAt: couplesTable.updatedAt,
+} as const;
+
+// Minimal subset used by requireCouple (id + locale are sufficient for the middleware)
+const _coreCoupleCols = {
+  id: couplesTable.id,
+  userId: couplesTable.userId,
+  email: couplesTable.email,
+  locale: couplesTable.locale,
+} as const;
+
 async function requireCouple(req: Request, res: Response, next: NextFunction): Promise<void> {
   const auth = getAuth(req);
   const userId = auth?.userId;
@@ -70,7 +101,7 @@ async function requireCouple(req: Request, res: Response, next: NextFunction): P
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  let [couple] = await db.select().from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
+  let [couple] = await db.select(_coreCoupleCols).from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
   if (!couple) {
     const contact = await fetchClerkContact(userId, req.log);
     // Use ON CONFLICT DO NOTHING to handle concurrent first-login requests gracefully
@@ -78,12 +109,12 @@ async function requireCouple(req: Request, res: Response, next: NextFunction): P
       userId,
       email: contact.email ?? "",
       locale: contact.locale,
-    }).onConflictDoNothing().returning();
+    }).onConflictDoNothing().returning(_coreCoupleCols);
     if (inserted.length > 0) {
       couple = inserted[0];
     } else {
       // Race condition: another request inserted first — re-fetch
-      [couple] = await db.select().from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
+      [couple] = await db.select(_coreCoupleCols).from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
     }
   }
   if (!couple) {
@@ -94,11 +125,10 @@ async function requireCouple(req: Request, res: Response, next: NextFunction): P
     // Backfill email/locale once for existing couples (Clerk is the source of truth)
     const contact = await fetchClerkContact(userId, req.log);
     if (contact.email) {
-      const [updated] = await db.update(couplesTable)
+      await db.update(couplesTable)
         .set({ email: contact.email, locale: couple.locale || contact.locale, updatedAt: new Date() })
-        .where(eq(couplesTable.id, couple.id))
-        .returning();
-      if (updated) couple = updated;
+        .where(eq(couplesTable.id, couple.id));
+      couple = { ...couple, email: contact.email, locale: couple.locale || contact.locale };
     }
   }
   (req as unknown as AuthedRequest).userId = userId;
@@ -111,7 +141,7 @@ router.use(requireCouple);
 // ---------- Couple profile ----------
 router.get("/client/me", async (req, res) => {
   const r = req as unknown as AuthedRequest;
-  const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+  const [couple] = await db.select(_safeCoupleSelect).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
   res.json(couple);
 });
 
@@ -790,7 +820,7 @@ router.post("/client/messages", async (req, res) => {
 
   // Notify admin (throttled per conversation)
   (async () => {
-    const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+    const [couple] = await db.select(_safeCoupleSelect).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
     const adminTo = process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL;
     if (adminTo) {
       const senderLabel = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || `Couple #${r.coupleId}`;
@@ -959,7 +989,7 @@ router.post("/client/conversations/:id/messages", async (req, res) => {
   if (conv.vendorId == null) {
     // Couple → admin
     (async () => {
-      const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+      const [couple] = await db.select(_safeCoupleSelect).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
       const adminTo = process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL;
       if (adminTo) {
         const senderLabel = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || `Couple #${r.coupleId}`;
@@ -983,7 +1013,7 @@ router.post("/client/conversations/:id/messages", async (req, res) => {
         .where(eq(vendorAccountsTable.vendorId, vendorIdLocal))
         .limit(1);
       if (!account?.email) return;
-      const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+      const [couple] = await db.select(_safeCoupleSelect).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
       const senderLabel = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || `Couple #${r.coupleId}`;
       await notifyConversationMessage({
         to: account.email,
@@ -1133,7 +1163,7 @@ router.post("/client/reviews", async (req, res) => {
   const { vendorId, rating, title, comment } = parsed.data;
 
   // Vérifier que le mariage est marqué "completed"
-  const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+  const [couple] = await db.select(_safeCoupleSelect).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
   if (!couple) { res.status(404).json({ error: "Couple not found" }); return; }
   if (couple.status !== "completed") {
     res.status(403).json({ error: "Vous pourrez laisser un avis une fois votre mariage marqué comme terminé." });
@@ -1298,7 +1328,7 @@ router.post("/client/mood-board-collaborators", async (req, res) => {
     token,
   }).returning();
 
-  const [couple] = await db.select().from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
+  const [couple] = await db.select(_safeCoupleSelect).from(couplesTable).where(eq(couplesTable.id, r.coupleId)).limit(1);
   const inviterName = [couple?.partner1Name, couple?.partner2Name].filter(Boolean).join(" & ") || "Le couple";
   notifyMoodBoardInvite({
     to: parsed.data.email,
