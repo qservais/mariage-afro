@@ -415,7 +415,7 @@
       "subject": "Objet",
       "services_label": "Prestations",
       "service_label_ph": "Prestation",
-      "price_hint": "Les prix sont en centimes d'euro (ex: 100000 = 1 000,00 €)",
+      "price_hint": "",
       "add_service": "Ajouter une prestation",
       "vat_rate": "TVA",
       "validity_days": "Validité (jours)",

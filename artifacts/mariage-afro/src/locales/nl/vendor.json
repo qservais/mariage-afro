@@ -415,7 +415,7 @@
       "subject": "Onderwerp",
       "services_label": "Diensten",
       "service_label_ph": "Dienst",
-      "price_hint": "Prijzen zijn in euro-centen (bijv: 100000 = 1.000,00 €)",
+      "price_hint": "",
       "add_service": "Dienst toevoegen",
       "vat_rate": "BTW",
       "validity_days": "Geldigheid (dagen)",

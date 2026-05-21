@@ -67,6 +67,7 @@ export default function VendorQuotesPage() {
   const [searchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ ...EMPTY_FORM });
+  const [priceInputs, setPriceInputs] = useState<string[]>([""]);
   const [prefillLeadId, setPrefillLeadId] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
@@ -99,6 +100,7 @@ export default function VendorQuotesPage() {
       qc.invalidateQueries({ queryKey: ["vendor", "quotes"] });
       setShowForm(false);
       setForm({ ...EMPTY_FORM });
+      setPriceInputs([""]);
       setPrefillLeadId(null);
       toast({ title: t("vendor.quotes.created") });
     },
@@ -133,10 +135,12 @@ export default function VendorQuotesPage() {
 
   function addService() {
     setForm((f) => ({ ...f, services: [...f.services, { label: "", qty: 1, unitPrice: 0 }] }));
+    setPriceInputs((p) => [...p, ""]);
   }
 
   function removeService(idx: number) {
     setForm((f) => ({ ...f, services: f.services.filter((_, i) => i !== idx) }));
+    setPriceInputs((p) => p.filter((_, i) => i !== idx));
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -224,11 +228,24 @@ export default function VendorQuotesPage() {
                     data-testid={`input-service-qty-${idx}`}
                   />
                   <Input
-                    type="number"
-                    min={0}
-                    placeholder="Prix HT (€cts)"
-                    value={svc.unitPrice}
-                    onChange={(e) => updateService(idx, "unitPrice", Math.max(0, Number(e.target.value)))}
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="0,00"
+                    value={priceInputs[idx] ?? ""}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      setPriceInputs((p) => { const n = [...p]; n[idx] = raw; return n; });
+                      const euros = parseFloat(raw.replace(/\s/g, "").replace(",", "."));
+                      updateService(idx, "unitPrice", isNaN(euros) || euros < 0 ? 0 : Math.round(euros * 100));
+                    }}
+                    onBlur={() => {
+                      const cents = form.services[idx]?.unitPrice ?? 0;
+                      setPriceInputs((p) => {
+                        const n = [...p];
+                        n[idx] = cents > 0 ? (cents / 100).toFixed(2).replace(".", ",") : "";
+                        return n;
+                      });
+                    }}
                     className="rounded-none text-sm"
                     data-testid={`input-service-price-${idx}`}
                   />
@@ -245,7 +262,7 @@ export default function VendorQuotesPage() {
                 </div>
               ))}
             </div>
-            <p className="text-[10px] text-neutral-400 mt-1">{t("vendor.quotes.price_hint")}</p>
+            <p className="text-[10px] text-neutral-400 mt-1">{t("vendor.quotes.price_hint", { defaultValue: "" })}</p>
             <button
               type="button"
               onClick={addService}

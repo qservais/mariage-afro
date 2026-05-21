@@ -415,7 +415,7 @@
       "subject": "Subject",
       "services_label": "Services",
       "service_label_ph": "Service",
-      "price_hint": "Prices are in euro cents (e.g. 100000 = €1,000.00)",
+      "price_hint": "",
       "add_service": "Add service",
       "vat_rate": "VAT",
       "validity_days": "Validity (days)",
