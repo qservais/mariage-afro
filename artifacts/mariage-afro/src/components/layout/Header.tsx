@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, ArrowUpRight, Briefcase, CalendarCheck2 } from "lucide-react";
+import { User, ArrowUpRight, Briefcase, CalendarCheck2, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoColor from "@assets/logo-mariage-affro-01.svg";
 
@@ -10,6 +10,7 @@ export default function Header() {
   const { pathname: location } = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openSection, setOpenSection] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,7 +22,12 @@ export default function Header() {
 
   useEffect(() => {
     setMobileMenuOpen(false);
+    setOpenSection(null);
   }, [location]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) setOpenSection(null);
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -304,30 +310,74 @@ export default function Header() {
               </Link>
             </motion.div>
 
-            {/* Menu links — 3 columns on md+, stacked on mobile */}
-            <div className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-32 py-4 md:py-8 min-h-0">
-              <nav className="grid grid-cols-1 md:grid-cols-3 gap-x-10 lg:gap-x-16 gap-y-5 md:gap-y-0">
+            {/* Menu links — 3 columns on md+, accordion on mobile */}
+            <div className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-32 py-2 md:py-8 min-h-0 overflow-y-auto">
+              <nav className="grid grid-cols-1 md:grid-cols-3 gap-x-10 lg:gap-x-16 md:gap-y-0">
                 {menuColumns.map((col, ci) => (
                   <motion.div
                     key={col.eyebrow}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.2 + ci * 0.08 }}
-                    className="flex flex-col"
+                    className="flex flex-col border-b border-cream/10 md:border-none"
                   >
-                    <p className="text-[9px] tracking-[0.3em] uppercase text-gold/70 mb-2 md:mb-5">
-                      {col.eyebrow}
-                    </p>
-                    <ul className="flex flex-col gap-0.5 md:gap-2">
+                    {/* Mobile: tappable header; Desktop: static label */}
+                    <button
+                      className="md:pointer-events-none flex items-center justify-between w-full py-3 md:py-0 md:mb-5 text-left group"
+                      onClick={() => setOpenSection(openSection === ci ? null : ci)}
+                      aria-expanded={openSection === ci}
+                    >
+                      <span className="text-[9px] tracking-[0.3em] uppercase text-gold/70 font-semibold">
+                        {col.eyebrow}
+                      </span>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 text-gold/50 transition-transform duration-300 md:hidden ${
+                          openSection === ci ? "rotate-180" : ""
+                        }`}
+                        aria-hidden="true"
+                      />
+                    </button>
+
+                    {/* Links: always visible on md+, collapsed on mobile */}
+                    <AnimatePresence initial={false}>
+                      {(openSection === ci) && (
+                        <motion.ul
+                          key="links"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.28, ease: "easeInOut" }}
+                          className="flex flex-col gap-1 overflow-hidden md:!h-auto md:!opacity-100 md:gap-2 pb-3 md:pb-0"
+                        >
+                          {col.links.map((link) => (
+                            <li key={link.to}>
+                              <Link
+                                to={link.to}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={`font-display uppercase text-xl md:text-lg lg:text-2xl xl:text-[1.85rem] tracking-tight leading-snug transition-colors block ${
+                                  isActive(link.to) ? "text-gold" : "text-cream hover:text-gold"
+                                }`}
+                                data-testid={`link-mobile-${link.to.replace(/\//g, "") || "home"}`}
+                              >
+                                {link.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </motion.ul>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Desktop: links always shown (no AnimatePresence) */}
+                    <ul className="hidden md:flex flex-col gap-2">
                       {col.links.map((link) => (
                         <li key={link.to}>
                           <Link
                             to={link.to}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`font-display uppercase text-xl md:text-lg lg:text-2xl xl:text-[1.85rem] tracking-tight leading-snug transition-colors ${
+                            className={`font-display uppercase text-lg lg:text-2xl xl:text-[1.85rem] tracking-tight leading-snug transition-colors block ${
                               isActive(link.to) ? "text-gold" : "text-cream hover:text-gold"
                             }`}
-                            data-testid={`link-mobile-${link.to.replace(/\//g, "") || "home"}`}
+                            data-testid={`link-desktop-${link.to.replace(/\//g, "") || "home"}`}
                           >
                             {link.label}
                           </Link>
