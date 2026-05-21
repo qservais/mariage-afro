@@ -11,7 +11,8 @@
     "actions": {
       "close": "Fermer",
       "decrement": "Diminuer",
-      "increment": "Augmenter"
+      "increment": "Augmenter",
+      "reset": "Recommencer"
     },
     "demo": {
       "page_title": "Kit formulaires — Démo interne",

@@ -11,7 +11,8 @@
     "actions": {
       "close": "Sluiten",
       "decrement": "Verlagen",
-      "increment": "Verhogen"
+      "increment": "Verhogen",
+      "reset": "Opnieuw beginnen"
     },
     "demo": {
       "page_title": "Formulierenkit — Interne demo",

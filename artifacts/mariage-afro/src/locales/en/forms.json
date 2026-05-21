@@ -11,7 +11,8 @@
     "actions": {
       "close": "Close",
       "decrement": "Decrease",
-      "increment": "Increase"
+      "increment": "Increase",
+      "reset": "Start over"
     },
     "demo": {
       "page_title": "Forms kit — Internal demo",
