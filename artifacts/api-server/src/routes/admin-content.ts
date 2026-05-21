@@ -33,6 +33,10 @@ function escHtml(s: unknown): string {
     .replace(/"/g, "&quot;");
 }
 
+function csrfInp(token: string): string {
+  return `<input type="hidden" name="${CSRF_FIELD}" value="${escHtml(token)}">`;
+}
+
 function contentLayout(title: string, body: string, toastMsg = "", csrfToken = "", currentPath = ""): string {
   const navLink = (href: string, label: string) => {
     const active = currentPath ? href.endsWith(currentPath) || currentPath.startsWith(href.replace("/admin", "")) : false;
@@ -167,15 +171,18 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
           <a class="btn sm secondary" href="/admin/content/vendors/${v.id}/edit">Modifier</a>
           <a class="btn sm secondary" href="/admin/devis?vendor_id=${v.id}" title="Voir les devis">Devis</a>
           <form method="post" action="/admin/content/vendors/${v.id}/toggle" style="display:inline">
+            ${csrfInp(csrfToken)}
             <button class="btn sm ${v.active ? "danger" : "success"}" type="submit">${v.active ? "Désactiver" : "Activer"}</button>
           </form>
           <form method="post" action="/admin/content/vendors/${v.id}/delete" style="display:inline" onsubmit="return confirm('Supprimer définitivement ce partenaire ?')">
+            ${csrfInp(csrfToken)}
             <button class="btn sm danger" type="submit">Supprimer</button>
           </form>
         </div>
         <details style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
           <summary style="cursor:pointer;font-size:12px;color:#68191e;font-weight:600;letter-spacing:0.05em;">✉ Lier un compte prestataire par email</summary>
           <form method="post" action="/admin/content/vendors/${v.id}/invite" style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            ${csrfInp(csrfToken)}
             <input type="email" name="invited_email" required placeholder="email@prestataire.be" value="${escHtml(v.invitedEmail ?? "")}" style="flex:1;min-width:200px;">
             <label style="display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;">
               <input type="checkbox" name="send_email" value="1" checked> Envoyer l'email
@@ -220,6 +227,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
     <form method="post" id="vendor-form">
+      ${csrfInp(csrfToken)}
       <input type="hidden" name="images" id="images-hidden" value="${escHtml((v.images ?? []).join("\n"))}">
       ${csrfToken ? `<input type="hidden" name="_csrf" value="${escHtml(csrfToken)}">` : ""}
 
@@ -522,6 +530,7 @@ router.post("/content/vendors/:id/delete", async (req: Request, res: Response) =
 
 router.get("/content/venues", async (_req: Request, res: Response) => {
   const venues = await db.select().from(marketplaceVenuesTable).orderBy(asc(marketplaceVenuesTable.name));
+  const csrfToken = generateCsrfToken(_req, res);
   const listHtml = venues.length === 0
     ? `<p style="color:#888">Aucun lieu. Cliquez sur "Ajouter" pour commencer.</p>`
     : `<div class="grid">${venues.map(v => `
@@ -533,15 +542,15 @@ router.get("/content/venues", async (_req: Request, res: Response) => {
         <div class="actions">
           <a class="btn sm secondary" href="/admin/content/venues/${v.id}/edit">Modifier</a>
           <form method="post" action="/admin/content/venues/${v.id}/toggle" style="display:inline">
+            ${csrfInp(csrfToken)}
             <button class="btn sm ${v.active ? "danger" : "success"}" type="submit">${v.active ? "Désactiver" : "Activer"}</button>
           </form>
           <form method="post" action="/admin/content/venues/${v.id}/delete" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+            ${csrfInp(csrfToken)}
             <button class="btn sm danger" type="submit">Supprimer</button>
           </form>
         </div>
       </div>`).join("")}</div>`;
-
-  const csrfToken = generateCsrfToken(_req, res);
   const body = `
     <div class="page-header">
       <h1>Lieux <span style="font-size:14px;font-weight:400;color:#888">(${venues.length})</span></h1>
@@ -551,11 +560,12 @@ router.get("/content/venues", async (_req: Request, res: Response) => {
   res.type("html").send(contentLayout("Lieux", body, "", csrfToken, "/content/venues"));
 });
 
-function venueForm(v: Partial<{name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean}> = {}, error = ""): string {
+function venueForm(v: Partial<{name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean}> = {}, error = "", csrfToken = ""): string {
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
     <form method="post">
+      ${csrfInp(csrfToken)}
       <label>Nom *<input name="name" required value="${escHtml(v.name)}"></label>
       <label>Ville *<input name="city" required value="${escHtml(v.city)}"></label>
       <label>Capacité (ex: 50–500)<input name="capacity" value="${escHtml(v.capacity)}"></label>
@@ -576,14 +586,14 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
 
 router.get("/content/venues/new", (_req: Request, res: Response) => {
   const csrfToken = generateCsrfToken(_req, res);
-  res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm({active:true})}`, "", csrfToken, "/content/venues"));
+  res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm({active:true}, "", csrfToken)}`, "", csrfToken, "/content/venues"));
 });
 
 router.post("/content/venues/new", async (req: Request, res: Response) => {
   const b = req.body as Record<string, string>;
   if (!b.name || !b.city) {
     const csrfToken = generateCsrfToken(req, res);
-    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom et ville sont requis.")}`, "", csrfToken, "/content/venues"));
+    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom et ville sont requis.", csrfToken)}`, "", csrfToken, "/content/venues"));
     return;
   }
   await db.insert(marketplaceVenuesTable).values({
@@ -600,7 +610,7 @@ router.get("/content/venues/:id/edit", async (req: Request, res: Response) => {
   const [v] = await db.select().from(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.id, Number(req.params.id)));
   if (!v) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
   const csrfToken = generateCsrfToken(req, res);
-  res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier "${escHtml(v.name)}"</h1>${venueForm(v)}`, "", csrfToken, "/content/venues"));
+  res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier "${escHtml(v.name)}"</h1>${venueForm(v, "", csrfToken)}`, "", csrfToken, "/content/venues"));
 });
 
 router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
@@ -632,6 +642,7 @@ router.post("/content/venues/:id/delete", async (req: Request, res: Response) =>
 
 router.get("/content/realisations", async (_req: Request, res: Response) => {
   const rows = await db.select().from(realisationsTable).orderBy(desc(realisationsTable.createdAt));
+  const csrfToken = generateCsrfToken(_req, res);
   const listHtml = rows.length === 0
     ? `<p style="color:#888">Aucune réalisation. Cliquez sur "Ajouter" pour commencer.</p>`
     : `<div class="grid">${rows.map(r => `
@@ -647,15 +658,15 @@ router.get("/content/realisations", async (_req: Request, res: Response) => {
         <div class="actions">
           <a class="btn sm secondary" href="/admin/content/realisations/${r.id}/edit">Modifier</a>
           <form method="post" action="/admin/content/realisations/${r.id}/toggle" style="display:inline">
+            ${csrfInp(csrfToken)}
             <button class="btn sm ${r.active ? "danger" : "success"}" type="submit">${r.active ? "Désactiver" : "Activer"}</button>
           </form>
           <form method="post" action="/admin/content/realisations/${r.id}/delete" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+            ${csrfInp(csrfToken)}
             <button class="btn sm danger" type="submit">Supprimer</button>
           </form>
         </div>
       </div>`).join("")}</div>`;
-
-  const csrfToken = generateCsrfToken(_req, res);
   const body = `
     <div class="page-header">
       <h1>Réalisations <span style="font-size:14px;font-weight:400;color:#888">(${rows.length})</span></h1>
@@ -665,11 +676,12 @@ router.get("/content/realisations", async (_req: Request, res: Response) => {
   res.type("html").send(contentLayout("Réalisations", body, "", csrfToken, "/content/realisations"));
 });
 
-function realisationForm(r: Partial<{brideName:string;groomName:string;weddingType:string;venueName:string;city:string;weddingDate:string|null;description:string;coverImage:string|null;gallery:string[];videoCouple:string|null;videoTeaser:string|null;active:boolean;featured:boolean}> = {}, error = ""): string {
+function realisationForm(r: Partial<{brideName:string;groomName:string;weddingType:string;venueName:string;city:string;weddingDate:string|null;description:string;coverImage:string|null;gallery:string[];videoCouple:string|null;videoTeaser:string|null;active:boolean;featured:boolean}> = {}, error = "", csrfToken = ""): string {
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
     <form method="post">
+      ${csrfInp(csrfToken)}
       <label>Prénom mariée *<input name="brideName" required value="${escHtml(r.brideName)}"></label>
       <label>Prénom marié *<input name="groomName" required value="${escHtml(r.groomName)}"></label>
       <label>Type de mariage (ex: Afro-européen, Traditionnel)<input name="weddingType" value="${escHtml(r.weddingType)}"></label>
@@ -699,14 +711,14 @@ function realisationForm(r: Partial<{brideName:string;groomName:string;weddingTy
 
 router.get("/content/realisations/new", (_req: Request, res: Response) => {
   const csrfToken = generateCsrfToken(_req, res);
-  res.type("html").send(contentLayout("Nouvelle réalisation", `<h1>Nouvelle réalisation</h1>${realisationForm({active:true})}`, "", csrfToken, "/content/realisations"));
+  res.type("html").send(contentLayout("Nouvelle réalisation", `<h1>Nouvelle réalisation</h1>${realisationForm({active:true}, "", csrfToken)}`, "", csrfToken, "/content/realisations"));
 });
 
 router.post("/content/realisations/new", async (req: Request, res: Response) => {
   const b = req.body as Record<string, string>;
   if (!b.brideName || !b.groomName) {
     const csrfToken = generateCsrfToken(req, res);
-    res.type("html").send(contentLayout("Nouvelle réalisation", `<h1>Nouvelle réalisation</h1>${realisationForm(b, "Prénoms requis.")}`, "", csrfToken, "/content/realisations"));
+    res.type("html").send(contentLayout("Nouvelle réalisation", `<h1>Nouvelle réalisation</h1>${realisationForm(b, "Prénoms requis.", csrfToken)}`, "", csrfToken, "/content/realisations"));
     return;
   }
   await db.insert(realisationsTable).values({
@@ -727,7 +739,7 @@ router.get("/content/realisations/:id/edit", async (req: Request, res: Response)
   const [r] = await db.select().from(realisationsTable).where(eq(realisationsTable.id, Number(req.params.id)));
   if (!r) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
   const csrfToken = generateCsrfToken(req, res);
-  res.type("html").send(contentLayout("Modifier réalisation", `<h1>Modifier ${escHtml(r.brideName)} & ${escHtml(r.groomName)}</h1>${realisationForm(r)}`, "", csrfToken, "/content/realisations"));
+  res.type("html").send(contentLayout("Modifier réalisation", `<h1>Modifier ${escHtml(r.brideName)} & ${escHtml(r.groomName)}</h1>${realisationForm(r, "", csrfToken)}`, "", csrfToken, "/content/realisations"));
 });
 
 router.post("/content/realisations/:id/edit", async (req: Request, res: Response) => {
@@ -843,16 +855,16 @@ router.get("/content/messages/:coupleId", async (req: Request, res: Response) =>
         <div class="meta">${m.authorRole === "admin" ? "Vous" : "Couple"} · ${new Date(m.createdAt).toLocaleString("fr-BE")}</div>
       </div>`).join("")}</div>`;
 
+  const csrfToken = generateCsrfToken(req, res);
   const replyForm = `
     <div class="card" style="margin-top:24px">
       <h2>Répondre</h2>
       <form method="post">
+        ${csrfInp(csrfToken)}
         <label>Message<textarea name="content" required></textarea></label>
         <button class="btn primary" type="submit">Envoyer</button>
       </form>
     </div>`;
-
-  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(contentLayout(
     `Messages — ${couple.partner1Name} & ${couple.partner2Name}`,
     `<h1>Conversation avec ${escHtml(couple.partner1Name || "—")} & ${escHtml(couple.partner2Name || "—")}</h1>
@@ -992,6 +1004,7 @@ router.get("/content/wedding-websites", async (_req: Request, res: Response) => 
     .leftJoin(couplesTable, eq(couplesTable.id, weddingWebsitesTable.coupleId))
     .orderBy(desc(weddingWebsitesTable.createdAt));
 
+  const csrfToken = generateCsrfToken(_req, res);
   const listHtml = rows.length === 0
     ? `<p style="color:#888">Aucun site mariage créé.</p>`
     : `<table><thead><tr><th>Couple</th><th>Titre</th><th>Adresse</th><th>Statut</th><th></th></tr></thead><tbody>
@@ -1002,14 +1015,13 @@ router.get("/content/wedding-websites", async (_req: Request, res: Response) => 
         <td><span class="badge ${r.active?"active":"inactive"}">${r.active?"Publié":"Privé"}</span></td>
         <td style="white-space:nowrap">
           <form method="post" action="/admin/content/wedding-websites/${r.id}/toggle" style="display:inline">
+            ${csrfInp(csrfToken)}
             <button class="btn sm ${r.active?"danger":"success"}" type="submit">${r.active?"Dépublier":"Publier"}</button>
           </form>
           <a class="btn sm secondary" href="/admin/content/wedding-websites/${escHtml(r.slug)}/jour-j" style="margin-left:6px">Page Jour-J</a>
         </td>
       </tr>`).join("")}
       </tbody></table>`;
-
-  const csrfToken = generateCsrfToken(_req, res);
   res.type("html").send(contentLayout("Sites mariages", `<h1>Sites mariage des couples</h1>${listHtml}`, "", csrfToken, "/content/wedding-websites"));
 });
 
@@ -1046,6 +1058,7 @@ router.get("/content/wedding-websites/:slug/jour-j", async (req: Request, res: R
 
   const c = config ?? { menuText: "", timeline: [], bioPartner1: "", bioPartner2: "", driveUrl: "", enabled: false };
   const timelineJson = JSON.stringify(c.timeline ?? []).replace(/</g, "\\u003c");
+  const csrfToken = generateCsrfToken(req, res);
 
   const body = `
     <h1>Page Jour-J — ${escHtml(couple?.partner1Name || "—")} &amp; ${escHtml(couple?.partner2Name || "—")}</h1>
@@ -1054,6 +1067,7 @@ router.get("/content/wedding-websites/:slug/jour-j", async (req: Request, res: R
       <div class="card" style="flex:1;min-width:320px">
         <h2>Configuration</h2>
         <form method="post">
+          ${csrfInp(csrfToken)}
           <label>
             <input type="checkbox" name="enabled" value="1" ${c.enabled ? "checked" : ""}> Page activée (visible par les invités)
           </label>
@@ -1078,7 +1092,6 @@ router.get("/content/wedding-websites/:slug/jour-j", async (req: Request, res: R
       </div>
     </div>`;
 
-  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(contentLayout(`Jour-J — ${site.slug}`, body, "", csrfToken, "/content/wedding-websites"));
 });
 
@@ -1150,10 +1163,10 @@ router.get("/content/vendor-accounts", async (_req: Request, res: Response) => {
         ${v ? ` · Fiche marketplace #${v.id} ${v.verified ? "✓" : ""} ${v.active ? "(publié)" : "(masqué)"}` : ""}
       </div>
       <div class="actions" style="margin-top:12px">
-        ${a.status !== "approved" ? `<form method="post" action="/admin/content/vendor-accounts/${a.id}/approve" style="display:inline">
+        ${a.status !== "approved" ? `<form method="post" action="/admin/content/vendor-accounts/${a.id}/approve" style="display:inline">${csrfInp(csrfToken)}
           <button class="btn sm success" type="submit">Approuver &amp; publier</button>
         </form>` : ""}
-        ${a.status !== "rejected" ? `<form method="post" action="/admin/content/vendor-accounts/${a.id}/reject" style="display:inline" onsubmit="return confirm('Rejeter et masquer la fiche ?')">
+        ${a.status !== "rejected" ? `<form method="post" action="/admin/content/vendor-accounts/${a.id}/reject" style="display:inline" onsubmit="return confirm('Rejeter et masquer la fiche ?')">${csrfInp(csrfToken)}
           <button class="btn sm danger" type="submit">Rejeter</button>
         </form>` : ""}
         ${v ? `<a class="btn sm secondary" href="/admin/content/vendors/${v.id}/edit">Modifier fiche</a>` : ""}
@@ -1166,13 +1179,13 @@ router.get("/content/vendor-accounts", async (_req: Request, res: Response) => {
     return `<h2 style="margin-top:24px">${escHtml(title)} (${items.length})</h2><div class="grid">${items.map(renderRow).join("")}</div>`;
   }
 
+  const csrfToken = generateCsrfToken(_req, res);
   const body = `
     <h1>Comptes prestataires (Espace Pro)</h1>
     <p style="font-size:13px;color:#555;margin-bottom:24px">Les prestataires créent un compte via /espace-pro/register puis remplissent l'onboarding. Approuvez pour publier leur fiche dans la marketplace.</p>
     ${renderSection("En attente de validation", pending)}
     ${renderSection("Approuvés", approved)}
     ${renderSection("Rejetés", rejected)}`;
-  const csrfToken = generateCsrfToken(_req, res);
   res.type("html").send(contentLayout("Comptes Pro", body, "", csrfToken, "/content/vendor-accounts"));
 });
 
@@ -1371,9 +1384,11 @@ router.get("/test-email", (_req: Request, res: Response) => {
       <tr><th>ADMIN_EMAIL</th><td>${adminOk ? '<span class="badge active">configuré</span>' : '<span class="badge inactive">défaut: info@mariage-afro.com</span>'}</td></tr>
     </table>
   </div>`;
+  const csrfToken2 = generateCsrfToken(_req, res);
   const form = `<div class="card">
     <h2>Envoyer un email de test</h2>
     <form method="post">
+      ${csrfInp(csrfToken2)}
       <label>Adresse de destination
         <input type="email" name="to" required placeholder="vous@example.com">
       </label>
@@ -1397,8 +1412,7 @@ router.get("/test-email", (_req: Request, res: Response) => {
       <button type="submit" class="btn primary">Envoyer le test</button>
     </form>
   </div>`;
-  const csrfToken = generateCsrfToken(_req, res);
-  res.type("html").send(contentLayout("Test emails", `<h1>Test des notifications email</h1>${status}${form}`, "", csrfToken, "/test-email"));
+  res.type("html").send(contentLayout("Test emails", `<h1>Test des notifications email</h1>${status}${form}`, "", csrfToken2, "/test-email"));
 });
 
 router.post("/test-email", async (req: Request, res: Response) => {

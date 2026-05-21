@@ -77,6 +77,10 @@ function tableFor(type: LeadType) {
   }
 }
 
+function csrfInput(token: string): string {
+  return `<input type="hidden" name="${CSRF_FIELD}" value="${escapeHtml(token)}">`;
+}
+
 function escapeHtml(str: unknown): string {
   if (str == null) return "";
   return String(str)
@@ -249,6 +253,9 @@ router.get("/reviews", adminAuth, async (req, res) => {
 
   const stars = (n: number) => "★".repeat(n) + "☆".repeat(5 - n);
 
+  const pendingBadge = await getPendingCount();
+  const csrfToken = generateCsrfToken(req, res);
+
   const tableBody = rows.length === 0
     ? `<tr><td colspan="6" class="empty">Aucun avis ${REVIEW_STATUS_LABEL[filterStatus].toLowerCase()}.</td></tr>`
     : rows.map((r) => `
@@ -265,14 +272,11 @@ router.get("/reviews", adminAuth, async (req, res) => {
             <div style="white-space:pre-wrap;max-width:400px;">${escapeHtml(r.comment)}</div>
           </td>
           <td style="white-space:nowrap;">
-            ${r.status !== "published" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;"><input type="hidden" name="status" value="published"/><button class="btn primary" type="submit">Publier</button></form>` : ""}
-            ${r.status !== "rejected" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;"><input type="hidden" name="status" value="rejected"/><button class="btn" type="submit">Rejeter</button></form>` : ""}
-            ${r.status !== "pending" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;"><input type="hidden" name="status" value="pending"/><button class="btn" type="submit">Re-modérer</button></form>` : ""}
+            ${r.status !== "published" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;">${csrfInput(csrfToken)}<input type="hidden" name="status" value="published"/><button class="btn primary" type="submit">Publier</button></form>` : ""}
+            ${r.status !== "rejected" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;">${csrfInput(csrfToken)}<input type="hidden" name="status" value="rejected"/><button class="btn" type="submit">Rejeter</button></form>` : ""}
+            ${r.status !== "pending" ? `<form method="POST" action="/admin/reviews/${r.id}/status" style="display:inline;margin:0 4px 4px 0;">${csrfInput(csrfToken)}<input type="hidden" name="status" value="pending"/><button class="btn" type="submit">Re-modérer</button></form>` : ""}
           </td>
         </tr>`).join("");
-
-  const pendingBadge = await getPendingCount();
-  const csrfToken = generateCsrfToken(req, res);
 
   res.type("html").send(layout("Avis", `
     <div class="container">
@@ -660,13 +664,15 @@ router.get("/leads/:type/:id", adminAuth, async (req, res) => {
     .map(([k, v]) => `<div class="field"><div class="field-lbl">${escapeHtml(k)}</div><div class="field-val">${escapeHtml(v)}</div></div>`)
     .join("");
 
+  const csrfToken = generateCsrfToken(req, res);
+
   const statusButtons = STATUSES.map(s => `
     <form method="POST" action="/admin/leads/${type}/${id}/status" style="display:inline;margin:0;">
+      ${csrfInput(csrfToken)}
       <input type="hidden" name="status" value="${s}" />
       <button class="btn ${s === r.status ? "primary" : ""}" type="submit">${STATUS_LABEL[s]}</button>
     </form>`).join("");
 
-  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(layout(`Demande #${id}`, `
     <div class="container">
       <p style="margin-bottom:16px;"><a href="/admin">← Retour</a></p>
@@ -678,6 +684,7 @@ router.get("/leads/:type/:id", adminAuth, async (req, res) => {
       <div class="detail-card">
         <h2 style="font-size:16px;">Note interne</h2>
         <form method="POST" action="/admin/leads/${type}/${id}/note">
+          ${csrfInput(csrfToken)}
           <textarea name="internalNote" placeholder="Note privée…">${escapeHtml(r.internalNote)}</textarea>
           <div class="actions"><button type="submit" class="btn primary">Enregistrer la note</button></div>
         </form>
@@ -856,6 +863,7 @@ router.get("/vendors/:accountId/subscription", adminAuth, async (req, res) => {
       <p style="color:#666;">${escapeHtml(account.email ?? "")}</p>
       <h3>Activer / mettre à jour le tier</h3>
       <form method="POST" action="/admin/vendors/${accountId}/subscription/activate" style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;">
+        ${csrfInput(csrfToken)}
         <label>Tier
           <select name="tier" required>
             <option value="basic" ${current?.tier==="basic"?"selected":""}>Basic</option>
@@ -868,7 +876,7 @@ router.get("/vendors/:accountId/subscription", adminAuth, async (req, res) => {
         </label>
         <button class="btn primary" type="submit">Activer</button>
       </form>
-      ${current ? `<form method="POST" action="/admin/subscriptions/${current.id}/cancel-html" style="margin-top:12px;"><button class="btn" type="submit">Annuler l'abonnement actuel</button></form>` : ""}
+      ${current ? `<form method="POST" action="/admin/subscriptions/${current.id}/cancel-html" style="margin-top:12px;">${csrfInput(csrfToken)}<button class="btn" type="submit">Annuler l'abonnement actuel</button></form>` : ""}
       <h3 style="margin-top:24px;">Historique</h3>
       <table><thead><tr><th>Demandé</th><th>Tier</th><th>Statut</th><th>Fin</th></tr></thead><tbody>${history}</tbody></table>
     </div>
@@ -961,6 +969,9 @@ router.get("/accounts", adminAuth, async (req, res) => {
     .where(and(isNull(vendorAccountsTable.validatedAt), ne(vendorAccountsTable.status, "rejected"), sql`${vendorAccountsTable.onboardedAt} IS NOT NULL`))
     .orderBy(desc(vendorAccountsTable.onboardedAt));
 
+  const pendingBadge = couples.length + vendors.length;
+  const csrfToken = generateCsrfToken(req, res);
+
   const coupleRows = couples.length === 0
     ? `<tr><td colspan="7" class="empty">Aucun couple en attente.</td></tr>`
     : couples.map((c) => `
@@ -973,9 +984,11 @@ router.get("/accounts", adminAuth, async (req, res) => {
         <td><span class="badge status-${c.status === "planning" ? "in_progress" : "new"}">${escapeHtml(c.status)}</span></td>
         <td style="white-space:nowrap;">
           <form method="POST" action="/admin/accounts/couples/${c.id}/approve" style="display:inline;margin:0 4px 4px 0;">
+            ${csrfInput(csrfToken)}
             <button class="btn primary" type="submit">Approuver</button>
           </form>
           <form method="POST" action="/admin/accounts/couples/${c.id}/reject" style="display:inline;margin:0 4px 4px 0;" onsubmit="return confirmReject()">
+            ${csrfInput(csrfToken)}
             <input type="hidden" name="reason" value="" />
             <button class="btn" type="submit">Rejeter</button>
           </form>
@@ -994,17 +1007,15 @@ router.get("/accounts", adminAuth, async (req, res) => {
         <td><span class="badge status-in_progress">${escapeHtml(v.status)}</span></td>
         <td style="white-space:nowrap;">
           <form method="POST" action="/admin/accounts/vendors/${v.id}/approve" style="display:inline;margin:0 4px 4px 0;">
+            ${csrfInput(csrfToken)}
             <button class="btn primary" type="submit">Approuver</button>
           </form>
           <form method="POST" action="/admin/accounts/vendors/${v.id}/reject" style="display:inline;margin:0 4px 4px 0;">
+            ${csrfInput(csrfToken)}
             <button class="btn" type="submit">Rejeter</button>
           </form>
         </td>
       </tr>`).join("");
-
-  const pendingBadge = couples.length + vendors.length;
-
-  const csrfToken = generateCsrfToken(req, res);
   res.type("html").send(layout("Comptes en attente", `
     <div class="container">
       <h2 style="margin-bottom:24px;font-size:22px;color:#68191e;">Validation des comptes</h2>
