@@ -119,7 +119,27 @@ app.use(cookieParser(cookieSecret));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(clerkMiddleware());
+// Build the list of authorized parties dynamically so Bearer tokens issued
+// for the web app (which runs on Replit preview/deployment domains) are
+// accepted by this API server regardless of which Replit domain is in use.
+const authorizedParties: string[] = [];
+if (process.env.REPLIT_DEV_DOMAIN) {
+  authorizedParties.push(`https://${process.env.REPLIT_DEV_DOMAIN}`);
+}
+if (process.env.REPLIT_DEPLOYMENT_DOMAIN) {
+  authorizedParties.push(`https://${process.env.REPLIT_DEPLOYMENT_DOMAIN}`);
+}
+(process.env.ALLOWED_ORIGINS ?? "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean)
+  .forEach((o) => authorizedParties.push(o));
+
+app.use(
+  clerkMiddleware(
+    authorizedParties.length > 0 ? { authorizedParties } : {},
+  ),
+);
 
 // Public routes first — before auth-protected routers
 app.use("/", weddingPublicRouter);

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { BudgetItem as Item, BudgetItemCreate, BudgetItemPatch } from "@/lib/clientTypes";
 import { useCouple } from "@/components/client/ClientLayout";
+import { useToast } from "@/hooks/use-toast";
 
 import { getBudgetChartColors } from "@/lib/brand-colors";
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
@@ -20,11 +21,12 @@ export default function BudgetPage() {
   const fmt = (cents: number) => `${(cents / 100).toLocaleString(locale)} €`;
 
   const qc = useQueryClient();
-  const { data: couple } = useCouple();
+  const { toast } = useToast();
+  const { data: couple, error: coupleError } = useCouple();
   const budgetMode = couple?.budgetMode ?? "libre";
   const totalBudgetCents = couple?.budget ?? 0;
 
-  const { data: items = [] } = useQuery<Item[]>({
+  const { data: items = [], error: itemsError } = useQuery<Item[]>({
     queryKey: ["client", "budget"],
     queryFn: () => clientApi.get<Item[]>("/api/client/budget"),
   });
@@ -33,18 +35,22 @@ export default function BudgetPage() {
   const create = useMutation({
     mutationFn: (b: BudgetItemCreate) => clientApi.post<Item>("/api/client/budget", b),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["client", "budget"] }); setForm({ category: "", vendor: "", planned: "", actual: "" }); },
+    onError: (err: Error) => toast({ title: t("budget.error_add", { defaultValue: "Impossible d'ajouter l'élément" }), description: err.message, variant: "destructive" }),
   });
   const update = useMutation({
     mutationFn: ({ id, body }: { id: number; body: BudgetItemPatch }) => clientApi.patch<Item>(`/api/client/budget/${id}`, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "budget"] }),
+    onError: (err: Error) => toast({ title: t("budget.error_update", { defaultValue: "Impossible de modifier l'élément" }), description: err.message, variant: "destructive" }),
   });
   const del = useMutation({
     mutationFn: (id: number) => clientApi.del(`/api/client/budget/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "budget"] }),
+    onError: (err: Error) => toast({ title: t("budget.error_delete", { defaultValue: "Impossible de supprimer l'élément" }), description: err.message, variant: "destructive" }),
   });
   const updateMode = useMutation({
     mutationFn: (mode: "libre" | "global") => clientApi.patch("/api/client/me", { budgetMode: mode }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "me"] }),
+    onError: (err: Error) => toast({ title: t("budget.error_mode", { defaultValue: "Impossible de changer le mode" }), description: err.message, variant: "destructive" }),
   });
 
   const totalPlanned = items.reduce((s, i) => s + i.planned, 0);
@@ -77,7 +83,8 @@ export default function BudgetPage() {
               <button
                 key={m}
                 onClick={() => updateMode.mutate(m)}
-                className={`px-3 py-2 ${budgetMode === m ? "bg-primary text-white" : "bg-white"}`}
+                disabled={!!coupleError || updateMode.isPending}
+                className={`px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed ${budgetMode === m ? "bg-primary text-white" : "bg-white"}`}
                 data-testid={`budget-mode-${m}`}
               >
                 {t(`budget.mode_${m}`)}
@@ -92,6 +99,20 @@ export default function BudgetPage() {
         <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
         <p>{t("budget.warning_estimate")}</p>
       </div>
+
+      {/* Load error banners */}
+      {coupleError && (
+        <div className="flex items-start gap-3 bg-rose-50 border border-rose-300 px-4 py-3 text-sm text-rose-800" role="alert">
+          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <p>{t("budget.error_profile", { defaultValue: "Impossible de charger votre profil — le mode budget ne peut pas être modifié." })} — {(coupleError as Error).message}</p>
+        </div>
+      )}
+      {itemsError && (
+        <div className="flex items-start gap-3 bg-rose-50 border border-rose-300 px-4 py-3 text-sm text-rose-800" role="alert">
+          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <p>{t("budget.error_load", { defaultValue: "Impossible de charger les postes budgétaires." })} — {(itemsError as Error).message}</p>
+        </div>
+      )}
 
       {/* Vendor sync info */}
       <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-700">
