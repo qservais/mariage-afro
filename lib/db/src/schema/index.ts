@@ -181,7 +181,7 @@ export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
   city: text("city").notNull(),
   tagline: text("tagline").notNull().default(""),
   description: text("description").notNull().default(""),
-  services: jsonb("services").$type<string[]>().notNull().default([]),
+  services: jsonb("services").$type<Array<{ name: string; price?: number | null; price_unit?: string | null; price_visible: boolean }>>().notNull().default([]),
   images: jsonb("images").$type<string[]>().notNull().default([]),
   coverImage: text("cover_image"),
   verified: boolean("verified").notNull().default(false),

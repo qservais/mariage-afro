@@ -227,7 +227,7 @@ router.post("/venue-request", async (req, res) => {
       weddingDate: data.weddingDate ?? null,
       guestCount: data.guestCount ?? null,
       message: data.message ?? null,
-      visitSlots: data.visitSlots?.filter((s) => s.date) ?? null,
+      visitSlots: (data.visitSlots?.filter((s) => s.date) ?? null) as Array<{ date: string; time: string }> | null,
     }).returning();
     void sendVenueRequestEmails(data, req.log).catch((err) => {
       req.log.error({ err }, "Venue request saved but email failed");

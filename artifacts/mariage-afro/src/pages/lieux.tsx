@@ -92,6 +92,7 @@ export default function Lieux() {
     if (!src) return undefined;
     if (/^https?:/i.test(src)) return src;
     const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
+    if (src.startsWith("/objects/")) return `${base}/storage${src}`;
     const rel = src.startsWith("/") ? src.slice(1) : src;
     return `${window.location.origin}${base}/${rel}`;
   }

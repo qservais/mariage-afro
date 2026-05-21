@@ -208,7 +208,7 @@ router.post("/content/vendors/:id/invite", async (req: Request, res: Response) =
   res.redirect("/admin/content/vendors?invite_ok=1");
 });
 
-function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:string[];images:string[];website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number;instagram:string|null;facebook:string|null;tiktok:string|null;youtube:string|null;pinterest:string|null}> = {}, error = ""): string {
+function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:Array<{name:string;price?:number|null;price_unit?:string|null;price_visible:boolean}|string>;images:string[];website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number;instagram:string|null;facebook:string|null;tiktok:string|null;youtube:string|null;pinterest:string|null}> = {}, error = ""): string {
   const stdCats = ["Photographie","Vidéo","DJ & Animation","Décoration","Traiteur","Coiffure & Maquillage","Robe de mariée","Transport","Invitations","Autre"];
   const isAutre = v.category ? !stdCats.includes(v.category) || v.category === "Autre" : false;
   const selectVal = isAutre && v.category !== "Autre" ? "Autre" : (v.category ?? "Photographie");
@@ -236,7 +236,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
         </div>
         <label>Tagline (résumé court)<input name="tagline" value="${escHtml(v.tagline)}"></label>
         <label>Description<textarea name="description" style="min-height:100px">${escHtml(v.description)}</textarea></label>
-        <label>Services (un par ligne)<textarea name="services" style="min-height:80px">${(v.services ?? []).join("\n")}</textarea></label>
+        <label>Services (un par ligne)<textarea name="services" style="min-height:80px">${(v.services ?? []).map((s: unknown) => (typeof s === "string" ? s : (s as { name: string }).name)).join("\n")}</textarea></label>
       </div>
 
       <div class="form-section">
@@ -453,7 +453,7 @@ function parseVendorBody(b: Record<string, string>) {
     city: b.city ?? "",
     tagline: b.tagline ?? "",
     description: b.description ?? "",
-    services: b.services ? b.services.split("\n").map(s=>s.trim()).filter(Boolean) : [],
+    services: b.services ? b.services.split("\n").map(s=>s.trim()).filter(Boolean).map(name => ({ name, price: null, price_unit: "forfait" as const, price_visible: false })) : [],
     images: b.images
       ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s))
       : [],

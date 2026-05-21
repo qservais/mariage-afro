@@ -20,6 +20,15 @@ export interface WeddingSiteData {
   colorPrimary?: string | null;
   colorBackground?: string | null;
   fontHeading?: string | null;
+  coverImage?: string | null;
+}
+
+const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
+function heroImageUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (/^https?:/i.test(path)) return path;
+  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  return null;
 }
 
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
@@ -262,6 +271,17 @@ function HeroMeta({ site, formattedDate, palette }: LayoutProps) {
 
 /* ---------------- 4 layouts ---------------- */
 
+function HeroCoverImage({ src, fallback }: { src: string | null; fallback?: string }) {
+  const url = src ?? fallback ?? null;
+  if (!url) return null;
+  return (
+    <div
+      className="absolute inset-0 bg-cover bg-center opacity-20"
+      style={{ backgroundImage: `url('${url}')` }}
+    />
+  );
+}
+
 function RoyalAfroLayout(props: LayoutProps) {
   const { site, palette, t } = props;
   return (
@@ -270,7 +290,10 @@ function RoyalAfroLayout(props: LayoutProps) {
         className="relative py-32 text-center overflow-hidden"
         style={{ backgroundColor: palette.hero.bg }}
       >
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80')] bg-cover bg-center opacity-20" />
+        <HeroCoverImage
+          src={heroImageUrl(site.coverImage)}
+          fallback="https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80"
+        />
         <div className="relative z-10 px-6">
           <p
             className="text-xs uppercase tracking-[0.4em] font-bold mb-6"
@@ -303,6 +326,7 @@ function BohemeLayout(props: LayoutProps) {
         className="relative py-36 text-center overflow-hidden"
         style={{ backgroundColor: palette.hero.bg }}
       >
+        <HeroCoverImage src={heroImageUrl(site.coverImage)} />
         <svg
           className="absolute inset-x-0 top-8 mx-auto opacity-50"
           width="320"
@@ -349,6 +373,10 @@ function ModerneLayout(props: LayoutProps) {
         className="relative min-h-[70vh] flex flex-col items-center justify-center text-center px-6"
         style={{ backgroundColor: palette.hero.bg }}
       >
+        <HeroCoverImage src={heroImageUrl(site.coverImage)} />
+        <div
+          className="relative z-10 w-full flex flex-col items-center"
+        >
         <div
           className="w-12 h-px mb-10"
           style={{ backgroundColor: palette.hero.eyebrow }}
@@ -370,6 +398,7 @@ function ModerneLayout(props: LayoutProps) {
           style={{ backgroundColor: palette.hero.eyebrow }}
         />
         <HeroMeta {...props} />
+        </div>
       </section>
       <MessageBlock {...props} />
       <ProgrammeBlock {...props} />
@@ -387,6 +416,7 @@ function TropicalLayout(props: LayoutProps) {
         className="relative py-32 text-center overflow-hidden"
         style={{ backgroundColor: palette.hero.bg }}
       >
+        <HeroCoverImage src={heroImageUrl(site.coverImage)} />
         <svg
           className="absolute left-0 bottom-0 opacity-40"
           width="220"

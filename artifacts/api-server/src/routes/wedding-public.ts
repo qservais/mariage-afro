@@ -60,16 +60,6 @@ router.get("/api/wedding/:slug/rsvp-questions", async (req: Request, res: Respon
   res.json(rows);
 });
 
-router.get("/api/wedding/:slug/rsvps", async (req: Request, res: Response) => {
-  const slug = String(req.params.slug);
-  const [site] = await db
-    .select({ id: weddingWebsitesTable.id, coupleId: weddingWebsitesTable.coupleId })
-    .from(weddingWebsitesTable)
-    .where(and(eq(weddingWebsitesTable.slug, slug), eq(weddingWebsitesTable.active, true)));
-  if (!site) { res.status(404).json({ error: "Site non trouvé" }); return; }
-  const rsvps = await db.select().from(weddingRsvpsTable).where(eq(weddingRsvpsTable.weddingWebsiteId, site.id));
-  res.json(rsvps);
-});
 
 router.get("/api/wedding/:slug/cagnottes", async (req: Request, res: Response) => {
   const slug = String(req.params.slug);
