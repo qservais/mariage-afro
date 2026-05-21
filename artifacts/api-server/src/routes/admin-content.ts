@@ -13,11 +13,12 @@ import {
   couplesTable,
   vendorAccountsTable,
   weddingJourJTable,
+  partnerApplicationsTable,
 } from "@workspace/db";
 import { eq, desc, asc, sql, and, isNull, isNotNull } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
 import { generateCsrfToken, requireCsrf, csrfAutoInjectorScript, CSRF_FIELD } from "../middlewares/adminCsrf";
-import { notifyVendorApproved, notifyConversationMessage, notifyVendorInvitation } from "../lib/email";
+import { notifyVendorApproved, notifyConversationMessage, notifyVendorInvitation, notifyPartnerApplicationApproved } from "../lib/email";
 
 const router = Router();
 router.use(adminAuth);
@@ -127,6 +128,7 @@ tbody tr:last-child td{border-bottom:none}
   ${navLink("/admin/content/conversations", "Conv. Pro")}
   ${navLink("/admin/content/wedding-websites", "Sites mariages")}
   ${navLink("/admin/content/vendor-accounts", "Comptes Pro")}
+  ${navLink("/admin/content/partner-applications", "Candidatures")}
 </nav>
 <main id="main-content">
 <div class="container">${body}</div>
@@ -1213,6 +1215,138 @@ router.post("/content/vendor-accounts/:id/reject", async (req: Request, res: Res
     .set({ status: "rejected", updatedAt: new Date() })
     .where(eq(vendorAccountsTable.id, id));
   res.redirect("/admin/content/vendor-accounts");
+});
+
+// ============ PARTNER APPLICATIONS (Candidatures publiques) ============
+
+router.get("/content/partner-applications", async (req: Request, res: Response) => {
+  const csrfToken = generateCsrfToken(req, res);
+  const rows = await db
+    .select()
+    .from(partnerApplicationsTable)
+    .orderBy(desc(partnerApplicationsTable.createdAt));
+
+  const pending = rows.filter(r => r.status === "new");
+  const approved = rows.filter(r => r.status === "approved");
+  const rejected = rows.filter(r => r.status === "rejected");
+
+  function renderSocial(a: typeof rows[number]): string {
+    const links = [
+      a.instagram ? `<a href="${escHtml(a.instagram)}" target="_blank" rel="noopener">Instagram</a>` : "",
+      a.facebook ? `<a href="${escHtml(a.facebook)}" target="_blank" rel="noopener">Facebook</a>` : "",
+      a.tiktok ? `<a href="${escHtml(a.tiktok)}" target="_blank" rel="noopener">TikTok</a>` : "",
+      a.youtube ? `<a href="${escHtml(a.youtube)}" target="_blank" rel="noopener">YouTube</a>` : "",
+    ].filter(Boolean).join(" · ");
+    return links ? `<p style="font-size:12px;color:#555;margin-top:4px">${links}</p>` : "";
+  }
+
+  function renderRow(a: typeof rows[number]): string {
+    const statusColor = a.status === "approved" ? "active" : a.status === "rejected" ? "danger" : "inactive";
+    return `<div class="item">
+      <h3>${escHtml(a.businessName)} <span class="badge ${statusColor}">${escHtml(a.status)}</span></h3>
+      <p style="font-size:13px;color:#555">${escHtml(a.category)}</p>
+      <p style="font-size:12px;color:#666;margin-top:4px">${escHtml(a.contactName)} · <a href="mailto:${escHtml(a.email)}">${escHtml(a.email)}</a>${a.phone ? ` · ${escHtml(a.phone)}` : ""}</p>
+      ${a.website ? `<p style="font-size:12px;margin-top:4px"><a href="${escHtml(a.website)}" target="_blank" rel="noopener">${escHtml(a.website)}</a></p>` : ""}
+      ${renderSocial(a)}
+      ${a.description ? `<p style="font-size:12px;color:#555;margin-top:8px;font-style:italic">${escHtml(a.description)}</p>` : ""}
+      <div class="meta" style="margin-top:8px;font-size:11px;color:#999">
+        Reçu le ${new Date(a.createdAt).toLocaleString("fr-BE")}
+      </div>
+      <div class="actions" style="margin-top:12px">
+        ${a.status !== "approved" ? `<form method="post" action="/admin/content/partner-applications/${a.id}/approve" style="display:inline">
+          <input type="hidden" name="${CSRF_FIELD}" value="${escHtml(csrfToken)}">
+          <button class="btn sm success" type="submit">Approuver</button>
+        </form>` : ""}
+        ${a.status !== "rejected" ? `<form method="post" action="/admin/content/partner-applications/${a.id}/reject" style="display:inline" onsubmit="return confirm('Rejeter cette candidature ?')">
+          <input type="hidden" name="${CSRF_FIELD}" value="${escHtml(csrfToken)}">
+          <button class="btn sm danger" type="submit">Rejeter</button>
+        </form>` : ""}
+      </div>
+    </div>`;
+  }
+
+  function renderSection(title: string, items: typeof rows): string {
+    if (items.length === 0) return `<h2 style="margin-top:24px">${escHtml(title)} (0)</h2><p style="color:#888;font-size:13px">Aucune</p>`;
+    return `<h2 style="margin-top:24px">${escHtml(title)} (${items.length})</h2><div class="grid">${items.map(renderRow).join("")}</div>`;
+  }
+
+  const body = `
+    <h1>Candidatures partenaires</h1>
+    <p style="font-size:13px;color:#555;margin-bottom:24px">Candidatures soumises via le formulaire public "Devenir prestataire". Approuvez pour déclencher l'invitation par email. Si le prestataire s'inscrit ensuite sur /espace-pro/register avec le même email, son compte sera automatiquement activé.</p>
+    <a class="btn sm secondary" href="/admin/content/vendor-accounts" style="margin-bottom:16px;display:inline-block">← Voir aussi les Comptes Pro</a>
+    ${renderSection("En attente", pending)}
+    ${renderSection("Approuvées", approved)}
+    ${renderSection("Rejetées", rejected)}`;
+
+  res.type("html").send(contentLayout("Candidatures", body, "", csrfToken, "/content/partner-applications"));
+});
+
+router.post("/content/partner-applications/:id/approve", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const [app] = await db.select().from(partnerApplicationsTable).where(eq(partnerApplicationsTable.id, id));
+  if (!app) { res.redirect("/admin/content/partner-applications"); return; }
+
+  // Approve the application
+  await db.update(partnerApplicationsTable)
+    .set({ status: "approved" })
+    .where(eq(partnerApplicationsTable.id, id));
+
+  // Also approve any existing vendor account with the same email
+  const [existingAccount] = await db
+    .select({ id: vendorAccountsTable.id, onboardedAt: vendorAccountsTable.onboardedAt, status: vendorAccountsTable.status })
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.email, app.email))
+    .limit(1);
+
+  if (existingAccount && existingAccount.status !== "approved") {
+    await db.update(vendorAccountsTable)
+      .set({ status: "approved", validatedAt: new Date(), updatedAt: new Date() })
+      .where(eq(vendorAccountsTable.id, existingAccount.id));
+    // If they've completed onboarding, also activate their marketplace profile
+    if (existingAccount.onboardedAt) {
+      const [acc] = await db.select({ vendorId: vendorAccountsTable.vendorId })
+        .from(vendorAccountsTable).where(eq(vendorAccountsTable.id, existingAccount.id));
+      if (acc?.vendorId) {
+        await db.update(marketplaceVendorsTable)
+          .set({ verified: true, active: true })
+          .where(eq(marketplaceVendorsTable.id, acc.vendorId));
+      }
+      // Send vendor-approved email (they already have an account)
+      notifyVendorApproved({
+        to: app.email,
+        locale: null,
+        businessName: app.businessName,
+      }, req.log).catch((err) => req.log.error({ err }, "Failed to send vendor approved email"));
+    } else {
+      // Account exists but no onboarding yet — send invite to create account
+      notifyPartnerApplicationApproved({
+        to: app.email,
+        contactName: app.contactName,
+        businessName: app.businessName,
+        locale: null,
+      }, req.log).catch((err) => req.log.error({ err }, "Failed to send partner application approved email"));
+    }
+  } else if (!existingAccount) {
+    // No vendor account yet — send invite to create account
+    notifyPartnerApplicationApproved({
+      to: app.email,
+      contactName: app.contactName,
+      businessName: app.businessName,
+      locale: null,
+    }, req.log).catch((err) => req.log.error({ err }, "Failed to send partner application approved email"));
+  }
+
+  res.redirect("/admin/content/partner-applications");
+});
+
+router.post("/content/partner-applications/:id/reject", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const [app] = await db.select().from(partnerApplicationsTable).where(eq(partnerApplicationsTable.id, id));
+  if (!app) { res.redirect("/admin/content/partner-applications"); return; }
+  await db.update(partnerApplicationsTable)
+    .set({ status: "rejected" })
+    .where(eq(partnerApplicationsTable.id, id));
+  res.redirect("/admin/content/partner-applications");
 });
 
 // ============ TEST EMAIL (dev only) ============

@@ -542,6 +542,35 @@ export async function notifyPartnerApplicationReceived(p: NotifyPartnerApplicati
   }, log);
 }
 
+// ---- 6b. Partner application approved (invite to create account) ----
+export interface NotifyPartnerApplicationApprovedPayload {
+  to: string;
+  contactName: string;
+  businessName: string;
+  locale?: string | null;
+}
+
+export async function notifyPartnerApplicationApproved(p: NotifyPartnerApplicationApprovedPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
+  const subject = { fr: "Votre candidature Mariage Afro a été approuvée !", nl: "Uw Mariage Afro-aanvraag is goedgekeurd!", en: "Your Mariage Afro application has been approved!" }[locale];
+  const title = { fr: "Candidature approuvée !", nl: "Aanvraag goedgekeurd!", en: "Application approved!" }[locale];
+  const intro = { fr: `Félicitations ${p.contactName} ! Votre candidature pour ${p.businessName} a été validée par notre équipe.`, nl: `Gefeliciteerd ${p.contactName}! Uw aanvraag voor ${p.businessName} is goedgekeurd door ons team.`, en: `Congratulations ${p.contactName}! Your application for ${p.businessName} has been approved by our team.` }[locale];
+  const body = { fr: "Créez maintenant votre compte prestataire pour accéder à votre espace personnel, gérer votre profil et recevoir des demandes de couples.", nl: "Maak nu uw leveranciersaccount aan voor toegang tot uw persoonlijke ruimte, profielbeheer en klantenanvragen.", en: "Create your vendor account now to access your personal space, manage your profile, and receive couple requests." }[locale];
+  const ctaLabel = { fr: "Créer mon compte prestataire", nl: "Mijn leveranciersaccount aanmaken", en: "Create my vendor account" }[locale];
+  await sendOne({
+    to: p.to,
+    subject,
+    html: wrap({
+      title,
+      intro,
+      bodyHtml: `<p>${esc(body)}</p>`,
+      ctaLabel,
+      ctaUrl: `${appUrl()}/espace-pro/register`,
+      locale,
+    }),
+  }, log);
+}
+
 // =====================================================================
 // LOT 6 — Conversion tools & lead magnets
 // =====================================================================

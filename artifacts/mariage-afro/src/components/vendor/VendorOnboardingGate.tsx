@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/react";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
-import { Briefcase, Upload } from "lucide-react";
+import { Briefcase, Clock, Upload } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import {
   FormShell,
@@ -27,6 +27,8 @@ interface AccountLike {
   website?: string | null;
   description?: string;
   onboardedAt?: string | null;
+  status?: string | null;
+  validatedAt?: string | null;
 }
 
 interface Props {
@@ -363,7 +365,40 @@ export default function VendorOnboardingGate({ account, children }: Props) {
     [t, categoryOptions, regionOptions, priceOptions, specialtyOptions],
   );
 
-  if (!needsOnboarding) return <>{children}</>;
+  const isApproved = account?.status === "approved" || !!account?.validatedAt;
+  const isPendingApproval = account !== undefined && !!account.onboardedAt && !isApproved;
+
+  if (!needsOnboarding && !isPendingApproval) return <>{children}</>;
+
+  if (isPendingApproval) {
+    return (
+      <div className="fixed inset-0 z-50 bg-wine-deep/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-cream w-full max-w-md p-10 text-center space-y-6">
+          <div className="w-16 h-16 bg-wine-deep/10 rounded-full flex items-center justify-center mx-auto">
+            <Clock className="w-8 h-8 text-wine-deep" />
+          </div>
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-wine-deep tracking-wide">
+              {t("vendor.onboarding.pending_title")}
+            </h2>
+            <p className="text-sm text-wine-deep/70 leading-relaxed">
+              {t("vendor.onboarding.pending_desc")}
+            </p>
+          </div>
+          <p className="text-xs text-wine-deep/50">
+            {t("vendor.onboarding.pending_contact")}{" "}
+            <a
+              href="mailto:info@mariageafro.be"
+              className="text-gold hover:text-wine-deep transition-colors underline underline-offset-2"
+            >
+              info@mariageafro.be
+            </a>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!ready) return null;
 
   const locale = (i18n.language?.slice(0, 2) ?? "fr") as "fr" | "nl" | "en";

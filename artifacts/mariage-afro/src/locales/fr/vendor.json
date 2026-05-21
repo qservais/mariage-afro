@@ -63,6 +63,9 @@
       "saving": "Enregistrement…",
       "error_generic": "Une erreur est survenue. Veuillez réessayer.",
       "error_couple_conflict": "Cet identifiant est déjà associé à un compte couple. Veuillez utiliser une adresse email différente pour votre compte prestataire.",
+      "pending_title": "Candidature en cours d'examen",
+      "pending_desc": "Votre dossier a bien été reçu et est en cours d'examen par notre équipe. Vous recevrez un email dès validation de votre compte prestataire.",
+      "pending_contact": "Une question ? Écrivez-nous à",
       "steps": {
         "s1_title": "Votre entreprise",
         "s1_desc": "Identité et contact principal.",

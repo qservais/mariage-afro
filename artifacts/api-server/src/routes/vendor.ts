@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
-import { getAuth } from "@clerk/express";
+import { getAuth, clerkClient } from "@clerk/express";
 import { z } from "zod";
 import { and, asc, desc, eq, inArray, isNull, isNotNull, ne, or, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -16,11 +16,12 @@ import {
   conversationsTable,
   messagesTable,
   couplesTable,
+  partnerApplicationsTable,
 } from "@workspace/db";
 import { gte, lte } from "drizzle-orm";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { consumeUploadIntent } from "../lib/uploadIntents";
-import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendorLeadFollowup, notifyQuoteReceived, notifyQuoteResponded, sendPartnerApplicationEmails } from "../lib/email";
+import { notifyConversationMessage, notifyAdminSubscriptionRequest, notifyVendorLeadFollowup, notifyQuoteReceived, notifyQuoteResponded, sendPartnerApplicationEmails, notifyVendorApproved } from "../lib/email";
 import { translateDescription } from "../lib/translate";
 import { logger } from "../lib/logger";
 
@@ -80,6 +81,40 @@ async function requireVendor(req: Request, res: Response, next: NextFunction): P
       .returning();
     if (inserted.length > 0) {
       account = inserted[0];
+      // On first login, try to pre-fill from an approved partner application
+      try {
+        const clerkUser = await clerkClient.users.getUser(userId);
+        const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+        if (email) {
+          const [approvedApp] = await db
+            .select()
+            .from(partnerApplicationsTable)
+            .where(and(
+              eq(partnerApplicationsTable.email, email),
+              eq(partnerApplicationsTable.status, "approved")
+            ))
+            .limit(1);
+          if (approvedApp) {
+            const [prefilled] = await db
+              .update(vendorAccountsTable)
+              .set({
+                businessName: approvedApp.businessName,
+                contactName: approvedApp.contactName,
+                email: approvedApp.email,
+                phone: approvedApp.phone ?? null,
+                category: approvedApp.category,
+                website: approvedApp.website ?? null,
+                description: approvedApp.description ?? "",
+                updatedAt: new Date(),
+              })
+              .where(eq(vendorAccountsTable.id, account.id))
+              .returning();
+            if (prefilled) account = prefilled;
+          }
+        }
+      } catch (err) {
+        logger.warn({ err }, "Failed to prefill vendor account from partner application on first login");
+      }
     } else {
       // Race condition: another request inserted first — re-fetch
       [account] = await db
@@ -282,7 +317,15 @@ router.post("/vendor/onboarding", async (req, res) => {
     }
   }
 
-  const [account] = await db
+  // Don't downgrade status if already approved (e.g. pre-approved from a partner application)
+  const [existingStatus] = await db
+    .select({ status: vendorAccountsTable.status })
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+    .limit(1);
+  const newStatus = existingStatus?.status === "approved" ? "approved" : "pending";
+
+  let [account] = await db
     .update(vendorAccountsTable)
     .set({
       vendorId,
@@ -295,7 +338,7 @@ router.post("/vendor/onboarding", async (req, res) => {
       website: data.website ?? null,
       description: data.description ?? "",
       locale: data.locale,
-      status: "pending",
+      status: newStatus,
       onboardedAt: new Date(),
       updatedAt: new Date(),
     })
@@ -329,21 +372,45 @@ router.post("/vendor/onboarding", async (req, res) => {
       .where(eq(vendorSubscriptionsTable.id, existingSub.id));
   }
 
-  void sendPartnerApplicationEmails({
-    businessName: data.businessName,
-    contactName: data.contactName,
-    email: data.email,
-    phone: data.phone,
-    category: data.category,
-    city: data.city,
-    website: data.website,
-    description: data.description,
-    locale: data.locale,
-    instagram: data.instagram,
-    facebook: data.facebook,
-    tiktok: data.tiktok,
-    youtube: data.youtube,
-  }, req.log).catch((err) => {
+  // Auto-approve if a matching approved partner application exists
+  if (account && account.status !== "approved") {
+    const [approvedApp] = await db
+      .select({ id: partnerApplicationsTable.id })
+      .from(partnerApplicationsTable)
+      .where(and(
+        eq(partnerApplicationsTable.email, data.email),
+        eq(partnerApplicationsTable.status, "approved")
+      ))
+      .limit(1);
+    if (approvedApp) {
+      const [updatedAccount] = await db
+        .update(vendorAccountsTable)
+        .set({ status: "approved", validatedAt: new Date(), updatedAt: new Date() })
+        .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+        .returning();
+      if (updatedAccount) account = updatedAccount;
+    }
+  }
+
+  // Email: if auto-approved send approval email, otherwise send "received" confirmation + admin
+  void (account?.status === "approved"
+    ? notifyVendorApproved({ to: data.email, locale: data.locale, businessName: data.businessName }, req.log)
+    : sendPartnerApplicationEmails({
+        businessName: data.businessName,
+        contactName: data.contactName,
+        email: data.email,
+        phone: data.phone,
+        category: data.category,
+        city: data.city,
+        website: data.website,
+        description: data.description,
+        locale: data.locale,
+        instagram: data.instagram,
+        facebook: data.facebook,
+        tiktok: data.tiktok,
+        youtube: data.youtube,
+      }, req.log)
+  ).catch((err) => {
     req.log.error({ err }, "Vendor onboarding saved but email failed");
   });
 
