@@ -208,7 +208,7 @@ router.post("/content/vendors/:id/invite", async (req: Request, res: Response) =
   res.redirect("/admin/content/vendors?invite_ok=1");
 });
 
-function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:Array<{name:string;price?:number|null;price_unit?:string|null;price_visible:boolean}|string>;images:string[];website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number;instagram:string|null;facebook:string|null;tiktok:string|null;youtube:string|null;pinterest:string|null}> = {}, error = ""): string {
+function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:Array<{name:string;price?:number|null;price_unit?:string|null;price_visible:boolean}|string>;images:string[];website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number;instagram:string|null;facebook:string|null;tiktok:string|null;youtube:string|null;pinterest:string|null}> = {}, error = "", csrfToken = ""): string {
   const stdCats = ["Photographie","Vidéo","DJ & Animation","Décoration","Traiteur","Coiffure & Maquillage","Robe de mariée","Transport","Invitations","Autre"];
   const isAutre = v.category ? !stdCats.includes(v.category) || v.category === "Autre" : false;
   const selectVal = isAutre && v.category !== "Autre" ? "Autre" : (v.category ?? "Photographie");
@@ -219,6 +219,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
     <div class="card">
     <form method="post" id="vendor-form">
       <input type="hidden" name="images" id="images-hidden" value="${escHtml((v.images ?? []).join("\n"))}">
+      ${csrfToken ? `<input type="hidden" name="_csrf" value="${escHtml(csrfToken)}">` : ""}
 
       <div class="form-section">
         <div class="form-section-title">Informations générales</div>
@@ -256,7 +257,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
       <div class="form-section">
         <div class="form-section-title">Contact & Web</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <label>Site web<input name="website" type="url" placeholder="https://…" value="${escHtml(v.website)}"></label>
+          <label>Site web<input name="website" type="text" placeholder="https://…" value="${escHtml(v.website)}"></label>
           <label>Email<input name="email" type="email" value="${escHtml(v.email)}"></label>
         </div>
         <label>Téléphone<input name="phone" value="${escHtml(v.phone)}"></label>
@@ -437,9 +438,9 @@ function isSafeImagePath(s: string): boolean {
   return s.startsWith("/objects/") || /^https:\/\//i.test(s);
 }
 
-/** Validate a social/web URL: must be https:// */
+/** Validate a social/web URL: must be http:// or https:// */
 function isSafeUrl(s: string): boolean {
-  return /^https:\/\//i.test(s);
+  return /^https?:\/\//i.test(s);
 }
 
 function parseVendorBody(b: Record<string, string>) {
@@ -473,7 +474,7 @@ function parseVendorBody(b: Record<string, string>) {
 
 router.get("/content/vendors/new", (_req: Request, res: Response) => {
   const csrfToken = generateCsrfToken(_req, res);
-  res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm({active:true, verified:true})}`, "", csrfToken, "/content/vendors"));
+  res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm({active:true, verified:true}, "", csrfToken)}`, "", csrfToken, "/content/vendors"));
 });
 
 router.post("/content/vendors/new", async (req: Request, res: Response) => {
@@ -481,7 +482,7 @@ router.post("/content/vendors/new", async (req: Request, res: Response) => {
   const parsed = parseVendorBody(b);
   if (!parsed.name || !parsed.city || !parsed.category) {
     const csrfToken = generateCsrfToken(req, res);
-    res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm(b, "Nom, ville et catégorie sont requis.")}`, "", csrfToken, "/content/vendors"));
+    res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm(b, "Nom, ville et catégorie sont requis.", csrfToken)}`, "", csrfToken, "/content/vendors"));
     return;
   }
   await db.insert(marketplaceVendorsTable).values(parsed);
@@ -492,7 +493,7 @@ router.get("/content/vendors/:id/edit", async (req: Request, res: Response) => {
   const [v] = await db.select().from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.id, Number(req.params.id)));
   if (!v) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
   const csrfToken = generateCsrfToken(req, res);
-  res.type("html").send(contentLayout("Modifier partenaire", `<h1>Modifier <span style="color:#68191e">${escHtml(v.name)}</span></h1>${vendorForm(v)}`, "", csrfToken, "/content/vendors"));
+  res.type("html").send(contentLayout("Modifier partenaire", `<h1>Modifier <span style="color:#68191e">${escHtml(v.name)}</span></h1>${vendorForm(v, "", csrfToken)}`, "", csrfToken, "/content/vendors"));
 });
 
 router.post("/content/vendors/:id/edit", async (req: Request, res: Response) => {

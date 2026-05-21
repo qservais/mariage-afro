@@ -95,6 +95,9 @@ const _coreCoupleCols = {
 } as const;
 
 async function requireCouple(req: Request, res: Response, next: NextFunction): Promise<void> {
+  // Vendor routes have their own requireVendor middleware — skip couple auth entirely
+  if (req.path.startsWith("/vendor/") || req.path === "/vendor") { next(); return; }
+
   const auth = getAuth(req);
   const userId = auth?.userId;
   if (!userId) {

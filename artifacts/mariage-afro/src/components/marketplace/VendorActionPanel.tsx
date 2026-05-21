@@ -24,6 +24,8 @@ import {
   type CategoryField,
 } from "@/lib/vendorCategoryConfig";
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 export type VendorActionType = "quote" | "availability" | "booking" | "zoom" | "rdv";
 
 interface VendorLite {
@@ -170,23 +172,29 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
     if (submitting) return;
     setSubmitting(true);
     try {
-      const res = await fetch("/api/vendor-request", {
+      // Merge category-specific fields into the message body (same format the API uses
+      // for the old /vendor-request endpoint, so leads.tsx parseCategoryFields works)
+      const catFieldsSuffix =
+        catConfig && Object.keys(categoryFieldValues).length > 0
+          ? "\n\n--- Informations spécifiques ---\n" +
+            Object.entries(categoryFieldValues)
+              .map(([k, v]) => `${k}: ${v}`)
+              .join("\n")
+          : "";
+      const fullMessage = message
+        ? message + catFieldsSuffix
+        : catFieldsSuffix.trim() || null;
+
+      const res = await fetch(`${BASE}/api/marketplace/vendors/${vendor.id}/lead`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          vendorId: String(vendor.id),
-          vendorName: vendor.name,
           requestType: action,
           name,
           email,
           phone: phone || null,
           weddingDate: weddingDate || null,
-          message: message || null,
-          locale: i18n.language,
-          categoryFields:
-            catConfig && Object.keys(categoryFieldValues).length > 0
-              ? categoryFieldValues
-              : null,
+          message: fullMessage,
         }),
       });
       if (!res.ok) throw new Error("bad_status");
