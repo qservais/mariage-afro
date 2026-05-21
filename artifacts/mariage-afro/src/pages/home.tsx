@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Quote, ChevronDown, ArrowRight, Heart, Briefcase, Building2, ChefHat, Wine, GlassWater, Users, UserCheck, Sparkles as SparklesIcon, Camera, Music2 } from "lucide-react";
+import { Quote, ChevronDown, ArrowRight, Heart, Briefcase, Building2, ChefHat, Wine, GlassWater, Users, UserCheck, Sparkles as SparklesIcon, Camera, Music2, Clapperboard } from "lucide-react";
 import { Picture } from "@/components/Picture";
 
 import { SEO } from "@/components/SEO";
@@ -165,6 +165,7 @@ export default function Home() {
     { icon: <SparklesIcon className="w-7 h-7" />, label: t("home.partner7") },
     { icon: <Camera className="w-7 h-7" />, label: t("home.partner8") },
     { icon: <Music2 className="w-7 h-7" />, label: t("home.partner9") },
+    { icon: <Clapperboard className="w-7 h-7" />, label: t("home.partner10"), mobileOnly: true },
   ];
 
   const platformPoints = [
@@ -781,7 +782,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="group bg-white p-10 flex flex-col items-center justify-center text-center hover:bg-cream transition-colors cursor-pointer"
+                className={`group bg-white p-10 flex flex-col items-center justify-center text-center hover:bg-cream transition-colors cursor-pointer${"mobileOnly" in item && item.mobileOnly ? " md:hidden" : ""}`}
               >
                 <div className="mb-5 text-gold-deep group-hover:scale-110 transition-transform">{item.icon}</div>
                 <h3 className="font-display uppercase text-base tracking-tight text-wine-deep">{item.label}</h3>
