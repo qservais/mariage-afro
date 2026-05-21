@@ -13,8 +13,8 @@ router.use(healthRouter);
 router.use(contactRouter);
 router.use(leadsRouter);
 router.use(quotesPublicRouter);
+router.use(storageRouter);
 router.use(clientRouter);
 router.use(vendorRouter);
-router.use(storageRouter);
 
 export default router;
