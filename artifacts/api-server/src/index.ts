@@ -1,6 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { runVendorFollowupCron, runVendorFeaturedBackfill, runServicesObjectMigration } from "./routes/vendor";
+import { runVendorFollowupCron, runVendorFeaturedBackfill, runServicesObjectMigration, runVendorSlugMigration } from "./routes/vendor";
 
 const rawPort = process.env["PORT"];
 
@@ -32,6 +32,11 @@ app.listen(port, (err) => {
   // One-time migration: convert legacy string services to object format.
   runServicesObjectMigration().catch((err) =>
     logger.warn({ err }, "Services object migration failed")
+  );
+
+  // One-time migration: generate URL slugs for vendors that don't have one yet.
+  runVendorSlugMigration().catch((err) =>
+    logger.warn({ err }, "Vendor slug migration failed")
   );
 
   // LOT 8 — daily vendor follow-up cron (with internal throttle).

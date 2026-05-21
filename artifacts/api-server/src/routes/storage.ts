@@ -154,24 +154,24 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
 router.get("/storage/objects/*path", async (req: Request, res: Response) => {
   try {
     const auth = getAuth(req);
-    const userId = auth?.userId;
-    if (!userId) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
+    const userId = auth?.userId ?? undefined;
 
     const raw = req.params.path;
     const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
     const objectPath = `/objects/${wildcardPath}`;
     const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
 
+    // canAccessObjectEntity returns true for public objects even without auth.
+    // For private objects it requires a valid userId.
     const canAccess = await objectStorageService.canAccessObjectEntity({
       userId,
       objectFile,
       requestedPermission: ObjectPermission.READ,
     });
     if (!canAccess) {
-      res.status(403).json({ error: "Forbidden" });
+      // 401 when unauthenticated (private object, no session), 403 when
+      // authenticated but not the owner / not in an allowed access group.
+      res.status(userId ? 403 : 401).json({ error: userId ? "Forbidden" : "Unauthorized" });
       return;
     }
 

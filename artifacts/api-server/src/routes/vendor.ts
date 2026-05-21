@@ -1524,4 +1524,29 @@ export async function runServicesObjectMigration(): Promise<void> {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Vendor slug backfill
+// Generates URL slugs for any marketplace_vendors rows that are missing one.
+// Safe to call multiple times (skips rows that already have a slug).
+// ---------------------------------------------------------------------------
+export async function runVendorSlugMigration(): Promise<void> {
+  const vendors = await db
+    .select({ id: marketplaceVendorsTable.id, name: marketplaceVendorsTable.name })
+    .from(marketplaceVendorsTable)
+    .where(isNull(marketplaceVendorsTable.slug));
+
+  let fixed = 0;
+  for (const vendor of vendors) {
+    const base = slugify(vendor.name);
+    const slug = await resolveVendorSlug(base, vendor.id);
+    await db
+      .update(marketplaceVendorsTable)
+      .set({ slug })
+      .where(eq(marketplaceVendorsTable.id, vendor.id));
+    fixed++;
+  }
+
+  logger.info({ fixed }, "Vendor slug migration complete");
+}
+
 export default router;
