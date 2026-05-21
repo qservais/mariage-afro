@@ -169,7 +169,8 @@
     "filter_all": "All",
     "filter_attending": "Attending",
     "filter_declined": "Declined",
-    "rsvp_for": "RSVP for {{name}}"
+    "rsvp_for": "RSVP for {{name}}",
+    "delete": "Delete guest"
   },
   "planning": {
     "title": "Planning",
@@ -200,7 +201,8 @@
       "Fri",
       "Sat",
       "Sun"
-    ]
+    ],
+    "due_date_label": "Due date"
   },
   "jour_j": {
     "title": "Wedding Day Coordination",
@@ -212,7 +214,9 @@
     "responsible_label": "Owner: {{name}}",
     "no_event": "No events",
     "emergency": "Emergency contacts",
-    "no_contacts": "Add your vendors with their phone numbers to find them here."
+    "no_contacts": "Add your vendors with their phone numbers to find them here.",
+    "delete": "Delete event",
+    "time_label": "Time"
   },
   "jour_j_public": {
     "title": "Wedding Day Public Page",
@@ -245,7 +249,8 @@
     "saving": "Saving…",
     "saved": "Wedding Day page updated",
     "edit_content": "Edit content",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "qr_alt": "QR code to the public Day-of page"
   },
   "profil": {
     "title": "Profile",
@@ -345,7 +350,9 @@
     "to_place_count": "To seat ({{count}})",
     "confirm_delete": "Delete table \"{{name}}\"? Guests will be released.",
     "table_full_error": "This table is full.",
-    "assign_placeholder": "— Assign —"
+    "assign_placeholder": "— Assign —",
+    "dismiss_error": "Close",
+    "free": "({{count}} free)"
   },
   "site_mariage": {
     "title": "My wedding website",
@@ -521,7 +528,13 @@
     "role_viewer": "View only",
     "role_editor": "Editor",
     "cancel": "Cancel",
-    "send_invite": "Send invite"
+    "send_invite": "Send invite",
+    "caption_aria_label": "Image caption",
+    "delete_collab": "Remove collaborator",
+    "image_alt": "Inspiration image",
+    "move_left": "Move left",
+    "move_right": "Move right",
+    "reorder_label": "Reorder images"
   },
   "cagnotte": {
     "title": "Wedding fund",
@@ -541,7 +554,9 @@
     "empty": "No fund created yet.",
     "confirm_delete": "Delete this fund?",
     "qr_alt": "IBAN QR code for {{title}} — {{names}}",
-    "qr_alt_generic": "IBAN QR code for {{title}}"
+    "qr_alt_generic": "IBAN QR code for {{title}}",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "mariage_cagnotte": {
     "title": "Our wedding fund",
@@ -595,5 +610,14 @@
       "refused": "Refused",
       "expired": "Expired"
     }
+  },
+  "kit": {
+    "stepper": "Step {{current}} of {{total}}",
+    "actions": {
+      "reset": "Reset"
+    }
+  },
+  "prestataires": {
+    "delete": "Remove vendor"
   }
 }

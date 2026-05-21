@@ -731,7 +731,8 @@
     "hero_title": "Contactez-nous",
     "hero_subtitle": "Une équipe dédiée pour répondre à vos questions et vous accompagner dans la préparation de votre mariage.",
     "info_title": "Coordonnées",
-    "info_address": "Bruxelles, Belgique — sur rendez-vous uniquement."
+    "info_address": "Bruxelles, Belgique — sur rendez-vous uniquement.",
+    "seo_title": "Contact — Mariage Afro"
   },
   "contact_extra": {
     "detailed_form": "Formulaire détaillé",
@@ -871,7 +872,8 @@
     "video": "Vidéo de présentation",
     "gallery": "Galerie",
     "other_services": "Prestations supplémentaires",
-    "title_fallback": "Prestataire"
+    "title_fallback": "Prestataire",
+    "category_fields_title": "Informations spécifiques"
   },
   "mariage_public": {
     "not_found_title": "Page introuvable",

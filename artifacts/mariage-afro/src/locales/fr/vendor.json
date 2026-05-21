@@ -34,14 +34,17 @@
       "mobile_list_title": "Jours bloqués ce mois-ci",
       "mobile_empty": "Aucun jour bloqué ce mois-ci.",
       "mobile_add_label": "Ajouter une date à bloquer",
-      "remove_block": "Libérer ce jour"
+      "remove_block": "Libérer ce jour",
+      "legend_label": "Légende"
     },
     "layout": {
       "pro_space": "Espace Pro",
       "welcome": "Espace prestataire",
       "signout": "Déconnexion",
       "status_published": "Publié",
-      "status_pending": "En attente"
+      "status_pending": "En attente",
+      "close_menu": "Fermer le menu",
+      "open_menu": "Ouvrir le menu"
     },
     "onboarding": {
       "eyebrow": "Bienvenue",
@@ -378,7 +381,12 @@
         "booking": "Réservation",
         "zoom": "Appel Zoom",
         "rdv": "Rendez-vous"
-      }
+      },
+      "close": "Fermer",
+      "drag_handle": "Déplacer",
+      "open_lead": "Ouvrir",
+      "send_quote": "Envoyer un devis",
+      "view_toggle_label": "Changer la vue"
     },
     "messages": {
       "nav": "Messagerie",
@@ -394,7 +402,8 @@
       "placeholder": "Écrivez votre réponse… (Ctrl+Entrée pour envoyer)",
       "loading": "Chargement…",
       "unread": "non lu",
-      "secure": "Conversation modérée"
+      "secure": "Conversation modérée",
+      "send_label": "Envoyer"
     },
     "quotes": {
       "title": "Mes devis",
@@ -443,7 +452,9 @@
       },
       "nav": {
         "quotes": "Devis"
-      }
+      },
+      "close": "Fermer",
+      "remove_service": "Supprimer la ligne"
     }
   }
 }

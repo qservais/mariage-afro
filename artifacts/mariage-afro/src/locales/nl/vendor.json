@@ -34,14 +34,17 @@
       "mobile_list_title": "Geblokkeerde dagen deze maand",
       "mobile_empty": "Geen geblokkeerde dagen deze maand.",
       "mobile_add_label": "Een datum blokkeren",
-      "remove_block": "Deze dag vrijgeven"
+      "remove_block": "Deze dag vrijgeven",
+      "legend_label": "Legenda"
     },
     "layout": {
       "pro_space": "Pro-zone",
       "welcome": "Leveranciersruimte",
       "signout": "Uitloggen",
       "status_published": "Gepubliceerd",
-      "status_pending": "In behandeling"
+      "status_pending": "In behandeling",
+      "close_menu": "Menu sluiten",
+      "open_menu": "Menu openen"
     },
     "onboarding": {
       "eyebrow": "Welkom",
@@ -378,7 +381,12 @@
         "booking": "Reservering",
         "zoom": "Zoom-gesprek",
         "rdv": "Afspraak"
-      }
+      },
+      "close": "Sluiten",
+      "drag_handle": "Verplaatsen",
+      "open_lead": "Openen",
+      "send_quote": "Offerte versturen",
+      "view_toggle_label": "Weergave wijzigen"
     },
     "messages": {
       "nav": "Berichten",
@@ -394,7 +402,8 @@
       "placeholder": "Schrijf uw antwoord… (Ctrl+Enter om te verzenden)",
       "loading": "Laden…",
       "unread": "ongelezen",
-      "secure": "Gemodereerd gesprek"
+      "secure": "Gemodereerd gesprek",
+      "send_label": "Versturen"
     },
     "quotes": {
       "title": "Mijn offertes",
@@ -443,7 +452,9 @@
       },
       "nav": {
         "quotes": "Offertes"
-      }
+      },
+      "close": "Sluiten",
+      "remove_service": "Regel verwijderen"
     }
   }
 }

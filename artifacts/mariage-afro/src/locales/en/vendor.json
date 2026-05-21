@@ -34,14 +34,17 @@
       "mobile_list_title": "Blocked days this month",
       "mobile_empty": "No blocked days this month.",
       "mobile_add_label": "Add a date to block",
-      "remove_block": "Free this day"
+      "remove_block": "Free this day",
+      "legend_label": "Legend"
     },
     "layout": {
       "pro_space": "Pro space",
       "welcome": "Vendor area",
       "signout": "Sign out",
       "status_published": "Published",
-      "status_pending": "Pending review"
+      "status_pending": "Pending review",
+      "close_menu": "Close menu",
+      "open_menu": "Open menu"
     },
     "onboarding": {
       "eyebrow": "Welcome",
@@ -378,7 +381,12 @@
         "booking": "Booking",
         "zoom": "Zoom call",
         "rdv": "Meeting"
-      }
+      },
+      "close": "Close",
+      "drag_handle": "Move",
+      "open_lead": "Open",
+      "send_quote": "Send a quote",
+      "view_toggle_label": "Change view"
     },
     "messages": {
       "nav": "Messages",
@@ -394,7 +402,8 @@
       "placeholder": "Write your reply… (Ctrl+Enter to send)",
       "loading": "Loading…",
       "unread": "unread",
-      "secure": "Moderated conversation"
+      "secure": "Moderated conversation",
+      "send_label": "Send"
     },
     "quotes": {
       "title": "My Quotes",
@@ -443,7 +452,9 @@
       },
       "nav": {
         "quotes": "Quotes"
-      }
+      },
+      "close": "Close",
+      "remove_service": "Remove line"
     }
   }
 }

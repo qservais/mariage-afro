@@ -169,7 +169,8 @@
     "filter_all": "Alle",
     "filter_attending": "Aanwezig",
     "filter_declined": "Afgemeld",
-    "rsvp_for": "RSVP van {{name}}"
+    "rsvp_for": "RSVP van {{name}}",
+    "delete": "Gast verwijderen"
   },
   "planning": {
     "title": "Planning",
@@ -200,7 +201,8 @@
       "Vr",
       "Za",
       "Zo"
-    ]
+    ],
+    "due_date_label": "Uiterste datum"
   },
   "jour_j": {
     "title": "Coördinatie Trouwdag",
@@ -212,7 +214,9 @@
     "responsible_label": "Verantwoordelijke: {{name}}",
     "no_event": "Geen evenementen",
     "emergency": "Noodcontacten",
-    "no_contacts": "Voeg uw leveranciers toe met telefoon om ze hier terug te vinden."
+    "no_contacts": "Voeg uw leveranciers toe met telefoon om ze hier terug te vinden.",
+    "delete": "Evenement verwijderen",
+    "time_label": "Tijd"
   },
   "jour_j_public": {
     "title": "Publieke Trouwdag-pagina",
@@ -245,7 +249,8 @@
     "saving": "Opslaan…",
     "saved": "Trouwdag-pagina bijgewerkt",
     "edit_content": "Inhoud bewerken",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "qr_alt": "QR-code naar de openbare Dag-J-pagina"
   },
   "profil": {
     "title": "Profiel",
@@ -345,7 +350,9 @@
     "to_place_count": "Te plaatsen ({{count}})",
     "confirm_delete": "Tafel \"{{name}}\" verwijderen? Gasten worden vrijgegeven.",
     "table_full_error": "Deze tafel is vol.",
-    "assign_placeholder": "— Toewijzen —"
+    "assign_placeholder": "— Toewijzen —",
+    "dismiss_error": "Sluiten",
+    "free": "({{count}} vrij)"
   },
   "site_mariage": {
     "title": "Mijn trouwsite",
@@ -521,7 +528,13 @@
     "role_viewer": "Alleen-lezen",
     "role_editor": "Editor",
     "cancel": "Annuleren",
-    "send_invite": "Uitnodiging versturen"
+    "send_invite": "Uitnodiging versturen",
+    "caption_aria_label": "Bijschrift van de afbeelding",
+    "delete_collab": "Medewerker verwijderen",
+    "image_alt": "Inspiratieafbeelding",
+    "move_left": "Naar links verplaatsen",
+    "move_right": "Naar rechts verplaatsen",
+    "reorder_label": "Afbeeldingen herordenen"
   },
   "cagnotte": {
     "title": "Trouwgeldpot",
@@ -541,7 +554,9 @@
     "empty": "Nog geen geldpot aangemaakt.",
     "confirm_delete": "Deze geldpot verwijderen?",
     "qr_alt": "IBAN QR-code voor {{title}} — {{names}}",
-    "qr_alt_generic": "IBAN QR-code voor {{title}}"
+    "qr_alt_generic": "IBAN QR-code voor {{title}}",
+    "edit": "Bewerken",
+    "delete": "Verwijderen"
   },
   "mariage_cagnotte": {
     "title": "Onze geldpot",
@@ -595,5 +610,14 @@
       "refused": "Geweigerd",
       "expired": "Verlopen"
     }
+  },
+  "kit": {
+    "stepper": "Stap {{current}} van {{total}}",
+    "actions": {
+      "reset": "Opnieuw instellen"
+    }
+  },
+  "prestataires": {
+    "delete": "Leverancier verwijderen"
   }
 }

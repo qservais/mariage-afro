@@ -169,7 +169,8 @@
     "filter_all": "Tous",
     "filter_attending": "Présents",
     "filter_declined": "Absents",
-    "rsvp_for": "RSVP de {{name}}"
+    "rsvp_for": "RSVP de {{name}}",
+    "delete": "Supprimer l'invité"
   },
   "planning": {
     "title": "Planning",
@@ -200,7 +201,8 @@
       "Ven",
       "Sam",
       "Dim"
-    ]
+    ],
+    "due_date_label": "Date limite"
   },
   "jour_j": {
     "title": "Coordination Jour J",
@@ -212,7 +214,9 @@
     "responsible_label": "Responsable : {{name}}",
     "no_event": "Aucun évènement",
     "emergency": "Contacts d'urgence",
-    "no_contacts": "Ajoutez vos prestataires avec leur téléphone pour les retrouver ici."
+    "no_contacts": "Ajoutez vos prestataires avec leur téléphone pour les retrouver ici.",
+    "delete": "Supprimer l'événement",
+    "time_label": "Heure"
   },
   "jour_j_public": {
     "title": "Page publique Jour-J",
@@ -245,7 +249,8 @@
     "saving": "Enregistrement…",
     "saved": "Page Jour-J mise à jour",
     "edit_content": "Modifier le contenu",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "qr_alt": "QR code vers la page Jour-J publique"
   },
   "profil": {
     "title": "Profil",
@@ -345,7 +350,9 @@
     "to_place_count": "À placer ({{count}})",
     "confirm_delete": "Supprimer la table \"{{name}}\" ? Les invités seront libérés.",
     "table_full_error": "Cette table est pleine.",
-    "assign_placeholder": "— Assigner —"
+    "assign_placeholder": "— Assigner —",
+    "dismiss_error": "Fermer",
+    "free": "({{count}} libre)"
   },
   "site_mariage": {
     "title": "Mon site mariage",
@@ -521,7 +528,13 @@
     "role_viewer": "Lecture seule",
     "role_editor": "Éditeur",
     "cancel": "Annuler",
-    "send_invite": "Envoyer l'invitation"
+    "send_invite": "Envoyer l'invitation",
+    "caption_aria_label": "Légende de l'image",
+    "delete_collab": "Retirer le collaborateur",
+    "image_alt": "Image d'inspiration",
+    "move_left": "Déplacer vers la gauche",
+    "move_right": "Déplacer vers la droite",
+    "reorder_label": "Réorganiser les images"
   },
   "cagnotte": {
     "title": "Cagnotte de mariage",
@@ -541,7 +554,9 @@
     "empty": "Aucune cagnotte créée pour le moment.",
     "confirm_delete": "Supprimer cette cagnotte ?",
     "qr_alt": "QR code IBAN pour {{title}} — {{names}}",
-    "qr_alt_generic": "QR code IBAN pour {{title}}"
+    "qr_alt_generic": "QR code IBAN pour {{title}}",
+    "edit": "Modifier",
+    "delete": "Supprimer"
   },
   "mariage_cagnotte": {
     "title": "Notre cagnotte",
@@ -595,5 +610,14 @@
       "refused": "Refusé",
       "expired": "Expiré"
     }
+  },
+  "kit": {
+    "stepper": "Étape {{current}} sur {{total}}",
+    "actions": {
+      "reset": "Réinitialiser"
+    }
+  },
+  "prestataires": {
+    "delete": "Supprimer le prestataire"
   }
 }

@@ -731,7 +731,8 @@
     "hero_title": "Neem contact op",
     "hero_subtitle": "Een toegewijd team om uw vragen te beantwoorden en u te begeleiden bij de voorbereiding van uw huwelijk.",
     "info_title": "Contactgegevens",
-    "info_address": "Brussel, België — alleen op afspraak."
+    "info_address": "Brussel, België — alleen op afspraak.",
+    "seo_title": "Contact — Mariage Afro"
   },
   "contact_extra": {
     "detailed_form": "Gedetailleerd formulier",
@@ -871,7 +872,8 @@
     "video": "Presentatievideo",
     "gallery": "Galerij",
     "other_services": "Extra diensten",
-    "title_fallback": "Leverancier"
+    "title_fallback": "Leverancier",
+    "category_fields_title": "Specifieke informatie"
   },
   "mariage_public": {
     "not_found_title": "Pagina niet gevonden",
