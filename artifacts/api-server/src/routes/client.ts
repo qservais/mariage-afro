@@ -1487,13 +1487,23 @@ router.patch("/client/rsvps/:id/status", async (req, res) => {
   const siteId = await getOwnedWeddingSiteId(r.coupleId);
   if (!siteId) { res.status(404).json({ error: "Wedding site not found" }); return; }
 
+  // Fetch current RSVP — verify ownership and guard idempotency
+  const [existing] = await db.select().from(weddingRsvpsTable)
+    .where(and(eq(weddingRsvpsTable.id, id), eq(weddingRsvpsTable.weddingWebsiteId, siteId)))
+    .limit(1);
+  if (!existing) { res.status(404).json({ error: "RSVP not found" }); return; }
+  // Already processed — return current state without side-effects (idempotent)
+  if (existing.status !== "pending") { res.json(existing); return; }
+
   const [rsvp] = await db.update(weddingRsvpsTable)
     .set({ status: parsed.data.status })
     .where(and(eq(weddingRsvpsTable.id, id), eq(weddingRsvpsTable.weddingWebsiteId, siteId)))
     .returning();
   if (!rsvp) { res.status(404).json({ error: "RSVP not found" }); return; }
 
-  if (parsed.data.status === "accepted" && rsvp.attending) {
+  // On acceptance: always add guest regardless of attending status
+  // (attending=false → rsvp "declined"; attending=true → rsvp "confirmed")
+  if (parsed.data.status === "accepted") {
     const firstName = rsvp.firstName || rsvp.name.split(" ")[0] || rsvp.name;
     const lastName = rsvp.firstName ? rsvp.lastName : rsvp.name.split(" ").slice(1).join(" ");
     await db.insert(guestsTable).values({
@@ -1502,7 +1512,7 @@ router.patch("/client/rsvps/:id/status", async (req, res) => {
       lastName,
       email: rsvp.email ?? null,
       source: "from_rsvp",
-      rsvp: "confirmed",
+      rsvp: rsvp.attending ? "confirmed" : "declined",
     });
   }
 
