@@ -314,33 +314,57 @@ export default function Contact() {
 
       <section className="py-24 md:py-32 bg-cream">
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {rdvModes.map((mode) => (
-              <div
-                key={mode.title}
-                className="flex flex-col items-start bg-cream p-10 hover:bg-white transition-colors group"
-              >
-                <div className="w-14 h-14 border border-gold/40 flex items-center justify-center mb-8 text-gold group-hover:bg-gold group-hover:text-cream transition-colors [&>svg]:!text-current">
-                  {mode.icon}
+          <div className="grid grid-cols-1 lg:grid-cols-[5fr_3fr] gap-px bg-wine-deep/10 border border-wine-deep/10">
+            {/* Phone — featured large card */}
+            <a
+              href={rdvModes[0].href}
+              className="flex flex-col items-start bg-cream p-10 md:p-14 hover:bg-cream-soft transition-colors group"
+            >
+              <span className="font-display text-[11px] uppercase tracking-[0.35em] text-gold-deep mb-10">01</span>
+              <h3 className="font-display uppercase text-3xl md:text-5xl tracking-tight text-wine-deep mb-4 leading-[0.95]">
+                {rdvModes[0].title}
+              </h3>
+              <p className="text-wine-deep/60 text-sm leading-relaxed mb-10 font-light max-w-md">
+                {rdvModes[0].desc}
+              </p>
+              <div className="mt-auto">
+                <div className="font-display text-2xl md:text-3xl text-wine-deep tracking-tight mb-6">
+                  {t("footer.phone")}
                 </div>
-                <h3 className="font-display uppercase text-xl tracking-tight text-wine-deep mb-3">
-                  {mode.title}
-                </h3>
-                <p className="text-wine-deep/65 text-sm leading-relaxed flex-grow mb-8 font-light">
-                  {mode.desc}
-                </p>
-                <a href={mode.href} className="btn-editorial-ghost text-wine-deep">
-                  {mode.action} →
-                </a>
+                <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-wine-deep/50 group-hover:text-wine-deep transition-colors font-medium">
+                  {rdvModes[0].action} →
+                </span>
               </div>
-            ))}
+            </a>
+
+            {/* Email + In Person — stacked right */}
+            <div className="flex flex-col gap-px">
+              {rdvModes.slice(1).map((mode, i) => (
+                <a
+                  key={mode.title}
+                  href={mode.href}
+                  className="flex flex-col items-start bg-cream p-8 md:p-10 hover:bg-cream-soft transition-colors group flex-1"
+                >
+                  <span className="font-display text-[11px] uppercase tracking-[0.35em] text-gold-deep mb-5">0{i + 2}</span>
+                  <h3 className="font-display uppercase text-xl tracking-tight text-wine-deep mb-2">
+                    {mode.title}
+                  </h3>
+                  <p className="text-wine-deep/60 text-xs leading-relaxed mb-5 font-light">
+                    {mode.desc}
+                  </p>
+                  <span className="mt-auto inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-wine-deep/50 group-hover:text-wine-deep transition-colors font-medium">
+                    {mode.action} →
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       <section
         id="contact-form"
-        className="py-24 md:py-32 bg-white border-t border-wine-deep/10"
+        className="py-24 md:py-32 bg-cream-soft border-t border-wine-deep/10"
       >
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-16">

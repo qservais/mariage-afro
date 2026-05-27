@@ -150,7 +150,7 @@ export default function InspirationPage() {
       <div className="flex items-end justify-between flex-wrap gap-3">
         <div>
           <h2 className="font-bold text-2xl">{t("inspiration.title")}</h2>
-          <p className="text-sm text-neutral-600">{t("inspiration.subtitle")}</p>
+          <p className="text-sm text-wine-deep/70">{t("inspiration.subtitle")}</p>
         </div>
         <Button variant="outline" className="rounded-none uppercase tracking-wider text-xs gap-2" onClick={() => setInviteOpen(true)} data-testid="btn-invite-collab">
           <Mail className="w-3.5 h-3.5" /> {t("inspiration.invite")}
@@ -158,12 +158,12 @@ export default function InspirationPage() {
       </div>
 
       {/* Board tabs */}
-      <div className="flex flex-wrap gap-2 items-center bg-white border border-neutral-200 p-3">
+      <div className="flex flex-wrap gap-2 items-center bg-cream border border-wine-deep/10 p-3">
         {boards.map((b) => (
           <button
             key={b.id}
             onClick={() => setActiveBoardId(b.id)}
-            className={`text-xs px-3 py-2 border ${activeBoard?.id === b.id ? "border-primary bg-primary text-white" : "border-neutral-300 hover:border-primary"}`}
+            className={`text-xs px-3 py-2 border ${activeBoard?.id === b.id ? "border-primary bg-primary text-white" : "border-wine-deep/20 hover:border-primary"}`}
             data-testid={`tab-board-${b.id}`}
           >
             {b.title} <span className="opacity-60">({b.images.length})</span>
@@ -187,13 +187,13 @@ export default function InspirationPage() {
       </div>
 
       {!activeBoard ? (
-        <div className="bg-white border border-dashed border-neutral-300 p-12 text-center text-neutral-500">
-          <ImagePlus className="w-10 h-10 mx-auto mb-3 text-neutral-400" />
+        <div className="bg-cream border border-dashed border-wine-deep/20 p-12 text-center text-wine-deep/50">
+          <ImagePlus className="w-10 h-10 mx-auto mb-3 text-wine-deep/40" />
           <p>{t("inspiration.no_board")}</p>
         </div>
       ) : (
         <>
-          <div className="bg-white border border-neutral-200 p-4 flex items-center justify-between">
+          <div className="bg-cream border border-wine-deep/10 p-4 flex items-center justify-between">
             <h3 className="font-medium">{activeBoard.title}</h3>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" className="rounded-none gap-1 text-xs" disabled={addImage.isPending} onClick={() => fileInputRef.current?.click()} data-testid="btn-upload-image">
@@ -219,11 +219,11 @@ export default function InspirationPage() {
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={onDrop}
-            className="bg-white border border-dashed border-neutral-300 p-4 min-h-[300px]"
+            className="bg-cream border border-dashed border-wine-deep/20 p-4 min-h-[300px]"
           >
             {activeBoard.images.length === 0 ? (
-              <div className="text-center py-12 text-neutral-500">
-                <ImagePlus className="w-10 h-10 mx-auto mb-3 text-neutral-400" />
+              <div className="text-center py-12 text-wine-deep/50">
+                <ImagePlus className="w-10 h-10 mx-auto mb-3 text-wine-deep/40" />
                 <p>{t("inspiration.drop_hint")}</p>
               </div>
             ) : (
@@ -280,7 +280,7 @@ export default function InspirationPage() {
                         onBlur={(e) => e.target.value !== img.caption && updateImage.mutate({ id: img.id, body: { caption: e.target.value } })}
                         placeholder={t("inspiration.caption_placeholder")}
                         aria-label={t("inspiration.caption_aria_label", { defaultValue: "Légende de l'image" })}
-                        className="w-full text-xs px-2 py-1 border-t border-neutral-200 bg-neutral-50 focus:outline-none focus:bg-white"
+                        className="w-full text-xs px-2 py-1 border-t border-wine-deep/10 bg-cream/60 focus:outline-none focus:bg-cream/80"
                       />
                     </div>
                   ))}
@@ -291,19 +291,19 @@ export default function InspirationPage() {
       )}
 
       {/* Collaborators */}
-      <div className="bg-white border border-neutral-200 p-5">
+      <div className="bg-cream border border-wine-deep/10 p-5">
         <h3 className="font-bold text-sm uppercase tracking-wider mb-3">{t("inspiration.collaborators")}</h3>
         {collaborators.length === 0 ? (
-          <p className="text-sm text-neutral-500">{t("inspiration.no_collaborators")}</p>
+          <p className="text-sm text-wine-deep/50">{t("inspiration.no_collaborators")}</p>
         ) : (
-          <ul className="divide-y divide-neutral-100">
+          <ul className="divide-y divide-wine-deep/10">
             {collaborators.map((c) => (
               <li key={c.id} className="py-2 flex items-center justify-between text-sm">
                 <div>
                   <span className="font-medium">{c.name || c.email}</span>
-                  <span className="text-neutral-500 ml-2 text-xs">{c.email} · {t(`inspiration.role_${c.role}`)}</span>
+                  <span className="text-wine-deep/50 ml-2 text-xs">{c.email} · {t(`inspiration.role_${c.role}`)}</span>
                 </div>
-                <button onClick={() => deleteCollab.mutate(c.id)} className="text-neutral-400 hover:text-primary" aria-label={t("inspiration.delete_collab", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
+                <button onClick={() => deleteCollab.mutate(c.id)} className="text-wine-deep/40 hover:text-primary" aria-label={t("inspiration.delete_collab", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
               </li>
             ))}
           </ul>
@@ -313,7 +313,7 @@ export default function InspirationPage() {
       {/* Invite modal */}
       {inviteOpen && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setInviteOpen(false)}>
-          <div className="bg-white max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-cream max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-bold text-lg">{t("inspiration.invite_modal_title")}</h3>
             <div className="space-y-3">
               <div>
@@ -326,7 +326,7 @@ export default function InspirationPage() {
               </div>
               <div>
                 <Label>{t("inspiration.invite_role")}</Label>
-                <select value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value as "viewer" | "editor" })} className="w-full border border-neutral-300 px-3 h-10 text-sm">
+                <select value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value as "viewer" | "editor" })} className="w-full border border-wine-deep/20 px-3 h-10 text-sm">
                   <option value="viewer">{t("inspiration.role_viewer")}</option>
                   <option value="editor">{t("inspiration.role_editor")}</option>
                 </select>

@@ -260,7 +260,7 @@ export default function Home() {
             initial={showCinematic ? false : { opacity: 0, y: 30 }}
             animate={showCinematic ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 1.1, delay: 0.3 }}
-            style={showCinematic ? { opacity: textOpacity, y: textY } : undefined}
+            style={showCinematic ? { opacity: textOpacity, y: textY, willChange: "transform, opacity" } : { willChange: "transform, opacity" }}
             className="lg:col-span-7 xl:col-span-6 lg:pl-4"
           >
             <span className="inline-flex items-center gap-3 text-[10px] md:text-xs uppercase tracking-[0.4em] mb-5 md:mb-7 text-gold font-medium">
@@ -297,6 +297,7 @@ export default function Home() {
             initial={showCinematic ? false : { opacity: 0, scale: 0.96 }}
             animate={showCinematic ? undefined : { opacity: 1, scale: 1 }}
             transition={{ duration: 1.4, delay: 0.5, ease: "easeOut" }}
+            style={{ willChange: "transform, opacity" }}
             className="lg:col-span-5 xl:col-span-6 lg:-mr-6 xl:-mr-12 relative"
           >
             <div ref={slotRef} className="relative aspect-[4/5] lg:aspect-[3/4] xl:aspect-[4/5] lg:max-h-[68vh] xl:max-h-[72vh] mx-auto w-full overflow-hidden shadow-2xl bg-wine-deep">
@@ -342,7 +343,7 @@ export default function Home() {
           initial={showCinematic ? false : { opacity: 0 }}
           animate={showCinematic ? undefined : { opacity: 1 }}
           transition={{ delay: 1.6, duration: 1 }}
-          style={showCinematic ? { opacity: indicatorOpacity } : undefined}
+          style={showCinematic ? { opacity: indicatorOpacity, willChange: "opacity" } : { willChange: "opacity" }}
           className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden md:block"
         >
           <motion.div
@@ -590,7 +591,7 @@ export default function Home() {
       </section>
 
       {/* Services Preview */}
-      <section className="py-24 md:py-32 bg-white border-t border-wine-deep/10">
+      <section className="py-24 md:py-32 bg-cream-soft border-t border-wine-deep/10">
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-20">
             <span className="section-eyebrow mb-6">{t("home.services_label")}</span>
@@ -607,7 +608,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.12 }}
-                className="bg-white p-10 md:p-12 flex flex-col group"
+                className="bg-cream-soft p-10 md:p-12 flex flex-col group"
               >
                 <span className="font-display text-6xl text-gold-deep mb-6 leading-none">{card.num}</span>
                 <h3 className="font-display uppercase text-2xl md:text-3xl tracking-tight text-wine-deep mb-5 leading-[1]">{card.title}</h3>
@@ -713,14 +714,14 @@ export default function Home() {
                 {/* Source badge */}
                 <div className="flex items-center gap-2 mb-5">
                   {item.source === "google" ? (
-                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" aria-label="Google">
+                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                       <path fill="var(--color-google-blue)"   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                       <path fill="var(--color-google-green)"  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                       <path fill="var(--color-google-yellow)" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                       <path fill="var(--color-google-red)"    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
                   ) : (
-                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" aria-label="Instagram">
+                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                       <defs>
                         <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
                           <stop offset="0%"   stopColor="var(--color-ig-1)"/>
@@ -765,7 +766,7 @@ export default function Home() {
       </section>
 
       {/* Prestations Grid Preview */}
-      <section className="py-24 md:py-32 bg-white border-t border-wine-deep/10">
+      <section className="py-24 md:py-32 bg-cream-soft border-t border-wine-deep/10">
         <div className="container mx-auto px-6 md:px-12">
           <motion.div {...fadeIn} className="text-center mb-20">
             <span className="section-eyebrow mb-6">{t("home.prestations_label")}</span>
@@ -782,7 +783,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
-                className={`group bg-white p-10 flex flex-col items-center justify-center text-center hover:bg-cream transition-colors cursor-pointer${"mobileOnly" in item && item.mobileOnly ? " md:hidden" : ""}`}
+                className={`group bg-cream-soft p-10 flex flex-col items-center justify-center text-center hover:bg-cream transition-colors cursor-pointer${"mobileOnly" in item && item.mobileOnly ? " md:hidden" : ""}`}
               >
                 <div className="mb-5 text-gold-deep group-hover:scale-110 transition-transform">{item.icon}</div>
                 <h3 className="font-display uppercase text-base tracking-tight text-wine-deep">{item.label}</h3>

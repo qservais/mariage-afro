@@ -235,6 +235,7 @@ export default function Header() {
             <Link
               key={link.to}
               to={link.to}
+              aria-current={isActive(link.to) ? "page" : undefined}
               className={`vertical-text-up transition-colors ${
                 isOverDark ? "text-cream/70 hover:text-gold" : "text-wine-deep/70 hover:text-gold-deep"
               }`}
@@ -354,6 +355,7 @@ export default function Header() {
                               <Link
                                 to={link.to}
                                 onClick={() => setMobileMenuOpen(false)}
+                                aria-current={isActive(link.to) ? "page" : undefined}
                                 className={`font-display uppercase text-xl md:text-lg lg:text-2xl xl:text-[1.85rem] tracking-tight leading-snug transition-colors block ${
                                   isActive(link.to) ? "text-gold" : "text-cream hover:text-gold"
                                 }`}
@@ -374,6 +376,7 @@ export default function Header() {
                           <Link
                             to={link.to}
                             onClick={() => setMobileMenuOpen(false)}
+                            aria-current={isActive(link.to) ? "page" : undefined}
                             className={`font-display uppercase text-lg lg:text-2xl xl:text-[1.85rem] tracking-tight leading-snug transition-colors block ${
                               isActive(link.to) ? "text-gold" : "text-cream hover:text-gold"
                             }`}
