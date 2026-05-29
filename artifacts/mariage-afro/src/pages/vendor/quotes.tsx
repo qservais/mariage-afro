@@ -174,7 +174,7 @@ export default function VendorQuotesPage() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white border border-neutral-200 p-6 space-y-5"
+          className="bg-cream border border-neutral-200 p-6 space-y-5"
           data-testid="form-new-quote"
         >
           <h2 className="font-semibold text-wine-deep text-lg">{t("vendor.quotes.form_title")}</h2>
@@ -344,7 +344,7 @@ export default function VendorQuotesPage() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
-        <div className="bg-white border border-neutral-200 overflow-hidden">
+        <div className="bg-cream border border-neutral-200 overflow-hidden">
           {isLoading ? (
             <div className="p-12 text-center text-neutral-500"><Loader2 className="w-5 h-5 mx-auto animate-spin" /></div>
           ) : quotes.length === 0 ? (
@@ -415,7 +415,7 @@ export default function VendorQuotesPage() {
           )}
         </div>
 
-        <aside className="bg-white border border-neutral-200 p-6 self-start sticky top-6">
+        <aside className="bg-cream border border-neutral-200 p-6 self-start sticky top-6">
           {!selected ? (
             <p className="text-sm text-neutral-500 text-center py-8">{t("vendor.quotes.detail_empty")}</p>
           ) : (

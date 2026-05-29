@@ -120,7 +120,7 @@ export default function VendorAvailabilityPage() {
             {t("vendor.availability.subtitle")}
           </p>
         </div>
-        <div className="flex items-center gap-3 bg-white border border-neutral-200 px-3 py-2">
+        <div className="flex items-center gap-3 bg-cream border border-neutral-200 px-3 py-2">
           <button
             type="button"
             onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
@@ -148,21 +148,21 @@ export default function VendorAvailabilityPage() {
       {/* Legend */}
       <div className="flex flex-wrap gap-4 text-xs text-neutral-700" role="list" aria-label={t("vendor.availability.legend_label", { defaultValue: "Légende" })}>
         <span className="inline-flex items-center gap-2" role="listitem">
-          <span className="w-3 h-3 bg-emerald-100 border border-emerald-300" aria-hidden="true" />
+          <span className="w-3 h-3 bg-gold/20 border border-gold/40" aria-hidden="true" />
           {t("vendor.availability.legend_free")}
         </span>
         <span className="inline-flex items-center gap-2" role="listitem">
-          <span className="w-3 h-3 bg-amber-100 border border-amber-300" aria-hidden="true" />
+          <span className="w-3 h-3 bg-wine-deep/10 border border-wine-deep/30" aria-hidden="true" />
           {t("vendor.availability.legend_blocked")}
         </span>
         <span className="inline-flex items-center gap-2" role="listitem">
-          <span className="w-3 h-3 bg-rose-100 border border-rose-300" aria-hidden="true" />
+          <span className="w-3 h-3 bg-primary/20 border border-primary/40" aria-hidden="true" />
           {t("vendor.availability.legend_booked")}
         </span>
       </div>
 
       {/* Desktop calendar */}
-      <section className="hidden md:block bg-white border border-neutral-200 p-4">
+      <section className="hidden md:block bg-cream border border-neutral-200 p-4">
         <div className="grid grid-cols-7 gap-1 text-[10px] uppercase tracking-widest text-neutral-500 mb-2">
           {weekdayLabels.map((d, i) => (
             <div key={`${d}-${i}`} className="text-center py-1">
@@ -184,11 +184,11 @@ export default function VendorAvailabilityPage() {
               const row = byDate.get(dateStr);
               const isPast = dateStr < todayStr;
               const isToday = dateStr === todayStr;
-              let cls = "bg-emerald-50 border-emerald-200 text-emerald-900 hover:bg-emerald-100";
+              let cls = "bg-gold/10 border-gold/30 text-wine-deep hover:bg-gold/20";
               if (row?.status === "blocked") {
-                cls = "bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200";
+                cls = "bg-wine-deep/10 border-wine-deep/30 text-wine-deep hover:bg-wine-deep/15";
               } else if (row?.status === "booked") {
-                cls = "bg-rose-100 border-rose-300 text-rose-900 cursor-not-allowed";
+                cls = "bg-primary/15 border-primary/40 text-primary cursor-not-allowed";
               }
               if (isPast) cls += " opacity-40 cursor-not-allowed";
               return (
@@ -217,7 +217,7 @@ export default function VendorAvailabilityPage() {
       </section>
 
       {/* Mobile list */}
-      <section className="md:hidden bg-white border border-neutral-200 p-4">
+      <section className="md:hidden bg-cream border border-neutral-200 p-4">
         <h3 className="text-xs uppercase tracking-widest text-neutral-500 mb-3">
           {t("vendor.availability.mobile_list_title")}
         </h3>

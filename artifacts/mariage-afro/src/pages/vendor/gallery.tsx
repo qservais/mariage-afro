@@ -58,7 +58,7 @@ export default function VendorGalleryPage() {
         <p className="text-sm text-neutral-600 mt-1">{t("vendor.gallery.subtitle")}</p>
       </div>
 
-      <div className="bg-white border border-neutral-200 p-6 space-y-5">
+      <div className="bg-cream border border-neutral-200 p-6 space-y-5">
         <div>
           <label
             data-testid="button-upload-gallery"

@@ -8,18 +8,18 @@ import { Input } from "@/components/ui/input";
 import type { Guest, GuestCreate, GuestPatch } from "@/lib/clientTypes";
 
 const RSVP_COLORS: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-800",
-  confirmed: "bg-emerald-100 text-emerald-800",
-  declined: "bg-rose-100 text-rose-800",
+  pending: "bg-wine-deep/5 text-wine-deep",
+  confirmed: "bg-gold/10 text-gold-deep",
+  declined: "bg-primary/10 text-primary",
 };
 const RSVP_STATUS_COLORS: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-800",
-  accepted: "bg-emerald-100 text-emerald-800",
-  rejected: "bg-rose-100 text-rose-800",
+  pending: "bg-wine-deep/5 text-wine-deep",
+  accepted: "bg-gold/10 text-gold-deep",
+  rejected: "bg-primary/10 text-primary",
 };
 const SOURCE_BADGE: Record<string, string> = {
   personal_invite: "bg-primary/10 text-primary",
-  from_rsvp: "bg-blue-50 text-blue-700",
+  from_rsvp: "bg-gold/10 text-gold-deep",
 };
 
 interface RsvpQuestion { id: number; label: string; type: "text" | "yesno" | "choice"; options: string[]; required: boolean; position: number; }
@@ -197,15 +197,15 @@ export default function GuestsPage() {
 
       {/* 3 new counters */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white p-4 border border-neutral-200">
+        <div className="bg-cream p-4 border border-neutral-200">
           <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.stat_link_guests")}</p>
-          <p className="text-2xl font-bold text-blue-700">{linkGuests}</p>
+          <p className="text-2xl font-bold text-gold-deep">{linkGuests}</p>
         </div>
-        <div className="bg-white p-4 border border-neutral-200">
+        <div className="bg-cream p-4 border border-neutral-200">
           <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.stat_personal_guests")}</p>
           <p className="text-2xl font-bold text-primary">{personalGuests}</p>
         </div>
-        <div className="bg-white p-4 border border-neutral-200">
+        <div className="bg-cream p-4 border border-neutral-200">
           <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.stat_total_guests")}</p>
           <p className="text-2xl font-bold">{totalNewGuests}</p>
         </div>
@@ -213,15 +213,15 @@ export default function GuestsPage() {
 
       {/* Internal RSVP stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-4 border border-neutral-200"><p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.total")}</p><p className="text-2xl font-bold">{guests.length}</p></div>
-        <div className="bg-white p-4 border border-neutral-200"><p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.confirmed")}</p><p className="text-2xl font-bold text-emerald-700">{confirmed}</p></div>
-        <div className="bg-white p-4 border border-neutral-200"><p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.pending")}</p><p className="text-2xl font-bold text-amber-700">{pending}</p></div>
-        <div className="bg-white p-4 border border-neutral-200"><p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.declined")}</p><p className="text-2xl font-bold text-rose-700">{declined}</p></div>
+        <div className="bg-cream p-4 border border-neutral-200"><p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.total")}</p><p className="text-2xl font-bold">{guests.length}</p></div>
+        <div className="bg-cream p-4 border border-neutral-200"><p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.confirmed")}</p><p className="text-2xl font-bold text-gold-deep">{confirmed}</p></div>
+        <div className="bg-cream p-4 border border-neutral-200"><p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.pending")}</p><p className="text-2xl font-bold text-wine-deep">{pending}</p></div>
+        <div className="bg-cream p-4 border border-neutral-200"><p className="text-xs uppercase text-neutral-500 tracking-widest">{t("invites.declined")}</p><p className="text-2xl font-bold text-primary">{declined}</p></div>
       </div>
 
       {/* Manual add form */}
       <form
-        className="bg-white p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
+        className="bg-cream p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.firstName) return; create.mutate({ ...form, table: form.table || null }); }}
       >
         <div>
@@ -248,7 +248,7 @@ export default function GuestsPage() {
       </form>
 
       {/* Guest list table */}
-      <div className="bg-white border border-neutral-200 overflow-x-auto">
+      <div className="bg-cream border border-neutral-200 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-background/40">
             <tr className="text-left text-xs uppercase tracking-widest text-neutral-600">
@@ -293,7 +293,7 @@ export default function GuestsPage() {
       </div>
 
       {/* RSVP custom questions */}
-      <div className="bg-white border border-neutral-200 p-5 space-y-4">
+      <div className="bg-cream border border-neutral-200 p-5 space-y-4">
         <div>
           <h3 className="font-bold text-sm uppercase tracking-wider">{t("invites.custom_questions")}</h3>
           <p className="text-xs text-neutral-500 mt-1">{t("invites.custom_questions_desc")}</p>
@@ -346,7 +346,7 @@ export default function GuestsPage() {
       </div>
 
       {/* Public RSVPs with approval */}
-      <div className="bg-white border border-neutral-200 p-5 space-y-4">
+      <div className="bg-cream border border-neutral-200 p-5 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h3 className="font-bold text-sm uppercase tracking-wider">{t("invites.public_rsvps")}</h3>
@@ -359,8 +359,8 @@ export default function GuestsPage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.total_rsvps")}</p><p className="text-xl font-bold" data-testid="stat-total-rsvps">{allRsvps.length}</p></div>
-          <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.attending")}</p><p className="text-xl font-bold text-emerald-700" data-testid="stat-attending">{pubAttending.length}</p></div>
-          <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.declined")}</p><p className="text-xl font-bold text-rose-700" data-testid="stat-declined">{pubDeclined.length}</p></div>
+          <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.attending")}</p><p className="text-xl font-bold text-gold-deep" data-testid="stat-attending">{pubAttending.length}</p></div>
+          <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.declined")}</p><p className="text-xl font-bold text-primary" data-testid="stat-declined">{pubDeclined.length}</p></div>
           <div className="bg-background/40 p-3 border border-neutral-200"><p className="text-[10px] uppercase text-neutral-500 tracking-widest">{t("invites.guest_total")}</p><p className="text-xl font-bold" data-testid="stat-guest-total">{pubGuestSum}</p></div>
         </div>
 
@@ -448,7 +448,7 @@ export default function GuestsPage() {
       {/* Personal invitation modal */}
       {inviteOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40" onClick={(e) => { if (e.target === e.currentTarget) setInviteOpen(false); }}>
-          <div className="bg-white w-full max-w-md mx-4 p-6 space-y-5 shadow-xl">
+          <div className="bg-cream w-full max-w-md mx-4 p-6 space-y-5 shadow-xl">
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-bold text-lg">{t("invites.invite_modal_title")}</h3>
@@ -458,7 +458,7 @@ export default function GuestsPage() {
             </div>
 
             {inviteSent ? (
-              <div className="flex flex-col items-center gap-3 py-6 text-emerald-700">
+              <div className="flex flex-col items-center gap-3 py-6 text-gold-deep">
                 <Check className="w-10 h-10" />
                 <p className="font-medium text-sm">{t("invites.invite_success")}</p>
               </div>

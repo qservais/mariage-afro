@@ -142,7 +142,7 @@ export default function PlanningPage() {
                 aria-selected={view === v}
                 aria-controls={`panel-planning-${v}`}
                 onClick={() => setView(v)}
-                className={`px-3 py-2 ${view === v ? "bg-primary text-white" : "bg-white"}`}
+                className={`px-3 py-2 ${view === v ? "bg-primary text-white" : "bg-cream-soft text-neutral-700"}`}
                 data-testid={`tab-view-${v}`}
               >
                 {v === "list" ? t("planning.view_list") : v === "week" ? t("planning.view_week") : t("planning.view_month")}
@@ -153,7 +153,7 @@ export default function PlanningPage() {
       </div>
 
       <form
-        className="bg-white p-4 border border-neutral-200 grid grid-cols-1 lg:grid-cols-4 gap-3"
+        className="bg-cream p-4 border border-neutral-200 grid grid-cols-1 lg:grid-cols-4 gap-3"
         onSubmit={(e) => {
           e.preventDefault();
           if (!form.title) return;
@@ -183,7 +183,7 @@ export default function PlanningPage() {
       </form>
 
       {view !== "list" && (
-        <div className="flex items-center justify-between bg-white border border-neutral-200 px-4 py-2">
+        <div className="flex items-center justify-between bg-cream border border-neutral-200 px-4 py-2">
           <button onClick={() => shift(-1)} className="p-1 hover:text-primary" aria-label={t("planning.previous")}><ChevronLeft className="w-4 h-4" /></button>
           <p className="text-sm font-bold uppercase tracking-widest">
             {view === "week"
@@ -195,7 +195,7 @@ export default function PlanningPage() {
       )}
 
       {view === "list" && (
-        <div id="panel-planning-list" role="tabpanel" aria-labelledby="tab-planning-list" className="bg-white border border-neutral-200">
+        <div id="panel-planning-list" role="tabpanel" aria-labelledby="tab-planning-list" className="bg-cream border border-neutral-200">
           {sorted.map((tk) => (
             <div key={tk.id} className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0">
               <button
@@ -224,11 +224,11 @@ export default function PlanningPage() {
           {weekDays.map((d, i) => {
             const list = tasksByDate.get(ymd(d)) ?? [];
             return (
-              <div key={i} className="bg-white border border-neutral-200 min-h-32 p-2">
+              <div key={i} className="bg-cream border border-neutral-200 min-h-32 p-2">
                 <p className="text-xs uppercase tracking-widest text-neutral-500">{days[i]} {d.getDate()}</p>
                 <div className="mt-2 space-y-1">
                   {list.map((tk) => (
-                    <div key={tk.id} className={`text-xs px-2 py-1 ${tk.done ? "bg-emerald-50 line-through text-neutral-400" : "bg-rose-50"}`}>
+                    <div key={tk.id} className={`text-xs px-2 py-1 ${tk.done ? "bg-gold/10 line-through text-neutral-400" : "bg-primary/5 text-wine-deep"}`}>
                       {tk.title}
                     </div>
                   ))}
@@ -250,11 +250,11 @@ export default function PlanningPage() {
               const list = tasksByDate.get(ymd(d)) ?? [];
               const inMonth = d.getMonth() === currentMonth;
               return (
-                <div key={i} className={`bg-white min-h-24 p-1 ${inMonth ? "" : "opacity-40"}`}>
+                <div key={i} className={`bg-cream min-h-24 p-1 ${inMonth ? "" : "opacity-40"}`}>
                   <p className="text-xs text-neutral-500">{d.getDate()}</p>
                   <div className="mt-1 space-y-0.5">
                     {list.slice(0, 3).map((tk) => (
-                      <div key={tk.id} className={`text-[10px] truncate px-1 ${tk.done ? "bg-emerald-50 text-neutral-400 line-through" : "bg-rose-50"}`}>{tk.title}</div>
+                      <div key={tk.id} className={`text-[10px] truncate px-1 ${tk.done ? "bg-gold/10 text-neutral-400 line-through" : "bg-primary/5 text-wine-deep"}`}>{tk.title}</div>
                     ))}
                     {list.length > 3 && <p className="text-[10px] text-neutral-500">+{list.length - 3}</p>}
                   </div>

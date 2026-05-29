@@ -94,15 +94,15 @@ export default function ClientDashboard() {
   return (
     <div className="space-y-8 max-w-6xl">
       {!couple?.validatedAt && (
-        <div className="bg-amber-50 border border-amber-200 p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="bg-wine-deep/5 border border-gold/30 p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-gold-deep shrink-0 mt-0.5" aria-hidden="true" />
           <div>
-            <p className="font-semibold text-amber-800 text-sm">{t("client_dashboard.pending_validation_title")}</p>
-            <p className="text-sm text-amber-700 mt-0.5">{t("client_dashboard.pending_validation_desc")}</p>
+            <p className="font-semibold text-wine-deep text-sm">{t("client_dashboard.pending_validation_title")}</p>
+            <p className="text-sm text-neutral-700 mt-0.5">{t("client_dashboard.pending_validation_desc")}</p>
           </div>
         </div>
       )}
-      <section className="bg-white p-6 border border-neutral-200">
+      <section className="bg-cream p-6 border border-neutral-200">
         {!editing ? (
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div>
@@ -145,7 +145,7 @@ export default function ClientDashboard() {
         )}
       </section>
 
-      <section className="bg-white p-6 border border-neutral-200">
+      <section className="bg-cream p-6 border border-neutral-200">
         <div className="flex justify-between items-center mb-3">
           <p className="text-xs uppercase tracking-widest text-neutral-500">{t("client_dashboard.progress_title")}</p>
           <p className="text-sm font-bold text-primary">{t("client_dashboard.progress_count", { pct, done, total })}</p>
@@ -177,7 +177,7 @@ export default function ClientDashboard() {
             <Link
               key={tile.to}
               to={tile.to}
-              className="bg-white p-6 border border-neutral-200 hover:border-primary transition-colors group"
+              className="bg-cream p-6 border border-neutral-200 hover:border-primary hover:bg-cream-soft transition-colors group"
               data-testid={`tile-${tile.to.split("/").pop()}`}
             >
               <div className={`w-12 h-12 ${tile.color} flex items-center justify-center mb-4`}>
@@ -190,7 +190,7 @@ export default function ClientDashboard() {
       </section>
 
       {jourJCfg != null && (
-        <section className="bg-white border border-neutral-200 p-6">
+        <section className="bg-cream border border-neutral-200 p-6">
           <div className="flex flex-wrap gap-6 items-start">
             {jourJCfg.qrDataUrl && (
               <div className="shrink-0">

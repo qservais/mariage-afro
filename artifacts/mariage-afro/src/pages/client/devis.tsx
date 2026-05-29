@@ -85,7 +85,7 @@ export default function ClientDevisPage() {
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
-        <div className="bg-white border border-neutral-200 overflow-hidden">
+        <div className="bg-cream border border-neutral-200 overflow-hidden">
           {isLoading ? (
             <div className="p-12 text-center text-neutral-500"><Loader2 className="w-5 h-5 mx-auto animate-spin" /></div>
           ) : quotes.length === 0 ? (
@@ -112,7 +112,7 @@ export default function ClientDevisPage() {
                     role="button"
                     tabIndex={0}
                     aria-pressed={selectedId === q.id}
-                    className={`border-b border-neutral-100 cursor-pointer hover:bg-amber-50/40 transition-colors ${selectedId === q.id ? "bg-amber-50/60" : ""} ${q.status === "sent" ? "font-semibold" : ""}`}
+                    className={`border-b border-neutral-100 cursor-pointer hover:bg-gold/5 transition-colors ${selectedId === q.id ? "bg-gold/10" : ""} ${q.status === "sent" ? "font-semibold" : ""}`}
                     data-testid={`row-devis-${q.id}`}
                   >
                     <td className="px-4 py-3 text-neutral-600 whitespace-nowrap">{fmtDate(q.createdAt)}</td>
@@ -132,7 +132,7 @@ export default function ClientDevisPage() {
           )}
         </div>
 
-        <aside className="bg-white border border-neutral-200 p-6 self-start sticky top-6">
+        <aside className="bg-cream border border-neutral-200 p-6 self-start sticky top-6">
           {!selected ? (
             <p className="text-sm text-neutral-500 text-center py-8">{t("devis.detail_empty")}</p>
           ) : (

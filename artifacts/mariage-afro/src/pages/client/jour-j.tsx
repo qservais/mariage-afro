@@ -108,7 +108,7 @@ export default function JourJPage() {
       </div>
 
       <form
-        className="bg-white p-4 border border-neutral-200 grid grid-cols-1 lg:grid-cols-4 gap-3"
+        className="bg-cream p-4 border border-neutral-200 grid grid-cols-1 lg:grid-cols-4 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.title) return; create.mutate({ time: form.time, title: form.title, responsible: form.responsible || null }); }}
       >
         <div>
@@ -126,7 +126,7 @@ export default function JourJPage() {
         <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2 lg:col-span-4"><Plus className="w-3 h-3" aria-hidden="true" /> {t("jour_j.add_to_timeline")}</Button>
       </form>
 
-      <div className="bg-white border border-neutral-200">
+      <div className="bg-cream border border-neutral-200">
         <div className="px-4 py-3 bg-background/40 text-xs uppercase tracking-widest font-bold border-b border-neutral-200">{t("jour_j.timeline")}</div>
         {events.map((ev) => (
           <div key={ev.id} className="flex items-center gap-4 px-4 py-3 border-b border-neutral-100 last:border-0">
@@ -147,7 +147,7 @@ export default function JourJPage() {
         {events.length === 0 && <p className="px-4 py-8 text-center text-neutral-400 text-sm">{t("jour_j.no_event")}</p>}
       </div>
 
-      <div className="bg-white border border-neutral-200">
+      <div className="bg-cream border border-neutral-200">
         <div className="px-4 py-3 bg-background/40 text-xs uppercase tracking-widest font-bold border-b border-neutral-200">{t("jour_j.emergency")}</div>
         {emergencyContacts.map((v) => (
           <div key={v.id} className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 last:border-0">
@@ -162,14 +162,14 @@ export default function JourJPage() {
       </div>
 
       {/* ---- PUBLIC JOUR-J PAGE ---- */}
-      <div className="bg-white border border-neutral-200">
+      <div className="bg-cream border border-neutral-200">
         <div className="px-4 py-3 bg-background/40 border-b border-neutral-200 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <QrCode className="w-4 h-4 text-primary" />
             <span className="text-xs uppercase tracking-widest font-bold">{t("jour_j_public.title")}</span>
           </div>
           {publicCfg && (
-            <span className={`text-xs font-bold px-2 py-0.5 ${publicCfg.enabled ? "bg-emerald-100 text-emerald-700" : "bg-neutral-100 text-neutral-500"}`}>
+            <span className={`text-xs font-bold px-2 py-0.5 ${publicCfg.enabled ? "bg-gold/10 text-gold-deep" : "bg-neutral-100 text-neutral-500"}`}>
               {publicCfg.enabled ? t("jour_j_public.enabled_badge") : t("jour_j_public.disabled_badge")}
             </span>
           )}

@@ -84,7 +84,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background pt-16 lg:pt-0 lg:pl-64">
-      <aside className="hidden lg:flex fixed top-0 left-0 bottom-0 w-64 bg-white border-r border-neutral-200 flex-col z-30">
+      <aside className="hidden lg:flex fixed top-0 left-0 bottom-0 w-64 bg-cream border-r border-neutral-200 flex-col z-30">
         <div className="px-6 py-6 border-b border-neutral-200">
           <Link to="/" className="flex items-center gap-2 text-primary font-bold tracking-widest text-sm uppercase">
             <Heart className="w-4 h-4 fill-primary" />
@@ -99,8 +99,9 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 transition-colors ${
-                  active ? "border-primary bg-background text-primary" : "border-transparent text-neutral-700 hover:bg-background/40"
+                aria-current={active ? "page" : undefined}
+                className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors ${
+                  active ? "bg-primary/10 text-primary font-semibold" : "text-neutral-700 hover:bg-cream-soft"
                 }`}
                 data-testid={`link-client-${item.to.split("/").pop()}`}
               >
@@ -120,7 +121,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
         </button>
       </aside>
 
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200 h-16 flex items-center justify-between px-4">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-cream border-b border-neutral-200 h-16 flex items-center justify-between px-4">
         <Link to="/" className="text-primary font-bold tracking-widest text-xs uppercase">Mariage Afro</Link>
         <button onClick={() => setMobileOpen(!mobileOpen)} aria-label={t("client_layout.menu_aria")} className="p-2">
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -128,7 +129,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-white z-30 overflow-y-auto">
+        <div className="lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-cream z-30 overflow-y-auto">
           <nav className="py-4">
             {NAV.map((item) => {
               const Icon = item.icon;
@@ -137,8 +138,9 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
                 <Link
                   key={item.to}
                   to={item.to}
+                  aria-current={active ? "page" : undefined}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-6 py-4 text-base font-medium ${active ? "text-primary bg-background" : "text-neutral-700"}`}
+                  className={`flex items-center gap-3 px-6 py-4 text-base font-medium ${active ? "text-primary bg-primary/10" : "text-neutral-700 hover:bg-cream-soft"}`}
                 >
                   <Icon className="w-5 h-5" aria-hidden="true" /> {t(item.labelKey)}
                 </Link>
@@ -154,7 +156,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
         </div>
       )}
 
-      <header className="bg-white border-b border-neutral-200 px-6 lg:px-10 py-6">
+      <header className="bg-cream border-b border-neutral-200 px-6 lg:px-10 py-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
             <p className="text-xs uppercase tracking-widest text-neutral-500">{t("client_layout.hello")}</p>

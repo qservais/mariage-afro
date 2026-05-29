@@ -35,7 +35,7 @@ export default function VendorAbonnementPage() {
         <div className="text-neutral-500"><Loader2 className="w-5 h-5 animate-spin" /></div>
       ) : (
         <div
-          className="bg-white border-2 border-gold p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+          className="bg-cream border-2 border-gold p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
           data-testid="banner-current-subscription"
         >
           <div className="w-14 h-14 bg-wine-deep flex items-center justify-center shrink-0">

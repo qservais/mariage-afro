@@ -111,7 +111,7 @@ export default function VendorMessagesPage() {
 
       <div className="flex-1 grid grid-cols-1 md:grid-cols-[300px_1fr] gap-4 min-h-0">
         {/* List */}
-        <div className="flex flex-col border border-neutral-200 bg-white min-h-0">
+        <div className="flex flex-col border border-neutral-200 bg-cream min-h-0">
           <div className="px-3 py-2 border-b border-neutral-200">
             <span className="text-xs uppercase tracking-widest text-neutral-500">{t("vendor.messages.list_title")}</span>
           </div>
@@ -147,7 +147,7 @@ export default function VendorMessagesPage() {
         </div>
 
         {/* Thread */}
-        <div className="flex flex-col border border-neutral-200 bg-white min-h-0">
+        <div className="flex flex-col border border-neutral-200 bg-cream min-h-0">
           {activeConv && (
             <div className="px-4 py-3 border-b border-neutral-200">
               <p className="font-semibold text-sm text-wine-deep">{coupleLabel(activeConv)}</p>

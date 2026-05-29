@@ -82,7 +82,7 @@ export default function VendorSettingsPage() {
         <p className="text-sm text-neutral-600 mt-1">{t("vendor.settings.subtitle")}</p>
       </div>
 
-      <section className="bg-white border border-neutral-200 p-6 space-y-3">
+      <section className="bg-cream border border-neutral-200 p-6 space-y-3">
         <h3 className="text-sm uppercase tracking-widest text-neutral-500">{t("vendor.settings.account")}</h3>
         <dl className="text-sm space-y-2">
           <div className="flex justify-between">
@@ -116,7 +116,7 @@ export default function VendorSettingsPage() {
       </section>
 
       {/* Auto follow-up toggle */}
-      <section className="bg-white border border-neutral-200 p-6 space-y-3" data-testid="section-auto-followup">
+      <section className="bg-cream border border-neutral-200 p-6 space-y-3" data-testid="section-auto-followup">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h3 className="text-sm uppercase tracking-widest text-neutral-500">{t("vendor.settings.auto_followup_title")}</h3>
@@ -142,7 +142,7 @@ export default function VendorSettingsPage() {
       </section>
 
       {/* Custom tags */}
-      <section className="bg-white border border-neutral-200 p-6 space-y-3" data-testid="section-custom-tags">
+      <section className="bg-cream border border-neutral-200 p-6 space-y-3" data-testid="section-custom-tags">
         <h3 className="text-sm uppercase tracking-widest text-neutral-500">{t("vendor.settings.custom_tags_title")}</h3>
         <p className="text-sm text-neutral-600">{t("vendor.settings.custom_tags_desc")}</p>
         <div className="flex gap-2">
@@ -190,7 +190,7 @@ export default function VendorSettingsPage() {
 
       {/* Public profile URL */}
       {data?.account?.vendorId && (
-        <section className="bg-white border border-neutral-200 p-6 space-y-3" data-testid="section-public-url">
+        <section className="bg-cream border border-neutral-200 p-6 space-y-3" data-testid="section-public-url">
           <h3 className="text-sm uppercase tracking-widest text-neutral-500">{t("vendor.settings.public_url_title")}</h3>
           <p className="text-sm text-neutral-600">{t("vendor.settings.public_url_desc")}</p>
           <div className="flex items-center gap-3 p-3 bg-neutral-50 border border-neutral-200">

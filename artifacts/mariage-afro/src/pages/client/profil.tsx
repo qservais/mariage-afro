@@ -60,7 +60,7 @@ export default function ProfilPage() {
         <p className="text-sm text-neutral-600">{t("profil.subtitle")}</p>
       </div>
 
-      <section className="bg-white p-6 border border-neutral-200">
+      <section className="bg-cream p-6 border border-neutral-200">
         <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3">{t("profil.account")}</p>
         <p className="text-sm">
           {t("profil.email_label")} <span className="font-medium">{user?.email || "—"}</span>
@@ -68,7 +68,7 @@ export default function ProfilPage() {
       </section>
 
       <form
-        className="bg-white p-6 border border-neutral-200 space-y-5"
+        className="bg-cream p-6 border border-neutral-200 space-y-5"
         onSubmit={(e) => {
           e.preventDefault();
           update.mutate({

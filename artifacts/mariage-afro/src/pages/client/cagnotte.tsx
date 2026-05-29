@@ -95,7 +95,7 @@ export default function CagnottePage() {
 
       {/* Form */}
       <form
-        className="bg-white border border-neutral-200 p-5 space-y-4"
+        className="bg-cream border border-neutral-200 p-5 space-y-4"
         onSubmit={(e) => { e.preventDefault(); if (!form.title.trim()) return; (editing ? update : create).mutate(); }}
       >
         <h3 className="font-bold text-sm uppercase tracking-wider">{editing ? t("cagnotte.edit_title") : t("cagnotte.create_title")}</h3>
@@ -148,12 +148,12 @@ export default function CagnottePage() {
       {/* List */}
       <div className="space-y-3">
         {cagnottes.length === 0 && (
-          <div className="bg-white border border-dashed border-neutral-300 p-10 text-center text-neutral-500 text-sm">
+          <div className="bg-cream border border-dashed border-neutral-300 p-10 text-center text-neutral-500 text-sm">
             {t("cagnotte.empty")}
           </div>
         )}
         {cagnottes.map((c) => (
-          <div key={c.id} className="bg-white border border-neutral-200 p-5 flex flex-col sm:flex-row gap-5">
+          <div key={c.id} className="bg-cream border border-neutral-200 p-5 flex flex-col sm:flex-row gap-5">
             {c.photo && <img src={objectUrl(c.photo)} alt={c.title} width={300} height={128} loading="lazy" decoding="async" className="w-full sm:w-32 h-32 object-cover" />}
             <div className="flex-1 space-y-2">
               <div className="flex items-start justify-between">

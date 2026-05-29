@@ -137,7 +137,7 @@ export default function VendorServicesPage() {
         <p className="text-sm text-neutral-600 mt-1">{t("vendor.services.subtitle")}</p>
       </div>
 
-      <div className="bg-white border border-neutral-200 p-6 space-y-6">
+      <div className="bg-cream border border-neutral-200 p-6 space-y-6">
 
         {suggestedServices.length > 0 && (
           <div className="space-y-3">
@@ -158,7 +158,7 @@ export default function VendorServicesPage() {
                       "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border transition-colors",
                       active
                         ? "bg-wine-deep text-cream border-wine-deep"
-                        : "bg-white text-neutral-700 border-neutral-300 hover:border-wine-deep hover:text-wine-deep",
+                        : "bg-cream-soft text-neutral-700 border-neutral-300 hover:border-wine-deep hover:text-wine-deep",
                     ].join(" ")}
                   >
                     {active && <Check className="w-3 h-3" aria-hidden="true" />}

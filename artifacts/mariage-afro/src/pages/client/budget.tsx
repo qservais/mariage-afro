@@ -88,7 +88,7 @@ export default function BudgetPage() {
                 key={m}
                 onClick={() => updateMode.mutate(m)}
                 disabled={!!coupleError || updateMode.isPending}
-                className={`px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed ${budgetMode === m ? "bg-primary text-white" : "bg-white"}`}
+                className={`px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed ${budgetMode === m ? "bg-primary text-white" : "bg-cream-soft text-neutral-700"}`}
                 data-testid={`budget-mode-${m}`}
               >
                 {t(`budget.mode_${m}`)}
@@ -99,42 +99,42 @@ export default function BudgetPage() {
       </div>
 
       {/* Estimation warning */}
-      <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
-        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+      <div className="flex items-start gap-3 bg-wine-deep/5 border border-gold/30 px-4 py-3 text-sm text-wine-deep">
+        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-gold-deep" aria-hidden="true" />
         <p>{t("budget.warning_estimate")}</p>
       </div>
 
       {/* Load error banners */}
       {coupleError && (
-        <div className="flex items-start gap-3 bg-rose-50 border border-rose-300 px-4 py-3 text-sm text-rose-800" role="alert">
-          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+        <div className="flex items-start gap-3 bg-primary/5 border border-primary/20 px-4 py-3 text-sm text-primary" role="alert">
+          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
           <p>{t("budget.error_profile", { defaultValue: "Impossible de charger votre profil — le mode budget ne peut pas être modifié." })} — {(coupleError as Error).message}</p>
         </div>
       )}
       {itemsError && (
-        <div className="flex items-start gap-3 bg-rose-50 border border-rose-300 px-4 py-3 text-sm text-rose-800" role="alert">
-          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+        <div className="flex items-start gap-3 bg-primary/5 border border-primary/20 px-4 py-3 text-sm text-primary" role="alert">
+          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
           <p>{t("budget.error_load", { defaultValue: "Impossible de charger les postes budgétaires." })} — {(itemsError as Error).message}</p>
         </div>
       )}
 
       {/* Vendor sync info */}
-      <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-700">
-        <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+      <div className="flex items-start gap-3 bg-cream-soft border border-gold/30 px-4 py-3 text-sm text-wine-deep">
+        <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-gold-deep" aria-hidden="true" />
         <p>{t("budget.vendor_sync_note")}</p>
       </div>
 
       {/* Stats cards */}
       <div className="grid sm:grid-cols-3 gap-4">
-        <div className="bg-white p-4 border border-neutral-200">
+        <div className="bg-cream p-4 border border-neutral-200">
           <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.planned")}</p>
           <p className="text-2xl font-bold mt-1">{fmt(totalPlanned)}</p>
         </div>
-        <div className="bg-white p-4 border border-neutral-200">
+        <div className="bg-cream p-4 border border-neutral-200">
           <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.actual")}</p>
           <p className="text-2xl font-bold mt-1">{fmt(totalActual)}</p>
         </div>
-        <div className="bg-white p-4 border border-neutral-200">
+        <div className="bg-cream p-4 border border-neutral-200">
           <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.paid")}</p>
           <p className="text-2xl font-bold mt-1 text-primary">{fmt(totalPaid)}</p>
         </div>
@@ -142,7 +142,7 @@ export default function BudgetPage() {
 
       {/* Global budget progress bar */}
       {budgetMode === "global" && (
-        <div className="bg-white p-6 border border-neutral-200 space-y-4">
+        <div className="bg-cream p-6 border border-neutral-200 space-y-4">
           <div className="flex justify-between items-baseline flex-wrap gap-2">
             <div>
               <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.total_committed")}</p>
@@ -175,7 +175,7 @@ export default function BudgetPage() {
       )}
 
       {chartData.length > 0 && (
-        <div className="bg-white p-6 border border-neutral-200">
+        <div className="bg-cream p-6 border border-neutral-200">
           <p className="text-sm font-bold uppercase tracking-widest mb-4">{t("budget.by_category")}</p>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -191,7 +191,7 @@ export default function BudgetPage() {
       )}
 
       <form
-        className="bg-white p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
+        className="bg-cream p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.category) return; create.mutate({ category: form.category, vendor: form.vendor || null, planned: Math.round(Number(form.planned || 0) * 100), actual: Math.round(Number(form.actual || 0) * 100) }); }}
       >
         <div>
@@ -213,7 +213,7 @@ export default function BudgetPage() {
         <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" aria-hidden="true" /> {t("budget.add")}</Button>
       </form>
 
-      <div className="bg-white border border-neutral-200 overflow-x-auto">
+      <div className="bg-cream border border-neutral-200 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-background/40">
             <tr className="text-left text-xs uppercase tracking-widest text-neutral-600">

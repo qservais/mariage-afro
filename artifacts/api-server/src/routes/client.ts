@@ -808,7 +808,7 @@ router.get("/client/conversations", async (req, res) => {
         unread: sql<number>`count(case when ${messagesTable.authorRole} <> 'couple' and ${messagesTable.readAt} is null then 1 end)`.as("unread"),
       })
       .from(messagesTable)
-      .where(sql`${messagesTable.conversationId} = ANY(${ids})`)
+      .where(inArray(messagesTable.conversationId, ids))
       .groupBy(messagesTable.conversationId);
     for (const s of stats) {
       if (s.conversationId != null) {

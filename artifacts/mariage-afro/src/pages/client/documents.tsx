@@ -65,7 +65,7 @@ export default function DocumentsPage() {
         <p className="text-sm text-neutral-600">{t("documents.subtitle")}</p>
       </div>
 
-      <div className="bg-white p-4 border border-neutral-200 space-y-4">
+      <div className="bg-cream p-4 border border-neutral-200 space-y-4">
         <div className="flex flex-wrap items-center gap-3">
           <label className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer rounded-none uppercase tracking-wider text-xs h-10 px-4">
             {docUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
@@ -157,7 +157,7 @@ export default function DocumentsPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-neutral-200">
+      <div className="bg-cream border border-neutral-200">
         {docs.map((d) => (
           <div key={d.id} className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0">
             <FileText className="w-5 h-5 text-neutral-400 flex-shrink-0" />

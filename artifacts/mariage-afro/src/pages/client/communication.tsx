@@ -188,7 +188,7 @@ export default function CommunicationPage() {
       <div className="flex-1 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4 min-h-0">
         {/* LEFT — list (only on vendors tab; admin tab uses a fixed conv) */}
         {tab === "vendors" && (
-          <div className="flex flex-col border border-border bg-white min-h-0">
+          <div className="flex flex-col border border-border bg-cream min-h-0">
             <div className="px-3 py-2 border-b border-border flex items-center justify-between">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">{t("vendor.messages.list_title")}</span>
               <button
@@ -210,7 +210,7 @@ export default function CommunicationPage() {
                   <p className="text-[11px] text-neutral-600 leading-relaxed">{t("client.conversations.not_validated_desc")}</p>
                 </div>
               ) : (
-                <div className="p-3 border-b border-border space-y-2 bg-amber-50/40">
+                <div className="p-3 border-b border-border space-y-2 bg-cream-soft">
                   <p className="text-[11px] text-muted-foreground">{t("client.conversations.pick_vendor_help")}</p>
                   <select
                     value={pickerVendorId}
@@ -271,7 +271,7 @@ export default function CommunicationPage() {
 
         {/* RIGHT — thread */}
         <div className={cn(
-          "flex flex-col border border-border bg-white min-h-0",
+          "flex flex-col border border-border bg-cream min-h-0",
           tab === "admin" ? "md:col-span-2" : "",
         )}>
           {tab === "vendors" && activeConv && (

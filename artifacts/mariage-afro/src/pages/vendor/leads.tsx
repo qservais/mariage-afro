@@ -162,7 +162,7 @@ function KanbanCard({ lead, selectedId, colStatus, colIndex, colTotal, onOpen, t
       role="listitem"
       style={style}
       aria-label={cardAriaLabel}
-      className={`relative bg-white border transition-colors ${isDragging ? "opacity-40 border-wine-deep" : selectedId === lead.id ? "border-wine-deep" : "border-neutral-200"}`}
+      className={`relative bg-cream border transition-colors ${isDragging ? "opacity-40 border-wine-deep" : selectedId === lead.id ? "border-wine-deep" : "border-neutral-200"}`}
       data-testid={`kanban-card-${lead.id}`}
     >
       {/* Drag handle — keyboard-focusable, activates @dnd-kit drag */}
@@ -391,7 +391,7 @@ export default function VendorLeadsPage() {
         <span className="text-xs text-neutral-500 ml-auto">
           {t("vendor.leads.count", { count: filtered.length })}
         </span>
-        <div className="inline-flex border border-neutral-300 bg-white" role="group" aria-label={t("vendor.leads.view_toggle_label", { defaultValue: "Changer la vue" })}>
+        <div className="inline-flex border border-neutral-300 bg-cream" role="group" aria-label={t("vendor.leads.view_toggle_label", { defaultValue: "Changer la vue" })}>
           <button
             onClick={() => setViewMode("table")}
             className={`px-3 py-2 text-xs uppercase tracking-wider flex items-center gap-1.5 ${viewMode === "table" ? "bg-wine-deep text-cream" : "text-wine-deep"}`}
@@ -440,7 +440,7 @@ export default function VendorLeadsPage() {
             {/* Overlay shown while dragging (mouse) */}
             <DragOverlay>
               {activeDragLead ? (
-                <div className="bg-white border border-wine-deep shadow-lg p-2.5 w-[14rem] opacity-95 rotate-1">
+                <div className="bg-cream border border-wine-deep shadow-lg p-2.5 w-[14rem] opacity-95 rotate-1">
                   <p className="text-xs text-neutral-500">{formatDate(activeDragLead.createdAt)}</p>
                   <p className="text-sm font-medium text-wine-deep mt-0.5">{activeDragLead.name}</p>
                   <p className="text-[11px] text-neutral-500 mt-1">{t(`vendor.leads.type.${activeDragLead.requestType}`)}</p>
@@ -449,7 +449,7 @@ export default function VendorLeadsPage() {
             </DragOverlay>
           </DndContext>
         ) : (
-        <div className="bg-white border border-neutral-200 overflow-hidden">
+        <div className="bg-cream border border-neutral-200 overflow-hidden">
           {isLoading ? (
             <div className="p-12 text-center text-neutral-500">
               <Loader2 className="w-5 h-5 mx-auto animate-spin" />
@@ -502,7 +502,7 @@ export default function VendorLeadsPage() {
         )}
 
         {/* Detail panel */}
-        <aside className="bg-white border border-neutral-200 p-6 self-start sticky top-6">
+        <aside className="bg-cream border border-neutral-200 p-6 self-start sticky top-6">
           {!selected ? (
             <p className="text-sm text-neutral-500 text-center py-8">
               {t("vendor.leads.detail_empty")}
@@ -592,7 +592,7 @@ export default function VendorLeadsPage() {
                       className={`text-xs uppercase tracking-wider px-2 py-2 border transition-colors ${
                         selected.status === s
                           ? "bg-wine-deep text-cream border-wine-deep"
-                          : "bg-white text-neutral-700 border-neutral-300 hover:border-wine-deep"
+                          : "bg-cream-soft text-neutral-700 border-neutral-300 hover:border-wine-deep"
                       }`}
                       data-testid={`button-status-${s}`}
                     >
@@ -618,7 +618,7 @@ export default function VendorLeadsPage() {
                         className={`text-[11px] uppercase tracking-wider px-2.5 py-1 border transition-colors ${
                           active
                             ? "bg-gold/20 border-gold text-wine-deep"
-                            : "bg-white border-neutral-300 text-neutral-600 hover:border-gold"
+                            : "bg-cream-soft border-neutral-300 text-neutral-600 hover:border-gold"
                         }`}
                         data-testid={`button-tag-${tag}`}
                       >
@@ -637,7 +637,7 @@ export default function VendorLeadsPage() {
                         className={`text-[11px] uppercase tracking-wider px-2.5 py-1 border transition-colors ${
                           active
                             ? "bg-gold/30 border-gold text-wine-deep"
-                            : "bg-white border-gold/40 text-wine-deep/80 hover:border-gold"
+                            : "bg-cream-soft border-gold/40 text-wine-deep/80 hover:border-gold"
                         }`}
                         data-testid={`button-custom-tag-${tag}`}
                         title={t("vendor.settings.custom_tags_title")}

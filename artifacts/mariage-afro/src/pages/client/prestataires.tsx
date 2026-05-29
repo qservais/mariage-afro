@@ -118,12 +118,12 @@ export default function VendorsPage() {
         <p className="text-sm text-neutral-600">{t("vendors_page.subtitle")}</p>
       </div>
 
-      <section className="bg-white p-4 border border-neutral-200 flex flex-wrap items-center gap-4">
+      <section className="bg-cream p-4 border border-neutral-200 flex flex-wrap items-center gap-4">
         <div className="flex-1 min-w-[200px]">
           <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">{t("vendors_page.status_label")}</p>
           <p className="text-sm">
             {isCompleted ? (
-              <span className="inline-flex items-center gap-2 text-emerald-700 font-medium">
+              <span className="inline-flex items-center gap-2 text-gold-deep font-medium">
                 <CheckCircle2 className="w-4 h-4" /> {t("vendors_page.completed_msg")}
               </span>
             ) : (
@@ -144,7 +144,7 @@ export default function VendorsPage() {
       </section>
 
       <form
-        className="bg-white p-4 border border-neutral-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3"
+        className="bg-cream p-4 border border-neutral-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.category || !form.name) return; create.mutate({ category: form.category, name: form.name, contactName: form.contactName || null, contactEmail: form.contactEmail || null, contactPhone: form.contactPhone || null, amount: Math.round(Number(form.amount || 0) * 100) }); }}
       >
         <Input placeholder={t("vendors_page.category")} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required data-testid="input-vendor-category" />
@@ -158,7 +158,7 @@ export default function VendorsPage() {
         </div>
       </form>
 
-      <div className="bg-white border border-neutral-200 overflow-x-auto">
+      <div className="bg-cream border border-neutral-200 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-background/40">
             <tr className="text-left text-xs uppercase tracking-widest text-neutral-600">
@@ -232,7 +232,7 @@ export default function VendorsPage() {
       </div>
 
       {myReviews.length > 0 && (
-        <section className="bg-white p-4 border border-neutral-200">
+        <section className="bg-cream p-4 border border-neutral-200">
           <h3 className="font-medium mb-3">{t("vendors_page.my_reviews")}</h3>
           <ul className="space-y-3">
             {myReviews.map((r) => (

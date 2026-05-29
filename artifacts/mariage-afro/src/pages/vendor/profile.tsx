@@ -153,7 +153,7 @@ export default function VendorProfilePage() {
       </div>
 
       <form
-        className="bg-white border border-neutral-200 p-6 space-y-5"
+        className="bg-cream border border-neutral-200 p-6 space-y-5"
         onSubmit={(e) => {
           e.preventDefault();
           save.mutate({

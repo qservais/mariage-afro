@@ -95,16 +95,16 @@ export default function VendorDashboard() {
   return (
     <div className="space-y-8 max-w-6xl">
       {isPendingValidation && (
-        <div className="bg-amber-50 border border-amber-200 p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="bg-wine-deep/5 border border-gold/30 p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-gold-deep shrink-0 mt-0.5" aria-hidden="true" />
           <div>
-            <p className="font-semibold text-amber-800 text-sm">{t("vendor.dashboard.pending_validation_title")}</p>
-            <p className="text-sm text-amber-700 mt-0.5">{t("vendor.dashboard.pending_validation_desc")}</p>
+            <p className="font-semibold text-wine-deep text-sm">{t("vendor.dashboard.pending_validation_title")}</p>
+            <p className="text-sm text-neutral-700 mt-0.5">{t("vendor.dashboard.pending_validation_desc")}</p>
           </div>
         </div>
       )}
       {/* Status + plan */}
-      <section className="bg-white p-6 border border-neutral-200 grid md:grid-cols-[1fr_auto] gap-6 items-start">
+      <section className="bg-cream p-6 border border-neutral-200 grid md:grid-cols-[1fr_auto] gap-6 items-start">
         <div>
           <p className="text-xs uppercase tracking-widest text-neutral-500">{t("vendor.dashboard.profile_status")}</p>
           <p className="text-lg font-medium mt-1 text-wine-deep">{vendor?.name || account?.businessName || "—"}</p>
@@ -147,12 +147,12 @@ export default function VendorDashboard() {
 
       {/* Response rate KPI */}
       <section className="grid sm:grid-cols-2 gap-3">
-        <div className="bg-white p-4 border border-neutral-200" data-testid="kpi-response-rate">
+        <div className="bg-cream p-4 border border-neutral-200" data-testid="kpi-response-rate">
           <p className="text-xs uppercase tracking-widest text-neutral-500">{t("vendor.dashboard.response_rate")}</p>
           <p className="text-2xl font-bold text-wine-deep mt-1">{stats?.responseRate ?? 0}%</p>
           <p className="text-[11px] text-neutral-500">{t("vendor.dashboard.stat_last_30d")}</p>
         </div>
-        <div className="bg-white p-4 border border-neutral-200" data-testid="kpi-leads-90d">
+        <div className="bg-cream p-4 border border-neutral-200" data-testid="kpi-leads-90d">
           <p className="text-xs uppercase tracking-widest text-neutral-500">{t("vendor.dashboard.leads_chart_title")}</p>
           <MiniLeadsBars data={stats?.leadsSeries ?? []} />
         </div>
@@ -170,7 +170,7 @@ export default function VendorDashboard() {
       </section>
 
       {/* Top sources */}
-      <section className="bg-white p-6 border border-neutral-200" data-testid="section-sources">
+      <section className="bg-cream p-6 border border-neutral-200" data-testid="section-sources">
         <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">{t("vendor.dashboard.sources_title")}</p>
         <h2 className="font-display text-lg text-wine-deep mb-4">{t("vendor.dashboard.stat_last_30d")}</h2>
         {(!stats?.sources || stats.sources.length === 0) ? (
@@ -199,7 +199,7 @@ export default function VendorDashboard() {
 
       {/* Top pages (where viewers landed) */}
       {stats?.topPages && stats.topPages.length > 0 && (
-        <section className="bg-white p-6 border border-neutral-200" data-testid="section-toppages">
+        <section className="bg-cream p-6 border border-neutral-200" data-testid="section-toppages">
           <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">{t("vendor.dashboard.toppages_title")}</p>
           <h2 className="font-display text-lg text-wine-deep mb-4">{t("vendor.dashboard.stat_last_30d")}</h2>
           <ul className="space-y-2">
@@ -225,7 +225,7 @@ export default function VendorDashboard() {
 
       {/* Onboarding checklist (hidden when 100%) */}
       {checklist && !checklist.hide && (
-        <section className="bg-white p-6 border border-neutral-200" data-testid="section-onboarding-checklist">
+        <section className="bg-cream p-6 border border-neutral-200" data-testid="section-onboarding-checklist">
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-xs uppercase tracking-widest text-neutral-500">{t("vendor.checklist.title")}</p>
@@ -246,13 +246,13 @@ export default function VendorDashboard() {
                   to={ITEM_LINKS[item.key] ?? "/espace-pro"}
                   className={`flex items-center gap-3 p-3 border transition-colors ${
                     item.done
-                      ? "border-emerald-200 bg-emerald-50/50 text-emerald-900"
+                      ? "border-gold/30 bg-gold/10 text-gold-deep"
                       : "border-neutral-200 hover:border-gold text-neutral-800"
                   }`}
                   data-testid={`checklist-item-${item.key}`}
                 >
                   {item.done ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-gold-deep shrink-0" />
                   ) : (
                     <Circle className="w-5 h-5 text-neutral-400 shrink-0" />
                   )}
@@ -275,7 +275,7 @@ export default function VendorDashboard() {
             <Link
               key={tile.to}
               to={tile.to}
-              className="bg-white p-5 border border-neutral-200 hover:border-gold transition-colors group flex items-center gap-4"
+              className="bg-cream p-5 border border-neutral-200 hover:border-gold hover:bg-cream-soft transition-colors group flex items-center gap-4"
               data-testid={`tile-vendor-${tile.label.toLowerCase().replace(/\s/g, "-")}`}
             >
               <div className="w-10 h-10 bg-cream flex items-center justify-center">
@@ -314,7 +314,7 @@ function ViewsChart({ series, title, totalLabel }: { series: { date: string; vie
   const total = series.reduce((acc, p) => acc + p.views, 0);
   const max = Math.max(1, ...series.map((p) => p.views));
   return (
-    <div className="bg-white p-6 border border-neutral-200" data-testid="section-views-chart">
+    <div className="bg-cream p-6 border border-neutral-200" data-testid="section-views-chart">
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-neutral-500">{title}</p>
@@ -397,7 +397,7 @@ function StatCard({
   icon: typeof Eye; label: string; value: number | string; sub: string; testid: string;
 }) {
   return (
-    <div className="bg-white p-5 border border-neutral-200" data-testid={testid}>
+    <div className="bg-cream p-5 border border-neutral-200" data-testid={testid}>
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs uppercase tracking-widest text-neutral-500">{label}</p>
         <Icon className="w-4 h-4 text-gold" />

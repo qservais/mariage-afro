@@ -197,7 +197,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
       )}
 
       {/* Header */}
-      <header className="bg-white border-b border-neutral-200 px-6 lg:px-10 py-6">
+      <header className="bg-cream border-b border-neutral-200 px-6 lg:px-10 py-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
             <p className="text-xs uppercase tracking-widest text-neutral-500">{t("vendor.layout.welcome")}</p>
@@ -209,7 +209,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest" data-testid="badge-vendor-status">
               {vendor.verified && vendor.active ? (
                 <>
-                  <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5">
+                  <span className="flex items-center gap-1.5 text-gold-deep bg-gold/10 border border-gold/30 px-3 py-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" /> {t("vendor.layout.status_published")}
                   </span>
                   {account?.vendorId && (
@@ -217,7 +217,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
                       href={`/partenaires/${account.vendorId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-wine-deep border border-wine-deep/30 bg-white hover:bg-wine-deep hover:text-white transition-colors px-3 py-1.5"
+                      className="flex items-center gap-1.5 text-wine-deep border border-wine-deep/30 bg-cream hover:bg-wine-deep hover:text-white transition-colors px-3 py-1.5"
                       data-testid="link-vendor-public-profile"
                     >
                       <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" /> {t("vendor.dashboard.view_public")}
@@ -225,7 +225,7 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
                   )}
                 </>
               ) : (
-                <span className="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-3 py-1.5">
+                <span className="flex items-center gap-1.5 text-wine-deep bg-wine-deep/5 border border-wine-deep/20 px-3 py-1.5">
                   <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" /> {t("vendor.layout.status_pending")}
                 </span>
               )}
