@@ -42,6 +42,10 @@ export async function requireClientAuth(req: Request, res: Response, next: NextF
     res.status(401).json({ error: "Utilisateur introuvable" });
     return;
   }
+  if (user.role !== "client") {
+    res.status(403).json({ error: "Accès réservé aux couples" });
+    return;
+  }
 
   let [couple] = await db.select({ id: couplesTable.id })
     .from(couplesTable).where(eq(couplesTable.userId, String(userDbId))).limit(1);
@@ -87,6 +91,10 @@ export async function requireVendorAuth(req: Request, res: Response, next: NextF
     .from(usersTable).where(eq(usersTable.id, userDbId)).limit(1);
   if (!user) {
     res.status(401).json({ error: "Utilisateur introuvable" });
+    return;
+  }
+  if (user.role !== "vendor") {
+    res.status(403).json({ error: "Accès réservé aux prestataires" });
     return;
   }
 

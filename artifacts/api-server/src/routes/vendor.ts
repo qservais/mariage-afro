@@ -109,20 +109,6 @@ router.post("/vendor/onboarding", async (req, res) => {
   }
   const data = parsed.data;
 
-  // Block if this Clerk user already has a couple account
-  const [existingCouple] = await db
-    .select({ id: couplesTable.id })
-    .from(couplesTable)
-    .where(eq(couplesTable.userId, r.userId))
-    .limit(1);
-  if (existingCouple) {
-    res.status(409).json({
-      error: "couple_account_conflict",
-      message: "Cet email est déjà associé à un compte couple. Utilisez une adresse email différente pour votre compte prestataire.",
-    });
-    return;
-  }
-
   const [existing] = await db
     .select()
     .from(vendorAccountsTable)
