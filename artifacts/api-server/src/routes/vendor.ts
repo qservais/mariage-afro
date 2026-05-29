@@ -60,7 +60,7 @@ interface AuthedVendorRequest extends Request {
   vendorAccountId: number;
 }
 
-router.use(requireVendorAuth);
+router.use("/vendor", requireVendorAuth);
 
 // ---------- Vendor account ----------
 router.get("/vendor/me", async (req, res) => {

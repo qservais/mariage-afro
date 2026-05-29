@@ -74,7 +74,7 @@ const _coreCoupleCols = {
   locale: couplesTable.locale,
 } as const;
 
-router.use(requireClientAuth);
+router.use("/client", requireClientAuth);
 
 // ---------- Couple profile ----------
 router.get("/client/me", async (req, res) => {
