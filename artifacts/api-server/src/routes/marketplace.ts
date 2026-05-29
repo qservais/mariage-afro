@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
-import { getAuth } from "@clerk/express";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../middlewares/jwtAuth";
 import { z } from "zod";
 import { db } from "@workspace/db";
 import {
@@ -420,8 +421,12 @@ router.get("/marketplace/vendors/:id/reviews", async (req: Request, res: Respons
 });
 
 router.post("/marketplace/vendors/:id/add-to-project", async (req: Request, res: Response) => {
-  const auth = getAuth(req);
-  if (!auth?.userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+  const cookie = req.cookies?.ma_token ?? (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.slice(7) : null);
+  let userId: string | null = null;
+  if (cookie) {
+    try { userId = (jwt.verify(cookie, JWT_SECRET) as { sub: string }).sub; } catch { }
+  }
+  if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
 
   const vendorId = Number(req.params.id);
   if (isNaN(vendorId)) { res.status(400).json({ error: "Invalid id" }); return; }
@@ -435,7 +440,7 @@ router.post("/marketplace/vendors/:id/add-to-project", async (req: Request, res:
   const [couple] = await db
     .select()
     .from(couplesTable)
-    .where(eq(couplesTable.userId, auth.userId));
+    .where(eq(couplesTable.userId, userId));
   if (!couple) { res.status(404).json({ error: "Couple profile not found" }); return; }
 
   const [row] = await db

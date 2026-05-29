@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useUser } from "@clerk/react";
+import { useAuth } from "@/lib/auth";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
 import { Heart } from "lucide-react";
@@ -54,7 +54,7 @@ const BUDGET_TO_NUMBER: Record<string, number | null> = {
 
 export default function OnboardingGate({ couple, children }: Props) {
   const { t } = useTranslation();
-  const { user } = useUser();
+  const { user } = useAuth();
   const qc = useQueryClient();
 
   const needsOnboarding = couple !== undefined && couple.onboardedAt == null;
@@ -74,7 +74,7 @@ export default function OnboardingGate({ couple, children }: Props) {
     if (!couple) return;
     setInitialValues((prev) => ({
       ...prev,
-      partner1Name: couple.partner1Name || user?.firstName || "",
+      partner1Name: couple.partner1Name || user?.email?.split("@")[0] || "",
       partner2Name: couple.partner2Name || "",
       weddingDate: couple.weddingDate ? couple.weddingDate.slice(0, 10) : "",
     }));

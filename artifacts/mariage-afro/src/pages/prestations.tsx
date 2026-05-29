@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "@clerk/react";
+import { useAuth } from "@/lib/auth";
 import {
   MapPin,
   CheckCircle2,
@@ -631,7 +631,8 @@ function BecomePartnerSection() {
 
 export default function Prestations() {
   const { t } = useTranslation();
-  const { isSignedIn } = useAuth();
+  const { user: authUser } = useAuth();
+  const isSignedIn = !!authUser;
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);

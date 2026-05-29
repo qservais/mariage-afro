@@ -1,6 +1,7 @@
 import express, { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { Readable } from "stream";
-import { getAuth } from "@clerk/express";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../middlewares/jwtAuth";
 import {
   RequestUploadUrlBody,
   RequestUploadUrlResponse,
@@ -12,9 +13,20 @@ import { recordUploadIntent } from "../lib/uploadIntents";
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
 
+function extractJwtUserId(req: Request): string | null {
+  const cookie = req.cookies?.ma_token;
+  const raw = cookie ?? (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.slice(7) : null);
+  if (!raw) return null;
+  try {
+    const p = jwt.verify(raw, JWT_SECRET) as { sub: string };
+    return p.sub;
+  } catch {
+    return null;
+  }
+}
+
 function requireAuth(req: Request, res: Response, next: NextFunction): void {
-  const auth = getAuth(req);
-  if (!auth?.userId) {
+  if (!extractJwtUserId(req)) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
@@ -37,7 +49,7 @@ router.post("/storage/uploads/request-url", requireAuth, async (req: Request, re
 
   try {
     const { name, size, contentType } = parsed.data;
-    const userId = getAuth(req)?.userId as string;
+    const userId = extractJwtUserId(req) as string;
 
     const uploadURL = await objectStorageService.getObjectEntityUploadURL();
     const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
@@ -83,7 +95,7 @@ router.post(
       (req.headers["content-type"] as string) ||
       "application/octet-stream";
 
-    const userId = getAuth(req)?.userId as string;
+    const userId = extractJwtUserId(req) as string;
 
     try {
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
@@ -153,8 +165,7 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
  */
 router.get("/storage/objects/*path", async (req: Request, res: Response) => {
   try {
-    const auth = getAuth(req);
-    const userId = auth?.userId ?? undefined;
+    const userId = extractJwtUserId(req) ?? undefined;
 
     const raw = req.params.path;
     const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;

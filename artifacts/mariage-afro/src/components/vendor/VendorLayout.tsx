@@ -1,6 +1,6 @@
 import { useRef, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
-import { useUser, useClerk } from "@clerk/react";
+import { useAuth } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
@@ -55,8 +55,7 @@ export function useVendorUnseenLeadsCount() {
 }
 
 export default function VendorLayout({ children }: { children?: ReactNode }) {
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -86,11 +85,11 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
     exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
 
   const handleSignOut = async () => {
-    await signOut();
+    await logout();
     navigate("/");
   };
 
-  const businessName = account?.businessName || user?.firstName || "—";
+  const businessName = account?.businessName || user?.email?.split("@")[0] || "—";
 
   return (
     <div className="min-h-screen bg-cream pt-16 lg:pt-0 lg:pl-64">

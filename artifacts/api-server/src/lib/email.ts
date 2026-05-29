@@ -1208,3 +1208,28 @@ export async function notifyVendorInvitation(p: NotifyVendorInvitationPayload, l
     }),
   }, log);
 }
+
+// ---- Auth emails (verification + password reset) ----
+
+export async function notifyAuthEmail(
+  type: "verify" | "reset",
+  p: { email: string; token: string },
+  log = logger,
+): Promise<void> {
+  const base = appUrl();
+  const isVerify = type === "verify";
+  const url = isVerify
+    ? `${base}/api/auth/verify-email?token=${p.token}`
+    : `${base}/espace-client/reset-password?token=${p.token}`;
+
+  const subject = isVerify
+    ? "Vérifiez votre adresse email — Mariage Afro"
+    : "Réinitialisation de votre mot de passe — Mariage Afro";
+  const title = isVerify ? "Confirmez votre email" : "Réinitialisez votre mot de passe";
+  const intro = isVerify
+    ? "Merci de vous être inscrit(e) sur Mariage Afro. Cliquez sur le bouton ci-dessous pour vérifier votre adresse email. Ce lien expire dans 24 heures."
+    : "Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe. Ce lien expire dans 1 heure.";
+  const ctaLabel = isVerify ? "Vérifier mon email" : "Réinitialiser mon mot de passe";
+
+  await sendOne({ to: p.email, subject, html: wrap({ title, intro, ctaLabel, ctaUrl: url, locale: "fr" }) }, log);
+}

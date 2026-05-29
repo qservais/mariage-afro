@@ -1,6 +1,6 @@
 import QRCode from "qrcode";
 import { Router, type Request, type Response, type NextFunction } from "express";
-import { getAuth, clerkClient } from "@clerk/express";
+import { requireClientAuth, type AuthedRequest as JwtAuthedRequest } from "../middlewares/jwtAuth";
 import { z } from "zod";
 import { and, eq, asc, desc, sql, isNull, ne, inArray, or } from "drizzle-orm";
 import {
@@ -42,26 +42,6 @@ interface AuthedRequest extends Request {
   coupleId: number;
 }
 
-function pickClerkLocale(raw: string | undefined | null): "fr" | "nl" | "en" {
-  const s = (raw || "").toLowerCase();
-  if (s.startsWith("nl")) return "nl";
-  if (s.startsWith("en")) return "en";
-  return "fr";
-}
-
-async function fetchClerkContact(userId: string, log: Request["log"]): Promise<{ email: string | null; locale: "fr" | "nl" | "en" }> {
-  try {
-    const u = await clerkClient.users.getUser(userId);
-    const primaryId = u.primaryEmailAddressId;
-    const primary = u.emailAddresses?.find((e) => e.id === primaryId) ?? u.emailAddresses?.[0];
-    const email = primary?.emailAddress ?? null;
-    const localeRaw = (u.publicMetadata as Record<string, unknown>)?.locale as string | undefined;
-    return { email, locale: pickClerkLocale(localeRaw) };
-  } catch (err) {
-    log.warn({ err, userId }, "Failed to fetch Clerk user for couple sync");
-    return { email: null, locale: "fr" };
-  }
-}
 
 // Stable couple columns — excludes budgetMode which was added in dev but not yet
 // applied to production. Use _safeCoupleSelect everywhere until the next Publish
@@ -94,52 +74,7 @@ const _coreCoupleCols = {
   locale: couplesTable.locale,
 } as const;
 
-async function requireCouple(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // Vendor and storage routes have their own auth middleware — skip couple auth entirely
-  if (req.path.startsWith("/vendor/") || req.path === "/vendor" || req.path.startsWith("/storage/")) { next(); return; }
-
-  const auth = getAuth(req);
-  const userId = auth?.userId;
-  if (!userId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  let [couple] = await db.select(_coreCoupleCols).from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
-  if (!couple) {
-    const contact = await fetchClerkContact(userId, req.log);
-    // Use ON CONFLICT DO NOTHING to handle concurrent first-login requests gracefully
-    const inserted = await db.insert(couplesTable).values({
-      userId,
-      email: contact.email ?? "",
-      locale: contact.locale,
-    }).onConflictDoNothing().returning(_coreCoupleCols);
-    if (inserted.length > 0) {
-      couple = inserted[0];
-    } else {
-      // Race condition: another request inserted first — re-fetch
-      [couple] = await db.select(_coreCoupleCols).from(couplesTable).where(eq(couplesTable.userId, userId)).limit(1);
-    }
-  }
-  if (!couple) {
-    res.status(500).json({ error: "Failed to create couple profile" });
-    return;
-  }
-  if (!couple.email) {
-    // Backfill email/locale once for existing couples (Clerk is the source of truth)
-    const contact = await fetchClerkContact(userId, req.log);
-    if (contact.email) {
-      await db.update(couplesTable)
-        .set({ email: contact.email, locale: couple.locale || contact.locale, updatedAt: new Date() })
-        .where(eq(couplesTable.id, couple.id));
-      couple = { ...couple, email: contact.email, locale: couple.locale || contact.locale };
-    }
-  }
-  (req as unknown as AuthedRequest).userId = userId;
-  (req as unknown as AuthedRequest).coupleId = couple.id;
-  next();
-}
-
-router.use(requireCouple);
+router.use(requireClientAuth);
 
 // ---------- Couple profile ----------
 router.get("/client/me", async (req, res) => {

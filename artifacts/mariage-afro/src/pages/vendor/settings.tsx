@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useUser, useClerk } from "@clerk/react";
+import { useAuth } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16,8 +16,7 @@ interface VendorSettingsResp {
 }
 
 export default function VendorSettingsPage() {
-  const { user } = useUser();
-  const { signOut, openUserProfile } = useClerk();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -88,11 +87,11 @@ export default function VendorSettingsPage() {
         <dl className="text-sm space-y-2">
           <div className="flex justify-between">
             <dt className="text-neutral-500">{t("vendor.settings.email")}</dt>
-            <dd className="font-medium">{user?.primaryEmailAddress?.emailAddress || "—"}</dd>
+            <dd className="font-medium">{user?.email || "—"}</dd>
           </div>
           <div className="flex justify-between">
             <dt className="text-neutral-500">{t("vendor.settings.name")}</dt>
-            <dd className="font-medium">{user?.fullName || account?.contactName || "—"}</dd>
+            <dd className="font-medium">{account?.contactName || "—"}</dd>
           </div>
           <div className="flex justify-between">
             <dt className="text-neutral-500">{t("vendor.settings.business")}</dt>
@@ -108,16 +107,7 @@ export default function VendorSettingsPage() {
             type="button"
             variant="outline"
             className="rounded-none uppercase tracking-wider text-xs"
-            onClick={() => openUserProfile()}
-            data-testid="button-manage-account"
-          >
-            {t("vendor.settings.manage_account")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-none uppercase tracking-wider text-xs"
-            onClick={async () => { await signOut(); navigate("/"); }}
+            onClick={async () => { await logout(); navigate("/"); }}
             data-testid="button-vendor-settings-signout"
           >
             {t("vendor.settings.signout")}

@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
-import { getAuth, clerkClient } from "@clerk/express";
+import { requireVendorAuth, type AuthedRequest as JwtAuthedRequest } from "../middlewares/jwtAuth";
 import { z } from "zod";
 import { and, asc, desc, eq, inArray, isNull, isNotNull, ne, or, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -60,80 +60,7 @@ interface AuthedVendorRequest extends Request {
   vendorAccountId: number;
 }
 
-async function requireVendor(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const auth = getAuth(req);
-  const userId = auth?.userId;
-  if (!userId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  let [account] = await db
-    .select()
-    .from(vendorAccountsTable)
-    .where(eq(vendorAccountsTable.userId, userId))
-    .limit(1);
-  if (!account) {
-    // Use ON CONFLICT DO NOTHING to handle concurrent first-login requests gracefully
-    const inserted = await db
-      .insert(vendorAccountsTable)
-      .values({ userId })
-      .onConflictDoNothing()
-      .returning();
-    if (inserted.length > 0) {
-      account = inserted[0];
-      // On first login, try to pre-fill from an approved partner application
-      try {
-        const clerkUser = await clerkClient.users.getUser(userId);
-        const email = clerkUser.emailAddresses?.[0]?.emailAddress;
-        if (email) {
-          const [approvedApp] = await db
-            .select()
-            .from(partnerApplicationsTable)
-            .where(and(
-              eq(partnerApplicationsTable.email, email),
-              eq(partnerApplicationsTable.status, "approved")
-            ))
-            .limit(1);
-          if (approvedApp) {
-            const [prefilled] = await db
-              .update(vendorAccountsTable)
-              .set({
-                businessName: approvedApp.businessName,
-                contactName: approvedApp.contactName,
-                email: approvedApp.email,
-                phone: approvedApp.phone ?? null,
-                category: approvedApp.category,
-                website: approvedApp.website ?? null,
-                description: approvedApp.description ?? "",
-                updatedAt: new Date(),
-              })
-              .where(eq(vendorAccountsTable.id, account.id))
-              .returning();
-            if (prefilled) account = prefilled;
-          }
-        }
-      } catch (err) {
-        logger.warn({ err }, "Failed to prefill vendor account from partner application on first login");
-      }
-    } else {
-      // Race condition: another request inserted first — re-fetch
-      [account] = await db
-        .select()
-        .from(vendorAccountsTable)
-        .where(eq(vendorAccountsTable.userId, userId))
-        .limit(1);
-    }
-  }
-  if (!account) {
-    res.status(500).json({ error: "Failed to create vendor account" });
-    return;
-  }
-  (req as unknown as AuthedVendorRequest).userId = userId;
-  (req as unknown as AuthedVendorRequest).vendorAccountId = account.id;
-  next();
-}
-
-router.use(requireVendor);
+router.use(requireVendorAuth);
 
 // ---------- Vendor account ----------
 router.get("/vendor/me", async (req, res) => {

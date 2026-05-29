@@ -3,8 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import helmet from "helmet";
-import { clerkMiddleware } from "@clerk/express";
-import { CLERK_PROXY_PATH, clerkProxyMiddleware } from "./middlewares/clerkProxyMiddleware";
+import authRouter from "./routes/auth";
 import router from "./routes";
 import adminRouter from "./routes/admin";
 import adminContentRouter from "./routes/admin-content";
@@ -74,8 +73,6 @@ app.use((_req, res, next) => {
   next();
 });
 
-app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
-
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "")
   .split(",")
   .map((o) => o.trim())
@@ -119,29 +116,8 @@ app.use(cookieParser(cookieSecret));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Build the list of authorized parties dynamically so Bearer tokens issued
-// for the web app (which runs on Replit preview/deployment domains) are
-// accepted by this API server regardless of which Replit domain is in use.
-const authorizedParties: string[] = [];
-if (process.env.REPLIT_DEV_DOMAIN) {
-  authorizedParties.push(`https://${process.env.REPLIT_DEV_DOMAIN}`);
-}
-if (process.env.REPLIT_DEPLOYMENT_DOMAIN) {
-  authorizedParties.push(`https://${process.env.REPLIT_DEPLOYMENT_DOMAIN}`);
-}
-(process.env.ALLOWED_ORIGINS ?? "")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean)
-  .forEach((o) => authorizedParties.push(o));
-
-app.use(
-  clerkMiddleware(
-    authorizedParties.length > 0 ? { authorizedParties } : {},
-  ),
-);
-
 // Public routes first — before auth-protected routers
+app.use("/api", authRouter);
 app.use("/", weddingPublicRouter);
 app.use("/api", marketplaceRouter);
 

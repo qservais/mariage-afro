@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
-import { useUser, useClerk } from "@clerk/react";
+import { useAuth } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
@@ -64,22 +64,21 @@ export function useCouple() {
 
 export default function ClientLayout({ children }: { children?: ReactNode }) {
   const { t } = useTranslation();
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: couple } = useCouple();
 
   const days = daysUntil(couple?.weddingDate);
-  const firstName = couple?.partner1Name || user?.firstName || "";
+  const firstName = couple?.partner1Name || user?.email?.split("@")[0] || "";
   const partnerName = couple?.partner2Name || "";
 
   const isActive = (to: string, exact?: boolean) =>
     exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
 
   const handleSignOut = async () => {
-    await signOut();
+    await logout();
     navigate("/");
   };
 

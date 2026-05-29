@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useUser } from "@clerk/react";
+import { useAuth } from "@/lib/auth";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
 import { Briefcase, Clock, Upload } from "lucide-react";
@@ -84,7 +84,7 @@ interface VendorValues extends Record<string, unknown> {
 }
 
 export default function VendorOnboardingGate({ account, children }: Props) {
-  const { user } = useUser();
+  const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
 
@@ -114,8 +114,8 @@ export default function VendorOnboardingGate({ account, children }: Props) {
     setInitialValues((prev) => ({
       ...prev,
       businessName: account.businessName || "",
-      contactName: account.contactName || user?.fullName || "",
-      email: account.email || user?.primaryEmailAddress?.emailAddress || "",
+      contactName: account.contactName || "",
+      email: account.email || user?.email || "",
       phone: account.phone || "",
       category: account.category || CATEGORY_VALUES[0],
       regions: account.city ? account.city.split(",").map((s) => s.trim()).filter(Boolean) : [],

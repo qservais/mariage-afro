@@ -2,7 +2,6 @@ import { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import i18n, { SUPPORTED_LANGS, type SupportedLang } from "@/i18n";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Show } from "@clerk/react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
@@ -13,7 +12,7 @@ import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import BackToTop from "@/components/layout/BackToTop";
 import { StickyCTA } from "@/components/StickyCTA";
-import { MariageAfroClerkProvider } from "@/lib/clerk";
+import { AuthProvider, useAuth } from "@/lib/auth";
 import "./i18n";
 
 // Public routes — code-split (only home stays eager for fast LCP)
@@ -81,6 +80,8 @@ const VendorMessagesPage = lazy(() => import("@/pages/vendor/messages"));
 const VendorAbonnementPage = lazy(() => import("@/pages/vendor/abonnement"));
 const VendorSignInPage = lazy(() => import("@/pages/vendor/sign-in"));
 const VendorSignUpPage = lazy(() => import("@/pages/vendor/sign-up"));
+const ForgotPasswordPage = lazy(() => import("@/pages/forgot-password"));
+const ResetPasswordPage = lazy(() => import("@/pages/reset-password"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -111,21 +112,17 @@ function RouteFallback() {
 }
 
 function ProtectedClient({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Show when="signed-in">{children}</Show>
-      <Show when="signed-out"><Navigate to="/espace-client/login" replace /></Show>
-    </>
-  );
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/espace-client/login" replace />;
+  return <>{children}</>;
 }
 
 function ProtectedVendor({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Show when="signed-in">{children}</Show>
-      <Show when="signed-out"><Navigate to="/espace-pro/login" replace /></Show>
-    </>
-  );
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/espace-pro/login" replace />;
+  return <>{children}</>;
 }
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -241,6 +238,8 @@ function AppRoutes() {
         <Routes>
           <Route path="/espace-pro/login/*" element={<VendorSignInPage />} />
           <Route path="/espace-pro/register/*" element={<VendorSignUpPage />} />
+          <Route path="/espace-pro/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
+          <Route path="/espace-pro/reset-password" element={<ResetPasswordPage />} />
           <Route path="/espace-pro" element={<ProtectedVendor><VendorLayout /></ProtectedVendor>}>
             <Route index element={<VendorDashboard />} />
             <Route path="profile" element={<VendorProfilePage />} />
@@ -267,6 +266,8 @@ function AppRoutes() {
           <Route path="/sign-up/*" element={<SignUpPage />} />
           <Route path="/espace-client/login/*" element={<SignInPage />} />
           <Route path="/espace-client/register/*" element={<SignUpPage />} />
+          <Route path="/espace-client/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
+          <Route path="/espace-client/reset-password" element={<ResetPasswordPage />} />
           <Route path="/espace-client" element={<ProtectedClient><ClientLayout /></ProtectedClient>}>
             <Route index element={<Navigate to="/espace-client/dashboard" replace />} />
             <Route path="dashboard" element={<ClientDashboard />} />
@@ -328,13 +329,13 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <MariageAfroClerkProvider>
+          <AuthProvider>
             <ScrollToTop />
             <BackToTop />
             <LangUrlSync>
               <AppRoutes />
             </LangUrlSync>
-          </MariageAfroClerkProvider>
+          </AuthProvider>
         </BrowserRouter>
         <Toaster />
       </TooltipProvider>

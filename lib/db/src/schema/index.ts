@@ -576,6 +576,24 @@ export const insertPartnerApplicationSchema = createInsertSchema(partnerApplicat
 export type InsertPartnerApplication = z.infer<typeof insertPartnerApplicationSchema>;
 export type PartnerApplication = typeof partnerApplicationsTable.$inferSelect;
 
+export const usersTable = pgTable("app_users", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  passwordHash: text("password_hash").notNull(),
+  role: text("role").notNull().default("client"),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  verifyToken: text("verify_token"),
+  verifyTokenExpiresAt: timestamp("verify_token_expires_at", { withTimezone: true }),
+  resetToken: text("reset_token"),
+  resetTokenExpiresAt: timestamp("reset_token_expires_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  emailIdx: uniqueIndex("app_users_email_idx").on(t.email),
+}));
+
+export type AppUser = typeof usersTable.$inferSelect;
+
 export type Couple = typeof couplesTable.$inferSelect;
 export type BudgetItem = typeof budgetItemsTable.$inferSelect;
 export type Guest = typeof guestsTable.$inferSelect;

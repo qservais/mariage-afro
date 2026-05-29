@@ -1,16 +1,10 @@
-type TokenGetter = () => Promise<string | null>;
+// With httpOnly cookie auth, the token is sent automatically via credentials:"include".
+// This module is kept as a no-op shim so existing clientApi/vendorApi callers compile.
 
-let _getter: TokenGetter | null = null;
-
-export function setTokenGetter(fn: TokenGetter): void {
-  _getter = fn;
+export function setTokenGetter(_fn: () => Promise<string | null>): void {
+  // no-op — token is in httpOnly cookie
 }
 
 export async function getAuthToken(): Promise<string | null> {
-  if (!_getter) return null;
-  try {
-    return await _getter();
-  } catch {
-    return null;
-  }
+  return null;
 }

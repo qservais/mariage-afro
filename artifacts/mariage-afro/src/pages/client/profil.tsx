@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useUser } from "@clerk/react";
+import { useUser } from "@/lib/auth";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,11 +63,8 @@ export default function ProfilPage() {
       <section className="bg-white p-6 border border-neutral-200">
         <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3">{t("profil.account")}</p>
         <p className="text-sm">
-          {t("profil.email_label")} <span className="font-medium">{user?.primaryEmailAddress?.emailAddress || "—"}</span>
+          {t("profil.email_label")} <span className="font-medium">{user?.email || "—"}</span>
         </p>
-        {user?.firstName && (
-          <p className="text-sm mt-1">{t("profil.name_label")} <span className="font-medium">{user.firstName} {user.lastName || ""}</span></p>
-        )}
       </section>
 
       <form

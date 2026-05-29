@@ -1,3 +1,4 @@
 - [Design system tokens](design-tokens.md) — bg-white banned; use bg-cream or bg-cream-soft (#faf9f7); neutral-* → wine-deep/* opacity variants
 - [Editorial grid pattern](editorial-grid.md) — canonical card grid: gap-px bg-wine-deep/10 border; ordinal numbers (01/02/03) over icon boxes for editorial sections
 - [Accessibility baseline](a11y-baseline.md) — skip link in PublicLayout; aria-current="page" on all nav links; aria-hidden on decorative SVGs (never aria-label on non-interactive SVG)
+- [Custom JWT Auth](custom-jwt-auth.md) — Clerk fully replaced by bcrypt+JWT; httpOnly cookie `ma_token` 30d; `app_users` table; lib/db needs `tsc --build` after schema changes.
