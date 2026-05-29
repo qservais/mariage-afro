@@ -6,3 +6,9 @@ id = "qJEmQhISQGs5eeK2QlfUj"
 uri = "file://attached_assets/guides/guide-mariage-afro.tar.gz"
 type = "unspecified"
 title = "Guide Mariage Afro (HTML)"
+
+[[outputs]]
+id = "Ne_xGyY73PgrrXrx2oF8R"
+uri = "file://.local/chatgpt-agent-prompt.md"
+type = "text"
+title = "Mariage Afro — Agent Prompt (ChatGPT)"
