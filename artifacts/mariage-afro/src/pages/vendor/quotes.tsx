@@ -146,6 +146,11 @@ export default function VendorQuotesPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const hasEmptyLabel = form.services.some((s) => !s.label.trim());
+    if (hasEmptyLabel) {
+      toast({ title: t("vendor.quotes.service_label_required", { defaultValue: "Chaque prestation doit avoir un intitulé." }), variant: "destructive" });
+      return;
+    }
     createMutation.mutate({ ...form, leadId: prefillLeadId ?? undefined } as typeof EMPTY_FORM & { leadId?: number });
   }
 

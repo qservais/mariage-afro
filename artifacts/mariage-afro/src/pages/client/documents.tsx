@@ -5,6 +5,7 @@ import { Trash2, ExternalLink, FileText, UploadCloud, Loader2 } from "lucide-rea
 import { clientApi, clientProxyUpload } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 interface Doc {
   id: number;
@@ -31,6 +32,7 @@ export default function DocumentsPage() {
   const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
   const locale = LOCALE_MAP[lang] || "fr-BE";
 
+  const { toast } = useToast();
   const qc = useQueryClient();
   const { data: docs = [] } = useQuery<Doc[]>({
     queryKey: ["client", "documents"],
@@ -91,8 +93,10 @@ export default function DocumentsPage() {
                       size: file.size,
                     });
                   }
+                  toast({ title: t("documents.uploaded") });
                 } catch (err) {
                   setDocUploadError((err as Error).message);
+                  toast({ title: t("documents.upload_error"), variant: "destructive" });
                 } finally {
                   setDocUploading(false);
                   if (docFileRef.current) docFileRef.current.value = "";

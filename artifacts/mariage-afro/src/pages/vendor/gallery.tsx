@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { UploadCloud, Trash2, Star, StarOff, Loader2 } from "lucide-react";
 import { vendorApi, proxyUpload } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface VendorProfile {
   id: number;
@@ -16,6 +17,7 @@ const displayUrl = (url: string) => (isStoredObject(url) ? `/api/storage${url}` 
 
 export default function VendorGalleryPage() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const qc = useQueryClient();
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -44,7 +46,9 @@ export default function VendorGalleryPage() {
       setCover(data.coverImage);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      toast({ title: t("vendor.gallery.saved") });
     },
+    onError: () => toast({ title: t("vendor.gallery.save_error", { defaultValue: "Impossible d'enregistrer la galerie" }), variant: "destructive" }),
   });
 
   return (

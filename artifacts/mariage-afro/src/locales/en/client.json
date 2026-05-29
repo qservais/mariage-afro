@@ -20,7 +20,10 @@
       "placeholder": "Write your message… (Ctrl+Enter to send)",
       "secure": "Secure conversation",
       "loading": "Loading…",
-      "unread": "new"
+      "unread": "new",
+      "error_start": "Could not start the conversation",
+      "not_validated_title": "Account pending review",
+      "not_validated_desc": "Your account must be reviewed by our team before you can contact vendors. You will receive a confirmation email once your account is activated."
     }
   },
   "client_layout": {
@@ -62,7 +65,7 @@
     "next_task": "Next task:",
     "next_task_due": " — by {{date}}",
     "pending_validation_title": "Account pending review",
-    "pending_validation_desc": "Our team is reviewing your account. Publishing your wedding website and sending quote requests will be available once validated.",
+    "pending_validation_desc": "Our team is reviewing your account. Messaging vendors, publishing your wedding website and sending quote requests will be available once validated.",
     "tile": {
       "budget": "Budget",
       "invites": "Guests",
@@ -72,7 +75,11 @@
       "day": "The big day",
       "profile": "Profile",
       "inspiration": "Inspiration",
-      "cagnotte": "Honeymoon fund"
+      "cagnotte": "Honeymoon fund",
+      "seating": "Seating chart",
+      "communication": "Messages",
+      "site": "My wedding site",
+      "devis": "Quotes"
     },
     "jour_j_card": {
       "title": "Wedding day guest page",
@@ -117,7 +124,9 @@
     "over_budget_text": "(over budget)",
     "remaining": "Remaining",
     "warning_estimate": "All amounts entered are indicative estimates and do not constitute contractual commitments.",
-    "vendor_sync_note": "Tip: when a vendor is marked as 'Paid' in the Vendors tab, their amount is automatically added here."
+    "vendor_sync_note": "Tip: when a vendor is marked as 'Paid' in the Vendors tab, their amount is automatically added here.",
+    "item_added": "Budget item added",
+    "item_deleted": "Item deleted"
   },
   "invites": {
     "title": "Guests",
@@ -186,7 +195,8 @@
     "rsvp_accept": "Accept",
     "rsvp_reject": "Reject",
     "th_status": "Status",
-    "invite_success": "Invitation sent!"
+    "invite_success": "Invitation sent!",
+    "rsvp_question_label_required": "The question label is required."
   },
   "planning": {
     "title": "Planning",
@@ -218,7 +228,10 @@
       "Sat",
       "Sun"
     ],
-    "due_date_label": "Due date"
+    "due_date_label": "Due date",
+    "task_marked_done": "Task marked as complete",
+    "task_marked_undone": "Task reopened",
+    "seed_no_date_desc": "Go to your profile to set your wedding date."
   },
   "jour_j": {
     "title": "Wedding Day Coordination",
@@ -304,7 +317,9 @@
     "open": "Open",
     "delete": "Delete",
     "empty": "No documents",
-    "ko": "KB"
+    "ko": "KB",
+    "uploaded": "Document added successfully",
+    "upload_error": "Upload failed"
   },
   "vendors_page": {
     "title": "Vendors",

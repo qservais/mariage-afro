@@ -20,7 +20,10 @@
       "placeholder": "Écrivez votre message… (Ctrl+Entrée pour envoyer)",
       "secure": "Conversation sécurisée",
       "loading": "Chargement…",
-      "unread": "nouveau"
+      "unread": "nouveau",
+      "error_start": "Impossible de démarrer la conversation",
+      "not_validated_title": "Compte en cours de validation",
+      "not_validated_desc": "Votre compte doit être validé par notre équipe avant de pouvoir contacter les prestataires. Vous recevrez un email de confirmation dès que votre compte sera activé."
     }
   },
   "client_layout": {
@@ -62,7 +65,7 @@
     "next_task": "Prochaine tâche :",
     "next_task_due": " — d'ici le {{date}}",
     "pending_validation_title": "Compte en cours de validation",
-    "pending_validation_desc": "Notre équipe examine votre compte. La publication de votre mini-site et les demandes de devis seront disponibles dès validation.",
+    "pending_validation_desc": "Notre équipe examine votre compte. La messagerie avec les prestataires, la publication de votre mini-site et les demandes de devis seront disponibles dès validation.",
     "tile": {
       "budget": "Budget",
       "invites": "Invités",
@@ -72,7 +75,11 @@
       "day": "Jour J",
       "profile": "Profil",
       "inspiration": "Inspiration",
-      "cagnotte": "Cagnotte"
+      "cagnotte": "Cagnotte",
+      "seating": "Plan de table",
+      "communication": "Communication",
+      "site": "Mon site mariage",
+      "devis": "Devis"
     },
     "jour_j_card": {
       "title": "Page Jour-J invités",
@@ -117,7 +124,9 @@
     "over_budget_text": "(dépassé)",
     "remaining": "Restant",
     "warning_estimate": "Les montants saisis sont des estimations indicatives et ne constituent pas des engagements contractuels.",
-    "vendor_sync_note": "Astuce : quand un prestataire passe au statut « Payé » dans l'onglet Prestataires, son montant est automatiquement ajouté ici."
+    "vendor_sync_note": "Astuce : quand un prestataire passe au statut « Payé » dans l'onglet Prestataires, son montant est automatiquement ajouté ici.",
+    "item_added": "Poste budgétaire ajouté",
+    "item_deleted": "Poste supprimé"
   },
   "invites": {
     "title": "Invités",
@@ -186,7 +195,8 @@
     "rsvp_accept": "Accepter",
     "rsvp_reject": "Refuser",
     "th_status": "Statut",
-    "invite_success": "Invitation envoyée !"
+    "invite_success": "Invitation envoyée !",
+    "rsvp_question_label_required": "L'intitulé de la question est obligatoire."
   },
   "planning": {
     "title": "Planning",
@@ -218,7 +228,10 @@
       "Sam",
       "Dim"
     ],
-    "due_date_label": "Date limite"
+    "due_date_label": "Date limite",
+    "task_marked_done": "Tâche marquée comme terminée",
+    "task_marked_undone": "Tâche réouverte",
+    "seed_no_date_desc": "Allez dans votre profil pour définir votre date de mariage."
   },
   "jour_j": {
     "title": "Coordination Jour J",
@@ -304,7 +317,9 @@
     "open": "Ouvrir",
     "delete": "Supprimer",
     "empty": "Aucun document",
-    "ko": "Ko"
+    "ko": "Ko",
+    "uploaded": "Document ajouté avec succès",
+    "upload_error": "Erreur lors du téléversement"
   },
   "vendors_page": {
     "title": "Prestataires",

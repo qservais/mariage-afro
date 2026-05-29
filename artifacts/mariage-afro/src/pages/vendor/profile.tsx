@@ -6,6 +6,7 @@ import { vendorApi, proxyUpload } from "@/lib/vendorApi";
 import { prepareImageForUpload, ACCEPTED_IMAGE_ATTR } from "@/lib/image-compress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 interface VendorProfile {
   id: number;
@@ -45,6 +46,7 @@ const CATEGORIES = [
 
 export default function VendorProfilePage() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const qc = useQueryClient();
 
   const { data: vendor } = useQuery<VendorProfile>({
@@ -102,7 +104,9 @@ export default function VendorProfilePage() {
       qc.invalidateQueries({ queryKey: ["vendor", "me"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      toast({ title: t("vendor.profile.saved") });
     },
+    onError: () => toast({ title: t("vendor.profile.save_error", { defaultValue: "Impossible d'enregistrer les modifications" }), variant: "destructive" }),
   });
 
   async function pickLogo(e: React.ChangeEvent<HTMLInputElement>) {

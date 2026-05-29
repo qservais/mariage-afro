@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Send, MessageCircle, Clock, ShieldCheck, Plus, ChevronLeft } from "lucide-react";
+import { Send, MessageCircle, Clock, ShieldCheck, Plus, ChevronLeft, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { clientApi, clientFetch } from "@/lib/clientApi";
+import { useCouple } from "@/components/client/ClientLayout";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: number;
@@ -42,6 +44,9 @@ function fmtTime(iso: string) {
 
 export default function CommunicationPage() {
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const { data: couple } = useCouple();
+  const isValidated = !!couple?.validatedAt;
   const qc = useQueryClient();
   const [tab, setTab] = useState<"admin" | "vendors">("admin");
   const [activeConvId, setActiveConvId] = useState<number | null>(null);
@@ -108,6 +113,7 @@ export default function CommunicationPage() {
       setActiveConvId(conv.id);
       qc.invalidateQueries({ queryKey: ["client", "conversations"] });
     },
+    onError: () => toast({ title: t("client.conversations.error_start"), variant: "destructive" }),
   });
 
   useEffect(() => {
@@ -195,31 +201,41 @@ export default function CommunicationPage() {
               </button>
             </div>
             {showPicker && (
-              <div className="p-3 border-b border-border space-y-2 bg-amber-50/40">
-                <p className="text-[11px] text-muted-foreground">{t("client.conversations.pick_vendor_help")}</p>
-                <select
-                  value={pickerVendorId}
-                  onChange={(e) => setPickerVendorId(e.target.value)}
-                  className="w-full border border-border px-2 py-1.5 text-sm bg-white"
-                  data-testid="select-vendor-picker"
-                >
-                  <option value="">{t("client.conversations.pick_vendor_placeholder")}</option>
-                  {marketplaceVendors.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.name} — {v.category}
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  size="sm"
-                  className="rounded-none w-full"
-                  disabled={!pickerVendorId || startConv.isPending}
-                  onClick={() => pickerVendorId && startConv.mutate(Number(pickerVendorId))}
-                  data-testid="button-start-conversation-confirm"
-                >
-                  {t("client.conversations.start")}
-                </Button>
-              </div>
+              !isValidated ? (
+                <div className="p-3 border-b border-border space-y-1 bg-wine-deep/5">
+                  <div className="flex items-center gap-1.5 text-wine-deep">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                    <p className="text-xs font-semibold">{t("client.conversations.not_validated_title")}</p>
+                  </div>
+                  <p className="text-[11px] text-neutral-600 leading-relaxed">{t("client.conversations.not_validated_desc")}</p>
+                </div>
+              ) : (
+                <div className="p-3 border-b border-border space-y-2 bg-amber-50/40">
+                  <p className="text-[11px] text-muted-foreground">{t("client.conversations.pick_vendor_help")}</p>
+                  <select
+                    value={pickerVendorId}
+                    onChange={(e) => setPickerVendorId(e.target.value)}
+                    className="w-full border border-border px-2 py-1.5 text-sm bg-white"
+                    data-testid="select-vendor-picker"
+                  >
+                    <option value="">{t("client.conversations.pick_vendor_placeholder")}</option>
+                    {marketplaceVendors.map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.name} — {v.category}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    size="sm"
+                    className="rounded-none w-full"
+                    disabled={!pickerVendorId || startConv.isPending}
+                    onClick={() => pickerVendorId && startConv.mutate(Number(pickerVendorId))}
+                    data-testid="button-start-conversation-confirm"
+                  >
+                    {t("client.conversations.start")}
+                  </Button>
+                </div>
+              )
             )}
             <div className="flex-1 overflow-y-auto">
               {vendorConvs.length === 0 ? (

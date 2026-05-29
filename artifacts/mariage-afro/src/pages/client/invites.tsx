@@ -50,6 +50,7 @@ export default function GuestsPage() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteSent, setInviteSent] = useState(false);
   const [qForm, setQForm] = useState({ label: "", type: "text" as "text" | "yesno" | "choice", options: "", required: false });
+  const [qFormError, setQFormError] = useState<string | null>(null);
   const [publicFilter, setPublicFilter] = useState<PublicFilter>("all");
 
   const RSVP_LABELS = useMemo<Record<string, string>>(() => ({
@@ -100,6 +101,7 @@ export default function GuestsPage() {
       options: qForm.options.split(",").map((s) => s.trim()).filter(Boolean),
     }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["client", "rsvp-questions"] }); setQForm({ label: "", type: "text", options: "", required: false }); },
+    onError: () => toast({ title: t("invites.rsvp_question_save_error", { defaultValue: "Impossible d'ajouter la question. Créez d'abord votre site mariage." }), variant: "destructive" }),
   });
   const delQ = useMutation({
     mutationFn: (id: number) => clientApi.del(`/api/client/rsvp-questions/${id}`),
@@ -296,10 +298,19 @@ export default function GuestsPage() {
           <h3 className="font-bold text-sm uppercase tracking-wider">{t("invites.custom_questions")}</h3>
           <p className="text-xs text-neutral-500 mt-1">{t("invites.custom_questions_desc")}</p>
         </div>
-        <form className="grid sm:grid-cols-12 gap-2" onSubmit={(e) => { e.preventDefault(); if (qForm.label.trim()) createQ.mutate(); }}>
+        <form className="grid sm:grid-cols-12 gap-2" onSubmit={(e) => {
+          e.preventDefault();
+          if (!qForm.label.trim()) {
+            setQFormError(t("invites.rsvp_question_label_required"));
+            return;
+          }
+          setQFormError(null);
+          createQ.mutate();
+        }}>
           <div className="sm:col-span-5">
             <label htmlFor="q-label" className="sr-only">{t("invites.question_label")}</label>
-            <Input id="q-label" placeholder={t("invites.question_label")} value={qForm.label} onChange={(e) => setQForm({ ...qForm, label: e.target.value })} className="rounded-none w-full" data-testid="input-question-label" />
+            <Input id="q-label" placeholder={t("invites.question_label")} value={qForm.label} onChange={(e) => { setQForm({ ...qForm, label: e.target.value }); if (e.target.value.trim()) setQFormError(null); }} className={`rounded-none w-full${qFormError ? " border-red-500" : ""}`} data-testid="input-question-label" aria-describedby={qFormError ? "q-label-error" : undefined} aria-invalid={!!qFormError} />
+            {qFormError && <p id="q-label-error" className="text-[11px] text-red-600 mt-0.5">{qFormError}</p>}
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="q-type" className="sr-only">{t("invites.q_type_label", { defaultValue: "Type de question" })}</label>

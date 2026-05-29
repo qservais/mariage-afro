@@ -34,7 +34,11 @@ export default function BudgetPage() {
 
   const create = useMutation({
     mutationFn: (b: BudgetItemCreate) => clientApi.post<Item>("/api/client/budget", b),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["client", "budget"] }); setForm({ category: "", vendor: "", planned: "", actual: "" }); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["client", "budget"] });
+      setForm({ category: "", vendor: "", planned: "", actual: "" });
+      toast({ title: t("budget.item_added") });
+    },
     onError: (err: Error) => toast({ title: t("budget.error_add", { defaultValue: "Impossible d'ajouter l'élément" }), description: err.message, variant: "destructive" }),
   });
   const update = useMutation({

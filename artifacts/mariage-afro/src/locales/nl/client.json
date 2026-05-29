@@ -20,7 +20,10 @@
       "placeholder": "Schrijf uw bericht… (Ctrl+Enter om te verzenden)",
       "secure": "Beveiligd gesprek",
       "loading": "Laden…",
-      "unread": "nieuw"
+      "unread": "nieuw",
+      "error_start": "Gesprek kon niet worden gestart",
+      "not_validated_title": "Account wordt gevalideerd",
+      "not_validated_desc": "Uw account moet door ons team worden gevalideerd voordat u contact kunt opnemen met leveranciers. U ontvangt een bevestigingsmail zodra uw account is geactiveerd."
     }
   },
   "client_layout": {
@@ -62,7 +65,7 @@
     "next_task": "Volgende taak:",
     "next_task_due": " — vóór {{date}}",
     "pending_validation_title": "Account wordt gevalideerd",
-    "pending_validation_desc": "Ons team bekijkt uw account. Het publiceren van uw huwelijkswebsite en offerteaanvragen zijn beschikbaar na validatie.",
+    "pending_validation_desc": "Ons team bekijkt uw account. Berichten sturen naar leveranciers, uw huwelijkswebsite publiceren en offerteaanvragen zijn beschikbaar na validatie.",
     "tile": {
       "budget": "Budget",
       "invites": "Gasten",
@@ -72,7 +75,11 @@
       "day": "De grote dag",
       "profile": "Profiel",
       "inspiration": "Inspiratie",
-      "cagnotte": "Geldpot"
+      "cagnotte": "Geldpot",
+      "seating": "Tafelplan",
+      "communication": "Berichten",
+      "site": "Mijn trouwsite",
+      "devis": "Offertes"
     },
     "jour_j_card": {
       "title": "Gasten-QR voor de trouwdag",
@@ -117,7 +124,9 @@
     "over_budget_text": "(overschreden)",
     "remaining": "Resterend",
     "warning_estimate": "De ingevoerde bedragen zijn indicatieve schattingen en vormen geen contractuele verplichtingen.",
-    "vendor_sync_note": "Tip: wanneer een leverancier de status 'Betaald' krijgt in het tabblad Leveranciers, wordt het bedrag hier automatisch toegevoegd."
+    "vendor_sync_note": "Tip: wanneer een leverancier de status 'Betaald' krijgt in het tabblad Leveranciers, wordt het bedrag hier automatisch toegevoegd.",
+    "item_added": "Budgetpost toegevoegd",
+    "item_deleted": "Post verwijderd"
   },
   "invites": {
     "title": "Gasten",
@@ -186,7 +195,8 @@
     "rsvp_accept": "Accepteren",
     "rsvp_reject": "Weigeren",
     "th_status": "Status",
-    "invite_success": "Uitnodiging verzonden!"
+    "invite_success": "Uitnodiging verzonden!",
+    "rsvp_question_label_required": "Het label van de vraag is verplicht."
   },
   "planning": {
     "title": "Planning",
@@ -218,7 +228,10 @@
       "Za",
       "Zo"
     ],
-    "due_date_label": "Uiterste datum"
+    "due_date_label": "Uiterste datum",
+    "task_marked_done": "Taak gemarkeerd als voltooid",
+    "task_marked_undone": "Taak heropend",
+    "seed_no_date_desc": "Ga naar uw profiel om uw trouwdatum in te stellen."
   },
   "jour_j": {
     "title": "Coördinatie Trouwdag",
@@ -304,7 +317,9 @@
     "open": "Openen",
     "delete": "Verwijderen",
     "empty": "Geen documenten",
-    "ko": "kB"
+    "ko": "kB",
+    "uploaded": "Document succesvol toegevoegd",
+    "upload_error": "Upload mislukt"
   },
   "vendors_page": {
     "title": "Leveranciers",

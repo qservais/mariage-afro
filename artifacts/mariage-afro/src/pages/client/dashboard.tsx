@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift, AlertCircle, QrCode, ExternalLink } from "lucide-react";
+import { Wallet, Users, ListChecks, Briefcase, FileText, Sparkles, UserCircle, Image as ImageIcon, Gift, AlertCircle, QrCode, ExternalLink, MessageCircle, Globe, Receipt, Armchair } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,15 +22,19 @@ interface JourJPublicConfig {
 }
 
 const TILES: TileDef[] = [
-  { to: "/espace-client/budget", labelKey: "client_dashboard.tile.budget", icon: Wallet, color: "bg-rose-50" },
-  { to: "/espace-client/invites", labelKey: "client_dashboard.tile.invites", icon: Users, color: "bg-amber-50" },
-  { to: "/espace-client/planning", labelKey: "client_dashboard.tile.planning", icon: ListChecks, color: "bg-emerald-50" },
-  { to: "/espace-client/prestataires", labelKey: "client_dashboard.tile.vendors", icon: Briefcase, color: "bg-blue-50" },
-  { to: "/espace-client/documents", labelKey: "client_dashboard.tile.documents", icon: FileText, color: "bg-purple-50" },
-  { to: "/espace-client/jour-j", labelKey: "client_dashboard.tile.day", icon: Sparkles, color: "bg-orange-50" },
-  { to: "/espace-client/inspiration", labelKey: "client_dashboard.tile.inspiration", icon: ImageIcon, color: "bg-pink-50" },
-  { to: "/espace-client/cagnotte", labelKey: "client_dashboard.tile.cagnotte", icon: Gift, color: "bg-yellow-50" },
-  { to: "/espace-client/profil", labelKey: "client_dashboard.tile.profile", icon: UserCircle, color: "bg-teal-50" },
+  { to: "/espace-client/budget", labelKey: "client_dashboard.tile.budget", icon: Wallet, color: "bg-wine-deep/5" },
+  { to: "/espace-client/invites", labelKey: "client_dashboard.tile.invites", icon: Users, color: "bg-cream" },
+  { to: "/espace-client/planning", labelKey: "client_dashboard.tile.planning", icon: ListChecks, color: "bg-wine-deep/5" },
+  { to: "/espace-client/plan-de-table", labelKey: "client_dashboard.tile.seating", icon: Armchair, color: "bg-cream" },
+  { to: "/espace-client/prestataires", labelKey: "client_dashboard.tile.vendors", icon: Briefcase, color: "bg-wine-deep/5" },
+  { to: "/espace-client/documents", labelKey: "client_dashboard.tile.documents", icon: FileText, color: "bg-cream" },
+  { to: "/espace-client/jour-j", labelKey: "client_dashboard.tile.day", icon: Sparkles, color: "bg-wine-deep/5" },
+  { to: "/espace-client/communication", labelKey: "client_dashboard.tile.communication", icon: MessageCircle, color: "bg-cream" },
+  { to: "/espace-client/site", labelKey: "client_dashboard.tile.site", icon: Globe, color: "bg-wine-deep/5" },
+  { to: "/espace-client/inspiration", labelKey: "client_dashboard.tile.inspiration", icon: ImageIcon, color: "bg-cream" },
+  { to: "/espace-client/cagnotte", labelKey: "client_dashboard.tile.cagnotte", icon: Gift, color: "bg-wine-deep/5" },
+  { to: "/espace-client/devis", labelKey: "client_dashboard.tile.devis", icon: Receipt, color: "bg-cream" },
+  { to: "/espace-client/profil", labelKey: "client_dashboard.tile.profile", icon: UserCircle, color: "bg-wine-deep/5" },
 ];
 
 interface Task { id: number; title: string; done: boolean; dueDate: string | null }

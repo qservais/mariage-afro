@@ -6,6 +6,7 @@ import { vendorApi } from "@/lib/vendorApi";
 import { CATEGORY_CONFIG } from "@/lib/vendorCategoryConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 type PriceUnit = "forfait" | "pers" | "heure" | "nuit" | "table";
 
@@ -28,6 +29,7 @@ const PRICE_UNITS: PriceUnit[] = ["forfait", "pers", "heure", "nuit", "table"];
 
 export default function VendorServicesPage() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const qc = useQueryClient();
   const idRef = useRef(0);
 
@@ -56,7 +58,9 @@ export default function VendorServicesPage() {
       qc.invalidateQueries({ queryKey: ["vendor", "profile"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      toast({ title: t("vendor.services.saved") });
     },
+    onError: () => toast({ title: t("vendor.services.save_error", { defaultValue: "Impossible d'enregistrer les services" }), variant: "destructive" }),
   });
 
   const suggestedServices: string[] =

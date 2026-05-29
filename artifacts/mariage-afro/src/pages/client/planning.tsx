@@ -56,7 +56,12 @@ export default function PlanningPage() {
   });
   const update = useMutation({
     mutationFn: ({ id, body }: { id: number; body: PlanningTaskPatch }) => clientApi.patch<PlanningTask>(`/api/client/planning/${id}`, body),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "planning"] }),
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({ queryKey: ["client", "planning"] });
+      if (variables.body.done !== undefined) {
+        toast({ title: variables.body.done ? t("planning.task_marked_done") : t("planning.task_marked_undone") });
+      }
+    },
   });
   const del = useMutation({
     mutationFn: (id: number) => clientApi.del(`/api/client/planning/${id}`),
@@ -73,7 +78,7 @@ export default function PlanningPage() {
 
   function handleSeed() {
     if (!couple?.weddingDate) {
-      toast({ title: t("planning.seed_no_date"), variant: "destructive" });
+      toast({ title: t("planning.seed_no_date"), description: t("planning.seed_no_date_desc"), variant: "destructive" });
       return;
     }
     if (!window.confirm(t("planning.seed_confirm"))) return;
