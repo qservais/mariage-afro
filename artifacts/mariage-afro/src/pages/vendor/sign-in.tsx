@@ -20,7 +20,7 @@ export default function VendorSignInPage() {
     setError(null);
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email, password, "vendor");
       navigate("/espace-pro", { replace: true });
     } catch (err) {
       setError((err as Error).message);

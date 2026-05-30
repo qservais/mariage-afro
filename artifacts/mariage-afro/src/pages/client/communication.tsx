@@ -38,6 +38,11 @@ interface MarketplaceVendor {
   city: string;
 }
 
+interface VendorsPage {
+  vendors: MarketplaceVendor[];
+  total: number;
+}
+
 function fmtTime(iso: string) {
   return new Date(iso).toLocaleString("fr-BE", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
@@ -98,10 +103,16 @@ export default function CommunicationPage() {
   });
 
   // ---- Vendor picker (start new conversation) ----
+  // /api/marketplace/vendors returns a paginated object { vendors, total, page, … }
+  // — we must extract .vendors, not use the object directly as an array.
   const { data: marketplaceVendors = [] } = useQuery<MarketplaceVendor[]>({
-    queryKey: ["marketplace", "vendors"],
-    queryFn: () => clientApi.get<MarketplaceVendor[]>("/api/marketplace/vendors"),
-    enabled: showPicker,
+    queryKey: ["marketplace", "vendors", "picker"],
+    queryFn: async () => {
+      const res = await clientApi.get<VendorsPage>("/api/marketplace/vendors?limit=200");
+      return res.vendors ?? [];
+    },
+    enabled: showPicker && isValidated,
+    staleTime: 5 * 60 * 1000,
   });
 
   const startConv = useMutation({

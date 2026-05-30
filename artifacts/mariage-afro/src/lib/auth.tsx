@@ -14,7 +14,7 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, expectedRole?: "client" | "vendor") => Promise<void>;
   register: (email: string, password: string, role?: "client" | "vendor") => Promise<void>;
   logout: () => Promise<void>;
   refetch: () => Promise<void>;
@@ -50,8 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { void fetchMe(); }, [fetchMe]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    await apiFetch("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+  const login = useCallback(async (email: string, password: string, expectedRole?: "client" | "vendor") => {
+    await apiFetch("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password, ...(expectedRole ? { expectedRole } : {}) }) });
     await fetchMe();
   }, [fetchMe]);
 

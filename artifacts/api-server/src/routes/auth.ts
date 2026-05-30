@@ -85,6 +85,7 @@ router.post("/auth/register", async (req: Request, res: Response): Promise<void>
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+  expectedRole: z.enum(["client", "vendor"]).optional(),
 });
 
 router.post("/auth/login", async (req: Request, res: Response): Promise<void> => {
@@ -93,7 +94,7 @@ router.post("/auth/login", async (req: Request, res: Response): Promise<void> =>
     res.status(400).json({ error: "Email ou mot de passe invalide" });
     return;
   }
-  const { email, password } = parsed.data;
+  const { email, password, expectedRole } = parsed.data;
   const emailLower = email.toLowerCase().trim();
 
   const [user] = await db.select().from(usersTable).where(eq(usersTable.email, emailLower)).limit(1);
@@ -105,6 +106,15 @@ router.post("/auth/login", async (req: Request, res: Response): Promise<void> =>
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) {
     res.status(401).json({ error: "Email ou mot de passe incorrect" });
+    return;
+  }
+
+  if (expectedRole && user.role !== expectedRole) {
+    const msg =
+      expectedRole === "vendor"
+        ? "Ce compte est un espace couple. Connectez-vous depuis l'espace marié·e."
+        : "Ce compte est un espace prestataire. Connectez-vous depuis l'espace pro.";
+    res.status(403).json({ error: msg });
     return;
   }
 
