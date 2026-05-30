@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, ExternalLink, FileText, UploadCloud, Loader2 } from "lucide-react";
 import { clientApi, clientProxyUpload } from "@/lib/clientApi";
+import { storageUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -55,8 +56,7 @@ export default function DocumentsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "documents"] }),
   });
 
-  const isStoredObject = (url: string) => url.startsWith("/objects/");
-  const servingUrl = (d: Doc) => (isStoredObject(d.url) ? `/api/storage${d.url}` : d.url);
+  const servingUrl = (d: Doc) => storageUrl(d.url) ?? d.url;
 
   return (
     <div className="space-y-6 max-w-6xl">

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Edit2, ImagePlus, Loader2, ExternalLink } from "lucide-react";
 import QRCode from "qrcode";
 import { clientApi, clientProxyUpload } from "@/lib/clientApi";
+import { storageUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,12 +22,8 @@ interface Cagnotte {
   active: boolean;
 }
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 function objectUrl(path: string | null): string {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/objects/")) return `/api/storage${path}`;
-  return path;
+  return storageUrl(path) ?? "";
 }
 
 async function uploadFile(file: File): Promise<string> {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { storageUrl as objectUrl } from "@/lib/storage-url";
 import type { BreadcrumbItem } from "@/components/SEO";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -46,16 +47,6 @@ interface VendorDetail {
 }
 
 const PRICE_LABEL = ["—", "€", "€€", "€€€", "€€€€"];
-
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-
-/** Convert an internal object path to a public serving URL. */
-function objectUrl(path: string | null | undefined): string | undefined {
-  if (!path) return undefined;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
-  return path;
-}
 
 function escapeJsonLd(s: string) {
   return s

@@ -14,13 +14,7 @@ interface Cagnotte {
   externalUrl: string | null;
 }
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-function objectUrl(p: string | null) {
-  if (!p) return "";
-  if (p.startsWith("http")) return p;
-  if (p.startsWith("/objects/")) return `${BASE}/storage${p}`;
-  return p;
-}
+import { storageUrlOrEmpty as objectUrl } from "@/lib/storage-url";
 
 function QrPreview({ value }: { value: string }) {
   const [src, setSrc] = useState("");

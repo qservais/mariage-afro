@@ -57,12 +57,7 @@ import bannerImg from "@assets/New-Project-12_1776614330308.png";
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-function objectUrl(path: string | null | undefined): string | undefined {
-  if (!path) return undefined;
-  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
-  return path;
-}
+import { storageUrl as objectUrl } from "@/lib/storage-url";
 
 
 interface DisplayVendor {

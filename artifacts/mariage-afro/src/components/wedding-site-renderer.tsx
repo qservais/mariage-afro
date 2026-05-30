@@ -7,6 +7,7 @@ import {
   type WeddingTemplateId,
   type WeddingTemplatePalette,
 } from "@/lib/wedding-templates";
+import { storageUrl as heroImageUrl } from "@/lib/storage-url";
 
 export interface WeddingSiteData {
   slug: string;
@@ -23,13 +24,6 @@ export interface WeddingSiteData {
   coverImage?: string | null;
 }
 
-const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
-function heroImageUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (/^https?:/i.test(path)) return path;
-  if (path.startsWith("/objects/")) return `/api/storage${path}`;
-  return null;
-}
 
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
 

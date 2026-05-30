@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { clientFetch, clientProxyUpload } from "@/lib/clientApi";
+import { storageUrl as coverImageDisplayUrl } from "@/lib/storage-url";
 import {
   WEDDING_TEMPLATE_IDS,
   WEDDING_FONT_HEADINGS,
@@ -49,14 +50,6 @@ interface WeddingWebsite {
 }
 
 const BASE_URL = import.meta.env.BASE_URL ?? "/";
-const BASE = BASE_URL.replace(/\/$/, "");
-
-function coverImageDisplayUrl(path: string | null): string | null {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/objects/")) return `/api/storage${path}`;
-  return path;
-}
 
 export default function SiteMariagePage() {
   const { t } = useTranslation();

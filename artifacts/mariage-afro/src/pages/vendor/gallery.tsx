@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { UploadCloud, Trash2, Star, StarOff, Loader2 } from "lucide-react";
 import { vendorApi, proxyUpload } from "@/lib/vendorApi";
+import { storageUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,8 +13,7 @@ interface VendorProfile {
   coverImage: string | null;
 }
 
-const isStoredObject = (url: string) => url.startsWith("/objects/");
-const displayUrl = (url: string) => (isStoredObject(url) ? `/api/storage${url}` : url);
+const displayUrl = (url: string) => storageUrl(url) ?? url;
 
 export default function VendorGalleryPage() {
   const { t } = useTranslation();

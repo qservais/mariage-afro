@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { storageUrl as objectUrl } from "@/lib/storage-url";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,13 +18,6 @@ const img7 = "/images/mielmaggm-156of162.webp";
 const img8 = "/images/m-sj2-05876.webp";
 
 const FALLBACK_IMAGES = [img1, img2, img3, img4, img5, img6, img7, img8];
-
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-function objectUrl(path: string | null | undefined): string | undefined {
-  if (!path) return undefined;
-  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
-  return path;
-}
 
 interface Realisation {
   id: number;

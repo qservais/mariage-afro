@@ -9,8 +9,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ImagePlus } from "lucide-react";
 
-const BASE = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
-const storageUrl = (path: string) => path?.startsWith("/objects/") ? `/api/storage${path}` : path;
+import { storageUrl } from "@/lib/storage-url";
 
 type Image = { id: number; boardId: number; url: string; caption: string | null };
 type Board = { id: number; title: string; description: string | null; images: Image[] };

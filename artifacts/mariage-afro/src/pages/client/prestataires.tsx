@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { clientApi } from "@/lib/clientApi";
+import { storageUrl as coverUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ClientVendor, ClientVendorCreate, ClientVendorPatch } from "@/lib/clientTypes";
@@ -73,12 +74,6 @@ const STATUS_COLORS: Record<string, string> = {
   paid:        "bg-gold/15 text-gold-deep",
 };
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
-
-function coverUrl(path: string | null): string | null {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  return path.replace(/^\/objects\//, "/api/storage/objects/");
-}
 
 // ── Vendor Picker Modal ───────────────────────────────────────────────────────
 

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, ImagePlus, Mail, Loader2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { clientApi, clientFetch, clientProxyUpload } from "@/lib/clientApi";
+import { storageUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,18 +30,13 @@ interface Collaborator {
   invitedAt: string;
 }
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-
 async function uploadFile(file: File): Promise<string> {
   const { objectPath } = await clientProxyUpload(file);
   return objectPath;
 }
 
 function objectUrl(path: string): string {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/objects/")) return `/api/storage${path}`;
-  return path;
+  return storageUrl(path) ?? "";
 }
 
 export default function InspirationPage() {
