@@ -1,6 +1,7 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { runVendorFollowupCron, runVendorFeaturedBackfill, runServicesObjectMigration, runVendorSlugMigration } from "./routes/vendor";
+import { seedRealisations } from "./lib/seedRealisations";
 
 const rawPort = process.env["PORT"];
 
@@ -23,6 +24,11 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // Seed default realisations if table is empty (runs on first deploy / fresh DB).
+  seedRealisations().catch((err) =>
+    logger.warn({ err }, "Realisations seed failed")
+  );
 
   // One-time backfill: ensure all existing vendors have tier=featured + status=active.
   runVendorFeaturedBackfill().catch((err) =>
