@@ -154,7 +154,7 @@ export default function MarketplaceFilters({
             placeholder={t("marketplace.search_placeholder")}
             value={draft.q}
             onChange={(e) => apply({ ...draft, q: e.target.value })}
-            className="w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep transition"
+            className="w-full pl-10 pr-3 py-2.5 text-sm bg-cream border border-wine-deep/20 focus:outline-none focus:border-wine-deep transition"
             data-testid="filter-search"
           />
         </div>
@@ -234,7 +234,7 @@ export default function MarketplaceFilters({
                   apply({ ...draft, capacityMin: Number.isFinite(n) && n > 0 ? n : null });
                 }}
                 placeholder={t("marketplace.capacity_placeholder")}
-                className="w-40 px-3 py-2 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
+                className="w-40 px-3 py-2 text-sm bg-cream border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
                 data-testid="filter-capacity"
               />
             </div>

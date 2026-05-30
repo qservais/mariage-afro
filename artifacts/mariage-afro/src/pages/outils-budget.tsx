@@ -377,7 +377,7 @@ export default function OutilsBudget() {
                           minLength={2}
                           value={contact.name}
                           onChange={(e) => setContact({ ...contact, name: e.target.value })}
-                          className="bg-white border-wine-deep/15 rounded-none mt-1"
+                          className="bg-cream border-wine-deep/15 rounded-none mt-1"
                           data-testid="budget-input-name"
                         />
                       </div>
@@ -388,7 +388,7 @@ export default function OutilsBudget() {
                           required
                           value={contact.email}
                           onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                          className="bg-white border-wine-deep/15 rounded-none mt-1"
+                          className="bg-cream border-wine-deep/15 rounded-none mt-1"
                           data-testid="budget-input-email"
                         />
                       </div>

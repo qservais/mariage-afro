@@ -15,6 +15,7 @@ interface Cagnotte {
 }
 
 import { storageUrlOrEmpty as objectUrl } from "@/lib/storage-url";
+import { ImgWithFallback } from "@/components/Picture";
 
 function QrPreview({ value }: { value: string }) {
   const [src, setSrc] = useState("");
@@ -59,7 +60,7 @@ export default function MariageCagnottePage() {
 
         {cagnottes.map((c) => (
           <article key={c.id} className="bg-cream border border-border p-6 flex flex-col md:flex-row gap-6">
-            {c.photo && <img src={objectUrl(c.photo)} alt={c.title} width={400} height={176} loading="lazy" decoding="async" className="w-full md:w-44 h-44 object-cover" />}
+            {c.photo && <ImgWithFallback src={objectUrl(c.photo)} alt={c.title} width={400} height={176} loading="lazy" decoding="async" className="w-full md:w-44 h-44 object-cover" />}
             <div className="flex-1 space-y-3">
               <h2 className="text-xl font-bold font-serif text-foreground">{c.title}</h2>
               {c.description && <p className="text-sm text-foreground/80 leading-relaxed">{c.description}</p>}

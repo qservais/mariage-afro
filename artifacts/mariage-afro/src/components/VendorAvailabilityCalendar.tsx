@@ -87,7 +87,7 @@ export default function VendorAvailabilityCalendar({
   const hasIndispo = rows.some((r) => r.date >= todayStr);
 
   return (
-    <div className="bg-white border border-wine-deep/10 p-5">
+    <div className="bg-cream border border-wine-deep/10 p-5">
       <div className="flex items-center justify-between mb-3">
         <h4 className="text-[11px] uppercase tracking-[0.25em] text-wine-deep font-medium">
           {t("marketplace.availability.title")}

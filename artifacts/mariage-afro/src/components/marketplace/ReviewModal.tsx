@@ -83,7 +83,7 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t("review_modal.title_placeholder")}
-              className="w-full px-3 py-2.5 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
+              className="w-full px-3 py-2.5 text-sm bg-cream border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
               data-testid="review-title"
             />
           </div>
@@ -98,7 +98,7 @@ export default function ReviewModal({ open, onClose, vendor, onSubmitted }: Prop
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder={t("review_modal.comment_placeholder")}
-              className="w-full px-3 py-2.5 text-sm bg-white border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
+              className="w-full px-3 py-2.5 text-sm bg-cream border border-wine-deep/20 focus:outline-none focus:border-wine-deep"
               data-testid="review-comment"
             />
             <p className="text-[11px] text-wine-deep/70 mt-1">{t("review_modal.char_count", { current: comment.length, max: 4000, min: 10 })}</p>

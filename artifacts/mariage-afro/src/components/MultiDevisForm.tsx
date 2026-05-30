@@ -227,7 +227,7 @@ export default function MultiDevisForm({ open, onClose, vendors, onSuccess }: Mu
                 {recipients.map((v) => (
                   <span
                     key={v.id}
-                    className="inline-block bg-white border border-wine-deep/20 px-3 py-1 text-xs text-wine-deep"
+                    className="inline-block bg-cream border border-wine-deep/20 px-3 py-1 text-xs text-wine-deep"
                   >
                     {v.name}
                   </span>

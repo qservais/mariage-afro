@@ -106,7 +106,7 @@ export default function Plateforme() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5, delay: i * 0.07 }}
-                  className="bg-cream p-10 flex flex-col group hover:bg-white transition-colors"
+                  className="bg-cream p-10 flex flex-col group hover:bg-cream-soft transition-colors"
                 >
                   <div className="flex items-start justify-between mb-8">
                     <div className="w-14 h-14 border border-gold-deep flex items-center justify-center text-gold-deep group-hover:bg-gold-deep group-hover:text-cream transition-colors">

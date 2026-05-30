@@ -250,7 +250,7 @@ export function SelectableCard<TValue extends string = string>({
             ctx.multiple ? "" : "rounded-full",
             selected
               ? "border-wine-deep bg-wine-deep text-cream"
-              : "border-wine-deep/30 bg-white",
+              : "border-wine-deep/30 bg-cream",
           )}
           aria-hidden="true"
         >

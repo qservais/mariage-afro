@@ -78,7 +78,7 @@ export default function VendorActionPanel({ vendor }: VendorActionPanelProps) {
   return (
     <>
       <div
-        className="bg-white p-5 border border-wine-deep/10 rounded-sm space-y-2"
+        className="bg-cream p-5 border border-wine-deep/10 rounded-sm space-y-2"
         data-testid="vendor-action-panel"
       >
         <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">

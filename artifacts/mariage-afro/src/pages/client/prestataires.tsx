@@ -169,7 +169,7 @@ function VendorPickerModal({
                 className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-wine-deep/[0.03] transition-colors disabled:opacity-50"
               >
                 {img ? (
-                  <img src={img} alt="" className="w-10 h-10 object-cover shrink-0 border border-wine-deep/10" aria-hidden="true" />
+                  <ImgWithFallback src={img} alt="" className="w-10 h-10 object-cover shrink-0 border border-wine-deep/10" aria-hidden="true" />
                 ) : (
                   <div className="w-10 h-10 bg-wine-deep/5 border border-wine-deep/10 flex items-center justify-center shrink-0" aria-hidden="true">
                     <Building2 className="w-4 h-4 text-wine-deep/25" />

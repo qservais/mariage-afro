@@ -1,4 +1,4 @@
-import { type CSSProperties, type ImgHTMLAttributes } from "react";
+import { type CSSProperties, type ImgHTMLAttributes, useState } from "react";
 
 type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "loading"> & {
   /** The original asset URL (JPG/JPEG/PNG) imported via `@assets/...` */
@@ -14,6 +14,39 @@ type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "loading"> & {
   loading?: "lazy" | "eager";
 };
 
+function ImagePlaceholder({
+  className,
+  style,
+  alt,
+}: {
+  className?: string;
+  style?: CSSProperties;
+  alt: string;
+}) {
+  return (
+    <div
+      className={`bg-wine-deep/[0.06] flex items-center justify-center overflow-hidden ${className ?? ""}`}
+      style={style}
+      role="img"
+      aria-label={alt || undefined}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        className="w-8 h-8 text-wine-deep/20"
+        aria-hidden="true"
+      >
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <polyline points="21 15 16 10 5 21" />
+      </svg>
+    </div>
+  );
+}
+
 /**
  * Renders a `<picture>` element that serves AVIF → WebP → original (JPG/PNG)
  * with explicit width/height + aspect-ratio CSS to eliminate CLS (Cumulative
@@ -23,6 +56,9 @@ type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "loading"> & {
  * If the optimization script hasn't been run, the <source> tags will 404 and
  * browsers gracefully fall back to the original <img>. So this is safe to
  * deploy incrementally.
+ *
+ * If the image fails to load for any reason, a branded cream/wine-deep
+ * placeholder is shown instead of the broken-image browser icon.
  */
 export function Picture({
   src,
@@ -34,17 +70,8 @@ export function Picture({
   style,
   ...rest
 }: Props) {
-  // Vite asset URLs come back with a hashed filename + extension, e.g.
-  //   "/assets/foo.GM-00756.jpg_xxx-AbCdEf12.jpeg"
-  // We derive the AVIF/WebP siblings by replacing only the trailing extension.
-  //
-  // IMPORTANT: <picture> does NOT fall back from a failed <source> request to
-  // the <img>. If a <source> matches by type and the resource 404s, the browser
-  // shows a broken image. So we only emit AVIF/WebP <source> tags for local
-  // bundled assets (where our Vite plugin guarantees the siblings exist) and
-  // for known-static extensions (.jpg/.jpeg/.png). External URLs (http(s)://,
-  // data:, blob:) — e.g. API-provided images from object storage — render as a
-  // plain <img> so they degrade safely.
+  const [failed, setFailed] = useState(false);
+
   const lastDot = src.lastIndexOf(".");
   const ext = lastDot > 0 ? src.slice(lastDot).toLowerCase() : "";
   const isLocalAsset = !/^(?:https?:|data:|blob:)/i.test(src);
@@ -59,6 +86,12 @@ export function Picture({
     aspectRatio: `${width} / ${height}`,
     ...style,
   };
+
+  if (failed) {
+    return (
+      <ImagePlaceholder className={className} style={aspectStyle} alt={alt} />
+    );
+  }
 
   return (
     <picture>
@@ -78,9 +111,50 @@ export function Picture({
         fetchPriority={eager ? "high" : "auto"}
         className={className}
         style={aspectStyle}
+        onError={() => setFailed(true)}
         {...rest}
       />
     </picture>
+  );
+}
+
+/**
+ * Drop-in wrapper for raw <img> tags showing user-generated content
+ * (storage images, vendor logos, gallery photos, etc.).
+ * Shows the same branded placeholder on load failure.
+ */
+export function ImgWithFallback({
+  src,
+  alt,
+  className,
+  style,
+  width,
+  height,
+  ...rest
+}: ImgHTMLAttributes<HTMLImageElement> & { alt: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed || !src) {
+    return (
+      <ImagePlaceholder
+        className={className}
+        style={style as CSSProperties}
+        alt={alt}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      style={style}
+      width={width}
+      height={height}
+      onError={() => setFailed(true)}
+      {...rest}
+    />
   );
 }
 

@@ -97,7 +97,7 @@ export default function SignInPage() {
             </div>
 
             {error && (
-              <p role="alert" className="text-sm text-red-700 bg-red-50 border border-red-200 px-4 py-3">
+              <p role="alert" className="text-sm text-wine-deep bg-wine-deep/5 border border-wine-deep/20 px-4 py-3">
                 {error}
               </p>
             )}

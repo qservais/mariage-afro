@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { SEO } from "@/components/SEO";
+import { ImgWithFallback } from "@/components/Picture";
 
 type ProfileId = "elegance_senegalaise" | "fusion_caribeenne" | "afro_chic" | "tradi_revisitee" | "minimaliste_dore";
 
@@ -341,7 +342,7 @@ export default function OutilsQuiz() {
                         >
                           {v.coverImage && (
                             <div className="aspect-[4/3] overflow-hidden bg-wine-deep/5">
-                              <img src={v.coverImage} alt={v.name} width={800} height={600} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform" style={{ aspectRatio: "4 / 3" }} />
+                              <ImgWithFallback src={v.coverImage} alt={v.name} width={800} height={600} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform" style={{ aspectRatio: "4 / 3" }} />
                             </div>
                           )}
                           <div className="p-4">
@@ -369,7 +370,7 @@ export default function OutilsQuiz() {
                           required minLength={2}
                           value={contact.name}
                           onChange={(e) => setContact({ ...contact, name: e.target.value })}
-                          className="bg-white border-wine-deep/15 rounded-none mt-1"
+                          className="bg-cream border-wine-deep/15 rounded-none mt-1"
                           data-testid="quiz-input-name"
                         />
                       </div>
@@ -379,7 +380,7 @@ export default function OutilsQuiz() {
                           type="email" required
                           value={contact.email}
                           onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                          className="bg-white border-wine-deep/15 rounded-none mt-1"
+                          className="bg-cream border-wine-deep/15 rounded-none mt-1"
                           data-testid="quiz-input-email"
                         />
                       </div>

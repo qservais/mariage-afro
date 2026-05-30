@@ -89,7 +89,7 @@ export function NumberStepperField({
           aria-describedby={[hintId, errorId].filter(Boolean).join(" ") || undefined}
           data-testid={testId}
           className={cn(
-            "w-16 h-11 text-center bg-white border-y border-wine-deep/20 rounded-none",
+            "w-16 h-11 text-center bg-cream border-y border-wine-deep/20 rounded-none",
             "text-base font-medium text-wine-deep tabular-nums",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:relative focus-visible:z-10",
             "disabled:opacity-60",

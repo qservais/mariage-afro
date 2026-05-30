@@ -174,7 +174,22 @@ function GalleryModal({ images, startIndex, onClose }: { images: string[]; start
           alt={`Photo de mariage ${idx + 1} sur ${images.length}`}
           className="max-w-[90vw] max-h-[85vh] object-contain"
           onClick={e => e.stopPropagation()}
+          onError={e => {
+            const el = e.currentTarget;
+            el.style.display = "none";
+            const ph = el.nextElementSibling as HTMLElement | null;
+            if (ph) ph.style.display = "flex";
+          }}
         />
+        <div
+          style={{ display: "none" }}
+          className="max-w-[90vw] w-80 h-60 bg-wine-deep/[0.12] flex items-center justify-center rounded"
+          onClick={e => e.stopPropagation()}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10 text-cream/30" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+          </svg>
+        </div>
         <button
           onClick={e => { e.stopPropagation(); setIdx(i => (i + 1) % images.length); }}
           aria-label="Image suivante"

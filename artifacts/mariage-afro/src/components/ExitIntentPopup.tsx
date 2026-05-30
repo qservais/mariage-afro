@@ -161,7 +161,7 @@ export default function ExitIntentPopup() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t("tools.budget.form_name")}
                   aria-label={t("tools.budget.form_name")}
-                  className="bg-white border-wine-deep/15 rounded-none"
+                  className="bg-cream border-wine-deep/15 rounded-none"
                   data-testid="popup-input-name"
                 />
                 <Input
@@ -170,7 +170,7 @@ export default function ExitIntentPopup() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t("tools.budget.form_email")}
                   aria-label={t("tools.budget.form_email")}
-                  className="bg-white border-wine-deep/15 rounded-none"
+                  className="bg-cream border-wine-deep/15 rounded-none"
                   data-testid="popup-input-email"
                 />
               </div>

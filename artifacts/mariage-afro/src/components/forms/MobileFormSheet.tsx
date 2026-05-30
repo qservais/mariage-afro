@@ -75,7 +75,7 @@ export function MobileFormSheet({
             className,
           )}
         >
-          <header className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-white border-b border-wine-deep/10 px-5 py-4 sm:px-6 sm:py-5">
+          <header className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-cream border-b border-wine-deep/10 px-5 py-4 sm:px-6 sm:py-5">
             <div className="min-w-0">
               <Dialog.Title className="font-display text-xl sm:text-2xl text-wine-deep leading-tight truncate">
                 {title}
@@ -97,7 +97,7 @@ export function MobileFormSheet({
           <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">{children}</div>
 
           {footer && (
-            <footer className="sticky bottom-0 bg-white border-t border-wine-deep/10 px-5 py-4 sm:px-6">
+            <footer className="sticky bottom-0 bg-cream border-t border-wine-deep/10 px-5 py-4 sm:px-6">
               {footer}
             </footer>
           )}

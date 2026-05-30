@@ -73,7 +73,21 @@ export default function MarketplaceMap({ points, height = 560 }: { points: MapPo
             <Popup>
               <div style={{ minWidth: 200, fontFamily: "system-ui" }}>
                 {p.image && (
-                  <img src={p.image} alt={p.name} width={240} height={90} loading="lazy" decoding="async" style={{ width: "100%", height: 90, objectFit: "cover", marginBottom: 8, aspectRatio: "8 / 3" }} />
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    width={240}
+                    height={90}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ width: "100%", height: 90, objectFit: "cover", marginBottom: 8, aspectRatio: "8 / 3" }}
+                    onError={e => {
+                      const el = e.currentTarget;
+                      el.style.background = "rgba(104,25,30,0.06)";
+                      el.style.objectFit = "none";
+                      el.removeAttribute("src");
+                    }}
+                  />
                 )}
                 <div style={{ fontWeight: 700, fontSize: 14, color: "var(--color-secondary)", marginBottom: 2 }}>{p.name}</div>
                 {p.category && (
