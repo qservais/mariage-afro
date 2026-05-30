@@ -4,7 +4,7 @@ import type { BreadcrumbItem } from "@/components/SEO";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail, Play, MessageCircle, X, ChevronLeft, ChevronRight, CalendarCheck } from "lucide-react";
+import { ArrowLeft, MapPin, CheckCircle2, Globe, Phone, Mail, Play, MessageCircle, X, ChevronLeft, ChevronRight, CalendarCheck, Check } from "lucide-react";
 import ReviewsList from "@/components/marketplace/ReviewsList";
 import { ReviewStars } from "@/components/marketplace/ReviewStars";
 import VendorActionPanel from "@/components/marketplace/VendorActionPanel";
@@ -44,6 +44,16 @@ interface VendorDetail {
   tiktok?: string | null;
   youtube?: string | null;
   pinterest?: string | null;
+  packages?: Array<{
+    id: string;
+    name: string;
+    subtitle?: string;
+    price?: number;
+    priceVisible: boolean;
+    highlighted?: boolean;
+    includes: string[];
+  }> | null;
+  videoUrls?: string[] | null;
 }
 
 const PRICE_LABEL = ["—", "€", "€€", "€€€", "€€€€"];
@@ -53,6 +63,15 @@ function escapeJsonLd(s: string) {
     .replace(/<\/(script)/gi, "<\\/$1")
     .replace(/<!--/g, "<\\!--")
     .replace(/\u2028|\u2029/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
+}
+
+function extractInstagramHandle(url: string): string {
+  try {
+    const u = new URL(url);
+    return u.pathname.replace(/^\/+|\/+$/g, "") || url;
+  } catch {
+    return url.replace(/^@/, "");
+  }
 }
 
 function getYouTubeEmbed(url: string): string | null {
@@ -420,6 +439,63 @@ export default function PrestataireDetail() {
             );
           })()}
 
+          {/* Packages / Formules */}
+          {vendor.packages && vendor.packages.length > 0 && (
+            <div>
+              <h2 className="font-display uppercase text-2xl text-wine-deep mb-6">
+                {t("vendor_detail.packages_title", { defaultValue: "Nos Formules" })}
+              </h2>
+              <div className={`grid gap-4 ${vendor.packages.length === 1 ? "grid-cols-1" : vendor.packages.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
+                {vendor.packages.map((pkg) => (
+                  <div
+                    key={pkg.id}
+                    className={`relative flex flex-col p-6 border ${
+                      pkg.highlighted
+                        ? "bg-wine-deep text-cream border-wine-deep"
+                        : "bg-cream-soft border-wine-deep/15"
+                    }`}
+                  >
+                    {pkg.highlighted && (
+                      <span className="absolute -top-3 left-6 bg-gold text-wine-deep text-[9px] uppercase tracking-[0.25em] font-bold px-3 py-1">
+                        {t("vendor_detail.packages_recommended", { defaultValue: "Recommandé" })}
+                      </span>
+                    )}
+                    <p className={`text-[10px] uppercase tracking-[0.25em] font-semibold mb-1 ${pkg.highlighted ? "text-gold" : "text-gold-deep"}`}>
+                      {t("vendor_detail.packages_formula", { defaultValue: "Formule" })}
+                    </p>
+                    <h3 className={`font-display text-2xl mb-2 ${pkg.highlighted ? "text-cream" : "text-wine-deep"}`}>
+                      {pkg.name}
+                    </h3>
+                    {pkg.subtitle && (
+                      <p className={`text-sm mb-4 leading-relaxed ${pkg.highlighted ? "text-cream/70" : "text-wine-deep/60"}`}>
+                        {pkg.subtitle}
+                      </p>
+                    )}
+                    <div className={`border-b pb-4 mb-4 ${pkg.highlighted ? "border-cream/20" : "border-wine-deep/10"}`}>
+                      {pkg.priceVisible && pkg.price != null ? (
+                        <p className={`text-3xl font-bold ${pkg.highlighted ? "text-gold" : "text-wine-deep"}`}>
+                          {pkg.price.toLocaleString("fr-BE")} <span className="text-lg">€</span>
+                        </p>
+                      ) : (
+                        <p className={`text-sm italic ${pkg.highlighted ? "text-cream/60" : "text-wine-deep/50"}`}>
+                          {t("vendor.services.price_on_request")}
+                        </p>
+                      )}
+                    </div>
+                    <ul className="space-y-2 flex-1">
+                      {pkg.includes.map((item, i) => (
+                        <li key={i} className="flex items-start gap-2.5 text-sm">
+                          <Check className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${pkg.highlighted ? "text-gold" : "text-gold-deep"}`} />
+                          <span className={pkg.highlighted ? "text-cream/90" : "text-wine-deep/80"}>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Gallery — click to open lightbox */}
           {galleryImages.length > 0 && (
             <div>
@@ -481,6 +557,73 @@ export default function PrestataireDetail() {
                   {vendor.videoUrl}
                 </a>
               )}
+            </div>
+          )}
+
+          {/* Additional videos */}
+          {vendor.videoUrls && vendor.videoUrls.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold flex items-center gap-2">
+                <Play className="w-3.5 h-3.5" />
+                {t("vendor_detail.more_videos", { defaultValue: "Autres vidéos" })}
+              </h3>
+              {vendor.videoUrls.map((url, idx) => {
+                const embed = getYouTubeEmbed(url);
+                return (
+                  <div key={idx}>
+                    {embed ? (
+                      <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+                        <iframe
+                          src={embed}
+                          title={`${vendor.name} — vidéo ${idx + 2}`}
+                          className="absolute inset-0 w-full h-full rounded-sm"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    ) : (
+                      <a href={url} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-wine-deep hover:text-gold text-sm underline">
+                        <Play className="w-4 h-4" /> {url}
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Instagram section */}
+          {vendor.instagram && (
+            <div>
+              <h2 className="font-display uppercase text-2xl text-wine-deep mb-4">Instagram</h2>
+              <div className="border border-wine-deep/10 p-6 bg-cream-soft">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full shrink-0 flex items-center justify-center text-white text-xl"
+                    style={{ background: "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)" }}>
+                    📷
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-wine-deep">
+                      @{extractInstagramHandle(vendor.instagram)}
+                    </p>
+                    <p className="text-xs text-wine-deep/60 mt-0.5">
+                      {t("vendor_detail.instagram_subtitle", { defaultValue: "Retrouvez nos dernières réalisations sur Instagram" })}
+                    </p>
+                  </div>
+                  <a
+                    href={vendor.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 px-5 py-2.5 bg-wine-deep text-cream text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-gold hover:text-wine-deep transition-colors"
+                  >
+                    {t("vendor_detail.instagram_follow", { defaultValue: "Suivre" })}
+                  </a>
+                </div>
+                <p className="text-sm text-wine-deep/70 leading-relaxed border-t border-wine-deep/10 pt-4">
+                  {t("vendor_detail.instagram_auto_sync", { defaultValue: "🔄 Découvrez toutes nos réalisations, coulisses et inspirations en temps réel sur notre compte Instagram." })}
+                </p>
+              </div>
             </div>
           )}
 

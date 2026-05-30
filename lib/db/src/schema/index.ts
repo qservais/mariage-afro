@@ -223,6 +223,17 @@ export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
   tiktok: text("tiktok"),
   youtube: text("youtube"),
   pinterest: text("pinterest"),
+  // LOT 160 — Packages/formulas + additional video gallery
+  packages: jsonb("packages").$type<Array<{
+    id: string;
+    name: string;
+    subtitle?: string;
+    price?: number | null;
+    priceVisible: boolean;
+    highlighted?: boolean;
+    includes: string[];
+  }>>().notNull().default([]),
+  videoUrls: jsonb("video_urls").$type<string[]>().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

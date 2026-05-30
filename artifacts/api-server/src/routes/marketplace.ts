@@ -147,6 +147,34 @@ async function tierByVendorId(vendorIds: number[]): Promise<Map<number, string>>
   return map;
 }
 
+/** Strip hidden price data from packages before sending to any public endpoint. */
+function toPublicPackages(
+  raw: unknown,
+): Array<{ id: string; name: string; subtitle?: string; priceVisible: boolean; price?: number; highlighted?: boolean; includes: string[] }> {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((p: unknown) => {
+    const pkg = p as {
+      id: string;
+      name: string;
+      subtitle?: string;
+      price?: number | null;
+      priceVisible: boolean;
+      highlighted?: boolean;
+      includes: string[];
+    };
+    const base: { id: string; name: string; subtitle?: string; priceVisible: boolean; highlighted?: boolean; includes: string[]; price?: number } = {
+      id: pkg.id,
+      name: pkg.name,
+      priceVisible: pkg.priceVisible,
+      includes: pkg.includes ?? [],
+      ...(pkg.subtitle ? { subtitle: pkg.subtitle } : {}),
+      ...(pkg.highlighted ? { highlighted: pkg.highlighted } : {}),
+    };
+    if (pkg.priceVisible && pkg.price != null) base.price = pkg.price;
+    return base;
+  });
+}
+
 /** Strip hidden price data from services before sending to any public endpoint.
  * When price_visible=true but price is null, emits price_on_request=true so the
  * client can display a "Prix sur demande" label. */
@@ -395,6 +423,7 @@ router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
   res.json({
     ...vendor,
     services: toPublicServices(vendor.services),
+    packages: toPublicPackages(vendor.packages),
     reviewCount: aggregates.get(id)?.count ?? 0,
     averageRating: aggregates.get(id)?.average ?? 0,
     reviews: recent,

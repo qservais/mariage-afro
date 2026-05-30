@@ -385,6 +385,16 @@ const profileSchema = z.object({
   facebook: z.string().max(200).optional().nullable(),
   tiktok: z.string().max(200).optional().nullable(),
   youtube: z.string().max(200).optional().nullable(),
+  packages: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1).max(120),
+    subtitle: z.string().max(500).optional(),
+    price: z.number().min(0).max(9_999_999).optional().nullable(),
+    priceVisible: z.boolean().default(false),
+    highlighted: z.boolean().optional(),
+    includes: z.array(z.string().min(1).max(200)).max(20),
+  })).max(6).optional(),
+  videoUrls: z.array(z.string().max(2000)).max(6).optional(),
 });
 
 router.patch("/vendor/profile", async (req, res) => {

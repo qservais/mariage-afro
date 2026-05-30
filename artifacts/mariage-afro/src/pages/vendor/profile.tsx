@@ -1,13 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Loader2, Upload, X } from "lucide-react";
+import { Loader2, Upload, X, Plus } from "lucide-react";
 import { vendorApi, proxyUpload } from "@/lib/vendorApi";
 import { prepareImageForUpload, ACCEPTED_IMAGE_ATTR } from "@/lib/image-compress";
 import { storageUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+
+interface PackageItem {
+  id: string;
+  name: string;
+  subtitle: string;
+  price: string;
+  priceVisible: boolean;
+  highlighted: boolean;
+  includes: string;
+}
 
 interface VendorProfile {
   id: number;
@@ -27,6 +37,16 @@ interface VendorProfile {
   youtube: string | null;
   logoUrl: string | null;
   services: string[];
+  packages?: Array<{
+    id: string;
+    name: string;
+    subtitle?: string;
+    price?: number | null;
+    priceVisible: boolean;
+    highlighted?: boolean;
+    includes: string[];
+  }>;
+  videoUrls?: string[];
 }
 
 function parseVideoEmbed(url: string): { embedUrl: string | null; type: "youtube" | "vimeo" | "upload" | null } {
@@ -76,6 +96,8 @@ export default function VendorProfilePage() {
   const [videoError, setVideoError] = useState<string | null>(null);
   const [showVideoPreview, setShowVideoPreview] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [packages, setPackages] = useState<PackageItem[]>([]);
+  const [additionalVideoUrls, setAdditionalVideoUrls] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -96,7 +118,34 @@ export default function VendorProfilePage() {
     setYoutubeChannel(vendor.youtube || "");
     setEmail(vendor.email || "");
     setLogoUrl(vendor.logoUrl || null);
+    setPackages(
+      (vendor.packages ?? []).map((p) => ({
+        id: p.id,
+        name: p.name,
+        subtitle: p.subtitle ?? "",
+        price: p.price != null ? String(p.price) : "",
+        priceVisible: p.priceVisible,
+        highlighted: p.highlighted ?? false,
+        includes: (p.includes ?? []).join("\n"),
+      }))
+    );
+    setAdditionalVideoUrls(vendor.videoUrls ?? []);
   }, [vendor]);
+
+  function addPackage() {
+    setPackages((prev) => [
+      ...prev,
+      { id: `pkg-${Date.now()}`, name: "", subtitle: "", price: "", priceVisible: false, highlighted: false, includes: "" },
+    ]);
+  }
+
+  function removePackage(idx: number) {
+    setPackages((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  function updatePkg(idx: number, field: keyof PackageItem, value: string | boolean) {
+    setPackages((prev) => prev.map((p, i) => (i === idx ? { ...p, [field]: value } : p)));
+  }
 
   const save = useMutation({
     mutationFn: (b: Record<string, unknown>) => vendorApi.patch("/api/vendor/profile", b),
@@ -169,6 +218,16 @@ export default function VendorProfilePage() {
             facebook: facebook || null,
             tiktok: tiktok || null,
             youtube: youtubeChannel || null,
+            packages: packages.filter((p) => p.name.trim()).map((p) => ({
+              id: p.id,
+              name: p.name.trim(),
+              ...(p.subtitle.trim() ? { subtitle: p.subtitle.trim() } : {}),
+              price: p.price !== "" ? parseFloat(p.price) || null : null,
+              priceVisible: p.priceVisible,
+              highlighted: p.highlighted,
+              includes: p.includes.split("\n").map((s) => s.trim()).filter(Boolean),
+            })),
+            videoUrls: additionalVideoUrls.filter(Boolean),
           });
         }}
       >
@@ -181,7 +240,6 @@ export default function VendorProfilePage() {
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 border border-neutral-200 bg-neutral-50 flex items-center justify-center overflow-hidden flex-shrink-0">
               {logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={storageUrl(logoUrl) ?? ""} alt="logo" className="w-full h-full object-cover" data-testid="logo-preview" />
               ) : (
                 <span className="text-[10px] uppercase tracking-wider text-neutral-400">{t("vendor.profile.logo_empty")}</span>
@@ -205,11 +263,7 @@ export default function VendorProfilePage() {
                 onClick={() => fileRef.current?.click()}
                 data-testid="button-logo-upload"
               >
-                {logoUploading ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : (
-                  <Upload className="w-4 h-4 mr-2" />
-                )}
+                {logoUploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
                 {logoUrl ? t("vendor.profile.logo_replace") : t("vendor.profile.logo_upload")}
               </Button>
               {logoUrl && (
@@ -306,26 +360,13 @@ export default function VendorProfilePage() {
             <p className="text-[11px] text-neutral-400 mt-1">{t("vendor.profile.video_url_help")}</p>
             {showVideoPreview && (() => {
               const { embedUrl, type } = parseVideoEmbed(videoUrl);
-              if (!embedUrl) return (
-                <p className="text-[11px] text-red-500 mt-2">{t("vendor.profile.video_preview_invalid")}</p>
-              );
+              if (!embedUrl) return <p className="text-[11px] text-red-500 mt-2">{t("vendor.profile.video_preview_invalid")}</p>;
               if (type === "upload") return (
-                <video
-                  src={embedUrl}
-                  controls
-                  className="mt-3 w-full max-w-sm aspect-video bg-black"
-                  data-testid="video-preview-player"
-                />
+                <video src={embedUrl} controls className="mt-3 w-full max-w-sm aspect-video bg-black" data-testid="video-preview-player" />
               );
               return (
                 <div className="mt-3 w-full max-w-sm aspect-video" data-testid="video-preview-embed">
-                  <iframe
-                    src={embedUrl}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Video preview"
-                  />
+                  <iframe src={embedUrl} className="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title="Video preview" />
                 </div>
               );
             })()}
@@ -380,7 +421,100 @@ export default function VendorProfilePage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        {/* Packages / Formules */}
+        <div className="border-t border-neutral-100 pt-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs uppercase tracking-wider text-wine-deep font-semibold">Formules & Packages</p>
+            {packages.length < 6 && (
+              <button type="button" onClick={addPackage} className="inline-flex items-center gap-1 text-xs text-wine-deep hover:text-gold transition-colors">
+                <Plus className="w-3.5 h-3.5" /> Ajouter
+              </button>
+            )}
+          </div>
+          {packages.length === 0 && (
+            <p className="text-xs text-neutral-400 italic">
+              Aucune formule — créez jusqu'à 6 packages pour présenter vos offres aux couples.
+            </p>
+          )}
+          <div className="space-y-4">
+            {packages.map((pkg, idx) => (
+              <div key={pkg.id} className="border border-neutral-200 p-4 space-y-3 bg-cream-soft">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-wine-deep uppercase tracking-wider">Formule {idx + 1}</span>
+                  <button type="button" onClick={() => removePackage(idx)} className="text-neutral-400 hover:text-red-600 transition-colors" aria-label="Supprimer">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-neutral-500 block mb-1">Nom *</label>
+                    <Input value={pkg.name} onChange={(e) => updatePkg(idx, "name", e.target.value)} placeholder="ex : Formule Premium" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-neutral-500 block mb-1">Sous-titre</label>
+                    <Input value={pkg.subtitle} onChange={(e) => updatePkg(idx, "subtitle", e.target.value)} placeholder="ex : Notre formule la plus populaire" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-neutral-500 block mb-1">Prix (€)</label>
+                    <Input type="number" min="0" value={pkg.price} onChange={(e) => updatePkg(idx, "price", e.target.value)} placeholder="ex : 2500" />
+                  </div>
+                  <div className="flex flex-col gap-2 justify-end pb-1">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" checked={pkg.priceVisible} onChange={(e) => updatePkg(idx, "priceVisible", e.target.checked)} className="accent-wine-deep" />
+                      <span className="text-xs text-neutral-600">Afficher le prix</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" checked={pkg.highlighted} onChange={(e) => updatePkg(idx, "highlighted", e.target.checked)} className="accent-wine-deep" />
+                      <span className="text-xs text-neutral-600">Mettre en avant</span>
+                    </label>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-[10px] uppercase tracking-wider text-neutral-500 block mb-1">
+                      Ce qui est inclus <span className="text-neutral-400 normal-case">(une ligne par élément)</span>
+                    </label>
+                    <textarea
+                      value={pkg.includes}
+                      onChange={(e) => updatePkg(idx, "includes", e.target.value)}
+                      rows={4}
+                      className="w-full border border-input bg-background px-3 py-2 text-sm"
+                      placeholder={"Consultation créative 2h\nDécoration de la salle\nMise en place le jour J"}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Additional video URLs */}
+        <div className="border-t border-neutral-100 pt-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs uppercase tracking-wider text-wine-deep font-semibold">Vidéos supplémentaires</p>
+            {additionalVideoUrls.length < 5 && (
+              <button type="button" onClick={() => setAdditionalVideoUrls((v) => [...v, ""])} className="inline-flex items-center gap-1 text-xs text-wine-deep hover:text-gold transition-colors">
+                <Plus className="w-3.5 h-3.5" /> Ajouter
+              </button>
+            )}
+          </div>
+          <p className="text-[11px] text-neutral-400">
+            Liens YouTube ou Vimeo additionnels affichés sur votre page publique. Max&nbsp;5.
+          </p>
+          {additionalVideoUrls.map((url, i) => (
+            <div key={i} className="flex gap-2">
+              <Input
+                value={url}
+                onChange={(e) => setAdditionalVideoUrls((v) => v.map((u, j) => (j === i ? e.target.value : u)))}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="flex-1"
+              />
+              <button type="button" onClick={() => setAdditionalVideoUrls((v) => v.filter((_, j) => j !== i))} className="px-2 text-neutral-400 hover:text-red-600 transition-colors" aria-label="Supprimer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4 pt-2">
           <Button
             type="submit"
             className="rounded-none uppercase tracking-wider text-xs bg-wine-deep text-cream hover:bg-wine-deep/90"
