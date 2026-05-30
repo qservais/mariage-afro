@@ -87,8 +87,10 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-        // Never retry on 401 — the user is not authenticated, retrying will spam the API
-        if (error instanceof Error && error.message.startsWith("401")) return false;
+        // Never retry on 4xx — these are definitive rejections, retrying just spams the API.
+        // clientFetch / vendorFetch attach .status so we can check cleanly.
+        const status = (error as Error & { status?: number }).status;
+        if (status && status >= 400 && status < 500) return false;
         return failureCount < 2;
       },
       staleTime: 60_000,

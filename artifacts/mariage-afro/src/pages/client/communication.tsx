@@ -64,7 +64,9 @@ export default function CommunicationPage() {
   const { data: conversations = [] } = useQuery<Conversation[]>({
     queryKey: ["client", "conversations"],
     queryFn: () => clientApi.get<Conversation[]>("/api/client/conversations"),
-    refetchInterval: 5000,
+    // Stop polling immediately on any error (e.g. 403 not-validated, 401 session expired)
+    // to avoid hammering the server with hundreds of failing requests per session.
+    refetchInterval: (query) => (query.state.error ? false : 5000),
   });
 
   const adminConv = useMemo(() => conversations.find((c) => c.kind === "admin") ?? null, [conversations]);
@@ -88,7 +90,7 @@ export default function CommunicationPage() {
     queryKey: ["client", "conversation", activeConvId, "messages"],
     queryFn: () => clientApi.get<Message[]>(`/api/client/conversations/${activeConvId}/messages`),
     enabled: activeConvId != null,
-    refetchInterval: 5000,
+    refetchInterval: (query) => (query.state.error ? false : 5000),
   });
 
   const sendMutation = useMutation({

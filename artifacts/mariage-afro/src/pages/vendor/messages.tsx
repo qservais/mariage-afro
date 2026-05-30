@@ -49,7 +49,7 @@ export default function VendorMessagesPage() {
   const { data: conversations = [] } = useQuery<VendorConversation[]>({
     queryKey: ["vendor", "conversations"],
     queryFn: () => vendorApi.get<VendorConversation[]>("/api/vendor/conversations"),
-    refetchInterval: 5000,
+    refetchInterval: (query) => (query.state.error ? false : 5000),
   });
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function VendorMessagesPage() {
     queryKey: ["vendor", "conversation", activeId, "messages"],
     queryFn: () => vendorApi.get<VendorMessage[]>(`/api/vendor/conversations/${activeId}/messages`),
     enabled: activeId != null,
-    refetchInterval: 5000,
+    refetchInterval: (query) => (query.state.error ? false : 5000),
   });
 
   const sendMutation = useMutation({

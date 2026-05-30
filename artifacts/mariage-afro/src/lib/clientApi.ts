@@ -29,7 +29,10 @@ export async function clientFetch<T = unknown>(
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(extractErrorMessage(text, "Une erreur est survenue."));
+    const msg = extractErrorMessage(text, "Une erreur est survenue.");
+    const err = new Error(msg) as Error & { status: number };
+    err.status = res.status;
+    throw err;
   }
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;

@@ -89,6 +89,8 @@ function isAllowedOrigin(origin: string): boolean {
     if (hostname === "localhost") return true;
     // Allow all mariage-afro.com subdomains (staging, dev, preview environments)
     if (hostname === "mariage-afro.com" || hostname.endsWith(".mariage-afro.com")) return true;
+    // Allow madebydone.be and all its subdomains (production custom domain)
+    if (hostname === "madebydone.be" || hostname.endsWith(".madebydone.be")) return true;
     // Allow REPLIT_DEV_DOMAIN and REPLIT_DEPLOYMENT_DOMAIN if set
     const devDomain = process.env.REPLIT_DEV_DOMAIN;
     const deployDomain = process.env.REPLIT_DEPLOYMENT_DOMAIN;
