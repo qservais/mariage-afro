@@ -115,8 +115,8 @@
     "mode_label": "Budgetmodus",
     "mode_libre": "Vrij budget",
     "mode_global": "Globaal budget",
-    "mode_libre_desc": "Vrije invoer, geen globaal totaal.",
-    "mode_global_desc": "Globaal bedrag bepaald, automatische tracking.",
+    "mode_libre_desc": "Vrije invoer — geen plafond, alleen informatieve tracking.",
+    "mode_global_desc": "Plafond vastgesteld bij onboarding — de voortgangsbalk volgt uw verplichtingen.",
     "total_budget": "Totaalbudget",
     "total_committed": "Vastgelegd",
     "progress_label": "{{pct}}% van budget vastgelegd",
@@ -126,7 +126,12 @@
     "warning_estimate": "De ingevoerde bedragen zijn indicatieve schattingen en vormen geen contractuele verplichtingen.",
     "vendor_sync_note": "Tip: wanneer een leverancier de status 'Betaald' krijgt in het tabblad Leveranciers, wordt het bedrag hier automatisch toegevoegd.",
     "item_added": "Budgetpost toegevoegd",
-    "item_deleted": "Post verwijderd"
+    "item_deleted": "Post verwijderd",
+    "no_budget_set": "Geen globaal budget ingesteld. Geef een bedrag op om de tracking te activeren.",
+    "set_budget": "Mijn budget instellen",
+    "edit_budget": "Budget aanpassen",
+    "save_budget": "Opslaan",
+    "budget_saved": "Globaal budget bijgewerkt"
   },
   "invites": {
     "title": "Gasten",

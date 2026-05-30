@@ -115,8 +115,8 @@
     "mode_label": "Budget mode",
     "mode_libre": "Free budget",
     "mode_global": "Global budget",
-    "mode_libre_desc": "Free entry, no global total.",
-    "mode_global_desc": "Set a total budget and track committed spending automatically.",
+    "mode_libre_desc": "Free entry — no cap, informative tracking only.",
+    "mode_global_desc": "Cap set at onboarding — the progress bar tracks your committed spending.",
     "total_budget": "Total budget",
     "total_committed": "Committed",
     "progress_label": "{{pct}}% of budget committed",
@@ -126,7 +126,12 @@
     "warning_estimate": "All amounts entered are indicative estimates and do not constitute contractual commitments.",
     "vendor_sync_note": "Tip: when a vendor is marked as 'Paid' in the Vendors tab, their amount is automatically added here.",
     "item_added": "Budget item added",
-    "item_deleted": "Item deleted"
+    "item_deleted": "Item deleted",
+    "no_budget_set": "No global budget set. Enter an amount to enable progress tracking.",
+    "set_budget": "Set my budget",
+    "edit_budget": "Edit budget",
+    "save_budget": "Save",
+    "budget_saved": "Global budget updated"
   },
   "invites": {
     "title": "Guests",

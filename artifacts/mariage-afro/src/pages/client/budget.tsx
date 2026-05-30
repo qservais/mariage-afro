@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, Check, Info, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Check, Info, AlertTriangle, Pencil, X as XIcon } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
@@ -18,13 +18,25 @@ export default function BudgetPage() {
   const { t, i18n } = useTranslation();
   const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
   const locale = LOCALE_MAP[lang] || "fr-BE";
+
+  // Items are stored in cents → divide by 100 to display as euros
   const fmt = (cents: number) => `${(cents / 100).toLocaleString(locale)} €`;
+  // Global budget is stored in whole euros (from onboarding tier selection)
+  const fmtEur = (euros: number) => `${euros.toLocaleString(locale)} €`;
 
   const qc = useQueryClient();
   const { toast } = useToast();
   const { data: couple, error: coupleError } = useCouple();
   const budgetMode = couple?.budgetMode ?? "libre";
-  const totalBudgetCents = couple?.budget ?? 0;
+
+  // couple.budget is stored as EUROS (integer). Budget items are in CENTS.
+  // Multiply by 100 to compare with item totals (cents).
+  const totalBudgetEuros = couple?.budget ?? 0;
+  const totalBudgetCents = totalBudgetEuros * 100;
+
+  // Budget editor state
+  const [editingBudget, setEditingBudget] = useState(false);
+  const [budgetInput, setBudgetInput] = useState("");
 
   const { data: items = [], error: itemsError } = useQuery<Item[]>({
     queryKey: ["client", "budget"],
@@ -56,6 +68,15 @@ export default function BudgetPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "me"] }),
     onError: (err: Error) => toast({ title: t("budget.error_mode", { defaultValue: "Impossible de changer le mode" }), description: err.message, variant: "destructive" }),
   });
+  const updateBudget = useMutation({
+    mutationFn: (budget: number) => clientApi.patch("/api/client/me", { budget }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["client", "me"] });
+      setEditingBudget(false);
+      toast({ title: t("budget.budget_saved", { defaultValue: "Budget global mis à jour" }) });
+    },
+    onError: (err: Error) => toast({ title: t("budget.error_mode", { defaultValue: "Impossible de mettre à jour le budget" }), description: err.message, variant: "destructive" }),
+  });
 
   const totalPlanned = items.reduce((s, i) => s + i.planned, 0);
   const totalActual = items.reduce((s, i) => s + i.actual, 0);
@@ -73,6 +94,17 @@ export default function BudgetPage() {
     return acc;
   }, []).filter((x) => x.value > 0);
 
+  const startEditBudget = () => {
+    setBudgetInput(totalBudgetEuros > 0 ? String(totalBudgetEuros) : "");
+    setEditingBudget(true);
+  };
+
+  const saveBudget = () => {
+    const val = Math.round(Number(budgetInput));
+    if (!budgetInput || isNaN(val) || val < 0) return;
+    updateBudget.mutate(val);
+  };
+
   return (
     <div className="space-y-6 max-w-6xl">
       <div className="flex items-end justify-between flex-wrap gap-3">
@@ -80,21 +112,26 @@ export default function BudgetPage() {
           <h2 className="font-bold text-2xl">{t("budget.title")}</h2>
           <p className="text-sm text-neutral-600">{t("budget.subtitle")}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs uppercase tracking-widest text-neutral-500">{t("budget.mode_label")} :</span>
-          <div className="inline-flex border border-neutral-300 text-xs uppercase tracking-wider">
-            {(["libre", "global"] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => updateMode.mutate(m)}
-                disabled={!!coupleError || updateMode.isPending}
-                className={`px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed ${budgetMode === m ? "bg-primary text-white" : "bg-cream-soft text-neutral-700"}`}
-                data-testid={`budget-mode-${m}`}
-              >
-                {t(`budget.mode_${m}`)}
-              </button>
-            ))}
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-widest text-neutral-500">{t("budget.mode_label")} :</span>
+            <div className="inline-flex border border-neutral-300 text-xs uppercase tracking-wider">
+              {(["libre", "global"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => updateMode.mutate(m)}
+                  disabled={!!coupleError || updateMode.isPending}
+                  className={`px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed ${budgetMode === m ? "bg-primary text-white" : "bg-cream-soft text-neutral-700"}`}
+                  data-testid={`budget-mode-${m}`}
+                >
+                  {t(`budget.mode_${m}`)}
+                </button>
+              ))}
+            </div>
           </div>
+          <p className="text-[11px] text-neutral-500 italic">
+            {t(`budget.mode_${budgetMode}_desc`)}
+          </p>
         </div>
       </div>
 
@@ -140,37 +177,94 @@ export default function BudgetPage() {
         </div>
       </div>
 
-      {/* Global budget progress bar */}
+      {/* Global budget section */}
       {budgetMode === "global" && (
         <div className="bg-cream p-6 border border-neutral-200 space-y-4">
-          <div className="flex justify-between items-baseline flex-wrap gap-2">
+          {/* Budget total header + editor */}
+          <div className="flex items-start justify-between flex-wrap gap-4">
             <div>
+              <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.total_budget")}</p>
+              {editingBudget ? (
+                <form
+                  className="flex items-center gap-2 mt-2"
+                  onSubmit={(e) => { e.preventDefault(); saveBudget(); }}
+                >
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      min="0"
+                      step="100"
+                      value={budgetInput}
+                      onChange={(e) => setBudgetInput(e.target.value)}
+                      placeholder="ex: 25000"
+                      className="rounded-none w-44 pr-8"
+                      autoFocus
+                      data-testid="input-global-budget"
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-neutral-500">€</span>
+                  </div>
+                  <Button type="submit" size="sm" className="rounded-none uppercase tracking-wider text-xs" disabled={updateBudget.isPending}>
+                    {t("budget.save_budget", { defaultValue: "Enregistrer" })}
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingBudget(false)}
+                    className="p-1 text-neutral-400 hover:text-neutral-700"
+                    aria-label="Annuler"
+                  >
+                    <XIcon className="w-4 h-4" />
+                  </button>
+                </form>
+              ) : totalBudgetEuros > 0 ? (
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-xl font-bold">{fmtEur(totalBudgetEuros)}</p>
+                  <button
+                    onClick={startEditBudget}
+                    className="text-neutral-400 hover:text-primary transition-colors"
+                    aria-label={t("budget.edit_budget", { defaultValue: "Modifier le budget" })}
+                    data-testid="btn-edit-global-budget"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-2">
+                  <p className="text-sm text-neutral-500 mb-2">{t("budget.no_budget_set", { defaultValue: "Aucun budget global défini." })}</p>
+                  <Button size="sm" variant="outline" className="rounded-none uppercase tracking-wider text-xs" onClick={startEditBudget} data-testid="btn-set-global-budget">
+                    {t("budget.set_budget", { defaultValue: "Définir mon budget" })}
+                  </Button>
+                </div>
+              )}
+            </div>
+            <div className="text-right">
               <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.total_committed")}</p>
               <p className="text-xl font-bold">{fmt(totalCommitted)}</p>
             </div>
-            <div className="text-right">
-              <p className="text-xs uppercase text-neutral-500 tracking-widest">{t("budget.total_budget")}</p>
-              <p className="text-xl font-bold">{fmt(totalBudgetCents)}</p>
-            </div>
           </div>
-          <div className="w-full bg-neutral-100 h-4 overflow-hidden">
-            <div
-              className={`h-4 transition-all ${progressPct >= 100 ? "bg-wine-deep" : progressPct >= 80 ? "bg-gold-deep" : "bg-primary"}`}
-              style={{ width: `${progressPct}%` }}
-              role="progressbar"
-              aria-valuenow={progressPct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={progressPct >= 100 ? t("budget.progress_over_budget") : t("budget.progress_label", { pct: progressPct })}
-            />
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-neutral-600">{t("budget.progress_label", { pct: progressPct })}</span>
-            <span className={`font-semibold ${remaining < 0 ? "text-wine-deep" : "text-gold-deep"}`}>
-              {t("budget.remaining")}: {fmt(Math.abs(remaining))}
-              {remaining < 0 && <span className="ml-1 font-bold">{t("budget.over_budget_text")}</span>}
-            </span>
-          </div>
+
+          {/* Progress bar (only if budget is set) */}
+          {totalBudgetEuros > 0 && (
+            <>
+              <div className="w-full bg-neutral-100 h-4 overflow-hidden">
+                <div
+                  className={`h-4 transition-all ${progressPct >= 100 ? "bg-wine-deep" : progressPct >= 80 ? "bg-gold-deep" : "bg-primary"}`}
+                  style={{ width: `${progressPct}%` }}
+                  role="progressbar"
+                  aria-valuenow={progressPct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={progressPct >= 100 ? t("budget.progress_over_budget") : t("budget.progress_label", { pct: progressPct })}
+                />
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-neutral-600">{t("budget.progress_label", { pct: progressPct })}</span>
+                <span className={`font-semibold ${remaining < 0 ? "text-wine-deep" : "text-gold-deep"}`}>
+                  {t("budget.remaining")}: {fmt(Math.abs(remaining))}
+                  {remaining < 0 && <span className="ml-1 font-bold">{t("budget.over_budget_text")}</span>}
+                </span>
+              </div>
+            </>
+          )}
         </div>
       )}
 

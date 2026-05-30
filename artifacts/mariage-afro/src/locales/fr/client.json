@@ -115,8 +115,8 @@
     "mode_label": "Mode budget",
     "mode_libre": "Budget libre",
     "mode_global": "Budget global",
-    "mode_libre_desc": "Saisie libre, pas de total global.",
-    "mode_global_desc": "Montant global défini, suivi automatique de l'engagement.",
+    "mode_libre_desc": "Saisie libre — pas de plafond, suivi informatif uniquement.",
+    "mode_global_desc": "Plafond fixé à l’onboarding — la barre de progression suit vos engagements.",
     "total_budget": "Budget total",
     "total_committed": "Engagé",
     "progress_label": "{{pct}}% du budget engagé",
@@ -126,7 +126,12 @@
     "warning_estimate": "Les montants saisis sont des estimations indicatives et ne constituent pas des engagements contractuels.",
     "vendor_sync_note": "Astuce : quand un prestataire passe au statut « Payé » dans l'onglet Prestataires, son montant est automatiquement ajouté ici.",
     "item_added": "Poste budgétaire ajouté",
-    "item_deleted": "Poste supprimé"
+    "item_deleted": "Poste supprimé",
+    "no_budget_set": "Aucun budget global défini. Renseignez un montant pour activer le suivi.",
+    "set_budget": "Définir mon budget",
+    "edit_budget": "Modifier le budget",
+    "save_budget": "Enregistrer",
+    "budget_saved": "Budget global mis à jour"
   },
   "invites": {
     "title": "Invités",
