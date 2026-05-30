@@ -131,6 +131,7 @@ tbody tr:last-child td{border-bottom:none}
   ${navLink("/admin/content/messages", "Messages")}
   ${navLink("/admin/content/conversations", "Conv. Pro")}
   ${navLink("/admin/content/wedding-websites", "Sites mariages")}
+  ${navLink("/admin/content/couples", "Couples")}
   ${navLink("/admin/content/vendor-accounts", "Comptes Pro")}
   ${navLink("/admin/content/partner-applications", "Candidatures")}
 </nav>
@@ -806,6 +807,94 @@ async function ensureAdminConversation(coupleId: number): Promise<number> {
     .where(and(eq(messagesTable.coupleId, coupleId), isNull(messagesTable.conversationId)));
   return created.id;
 }
+
+// ============ COUPLES — validation admin ============
+
+router.get("/content/couples", async (req: Request, res: Response) => {
+  const csrfToken = generateCsrfToken(req, res);
+  const toast = typeof req.query.toast === "string" ? req.query.toast : "";
+
+  const couples = await db
+    .select({
+      id: couplesTable.id,
+      partner1Name: couplesTable.partner1Name,
+      partner2Name: couplesTable.partner2Name,
+      email: couplesTable.email,
+      weddingDate: couplesTable.weddingDate,
+      status: couplesTable.status,
+      onboardedAt: couplesTable.onboardedAt,
+      validatedAt: couplesTable.validatedAt,
+      createdAt: couplesTable.createdAt,
+    })
+    .from(couplesTable)
+    .orderBy(desc(couplesTable.createdAt));
+
+  const fmtDate = (d: Date | string | null) =>
+    d ? new Date(d).toLocaleDateString("fr-BE", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+
+  const rows = couples.map((c) => {
+    const validated = !!c.validatedAt;
+    const names = `${escHtml(c.partner1Name || "?")} & ${escHtml(c.partner2Name || "?")}`;
+    return `<tr>
+      <td><strong>${names}</strong><br><span style="font-size:12px;color:#777">${escHtml(c.email || "")}</span></td>
+      <td>${fmtDate(c.weddingDate)}</td>
+      <td>${c.onboardedAt ? `<span class="badge active">Onboardé</span>` : `<span class="badge inactive">Non onboardé</span>`}</td>
+      <td>${validated
+        ? `<span class="badge active">✓ Validé le ${fmtDate(c.validatedAt)}</span>`
+        : `<span class="badge pending">⏳ En attente</span>`}</td>
+      <td>
+        ${validated
+          ? `<form method="post" action="/admin/content/couples/${c.id}/invalidate" style="display:inline">
+               <input type="hidden" name="_csrf" value="${escHtml(csrfToken)}">
+               <button type="submit" class="btn sm secondary" onclick="return confirm('Révoquer la validation ?')">Révoquer</button>
+             </form>`
+          : `<form method="post" action="/admin/content/couples/${c.id}/validate" style="display:inline">
+               <input type="hidden" name="_csrf" value="${escHtml(csrfToken)}">
+               <button type="submit" class="btn sm success">✓ Valider le compte</button>
+             </form>`}
+        <a class="btn sm secondary" href="/admin/content/messages/${c.id}" style="margin-left:6px">Messages</a>
+      </td>
+    </tr>`;
+  }).join("");
+
+  const body = `
+    <div class="page-header"><h1>Comptes couples</h1></div>
+    <p style="font-size:13px;color:#555;margin-bottom:20px">
+      Valider un compte couple lui donne accès à la messagerie avec les prestataires, aux demandes de devis et à la publication de son mini-site.
+    </p>
+    ${couples.length === 0
+      ? `<p style="color:#888">Aucun couple inscrit.</p>`
+      : `<table>
+           <thead><tr>
+             <th>Couple</th><th>Date de mariage</th><th>Onboarding</th><th>Validation</th><th>Actions</th>
+           </tr></thead>
+           <tbody>${rows}</tbody>
+         </table>`}`;
+
+  res.type("html").send(contentLayout("Couples", body, toast, csrfToken, "/content/couples"));
+});
+
+router.post("/content/couples/:id/validate", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) { res.redirect("/admin/content/couples"); return; }
+  const [couple] = await db.select({ id: couplesTable.id }).from(couplesTable).where(eq(couplesTable.id, id)).limit(1);
+  if (!couple) { res.redirect("/admin/content/couples"); return; }
+  await db.update(couplesTable)
+    .set({ validatedAt: new Date() })
+    .where(eq(couplesTable.id, id));
+  res.redirect("/admin/content/couples?toast=Compte+validé+avec+succès");
+});
+
+router.post("/content/couples/:id/invalidate", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) { res.redirect("/admin/content/couples"); return; }
+  await db.update(couplesTable)
+    .set({ validatedAt: null })
+    .where(eq(couplesTable.id, id));
+  res.redirect("/admin/content/couples?toast=Validation+révoquée");
+});
+
+// ============ MESSAGES COUPLES ============
 
 router.get("/content/messages", async (_req: Request, res: Response) => {
   // Admin↔couple threads only
