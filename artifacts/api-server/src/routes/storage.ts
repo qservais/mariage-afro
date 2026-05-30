@@ -7,7 +7,7 @@ import {
   RequestUploadUrlResponse,
 } from "@workspace/api-zod";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
-import { ObjectAclPolicy } from "../lib/objectAcl";
+import { ObjectAclPolicy, ObjectPermission } from "../lib/objectAcl";
 import { recordUploadIntent } from "../lib/uploadIntents";
 
 const router: IRouter = Router();
