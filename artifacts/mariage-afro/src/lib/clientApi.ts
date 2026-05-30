@@ -2,6 +2,17 @@ import { getAuthToken } from "@/lib/tokenStore";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
+function extractErrorMessage(text: string, fallback: string): string {
+  try {
+    const json = JSON.parse(text);
+    if (typeof json?.error === "string" && json.error.trim()) return json.error;
+    if (typeof json?.message === "string" && json.message.trim()) return json.message;
+  } catch {
+    if (text.trim()) return text.trim();
+  }
+  return fallback;
+}
+
 export async function clientFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
@@ -18,7 +29,7 @@ export async function clientFetch<T = unknown>(
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`${res.status} ${res.statusText}: ${text}`);
+    throw new Error(extractErrorMessage(text, "Une erreur est survenue."));
   }
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
@@ -40,7 +51,7 @@ export async function clientProxyUpload(file: File): Promise<{ objectPath: strin
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Upload failed: ${res.status} ${res.statusText}: ${text}`);
+    throw new Error(extractErrorMessage(text, "Échec de l'envoi du fichier."));
   }
   return res.json() as Promise<{ objectPath: string }>;
 }

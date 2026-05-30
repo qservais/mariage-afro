@@ -529,7 +529,12 @@ function PhotoUploadField({
         headers: { "x-content-type": file.type || "image/jpeg" },
         body: file,
       });
-      if (!res.ok) throw new Error(`Upload failed: HTTP ${res.status}`);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        let errMsg = "Échec de l'envoi du fichier.";
+        try { const j = JSON.parse(errText); if (j?.error) errMsg = j.error; } catch { if (errText.trim()) errMsg = errText.trim(); }
+        throw new Error(errMsg);
+      }
       const { objectPath } = await res.json();
       onChange(objectPath);
       setPreviewUrl(URL.createObjectURL(file));

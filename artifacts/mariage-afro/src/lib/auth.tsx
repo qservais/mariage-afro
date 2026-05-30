@@ -31,7 +31,7 @@ async function apiFetch(path: string, options: RequestInit = {}) {
     ...options,
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error ?? `${res.status} ${res.statusText}`);
+  if (!res.ok) throw new Error(data.error ?? data.message ?? "Une erreur est survenue.");
   return data;
 }
 
