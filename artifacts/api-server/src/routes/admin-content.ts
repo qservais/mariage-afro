@@ -17,7 +17,8 @@ import {
 } from "@workspace/db";
 import { eq, desc, asc, sql, and, isNull, isNotNull } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
-import { generateCsrfToken, requireCsrf, csrfAutoInjectorScript, CSRF_FIELD } from "../middlewares/adminCsrf";
+import { generateCsrfToken, requireCsrf, CSRF_FIELD } from "../middlewares/adminCsrf";
+import { adminContentLayout as contentLayout } from "../lib/adminLayout";
 import { notifyVendorApproved, notifyConversationMessage, notifyVendorInvitation, notifyPartnerApplicationApproved } from "../lib/email";
 
 const router = Router();
@@ -35,118 +36,6 @@ function escHtml(s: unknown): string {
 
 function csrfInp(token: string): string {
   return `<input type="hidden" name="${CSRF_FIELD}" value="${escHtml(token)}">`;
-}
-
-function contentLayout(title: string, body: string, toastMsg = "", csrfToken = "", currentPath = ""): string {
-  const navLink = (href: string, label: string) => {
-    const active = currentPath ? href.endsWith(currentPath) || currentPath.startsWith(href.replace("/admin", "")) : false;
-    return `<a href="${href}"${active ? ' aria-current="page"' : ""}>${label}</a>`;
-  };
-  const csrfMeta = csrfToken ? `<meta name="csrf-token" content="${escHtml(csrfToken)}">` : "";
-  return `<!DOCTYPE html><html lang="fr"><head>
-<meta charset="utf-8"><title>${escHtml(title)} — Admin</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-${csrfMeta}<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:#f0ede8;color:#1a1a1a;min-height:100vh;font-size:14px;line-height:1.5}
-.topbar{background:#1a1a1a;color:#fff;padding:0 24px;display:flex;align-items:stretch;gap:0;height:50px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.topbar a{color:#e8c88a;text-decoration:none;font-size:12px;font-weight:500;opacity:.85;display:flex;align-items:center;padding:0 12px;letter-spacing:.02em;transition:background .15s,opacity .15s}
-.topbar a:hover{opacity:1;background:rgba(255,255,255,.07)}
-.topbar a[aria-current="page"]{opacity:1;background:rgba(255,255,255,.12);border-bottom:2px solid #e8c88a}
-.topbar a.home{font-weight:700;color:#fff;letter-spacing:.04em;padding-right:16px;border-right:1px solid #333}
-.container{max-width:1160px;margin:32px auto;padding:0 20px}
-h1{font-size:20px;font-weight:700;margin-bottom:24px;letter-spacing:-.01em;color:#111}
-h2{font-size:15px;font-weight:600;margin-bottom:14px;color:#222}
-.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap}
-.page-header h1{margin-bottom:0}
-.card{background:#fff;border:1px solid #ddd;padding:28px;margin-bottom:24px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;margin-bottom:24px}
-.item{background:#fff;border:1px solid #ddd;padding:18px;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .15s}
-.item:hover{box-shadow:0 3px 8px rgba(0,0,0,.08)}
-.item h3{font-size:15px;font-weight:600;margin-bottom:5px;color:#111}
-.item p{font-size:13px;color:#555;margin-bottom:7px;line-height:1.45}
-.item .meta{font-size:11.5px;color:#888;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;border:none;text-decoration:none;border-radius:4px;transition:opacity .15s,transform .1s;white-space:nowrap}
-.btn:active{transform:scale(.98)}
-.btn.primary{background:#1a1a1a;color:#fff}
-.btn.primary:hover{background:#2d2d2d}
-.btn.danger{background:#c0392b;color:#fff}
-.btn.danger:hover{background:#a93226}
-.btn.secondary{background:#e8e4df;color:#1a1a1a;border:1px solid #ccc}
-.btn.secondary:hover{background:#ddd8d2}
-.btn.sm{padding:5px 12px;font-size:12px;border-radius:3px}
-.btn.success{background:#2e8b57;color:#fff}
-.btn.success:hover{background:#25704a}
-form{display:flex;flex-direction:column;gap:14px}
-.form-section{background:#faf9f7;border:1px solid #e8e4df;border-radius:5px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
-.form-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:2px}
-label{font-size:13px;font-weight:500;display:flex;flex-direction:column;gap:5px;color:#333}
-label.inline{flex-direction:row;align-items:center;gap:8px;font-weight:400}
-input,textarea,select{padding:9px 11px;border:1px solid #ccc;font-size:14px;font-family:inherit;background:#fff;width:100%;border-radius:4px;color:#1a1a1a;transition:border-color .15s,box-shadow .15s}
-input:focus,textarea:focus,select:focus{outline:none;border-color:#e8c88a;box-shadow:0 0 0 3px rgba(232,200,138,.18)}
-textarea{resize:vertical;min-height:80px}
-.err{background:#fdecea;border:1px solid #e74c3c;padding:12px 16px;font-size:13px;margin-bottom:16px;color:#c0392b;border-radius:4px}
-.ok{background:#eafaf1;border:1px solid #2ecc71;padding:12px 16px;font-size:13px;margin-bottom:16px;color:#1d8348;border-radius:4px}
-.badge{display:inline-block;padding:2px 9px;font-size:11px;font-weight:600;border-radius:12px;letter-spacing:.02em}
-.badge.active{background:#d5f5e3;color:#1d6d3e}
-.badge.inactive{background:#f0f0f0;color:#888}
-.badge.pending{background:#fef9e7;color:#7d6608}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 14px;background:#faf9f7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#666;border-bottom:2px solid #e8e4df}
-td{text-align:left;padding:11px 14px;border-bottom:1px solid #f0ede8}
-tbody tr:hover td{background:#faf9f7}
-tbody tr:last-child td{border-bottom:none}
-.thread{display:flex;flex-direction:column;gap:12px}
-.msg{padding:12px 16px;max-width:75%;border-radius:6px}
-.msg.couple{background:#f0ede8;align-self:flex-start}
-.msg.admin{background:#1a1a1a;color:#fff;align-self:flex-end}
-.msg .meta{font-size:11px;opacity:.6;margin-top:4px}
-.tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid #e5e5e5}
-.tab{padding:10px 20px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;color:#555;border-bottom:2px solid transparent;margin-bottom:-2px}
-.tab.active{color:#1a1a1a;border-bottom-color:#e8c88a}
-/* Toast */
-.toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:14px 20px;border-radius:6px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:9999;max-width:360px}
-.toast.show{opacity:1;transform:translateY(0)}
-.toast.success{background:#2e8b57}
-.toast.error{background:#c0392b}
-/* Upload photos */
-.upload-zone{border:2px dashed #ccc;border-radius:6px;padding:24px;text-align:center;background:#faf9f7;cursor:pointer;transition:border-color .2s,background .2s}
-.upload-zone:hover,.upload-zone.drag{border-color:#e8c88a;background:#fffbf0}
-.upload-zone p{font-size:13px;color:#777;margin-top:6px}
-.photo-previews{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-.photo-thumb{position:relative;width:80px;height:80px}
-.photo-thumb img{width:100%;height:100%;object-fit:cover;border-radius:4px;border:1px solid #ddd}
-.photo-thumb .remove-btn{position:absolute;top:-6px;right:-6px;background:#c0392b;color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-.upload-progress{font-size:12px;color:#777;margin-top:8px}
-.social-field{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:center}
-.social-icon{font-size:18px;text-align:center}
-</style>
-</head><body>
-<nav class="topbar" aria-label="Administration">
-  <a class="home" href="/admin">Mariage Afro Admin</a>
-  ${navLink("/admin/content/vendors", "Partenaires")}
-  ${navLink("/admin/content/venues", "Lieux")}
-  ${navLink("/admin/content/realisations", "Réalisations")}
-  ${navLink("/admin/content/messages", "Messages")}
-  ${navLink("/admin/content/conversations", "Conv. Pro")}
-  ${navLink("/admin/content/wedding-websites", "Sites mariages")}
-  ${navLink("/admin/content/couples", "Couples")}
-  ${navLink("/admin/content/vendor-accounts", "Comptes Pro")}
-  ${navLink("/admin/content/partner-applications", "Candidatures")}
-</nav>
-<main id="main-content">
-<div class="container">${body}</div>
-</main>
-${toastMsg ? `<div class="toast success show" id="toast">${escHtml(toastMsg)}</div>` : ""}
-<script>
-(function(){
-  var t=document.getElementById("toast");
-  if(t){setTimeout(function(){t.classList.remove("show");},4000);}
-})();
-${csrfAutoInjectorScript}
-</script>
-</body></html>`;
 }
 
 // ============ MARKETPLACE VENDORS ============

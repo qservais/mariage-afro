@@ -16,7 +16,7 @@ import {
   vendorLeadsTable,
 } from "@workspace/db";
 import { adminAuth, ADMIN_COOKIE, isAuthed } from "../middlewares/adminAuth";
-import { generateCsrfToken, requireCsrf, csrfAutoInjectorScript, CSRF_FIELD } from "../middlewares/adminCsrf";
+import { generateCsrfToken, requireCsrf, CSRF_FIELD } from "../middlewares/adminCsrf";
 import {
   notifyVendorSubscriptionActivated,
   notifyVendorApproved,
@@ -24,6 +24,7 @@ import {
   notifyCoupleApproved,
   notifyCoupleRejected,
 } from "../lib/email";
+import { adminLayout as layout } from "../lib/adminLayout";
 
 const router = Router();
 // CSRF validation on all admin POST routes (JSON and upload-photo endpoints are excluded inside requireCsrf)
@@ -100,59 +101,6 @@ const COOKIE_OPTS = {
   path: "/",
 };
 
-const css = `
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff4e4;color:#141414;min-height:100vh}
-  a{color:#68191e;text-decoration:none}
-  a:hover{text-decoration:underline}
-  .topbar{background:#68191e;color:#fff4e4;padding:16px 32px;display:flex;justify-content:space-between;align-items:center}
-  .topbar h1{font-size:18px;font-weight:700;letter-spacing:0.05em}
-  .topbar a,.topbar form button{color:#fff4e4;background:none;border:1px solid rgba(255,244,228,0.3);padding:6px 14px;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;font-family:inherit}
-  .topbar a:hover,.topbar form button:hover{background:rgba(255,244,228,0.1);text-decoration:none}
-  .container{max-width:1200px;margin:0 auto;padding:32px}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
-  .stat{background:#fff;border:1px solid #e8d9bf;padding:20px}
-  .stat .lbl{font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:#888;margin-bottom:8px}
-  .stat .val{font-size:32px;font-weight:700;color:#68191e}
-  .filters{background:#fff;border:1px solid #e8d9bf;padding:16px 20px;margin-bottom:16px;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
-  .filters label{font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#666;font-weight:600;margin-right:8px}
-  .filters select,.filters input{padding:6px 10px;border:1px solid #ddd;font-family:inherit;font-size:13px;background:#fff}
-  .filters .reset{margin-left:auto;font-size:12px;color:#68191e}
-  table{width:100%;background:#fff;border:1px solid #e8d9bf;border-collapse:collapse}
-  th,td{padding:12px 16px;text-align:left;font-size:13px;border-bottom:1px solid #f0e7d4}
-  th{background:#fff4e4;font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#666;font-weight:700}
-  tr:hover td{background:#fffaf2}
-  .badge{display:inline-block;padding:3px 10px;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;border-radius:0}
-  .badge.type-lead{background:#fff4e4;color:#68191e;border:1px solid #68191e}
-  .badge.type-vendor{background:#eef0ff;color:#3a3f8a;border:1px solid #3a3f8a}
-  .badge.type-venue{background:#e9f4ec;color:#2e6b3f;border:1px solid #2e6b3f}
-  .badge.type-partner{background:#f8e9eb;color:#a02335;border:1px solid #a02335}
-  .badge.status-new{background:#fff;color:#68191e;border:1px solid #68191e}
-  .badge.status-in_progress{background:#fff8e1;color:#c08800;border:1px solid #c08800}
-  .badge.status-done{background:#e8f5e9;color:#2e7d32;border:1px solid #2e7d32}
-  .empty{text-align:center;padding:48px;color:#888}
-  .pagination{margin-top:20px;display:flex;justify-content:center;gap:12px;font-size:13px}
-  .pagination a,.pagination span{padding:6px 12px;border:1px solid #e8d9bf;background:#fff}
-  .pagination .current{background:#68191e;color:#fff4e4;border-color:#68191e}
-  .detail-card{background:#fff;border:1px solid #e8d9bf;padding:32px;margin-bottom:24px}
-  .detail-card h2{font-size:22px;color:#68191e;margin-bottom:16px}
-  .field{margin-bottom:14px}
-  .field-lbl{font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#888;font-weight:600;margin-bottom:4px}
-  .field-val{font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
-  .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
-  .btn{padding:10px 20px;font-size:11px;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;border:1px solid #68191e;background:#fff;color:#68191e;cursor:pointer;font-family:inherit}
-  .btn:hover{background:#68191e;color:#fff}
-  .btn.primary{background:#68191e;color:#fff}
-  .btn.primary:hover{background:#4d1216}
-  textarea{width:100%;padding:10px;border:1px solid #ddd;font-family:inherit;font-size:13px;min-height:80px;resize:vertical}
-  .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh}
-  .login-card{background:#fff;border:1px solid #e8d9bf;padding:40px;width:100%;max-width:380px}
-  .login-card h1{color:#68191e;margin-bottom:24px;font-size:22px;text-align:center}
-  .login-card input{width:100%;padding:12px;border:1px solid #ddd;font-family:inherit;font-size:14px;margin-bottom:16px}
-  .login-card .btn{width:100%}
-  .err{color:#c01a1a;font-size:13px;margin-bottom:12px;text-align:center}
-`;
-
 async function getPendingCount(): Promise<number> {
   const [[cp], [va]] = await Promise.all([
     db.select({ count: sql<number>`count(*)::int` })
@@ -163,39 +111,6 @@ async function getPendingCount(): Promise<number> {
       .where(eq(vendorAccountsTable.status, "pending")),
   ]);
   return (cp?.count ?? 0) + (va?.count ?? 0);
-}
-
-function layout(title: string, body: string, showNav = true, pendingBadge = 0, csrfToken = "", currentSection = ""): string {
-  const badge = (n: number) => n > 0
-    ? ` <sup style="background:#c08800;color:#fff;padding:1px 5px;font-size:9px;vertical-align:super;font-weight:700;">${n}</sup>`
-    : "";
-  const navLink = (href: string, label: string, section: string) => {
-    const active = currentSection === section;
-    return `<a href="${href}"${active ? ' aria-current="page"' : ""}>${label}</a>`;
-  };
-  const nav = showNav ? `
-    <header>
-      <nav class="topbar" aria-label="Administration">
-        <h1><a href="/admin" style="color:inherit;">Mariage Afro · Admin</a></h1>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          ${navLink("/admin", "Demandes", "leads")}
-          ${navLink("/admin/reviews", "Avis", "reviews")}
-          ${navLink("/admin/subscriptions", "Abonnements", "subscriptions")}
-          ${navLink("/admin/accounts", `Comptes${badge(pendingBadge)}`, "accounts")}
-          ${navLink("/admin/couples", "Couples", "couples")}
-          ${navLink("/admin/devis", "Devis", "devis")}
-          ${navLink("/admin/content/vendors", "Prestataires", "content")}
-          <form method="POST" action="/admin/logout" style="margin:0;">
-            <input type="hidden" name="${CSRF_FIELD}" value="${escapeHtml(csrfToken)}">
-            <button type="submit">Déconnexion</button>
-          </form>
-        </div>
-      </nav>
-    </header>` : "";
-  const csrfMeta = csrfToken
-    ? `<meta name="csrf-token" content="${escapeHtml(csrfToken)}">`
-    : "";
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} — Mariage Afro Admin</title>${csrfMeta}<style>${css}</style><script>${csrfAutoInjectorScript}</script></head><body>${nav}<main id="main-content">${body}</main></body></html>`;
 }
 
 // ---------- Reviews moderation ----------
