@@ -466,27 +466,133 @@ router.get("/content/venues", async (_req: Request, res: Response) => {
 });
 
 function venueForm(v: Partial<{name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean}> = {}, error = "", csrfToken = ""): string {
+  const existingImages = v.images ?? [];
+  const uploadedPathsJson = JSON.stringify(existingImages.filter(u => !u.startsWith("http")));
+  const manualUrlsText = existingImages.filter(u => u.startsWith("http")).join("\n");
+  const allImagesValue = existingImages.join("\n");
+
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
-    <form method="post">
+    <form method="post" id="venue-form">
       ${csrfInp(csrfToken)}
-      <label>Nom *<input name="name" required value="${escHtml(v.name)}"></label>
-      <label>Ville *<input name="city" required value="${escHtml(v.city)}"></label>
-      <label>Capacité (ex: 50–500)<input name="capacity" value="${escHtml(v.capacity)}"></label>
-      <label>Style (ex: Moderne, Château, Industriel)<input name="style" value="${escHtml(v.style)}"></label>
-      <label>Description<textarea name="description">${escHtml(v.description)}</textarea></label>
-      <label>Options (une par ligne)<textarea name="options">${(v.options ?? []).join("\n")}</textarea></label>
-      <label>URLs photos (une par ligne)<textarea name="images">${(v.images ?? []).join("\n")}</textarea></label>
-      <label style="flex-direction:row;align-items:center;gap:8px">
-        <input type="checkbox" name="active" value="1" ${v.active!==false?"checked":""}> Actif
-      </label>
+
+      <div class="form-section">
+        <div class="form-section-title">Informations</div>
+        <label>Nom *<input name="name" required value="${escHtml(v.name)}"></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <label>Ville *<input name="city" required value="${escHtml(v.city)}"></label>
+          <label>Capacité (ex: 50–500)<input name="capacity" value="${escHtml(v.capacity)}"></label>
+        </div>
+        <label>Style (ex: Moderne, Château, Industriel)<input name="style" value="${escHtml(v.style)}"></label>
+        <label>Description<textarea name="description">${escHtml(v.description)}</textarea></label>
+        <label>Options (une par ligne)<textarea name="options">${(v.options ?? []).join("\n")}</textarea></label>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Photos</div>
+        <div class="upload-zone" id="venue-upload-zone" onclick="document.getElementById('venue-photo-input').click()" style="cursor:pointer">
+          <div style="font-size:28px">🏛️</div>
+          <p>Cliquez pour ajouter des photos, ou glissez-déposez ici</p>
+          <p style="font-size:11px;color:#aaa">JPG, PNG, WEBP — max 10 Mo par fichier</p>
+          <input type="file" id="venue-photo-input" accept="image/*" multiple style="display:none" onchange="venueHandleFiles(this.files)">
+        </div>
+        <div class="photo-previews" id="venue-photo-previews"></div>
+        <div id="venue-upload-status" role="status" aria-live="assertive" aria-atomic="true" class="upload-progress"></div>
+        <p style="font-size:11px;color:#aaa;margin-top:6px">Vous pouvez aussi coller des URLs directement :</p>
+        <label style="font-size:12px">URLs manuelles (une par ligne)
+          <textarea id="venue-images-manual" style="min-height:55px;font-size:12px" placeholder="https://example.com/photo.jpg" onchange="venueSyncManual()">${escHtml(manualUrlsText)}</textarea>
+        </label>
+        <input type="hidden" name="images" id="venue-images-hidden" value="${escHtml(allImagesValue)}">
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Statut</div>
+        <label class="inline">
+          <input type="checkbox" name="active" value="1" ${v.active!==false?"checked":""}> Actif
+        </label>
+      </div>
+
       <div class="actions">
         <button class="btn primary" type="submit">Enregistrer</button>
         <a class="btn secondary" href="/admin/content/venues">Annuler</a>
       </div>
     </form>
-    </div>`;
+    </div>
+
+    <script>
+    (function() {
+      var uploadedPaths = ${uploadedPathsJson};
+      var manualUrls = ${JSON.stringify(manualUrlsText ? manualUrlsText.split("\n").filter(Boolean) : [])};
+
+      function safeImgUrl(path) {
+        if (path.startsWith("/objects/")) return window.location.origin + "/api/storage" + path;
+        if (/^https:\\/\\//i.test(path)) return path;
+        return "";
+      }
+      function syncHidden() {
+        document.getElementById("venue-images-hidden").value = uploadedPaths.concat(manualUrls).join("\\n");
+      }
+      window.venueSyncManual = function() {
+        var raw = document.getElementById("venue-images-manual").value;
+        manualUrls = raw.split("\\n").map(function(s){ return s.trim(); }).filter(Boolean);
+        syncHidden();
+      };
+      function renderPreviews() {
+        var c = document.getElementById("venue-photo-previews");
+        c.innerHTML = "";
+        uploadedPaths.forEach(function(path, i) {
+          var url = safeImgUrl(path);
+          if (!url) return;
+          var thumb = document.createElement("div");
+          thumb.className = "photo-thumb";
+          var img = document.createElement("img");
+          img.src = url;
+          img.onerror = function(){ img.style.display = "none"; };
+          var btn = document.createElement("button");
+          btn.type = "button"; btn.className = "remove-btn"; btn.textContent = "×";
+          (function(idx){
+            btn.addEventListener("click", function(){ uploadedPaths.splice(idx, 1); renderPreviews(); syncHidden(); });
+          })(i);
+          thumb.appendChild(img); thumb.appendChild(btn); c.appendChild(thumb);
+        });
+      }
+      function uploadFile(file) {
+        var status = document.getElementById("venue-upload-status");
+        status.textContent = "Upload en cours…";
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/admin/content/venues/upload-photo");
+        xhr.setRequestHeader("x-content-type", file.type || "image/jpeg");
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+            uploadedPaths.push(data.objectPath);
+            renderPreviews();
+            syncHidden();
+            status.textContent = "Photo ajoutée.";
+            setTimeout(function(){ status.textContent = ""; }, 3000);
+          } else {
+            status.textContent = "Erreur lors de l\\'upload (" + xhr.status + ").";
+          }
+        };
+        xhr.onerror = function(){ status.textContent = "Erreur réseau."; };
+        xhr.send(file);
+      }
+      window.venueHandleFiles = function(files) {
+        if (!files || !files.length) return;
+        Array.from(files).forEach(function(f){ uploadFile(f); });
+      };
+      var zone = document.getElementById("venue-upload-zone");
+      zone.addEventListener("dragover", function(e){ e.preventDefault(); zone.classList.add("drag"); });
+      zone.addEventListener("dragleave", function(){ zone.classList.remove("drag"); });
+      zone.addEventListener("drop", function(e){
+        e.preventDefault(); zone.classList.remove("drag");
+        window.venueHandleFiles(e.dataTransfer.files);
+      });
+      renderPreviews();
+      syncHidden();
+    })();
+    </script>`;
 }
 
 router.get("/content/venues/new", (_req: Request, res: Response) => {
@@ -505,7 +611,7 @@ router.post("/content/venues/new", async (req: Request, res: Response) => {
     name: b.name, city: b.city, capacity: b.capacity ?? "", style: b.style ?? "",
     description: b.description ?? "",
     options: b.options ? b.options.split("\n").map(s=>s.trim()).filter(Boolean) : [],
-    images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(Boolean) : [],
+    images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     active: b.active === "1",
   });
   res.redirect("/admin/content/venues");
@@ -525,7 +631,7 @@ router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
     name: b.name, city: b.city, capacity: b.capacity ?? "", style: b.style ?? "",
     description: b.description ?? "",
     options: b.options ? b.options.split("\n").map(s=>s.trim()).filter(Boolean) : [],
-    images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(Boolean) : [],
+    images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     active: b.active === "1",
   }).where(eq(marketplaceVenuesTable.id, id));
   res.redirect("/admin/content/venues");
@@ -542,6 +648,43 @@ router.post("/content/venues/:id/delete", async (req: Request, res: Response) =>
   await db.delete(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.id, Number(req.params.id)));
   res.redirect("/admin/content/venues");
 });
+
+// ---- Venue photo upload ----
+router.post(
+  "/content/venues/upload-photo",
+  express.raw({ type: "*/*", limit: "50mb" }),
+  async (req: Request, res: Response) => {
+    const body = req.body as Buffer;
+    if (!Buffer.isBuffer(body) || body.length === 0) {
+      res.status(400).json({ error: "Empty body" });
+      return;
+    }
+    const contentType = (req.headers["x-content-type"] as string) || "image/jpeg";
+    try {
+      const uploadURL = await _objectStorageService.getObjectEntityUploadURL();
+      const objectPath = _objectStorageService.normalizeObjectEntityPath(uploadURL);
+      await recordUploadIntent(objectPath, "admin");
+      const gcsRes = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": contentType },
+        body,
+      });
+      if (!gcsRes.ok) {
+        req.log.error({ status: gcsRes.status }, "Venue photo upload: GCS failed");
+        res.status(502).json({ error: "Storage upload failed" });
+        return;
+      }
+      const finalPath = await _objectStorageService.trySetObjectEntityAclPolicy(objectPath, {
+        owner: "admin",
+        visibility: "public",
+      });
+      res.json({ objectPath: finalPath });
+    } catch (err) {
+      req.log.error({ err }, "Venue photo upload error");
+      res.status(500).json({ error: "Upload failed" });
+    }
+  },
+);
 
 // ============ RÉALISATIONS ============
 
