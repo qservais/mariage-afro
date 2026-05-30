@@ -70,12 +70,14 @@ export default function CommunicationPage() {
   const adminConv = useMemo(() => conversations.find((c) => c.kind === "admin") ?? null, [conversations]);
   const vendorConvs = useMemo(() => conversations.filter((c) => c.kind === "vendor"), [conversations]);
 
-  // Auto-select active conversation when tab changes
+  // Auto-select active conversation when tab changes.
+  // On the vendors tab we only auto-select when there is no activeConvId already set —
+  // this prevents overriding a freshly-created conversation before the query refetches.
   useEffect(() => {
     if (tab === "admin") {
       if (adminConv && activeConvId !== adminConv.id) setActiveConvId(adminConv.id);
     } else {
-      if (!activeConvId || !vendorConvs.find((c) => c.id === activeConvId)) {
+      if (!activeConvId) {
         setActiveConvId(vendorConvs[0]?.id ?? null);
       }
     }
@@ -121,10 +123,11 @@ export default function CommunicationPage() {
     onSuccess: (conv) => {
       setShowPicker(false);
       setPickerVendorId("");
+      setTab("vendors");
       setActiveConvId(conv.id);
       qc.invalidateQueries({ queryKey: ["client", "conversations"] });
     },
-    onError: () => toast({ title: t("client.conversations.error_start"), variant: "destructive" }),
+    onError: (err) => toast({ title: (err as Error).message || t("client.conversations.error_start"), variant: "destructive" }),
   });
 
   useEffect(() => {

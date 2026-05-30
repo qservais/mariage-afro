@@ -12,6 +12,8 @@ import { Loader2, ImagePlus } from "lucide-react";
 import { storageUrl } from "@/lib/storage-url";
 import { ImgWithFallback } from "@/components/Picture";
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 type Image = { id: number; boardId: number; url: string; caption: string | null };
 type Board = { id: number; title: string; description: string | null; images: Image[] };
 type SharedData = { role: "viewer" | "editor"; name: string | null; couple: { name: string }; boards: Board[] };

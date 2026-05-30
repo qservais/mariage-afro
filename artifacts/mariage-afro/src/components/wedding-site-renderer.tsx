@@ -285,7 +285,7 @@ function RoyalAfroLayout(props: LayoutProps) {
         style={{ backgroundColor: palette.hero.bg }}
       >
         <HeroCoverImage
-          src={heroImageUrl(site.coverImage)}
+          src={heroImageUrl(site.coverImage) ?? null}
           fallback="https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80"
         />
         <div className="relative z-10 px-6">
@@ -320,7 +320,7 @@ function BohemeLayout(props: LayoutProps) {
         className="relative py-36 text-center overflow-hidden"
         style={{ backgroundColor: palette.hero.bg }}
       >
-        <HeroCoverImage src={heroImageUrl(site.coverImage)} />
+        <HeroCoverImage src={heroImageUrl(site.coverImage) ?? null} />
         <svg
           className="absolute inset-x-0 top-8 mx-auto opacity-50"
           width="320"
@@ -367,7 +367,7 @@ function ModerneLayout(props: LayoutProps) {
         className="relative min-h-[70vh] flex flex-col items-center justify-center text-center px-6"
         style={{ backgroundColor: palette.hero.bg }}
       >
-        <HeroCoverImage src={heroImageUrl(site.coverImage)} />
+        <HeroCoverImage src={heroImageUrl(site.coverImage) ?? null} />
         <div
           className="relative z-10 w-full flex flex-col items-center"
         >
@@ -410,7 +410,7 @@ function TropicalLayout(props: LayoutProps) {
         className="relative py-32 text-center overflow-hidden"
         style={{ backgroundColor: palette.hero.bg }}
       >
-        <HeroCoverImage src={heroImageUrl(site.coverImage)} />
+        <HeroCoverImage src={heroImageUrl(site.coverImage) ?? null} />
         <svg
           className="absolute left-0 bottom-0 opacity-40"
           width="220"

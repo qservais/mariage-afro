@@ -87,6 +87,8 @@ function isAllowedOrigin(origin: string): boolean {
     if (hostname.endsWith(".replit.app")) return true;
     if (hostname.endsWith(".kirk.replit.dev")) return true;
     if (hostname === "localhost") return true;
+    // Allow all mariage-afro.com subdomains (staging, dev, preview environments)
+    if (hostname === "mariage-afro.com" || hostname.endsWith(".mariage-afro.com")) return true;
     // Allow REPLIT_DEV_DOMAIN and REPLIT_DEPLOYMENT_DOMAIN if set
     const devDomain = process.env.REPLIT_DEV_DOMAIN;
     const deployDomain = process.env.REPLIT_DEPLOYMENT_DOMAIN;

@@ -8,6 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import { clientApi } from "@/lib/clientApi";
 import { storageUrl as coverUrl } from "@/lib/storage-url";
+import { ImgWithFallback } from "@/components/Picture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ClientVendor, ClientVendorCreate, ClientVendorPatch } from "@/lib/clientTypes";

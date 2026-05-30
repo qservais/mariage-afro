@@ -27,6 +27,7 @@ interface DocCreate {
 }
 
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
+const isStoredObject = (url: string) => url.startsWith("/objects/");
 
 export default function DocumentsPage() {
   const { t, i18n } = useTranslation();

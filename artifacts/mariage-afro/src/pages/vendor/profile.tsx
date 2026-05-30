@@ -35,7 +35,7 @@ function parseVideoEmbed(url: string): { embedUrl: string | null; type: "youtube
   if (ytMatch) return { embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`, type: "youtube" };
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) return { embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}`, type: "vimeo" };
-  if (url.startsWith("/objects/") || url.match(/\.(mp4|webm|mov)$/i)) return { embedUrl: storageUrl(url), type: "upload" };
+  if (url.startsWith("/objects/") || url.match(/\.(mp4|webm|mov)$/i)) return { embedUrl: storageUrl(url) ?? null, type: "upload" };
   return { embedUrl: null, type: null };
 }
 
