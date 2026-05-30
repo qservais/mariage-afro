@@ -151,12 +151,22 @@ ${csrfAutoInjectorScript}
 // ============ MARKETPLACE VENDORS ============
 
 router.get("/content/vendors", async (_req: Request, res: Response) => {
-  const vendors = await db.select().from(marketplaceVendorsTable).orderBy(asc(marketplaceVendorsTable.name));
+  const rows = await db
+    .select({
+      v: marketplaceVendorsTable,
+      accountEmail: vendorAccountsTable.email,
+      accountContact: vendorAccountsTable.contactName,
+      accountPhone: vendorAccountsTable.phone,
+      accountStatus: vendorAccountsTable.status,
+    })
+    .from(marketplaceVendorsTable)
+    .leftJoin(vendorAccountsTable, eq(vendorAccountsTable.vendorId, marketplaceVendorsTable.id))
+    .orderBy(asc(marketplaceVendorsTable.name));
   const toast = _req.query.invite_ok ? "Invitation envoyée avec succès." : (_req.query.saved ? "Partenaire enregistré." : "");
   const csrfToken = generateCsrfToken(_req, res);
-  const listHtml = vendors.length === 0
+  const listHtml = rows.length === 0
     ? `<p style="color:#888">Aucun partenaire. Cliquez sur "+ Ajouter" pour commencer.</p>`
-    : `<div class="grid">${vendors.map(v => `
+    : `<div class="grid">${rows.map(({ v, accountEmail, accountContact, accountPhone, accountStatus }) => `
       <div class="item">
         <h3>${escHtml(v.name)} ${v.verified ? '<span style="color:#2e8b57;font-size:13px">✓</span>' : ""}</h3>
         <p style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#888;margin-bottom:6px">${escHtml(v.category)} · ${escHtml(v.city)}</p>
@@ -165,8 +175,13 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
           <span class="badge ${v.active ? "active" : "inactive"}">${v.active ? "Actif" : "Inactif"}</span>
           <span>${v.services.length} services</span>
           <span>Note: ${v.rating}/5</span>
-          ${v.invitedEmail ? `<span>✉ ${escHtml(v.invitedEmail)}</span>` : ""}
         </div>
+        ${accountEmail ? `
+        <div style="margin:8px 0 4px;padding:8px 10px;background:#f0faf4;border:1px solid #b7e4c7;border-radius:4px;font-size:12px;color:#1a5c35;line-height:1.6;">
+          <strong style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#2e8b57;">✓ Compte lié</strong><br>
+          ${accountContact ? `${escHtml(accountContact)} — ` : ""}<a href="mailto:${escHtml(accountEmail)}" style="color:#1d6d3e;font-weight:600;">${escHtml(accountEmail)}</a>${accountPhone ? ` · ${escHtml(accountPhone)}` : ""}
+          ${accountStatus !== "approved" ? `<span style="margin-left:6px;font-size:11px;color:#7d6608;">(${escHtml(accountStatus ?? "")})</span>` : ""}
+        </div>` : v.invitedEmail ? `<p style="font-size:12px;color:#888;margin:6px 0 2px;">✉ Invitation envoyée : ${escHtml(v.invitedEmail)}</p>` : ""}
         <div class="actions">
           <a class="btn sm secondary" href="/admin/content/vendors/${v.id}/edit">Modifier</a>
           <a class="btn sm secondary" href="/admin/devis?vendor_id=${v.id}" title="Voir les devis">Devis</a>
@@ -179,7 +194,7 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
             <button class="btn sm danger" type="submit">Supprimer</button>
           </form>
         </div>
-        <details style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+        ${!accountEmail ? `<details style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
           <summary style="cursor:pointer;font-size:12px;color:#68191e;font-weight:600;letter-spacing:0.05em;">✉ Lier un compte prestataire par email</summary>
           <form method="post" action="/admin/content/vendors/${v.id}/invite" style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             ${csrfInp(csrfToken)}
@@ -190,12 +205,12 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
             <button class="btn sm primary" type="submit">Lier</button>
           </form>
           <p style="font-size:11px;color:#888;margin-top:6px;">Le prestataire crée son compte sur /espace-pro/register avec cet email → il est automatiquement lié à cette fiche.</p>
-        </details>
+        </details>` : ""}
       </div>`).join("")}</div>`;
 
   const body = `
     <div class="page-header">
-      <h1>Partenaires Marketplace <span style="font-size:14px;font-weight:400;color:#888">(${vendors.length})</span></h1>
+      <h1>Partenaires Marketplace <span style="font-size:14px;font-weight:400;color:#888">(${rows.length})</span></h1>
       <a class="btn primary" href="/admin/content/vendors/new">+ Ajouter un partenaire</a>
     </div>
     ${listHtml}`;
