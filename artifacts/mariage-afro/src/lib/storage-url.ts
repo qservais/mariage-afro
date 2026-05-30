@@ -4,6 +4,7 @@ export function storageUrl(path: string | null | undefined): string | null {
   if (!path) return null;
   if (/^https?:/i.test(path)) return path;
   if (path.startsWith("/objects/")) return `${BASE}/api/storage${path}`;
+  if (path.startsWith("/images/") || path.startsWith("/videos/")) return `${BASE}${path}`;
   return path;
 }
 

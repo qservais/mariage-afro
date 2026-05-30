@@ -201,13 +201,14 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const galleryImages = (r.gallery?.length ? r.gallery : r.coverImage ? [r.coverImage] : []).map((p) => objectUrl(p) ?? p);
-  const cover = objectUrl(r.coverImage) ?? galleryImages[0] ?? FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
+  const cover = objectUrl(r.coverImage) ?? galleryImages[0] ?? objectUrl(FALLBACK_IMAGES[index % FALLBACK_IMAGES.length]) ?? FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
   const isReversed = index % 2 === 1;
 
   // Double-video mode: both videoCouple AND videoTeaser are set
   const hasDoubleVideo = !!(r.videoCouple && r.videoTeaser);
   // Single-video fallback (legacy videoUrl or only one of the two fields)
-  const singleVideoUrl = r.videoUrl || (!hasDoubleVideo ? (r.videoCouple || r.videoTeaser) : null) || null;
+  const rawVideoUrl = r.videoUrl || (!hasDoubleVideo ? (r.videoCouple || r.videoTeaser) : null) || null;
+  const singleVideoUrl = rawVideoUrl ? (objectUrl(rawVideoUrl) ?? rawVideoUrl) : null;
 
   const formattedDate = r.weddingDate
     ? new Date(r.weddingDate).toLocaleDateString("fr-BE", { month: "long", year: "numeric" })
@@ -348,12 +349,12 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
           <div className="flex flex-col">
             <div className="relative flex flex-col sm:flex-row">
               <VideoPlayer
-                url={r.videoCouple!}
+                url={objectUrl(r.videoCouple) ?? r.videoCouple!}
                 label={t("realisations.video_couple_label")}
                 className="flex-1 aspect-video"
               />
               <VideoPlayer
-                url={r.videoTeaser!}
+                url={objectUrl(r.videoTeaser) ?? r.videoTeaser!}
                 label={t("realisations.video_teaser_label")}
                 className="flex-1 aspect-video"
               />
