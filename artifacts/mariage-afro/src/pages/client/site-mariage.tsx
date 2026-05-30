@@ -54,7 +54,7 @@ const BASE = BASE_URL.replace(/\/$/, "");
 function coverImageDisplayUrl(path: string | null): string | null {
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  if (path.startsWith("/objects/")) return `/api/storage${path}`;
   return path;
 }
 

@@ -1026,7 +1026,7 @@ router.patch("/client/wedding-website", async (req, res) => {
     .where(eq(weddingWebsitesTable.coupleId, r.coupleId));
 
   const data = { ...parsed.data };
-  if (typeof data.coverImage === "string" && data.coverImage.startsWith("/objects/")) {
+  if (typeof data.coverImage === "string" && data.coverImage.startsWith("/objects/") && data.coverImage !== current?.coverImage) {
     if (!await consumeUploadIntent(data.coverImage, r.userId)) {
       res.status(403).json({ error: "Upload intent expired or unauthorized" });
       return;
