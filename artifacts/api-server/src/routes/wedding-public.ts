@@ -23,7 +23,7 @@ const storageService = new ObjectStorageService();
 const router = Router();
 
 const rsvpSchema = z.object({
-  name: z.string().min(1).max(100).optional().default(""),
+  name: z.string().max(100).optional().default(""),
   firstName: z.string().min(1).max(100),
   lastName: z.string().max(100).optional().default(""),
   email: z.string().email(),
