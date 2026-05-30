@@ -43,9 +43,6 @@ interface AuthedRequest extends Request {
 }
 
 
-// Stable couple columns — excludes budgetMode which was added in dev but not yet
-// applied to production. Use _safeCoupleSelect everywhere until the next Publish
-// syncs the schema, then revert to plain db.select().
 const _safeCoupleSelect = {
   id: couplesTable.id,
   userId: couplesTable.userId,
@@ -58,6 +55,7 @@ const _safeCoupleSelect = {
   ceremonyVenue: couplesTable.ceremonyVenue,
   guestEstimate: couplesTable.guestEstimate,
   budget: couplesTable.budget,
+  budgetMode: couplesTable.budgetMode,
   status: couplesTable.status,
   onboardedAt: couplesTable.onboardedAt,
   validatedAt: couplesTable.validatedAt,
