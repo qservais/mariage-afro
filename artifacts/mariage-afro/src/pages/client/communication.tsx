@@ -215,7 +215,7 @@ export default function CommunicationPage() {
                   <select
                     value={pickerVendorId}
                     onChange={(e) => setPickerVendorId(e.target.value)}
-                    className="w-full border border-border px-2 py-1.5 text-sm bg-white"
+                    className="w-full border border-border px-2 py-1.5 text-sm bg-cream"
                     data-testid="select-vendor-picker"
                   >
                     <option value="">{t("client.conversations.pick_vendor_placeholder")}</option>

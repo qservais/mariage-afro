@@ -234,7 +234,7 @@ export default function VendorServicesPage() {
                       <select
                         value={svc.price_unit}
                         onChange={(e) => updateServiceUnit(svc.name, e.target.value as PriceUnit)}
-                        className="h-8 text-xs border border-neutral-300 bg-white px-2 py-0 text-neutral-700"
+                        className="h-8 text-xs border border-neutral-300 bg-cream px-2 py-0 text-neutral-700"
                         data-testid={`select-unit-${svc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                       >
                         {PRICE_UNITS.map((u) => (

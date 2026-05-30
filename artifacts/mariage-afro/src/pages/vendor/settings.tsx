@@ -133,7 +133,7 @@ export default function VendorSettingsPage() {
               autoFollowup ? "bg-wine-deep" : "bg-neutral-300"
             }`}
           >
-            <span className={`inline-block h-5 w-5 bg-white shadow transition-transform ${autoFollowup ? "translate-x-6" : "translate-x-1"}`} />
+            <span className={`inline-block h-5 w-5 bg-cream shadow transition-transform ${autoFollowup ? "translate-x-6" : "translate-x-1"}`} />
           </button>
         </div>
         <p className="text-xs uppercase tracking-widest text-neutral-500">

@@ -25,7 +25,7 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 function objectUrl(path: string | null): string {
   if (!path) return "";
   if (path.startsWith("http")) return path;
-  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  if (path.startsWith("/objects/")) return `/api/storage${path}`;
   return path;
 }
 

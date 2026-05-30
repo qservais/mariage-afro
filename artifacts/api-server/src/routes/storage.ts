@@ -7,7 +7,7 @@ import {
   RequestUploadUrlResponse,
 } from "@workspace/api-zod";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
-import { ObjectPermission } from "../lib/objectAcl";
+import { ObjectAclPolicy } from "../lib/objectAcl";
 import { recordUploadIntent } from "../lib/uploadIntents";
 
 const router: IRouter = Router();
@@ -112,6 +112,18 @@ router.post(
         req.log.error({ status: gcsRes.status }, "GCS proxy upload failed");
         res.status(502).json({ error: "Storage upload failed" });
         return;
+      }
+
+      // Set ACL immediately so the object is accessible right after upload.
+      // The save handler will also set it (as a safety net), but doing it here
+      // avoids broken previews when the user hasn't saved yet.
+      try {
+        await objectStorageService.trySetObjectEntityAclPolicy(objectPath, {
+          owner: userId,
+          visibility: "public",
+        } as ObjectAclPolicy);
+      } catch (aclErr) {
+        req.log.warn({ err: aclErr }, "Could not set ACL on proxy upload (non-fatal)");
       }
 
       res.json({ objectPath });

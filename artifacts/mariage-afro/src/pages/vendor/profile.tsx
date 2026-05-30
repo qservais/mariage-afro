@@ -28,13 +28,20 @@ interface VendorProfile {
   services: string[];
 }
 
+function objectStorageUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("/objects/")) return `/api/storage${path}`;
+  return path;
+}
+
 function parseVideoEmbed(url: string): { embedUrl: string | null; type: "youtube" | "vimeo" | "upload" | null } {
   if (!url) return { embedUrl: null, type: null };
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   if (ytMatch) return { embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`, type: "youtube" };
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) return { embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}`, type: "vimeo" };
-  if (url.startsWith("/objects/") || url.match(/\.(mp4|webm|mov)$/i)) return { embedUrl: url, type: "upload" };
+  if (url.startsWith("/objects/") || url.match(/\.(mp4|webm|mov)$/i)) return { embedUrl: objectStorageUrl(url), type: "upload" };
   return { embedUrl: null, type: null };
 }
 
@@ -181,7 +188,7 @@ export default function VendorProfilePage() {
             <div className="w-20 h-20 border border-neutral-200 bg-neutral-50 flex items-center justify-center overflow-hidden flex-shrink-0">
               {logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={logoUrl} alt="logo" className="w-full h-full object-cover" data-testid="logo-preview" />
+                <img src={objectStorageUrl(logoUrl) ?? ""} alt="logo" className="w-full h-full object-cover" data-testid="logo-preview" />
               ) : (
                 <span className="text-[10px] uppercase tracking-wider text-neutral-400">{t("vendor.profile.logo_empty")}</span>
               )}

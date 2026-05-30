@@ -316,7 +316,7 @@ export default function SiteMariagePage() {
             </div>
             {qrDataUrl && (
               <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                <div className="border border-border p-2 bg-white">
+                <div className="border border-border p-2 bg-cream">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={qrDataUrl}
@@ -387,7 +387,7 @@ export default function SiteMariagePage() {
                   </span>
                 )}
                 {isPending && (
-                  <span className="absolute inset-0 z-20 flex items-center justify-center bg-white/70">
+                  <span className="absolute inset-0 z-20 flex items-center justify-center bg-cream/70">
                     <Loader2 className="w-5 h-5 animate-spin text-primary" />
                   </span>
                 )}
@@ -458,7 +458,7 @@ export default function SiteMariagePage() {
                 type="color"
                 value={form.colorPrimary || resolveColor("--color-secondary")}
                 onChange={(e) => setForm({ ...form, colorPrimary: e.target.value })}
-                className="h-10 w-14 border border-border bg-white cursor-pointer p-1"
+                className="h-10 w-14 border border-border bg-cream cursor-pointer p-1"
                 data-testid="input-color-primary"
               />
               <Input
@@ -488,7 +488,7 @@ export default function SiteMariagePage() {
                 type="color"
                 value={form.colorBackground || resolveColor("--color-cream-soft")}
                 onChange={(e) => setForm({ ...form, colorBackground: e.target.value })}
-                className="h-10 w-14 border border-border bg-white cursor-pointer p-1"
+                className="h-10 w-14 border border-border bg-cream cursor-pointer p-1"
                 data-testid="input-color-background"
               />
               <Input

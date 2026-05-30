@@ -1026,10 +1026,13 @@ router.patch("/client/wedding-website", async (req, res) => {
     .where(eq(weddingWebsitesTable.coupleId, r.coupleId));
 
   const data = { ...parsed.data };
-  if (typeof data.coverImage === "string" && data.coverImage.startsWith("/objects/") && data.coverImage !== current?.coverImage) {
-    if (!await consumeUploadIntent(data.coverImage, r.userId)) {
-      res.status(403).json({ error: "Upload intent expired or unauthorized" });
-      return;
+  if (typeof data.coverImage === "string" && data.coverImage.startsWith("/objects/")) {
+    const isNew = data.coverImage !== current?.coverImage;
+    if (isNew) {
+      if (!await consumeUploadIntent(data.coverImage, r.userId)) {
+        res.status(403).json({ error: "Upload intent expired or unauthorized" });
+        return;
+      }
     }
     try {
       data.coverImage = await storageService.trySetObjectEntityAclPolicy(data.coverImage, {
@@ -1038,8 +1041,7 @@ router.patch("/client/wedding-website", async (req, res) => {
       });
     } catch (err) {
       req.log?.error?.({ err }, "Failed to set cover image ACL");
-      res.status(400).json({ error: "Invalid uploaded object path" });
-      return;
+      if (isNew) { res.status(400).json({ error: "Invalid uploaded object path" }); return; }
     }
   } else if (typeof data.coverImage === "string" && data.coverImage.includes("/.private/")) {
     res.status(400).json({ error: "Invalid url" });

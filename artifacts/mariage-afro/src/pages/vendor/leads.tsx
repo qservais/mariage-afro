@@ -363,7 +363,7 @@ export default function VendorLeadsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border border-neutral-300 px-3 py-2 text-sm rounded-none bg-white"
+            className="border border-neutral-300 px-3 py-2 text-sm rounded-none bg-cream"
             data-testid="select-leads-status-filter"
           >
             <option value="all">{t("vendor.leads.all")}</option>
@@ -379,7 +379,7 @@ export default function VendorLeadsPage() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="border border-neutral-300 px-3 py-2 text-sm rounded-none bg-white"
+            className="border border-neutral-300 px-3 py-2 text-sm rounded-none bg-cream"
             data-testid="select-leads-type-filter"
           >
             <option value="all">{t("vendor.leads.all")}</option>

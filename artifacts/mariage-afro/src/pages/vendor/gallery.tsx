@@ -134,7 +134,7 @@ export default function VendorGalleryPage() {
                       setCover(nextCover);
                       save.mutate({ images, coverImage: nextCover });
                     }}
-                    className="bg-white/90 hover:bg-white p-2"
+                    className="bg-cream/90 hover:bg-cream p-2"
                     aria-label={isCover ? t("vendor.gallery.unset_cover") : t("vendor.gallery.set_cover")}
                     data-testid={`button-cover-${idx}`}
                   >
@@ -149,7 +149,7 @@ export default function VendorGalleryPage() {
                       setCover(nextCover);
                       save.mutate({ images: next, coverImage: nextCover });
                     }}
-                    className="bg-white/90 hover:bg-white p-2 text-red-600"
+                    className="bg-cream/90 hover:bg-cream p-2 text-wine-deep"
                     aria-label={t("vendor.gallery.remove")}
                     data-testid={`button-remove-${idx}`}
                   >

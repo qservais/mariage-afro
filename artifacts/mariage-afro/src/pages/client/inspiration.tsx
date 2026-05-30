@@ -39,7 +39,7 @@ async function uploadFile(file: File): Promise<string> {
 function objectUrl(path: string): string {
   if (!path) return "";
   if (path.startsWith("http")) return path;
-  if (path.startsWith("/objects/")) return `${BASE}/storage${path}`;
+  if (path.startsWith("/objects/")) return `/api/storage${path}`;
   return path;
 }
 
@@ -250,7 +250,7 @@ export default function InspirationPage() {
                           onClick={() => moveImage(img.id, "left")}
                           disabled={idx === 0 || updateImage.isPending}
                           aria-label={t("inspiration.move_left", { defaultValue: "Déplacer vers la gauche" })}
-                          className="bg-white/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          className="bg-cream/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                           data-testid={`btn-img-move-left-${img.id}`}
                         >
                           <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
@@ -259,7 +259,7 @@ export default function InspirationPage() {
                           onClick={() => moveImage(img.id, "right")}
                           disabled={idx === arr.length - 1 || updateImage.isPending}
                           aria-label={t("inspiration.move_right", { defaultValue: "Déplacer vers la droite" })}
-                          className="bg-white/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          className="bg-cream/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                           data-testid={`btn-img-move-right-${img.id}`}
                         >
                           <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -269,7 +269,7 @@ export default function InspirationPage() {
                       {/* Delete button */}
                       <button
                         onClick={() => deleteImage.mutate(img.id)}
-                        className="absolute top-2 right-2 bg-white/90 p-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-primary hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        className="absolute top-2 right-2 bg-cream/90 p-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-primary hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         aria-label={t("inspiration.delete_image")}
                       >
                         <X className="w-4 h-4" aria-hidden="true" />
