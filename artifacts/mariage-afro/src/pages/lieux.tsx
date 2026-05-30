@@ -10,6 +10,7 @@ import MarketplaceMap from "@/components/marketplace/MarketplaceMap";
 
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
+import { storageUrl } from "@/lib/storage-url";
 
 const BANNER_URL = "https://images.unsplash.com/photo-1637749713740-1cd07067c4fd?auto=format&fit=crop&w=1920&q=80";
 
@@ -91,8 +92,8 @@ export default function Lieux() {
   function resolveVenueImage(src: string | null | undefined): string | undefined {
     if (!src) return undefined;
     if (/^https?:/i.test(src)) return src;
+    if (src.startsWith("/objects/")) return storageUrl(src) ?? undefined;
     const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
-    if (src.startsWith("/objects/")) return `${base}/storage${src}`;
     const rel = src.startsWith("/") ? src.slice(1) : src;
     return `${window.location.origin}${base}/${rel}`;
   }
