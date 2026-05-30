@@ -104,7 +104,7 @@ function StarRating({ count }: { count: number }) {
           key={star}
           className={`w-3.5 h-3.5 ${
             star <= count
-              ? "text-amber-400 fill-amber-400"
+              ? "text-gold fill-gold"
               : "text-muted-foreground/30 fill-muted-foreground/10"
           }`}
         />

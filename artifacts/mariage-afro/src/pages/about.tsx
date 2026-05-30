@@ -21,7 +21,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-cream">
         <div className="container mx-auto px-6 md:px-12 max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

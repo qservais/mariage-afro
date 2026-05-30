@@ -117,7 +117,7 @@ export default function ProfilPage() {
           <Button type="submit" className="rounded-none uppercase tracking-wider text-xs" disabled={update.isPending} data-testid="button-save-profile">
             {update.isPending ? t("profil.saving") : t("profil.save")}
           </Button>
-          {saved && <p className="text-sm text-emerald-700">{t("profil.saved")}</p>}
+          {saved && <p className="text-sm text-gold-deep">{t("profil.saved")}</p>}
         </div>
       </form>
     </div>

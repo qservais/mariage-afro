@@ -279,7 +279,7 @@ export default function SiteMariagePage() {
       {/* Share link + QR code */}
       {publicUrl && (
         <div
-          className="bg-white border border-border p-6 space-y-4"
+          className="bg-cream border border-border p-6 space-y-4"
           data-testid="share-block"
         >
           <div>
@@ -306,7 +306,7 @@ export default function SiteMariagePage() {
                 <button
                   type="button"
                   onClick={copyPublicUrl}
-                  className="px-4 border-l border-border bg-white hover:bg-muted/50 text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2"
+                  className="px-4 border-l border-border bg-cream hover:bg-muted/50 text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2"
                   data-testid="button-copy-link"
                 >
                   {linkCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -346,7 +346,7 @@ export default function SiteMariagePage() {
 
       {/* Template gallery */}
       <div
-        className="bg-white border border-border p-6 space-y-5"
+        className="bg-cream border border-border p-6 space-y-5"
         data-testid="template-gallery"
       >
         <div>
@@ -370,7 +370,7 @@ export default function SiteMariagePage() {
               <div
                 key={id}
                 className={[
-                  "relative border bg-white transition-all",
+                  "relative border bg-cream transition-all",
                   isSelected
                     ? "border-primary ring-2 ring-primary/20"
                     : "border-border hover:border-primary/40",
@@ -437,7 +437,7 @@ export default function SiteMariagePage() {
 
       {/* Personnaliser */}
       <div
-        className="bg-white border border-border p-6 space-y-5"
+        className="bg-cream border border-border p-6 space-y-5"
         data-testid="customize-block"
       >
         <div>
@@ -583,7 +583,7 @@ export default function SiteMariagePage() {
               />
             )}
           </div>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 px-6 py-4 border-t border-border bg-white flex-shrink-0">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 px-6 py-4 border-t border-border bg-cream flex-shrink-0">
             <Button
               type="button"
               variant="outline"
@@ -617,10 +617,10 @@ export default function SiteMariagePage() {
       </Dialog>
 
       {/* Publication status */}
-      <div className="bg-white border border-border p-5 flex items-center justify-between">
+      <div className="bg-cream border border-border p-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {form.active ? (
-            <Eye className="w-5 h-5 text-emerald-600" />
+            <Eye className="w-5 h-5 text-gold-deep" />
           ) : (
             <EyeOff className="w-5 h-5 text-muted-foreground" />
           )}
@@ -643,7 +643,7 @@ export default function SiteMariagePage() {
 
       {/* Cover image */}
       <div
-        className="bg-white border border-border p-6 space-y-4"
+        className="bg-cream border border-border p-6 space-y-4"
         data-testid="cover-image-block"
       >
         <div>
@@ -714,7 +714,7 @@ export default function SiteMariagePage() {
       </div>
 
       {/* General info */}
-      <div className="bg-white border border-border p-6 space-y-5">
+      <div className="bg-cream border border-border p-6 space-y-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
           {t("site_mariage.general_info")}
         </h2>
@@ -796,7 +796,7 @@ export default function SiteMariagePage() {
       </div>
 
       {/* Programme */}
-      <div className="bg-white border border-border p-6 space-y-5">
+      <div className="bg-cream border border-border p-6 space-y-5">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
             {t("site_mariage.programme")}
@@ -839,7 +839,7 @@ export default function SiteMariagePage() {
       </div>
 
       {/* RSVP */}
-      <div className="bg-white border border-border p-5 flex items-center justify-between">
+      <div className="bg-cream border border-border p-5 flex items-center justify-between">
         <div>
           <p className="font-medium text-sm text-foreground">{t("site_mariage.rsvp_form")}</p>
           <p className="text-xs text-muted-foreground">

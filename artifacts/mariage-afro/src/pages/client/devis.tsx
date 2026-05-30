@@ -28,10 +28,10 @@ interface ClientQuote {
 }
 
 const STATUS_BADGE: Record<string, string> = {
-  sent: "bg-blue-100 text-blue-700 border-blue-200",
-  accepted: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  refused: "bg-rose-100 text-rose-700 border-rose-200",
-  expired: "bg-stone-100 text-stone-600 border-stone-200",
+  sent: "bg-wine-deep/5 text-wine-deep border-wine-deep/20",
+  accepted: "bg-gold/10 text-gold-deep border-gold/30",
+  refused: "bg-primary/5 text-primary border-primary/20",
+  expired: "bg-neutral-100 text-neutral-500 border-neutral-200",
 };
 
 function fmtEur(cents: number) {
@@ -184,7 +184,7 @@ export default function ClientDevisPage() {
               {selected.respondMessage && (
                 <div>
                   <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">{t("devis.your_reply")}</p>
-                  <p className="text-sm bg-amber-50 border border-amber-200 p-3 whitespace-pre-wrap">{selected.respondMessage}</p>
+                  <p className="text-sm bg-cream-soft border border-gold/30 p-3 whitespace-pre-wrap">{selected.respondMessage}</p>
                 </div>
               )}
 
@@ -211,7 +211,7 @@ export default function ClientDevisPage() {
                     <Button
                       onClick={() => handleRespond("accept")}
                       disabled={respondMutation.isPending}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-none uppercase tracking-wider text-xs gap-1.5"
+                      className="bg-gold-deep hover:bg-gold-deep/90 text-white rounded-none uppercase tracking-wider text-xs gap-1.5"
                       data-testid="button-accept"
                     >
                       {respondMutation.isPending && responding === "accept" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -221,7 +221,7 @@ export default function ClientDevisPage() {
                       onClick={() => handleRespond("refuse")}
                       disabled={respondMutation.isPending}
                       variant="outline"
-                      className="border-rose-300 text-rose-600 hover:bg-rose-50 rounded-none uppercase tracking-wider text-xs gap-1.5"
+                      className="border-primary/40 text-primary hover:bg-primary/5 rounded-none uppercase tracking-wider text-xs gap-1.5"
                       data-testid="button-refuse"
                     >
                       {respondMutation.isPending && responding === "refuse" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}

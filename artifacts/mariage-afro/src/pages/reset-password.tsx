@@ -77,8 +77,8 @@ export default function ResetPasswordPage() {
         <div className="border border-wine-deep/10 bg-cream-soft p-8">
           {done ? (
             <div className="text-center space-y-4">
-              <div className="w-12 h-12 bg-green-50 border border-green-200 flex items-center justify-center mx-auto">
-                <span className="text-green-600 text-xl">✓</span>
+              <div className="w-12 h-12 bg-gold/10 border border-gold/30 flex items-center justify-center mx-auto">
+                <span className="text-gold-deep text-xl">✓</span>
               </div>
               <p className="text-wine-deep text-sm">
                 {t("auth.reset_done", { defaultValue: "Mot de passe modifié. Redirection…" })}

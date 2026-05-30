@@ -200,17 +200,17 @@ export default function InspirationPage() {
                 {addImage.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImagePlus className="w-3.5 h-3.5" />}
                 {t("inspiration.add_image")}
               </Button>
-              <Button size="sm" variant="ghost" className="rounded-none text-xs text-rose-600" onClick={() => confirm(t("inspiration.confirm_delete_board")) && deleteBoard.mutate(activeBoard.id)}>
+              <Button size="sm" variant="ghost" className="rounded-none text-xs text-primary" onClick={() => confirm(t("inspiration.confirm_delete_board")) && deleteBoard.mutate(activeBoard.id)}>
                 <Trash2 className="w-3.5 h-3.5" />
               </Button>
             </div>
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
           {uploadError && (
-            <div className="flex items-center gap-2 bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700" role="alert">
+            <div className="flex items-center gap-2 bg-primary/5 border border-primary/20 px-4 py-3 text-sm text-primary" role="alert">
               <X className="w-4 h-4 flex-shrink-0" />
               <span>{uploadError}</span>
-              <button onClick={() => setUploadError(null)} className="ml-auto text-rose-400 hover:text-rose-600" aria-label={t("inspiration.cancel")}>
+              <button onClick={() => setUploadError(null)} className="ml-auto text-primary/50 hover:text-primary" aria-label={t("inspiration.cancel")}>
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>

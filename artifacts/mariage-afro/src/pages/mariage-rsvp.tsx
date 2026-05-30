@@ -83,7 +83,7 @@ export default function MariageRsvpPage() {
 
         {/* Confirmation card */}
         <main className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="bg-white border border-[#e8d5b7] max-w-md w-full text-center shadow-sm">
+          <div className="bg-cream border border-[#e8d5b7] max-w-md w-full text-center shadow-sm">
             {/* Top ornament */}
             <div className="bg-[#68191e]/5 py-6 px-8 border-b border-[#e8d5b7]">
               <div className="flex items-center justify-center gap-3 mb-2">
@@ -159,7 +159,7 @@ export default function MariageRsvpPage() {
       </section>
 
       <section className="py-10 px-6 max-w-lg mx-auto">
-        <form onSubmit={(e) => { e.preventDefault(); if (canSubmit) submit.mutate(); }} className="bg-white border border-border p-6 space-y-5">
+        <form onSubmit={(e) => { e.preventDefault(); if (canSubmit) submit.mutate(); }} className="bg-cream border border-border p-6 space-y-5">
 
           {/* Prénom + Nom séparés */}
           <div className="grid grid-cols-2 gap-3">

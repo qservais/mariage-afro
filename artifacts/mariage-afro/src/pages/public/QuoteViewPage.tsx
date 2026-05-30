@@ -179,7 +179,7 @@ export default function QuoteViewPage() {
           </section>
 
           {(isAccepted || isRefused) && (
-            <section className={`flex items-start gap-3 p-4 border ${isAccepted ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-rose-200 bg-rose-50 text-rose-800"}`}>
+            <section className={`flex items-start gap-3 p-4 border ${isAccepted ? "border-gold/30 bg-gold/10 text-gold-deep" : "border-primary/20 bg-primary/5 text-primary"}`}>
               {isAccepted ? <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" /> : <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />}
               <div>
                 <p className="font-semibold text-sm">

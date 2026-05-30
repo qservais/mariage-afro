@@ -61,9 +61,9 @@ export default function VendorAbonnementPage() {
         </div>
       )}
 
-      <div className="bg-amber-50 border border-amber-200 p-5">
-        <p className="text-sm font-semibold text-amber-800">{t("vendor.subscription.free_notice_title")}</p>
-        <p className="text-sm text-amber-700 mt-1">{t("vendor.subscription.free_notice_desc")}</p>
+      <div className="bg-wine-deep/5 border border-gold/30 p-5">
+        <p className="text-sm font-semibold text-wine-deep">{t("vendor.subscription.free_notice_title")}</p>
+        <p className="text-sm text-neutral-700 mt-1">{t("vendor.subscription.free_notice_desc")}</p>
       </div>
 
       <div className="bg-cream border border-gold/30 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">

@@ -61,7 +61,7 @@ export function MobileFormSheet({
         <Dialog.Content
           data-testid={testId}
           className={cn(
-            "fixed z-[101] bg-white text-wine-deep flex flex-col",
+            "fixed z-[101] bg-cream text-wine-deep flex flex-col",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             // Mobile: bottom-sheet full-height
             isAlwaysSheet

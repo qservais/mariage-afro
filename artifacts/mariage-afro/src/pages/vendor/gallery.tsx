@@ -161,7 +161,7 @@ export default function VendorGalleryPage() {
           })}
         </div>
 
-        {saved && <p className="text-sm text-emerald-700">{t("vendor.gallery.saved")}</p>}
+        {saved && <p className="text-sm text-gold-deep">{t("vendor.gallery.saved")}</p>}
         {save.isError && <p className="text-sm text-red-600">{(save.error as Error).message}</p>}
       </div>
     </div>

@@ -98,7 +98,7 @@ export default function MultiDevisForm({ open, onClose, vendors, onSuccess }: Mu
                 className={`flex items-center gap-3 p-3 border cursor-pointer transition-colors ${
                   isOn
                     ? "border-wine-deep bg-cream"
-                    : "border-wine-deep/15 bg-white hover:border-wine-deep/40"
+                    : "border-wine-deep/15 bg-cream hover:border-wine-deep/40"
                 }`}
               >
                 <input

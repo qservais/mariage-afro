@@ -39,7 +39,7 @@ export function FormShell({
     <div
       data-testid={testId}
       className={cn(
-        "flex flex-col bg-white text-wine-deep",
+        "flex flex-col bg-cream text-wine-deep",
         isModal
           ? "max-h-[90vh] w-full max-w-2xl border border-gold-deep shadow-2xl"
           : "card-editorial",

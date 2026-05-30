@@ -132,7 +132,7 @@ export default function VendorActionModal({ open, onClose, vendor, action }: Pro
             exit={{ y: 40, opacity: 0 }}
             transition={{ duration: 0.25 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto bg-white shadow-2xl"
+            className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto bg-cream shadow-2xl"
           >
             <div className="sticky top-0 z-10 flex items-start justify-between gap-4 px-6 py-4 bg-primary text-white">
               <div>
@@ -224,7 +224,7 @@ export default function VendorActionModal({ open, onClose, vendor, action }: Pro
                           <FormMessage />
                           {watchedDate && !checkingDate && dateStatus && (
                             <div
-                              className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900"
+                              className="mt-2 flex items-start gap-2 bg-wine-deep/5 border border-gold/30 px-3 py-2 text-xs text-wine-deep"
                               data-testid="warning-date-unavailable"
                             >
                               <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />

@@ -297,7 +297,7 @@ export default function VendorServicesPage() {
           >
             {save.isPending ? t("vendor.services.saving") : t("vendor.services.save")}
           </Button>
-          {saved && <p className="text-sm text-emerald-700">{t("vendor.services.saved")}</p>}
+          {saved && <p className="text-sm text-gold-deep">{t("vendor.services.saved")}</p>}
         </div>
       </div>
     </div>

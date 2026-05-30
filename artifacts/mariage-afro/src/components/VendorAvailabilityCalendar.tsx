@@ -94,7 +94,7 @@ export default function VendorAvailabilityCalendar({
         </h4>
         <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-wine-deep/70">
           <span className="inline-flex items-center gap-1">
-            <span className="w-2.5 h-2.5 bg-emerald-50 border border-emerald-200" />
+            <span className="w-2.5 h-2.5 bg-gold/10 border border-gold/30" />
             {t("marketplace.availability.legend_free")}
           </span>
           <span className="inline-flex items-center gap-1">
@@ -138,7 +138,7 @@ export default function VendorAvailabilityCalendar({
                       const row = byDate.get(dateStr);
                       const isPast = dateStr < todayStr;
                       let cls =
-                        "bg-emerald-50 text-wine-deep/70 border border-emerald-100";
+                        "bg-gold/10 text-wine-deep/70 border border-gold/20";
                       if (row) {
                         cls = "bg-neutral-300 text-neutral-600 border border-neutral-400";
                       }

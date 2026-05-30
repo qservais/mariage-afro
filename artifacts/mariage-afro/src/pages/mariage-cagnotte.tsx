@@ -57,14 +57,14 @@ export default function MariageCagnottePage() {
         <p className="text-center text-muted-foreground">{t("mariage_cagnotte.intro")}</p>
 
         {cagnottes.length === 0 && (
-          <div className="bg-white border border-dashed border-border p-10 text-center text-muted-foreground">
+          <div className="bg-cream border border-dashed border-border p-10 text-center text-muted-foreground">
             <Heart className="w-10 h-10 mx-auto mb-3 text-primary/40" />
             {t("mariage_cagnotte.empty")}
           </div>
         )}
 
         {cagnottes.map((c) => (
-          <article key={c.id} className="bg-white border border-border p-6 flex flex-col md:flex-row gap-6">
+          <article key={c.id} className="bg-cream border border-border p-6 flex flex-col md:flex-row gap-6">
             {c.photo && <img src={objectUrl(c.photo)} alt={c.title} width={400} height={176} loading="lazy" decoding="async" className="w-full md:w-44 h-44 object-cover" />}
             <div className="flex-1 space-y-3">
               <h2 className="text-xl font-bold font-serif text-foreground">{c.title}</h2>

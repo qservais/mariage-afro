@@ -198,7 +198,7 @@ const ADMIN_SECTIONS: Section[] = [
 function SectionCard({ s }: { s: Section }) {
   const Icon = s.icon;
   return (
-    <article id={s.id} className="bg-white border border-border p-6 md:p-8 scroll-mt-24">
+    <article id={s.id} className="bg-cream border border-border p-6 md:p-8 scroll-mt-24">
       <header className="flex items-start gap-4 mb-5 pb-5 border-b border-border">
         <div className="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center shrink-0">
           <Icon className="w-6 h-6" />
@@ -274,7 +274,7 @@ export default function GuidePage() {
             { i: Clock, t: "Organisez", d: "Espace Client : budget, planning, RSVP, mood board, plan de table." },
             { i: Sparkles, t: "Célébrez", d: "Site mariage, cagnotte et messagerie pour partager le grand jour." },
           ].map((b) => (
-            <div key={b.t} className="bg-white border border-border p-6 text-center">
+            <div key={b.t} className="bg-cream border border-border p-6 text-center">
               <b.i className="w-8 h-8 text-primary mx-auto mb-3" />
               <h3 className="font-serif text-lg mb-2">{b.t}</h3>
               <p className="text-sm text-muted-foreground">{b.d}</p>
@@ -315,7 +315,7 @@ export default function GuidePage() {
               Développez votre activité auprès des couples afro & mixtes en Belgique.
             </p>
           </div>
-          <div className="bg-white border border-border p-6 mb-10">
+          <div className="bg-cream border border-border p-6 mb-10">
             <p className="text-xs uppercase tracking-widest text-primary mb-3">Sommaire</p>
             <Toc sections={VENDOR_SECTIONS} color="text-foreground" />
           </div>

@@ -193,7 +193,7 @@ export function SelectableCard<TValue extends string = string>({
       data-selected={selected || undefined}
       className={cn(
         "group relative flex flex-col gap-2 cursor-pointer p-4 md:p-5",
-        "border bg-white transition-colors min-h-[88px]",
+        "border bg-cream transition-colors min-h-[88px]",
         "focus-within:ring-2 focus-within:ring-gold focus-within:ring-offset-2 focus-within:ring-offset-cream",
         selected
           ? "border-wine-deep border-2 bg-cream/60"

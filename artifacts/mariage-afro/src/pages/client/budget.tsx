@@ -155,7 +155,7 @@ export default function BudgetPage() {
           </div>
           <div className="w-full bg-neutral-100 h-4 overflow-hidden">
             <div
-              className={`h-4 transition-all ${progressPct >= 100 ? "bg-rose-500" : progressPct >= 80 ? "bg-amber-400" : "bg-primary"}`}
+              className={`h-4 transition-all ${progressPct >= 100 ? "bg-wine-deep" : progressPct >= 80 ? "bg-gold-deep" : "bg-primary"}`}
               style={{ width: `${progressPct}%` }}
               role="progressbar"
               aria-valuenow={progressPct}
@@ -166,7 +166,7 @@ export default function BudgetPage() {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-neutral-600">{t("budget.progress_label", { pct: progressPct })}</span>
-            <span className={`font-semibold ${remaining < 0 ? "text-rose-600" : "text-emerald-600"}`}>
+            <span className={`font-semibold ${remaining < 0 ? "text-wine-deep" : "text-gold-deep"}`}>
               {t("budget.remaining")}: {fmt(Math.abs(remaining))}
               {remaining < 0 && <span className="ml-1 font-bold">{t("budget.over_budget_text")}</span>}
             </span>

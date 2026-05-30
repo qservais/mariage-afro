@@ -35,10 +35,10 @@ interface VendorQuote {
 
 const STATUS_BADGE: Record<string, string> = {
   draft: "bg-neutral-100 text-neutral-600 border-neutral-200",
-  sent: "bg-blue-100 text-blue-700 border-blue-200",
-  accepted: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  refused: "bg-rose-100 text-rose-700 border-rose-200",
-  expired: "bg-stone-100 text-stone-600 border-stone-200",
+  sent: "bg-wine-deep/5 text-wine-deep border-wine-deep/20",
+  accepted: "bg-gold/10 text-gold-deep border-gold/30",
+  refused: "bg-primary/5 text-primary border-primary/20",
+  expired: "bg-neutral-100 text-neutral-500 border-neutral-200",
 };
 
 function fmtEur(cents: number) {
@@ -260,7 +260,7 @@ export default function VendorQuotesPage() {
                     onClick={() => removeService(idx)}
                     disabled={form.services.length <= 1}
                     aria-label={t("vendor.quotes.remove_service", { defaultValue: "Supprimer la ligne" })}
-                    className="p-1 text-neutral-400 hover:text-rose-600 disabled:opacity-30"
+                    className="p-1 text-neutral-400 hover:text-primary disabled:opacity-30"
                     data-testid={`button-remove-service-${idx}`}
                   >
                     <X className="w-4 h-4" aria-hidden="true" />
@@ -368,7 +368,7 @@ export default function VendorQuotesPage() {
                   <tr
                     key={q.id}
                     onClick={() => setSelectedId(q.id === selectedId ? null : q.id)}
-                    className={`border-b border-neutral-100 cursor-pointer hover:bg-amber-50/40 transition-colors ${selectedId === q.id ? "bg-amber-50/60" : ""}`}
+                    className={`border-b border-neutral-100 cursor-pointer hover:bg-cream-soft transition-colors ${selectedId === q.id ? "bg-gold/5" : ""}`}
                     data-testid={`row-quote-${q.id}`}
                   >
                     <td className="px-4 py-3 text-neutral-600 whitespace-nowrap">{fmtDate(q.createdAt)}</td>
@@ -399,7 +399,7 @@ export default function VendorQuotesPage() {
                               onClick={(e) => { e.stopPropagation(); if (confirm(t("vendor.quotes.delete_confirm"))) deleteMutation.mutate(q.id); }}
                               disabled={deleteMutation.isPending}
                               aria-label={t("vendor.quotes.delete_btn")}
-                              className="p-1.5 border border-neutral-300 text-neutral-500 hover:border-rose-500 hover:text-rose-600 transition-colors"
+                              className="p-1.5 border border-neutral-300 text-neutral-500 hover:border-primary hover:text-primary transition-colors"
                               data-testid={`button-delete-${q.id}`}
                             >
                               <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
@@ -479,7 +479,7 @@ export default function VendorQuotesPage() {
               {selected.respondMessage && (
                 <div>
                   <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">{t("vendor.quotes.respond_message")}</p>
-                  <p className="text-sm bg-amber-50 border border-amber-200 p-3 whitespace-pre-wrap">{selected.respondMessage}</p>
+                  <p className="text-sm bg-cream-soft border border-gold/30 p-3 whitespace-pre-wrap">{selected.respondMessage}</p>
                 </div>
               )}
 

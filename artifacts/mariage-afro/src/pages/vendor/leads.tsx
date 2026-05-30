@@ -84,12 +84,12 @@ const TYPES = ["quote", "availability", "booking", "zoom", "rdv"] as const;
 const LEAD_TAGS = ["hot", "vip", "follow_up", "negotiation", "cold"] as const;
 
 const STATUS_BADGE: Record<string, string> = {
-  new: "bg-amber-100 text-amber-800 border-amber-200",
-  seen: "bg-blue-100 text-blue-800 border-blue-200",
-  contacted: "bg-violet-100 text-violet-800 border-violet-200",
-  devis_envoye: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200",
-  won: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  lost: "bg-stone-100 text-stone-700 border-stone-200",
+  new: "bg-gold/10 text-gold-deep border-gold/30",
+  seen: "bg-wine-deep/5 text-wine-deep border-wine-deep/20",
+  contacted: "bg-wine-deep/10 text-wine-deep border-wine-deep/30",
+  devis_envoye: "bg-gold/15 text-gold-deep border-gold/40",
+  won: "bg-gold/20 text-gold-deep border-gold/40",
+  lost: "bg-neutral-100 text-neutral-500 border-neutral-200",
 };
 
 function formatDate(iso: string) {
@@ -180,7 +180,7 @@ function KanbanCard({ lead, selectedId, colStatus, colIndex, colTotal, onOpen, t
       {/* Card body — opens detail panel */}
       <button
         onClick={() => onOpen(lead)}
-        className="w-full text-left pl-6 pr-2.5 py-2.5 hover:bg-amber-50/30 focus:outline-none focus-visible:bg-amber-50/40"
+        className="w-full text-left pl-6 pr-2.5 py-2.5 hover:bg-cream-soft focus:outline-none focus-visible:bg-cream-soft"
         tabIndex={0}
         aria-label={`${t("vendor.leads.open_lead", { defaultValue: "Ouvrir" })} ${lead.name}`}
       >
@@ -473,8 +473,8 @@ export default function VendorLeadsPage() {
                   <tr
                     key={lead.id}
                     onClick={() => openLead(lead)}
-                    className={`border-b border-neutral-100 cursor-pointer hover:bg-amber-50/40 transition-colors ${
-                      selectedId === lead.id ? "bg-amber-50/60" : ""
+                    className={`border-b border-neutral-100 cursor-pointer hover:bg-cream-soft transition-colors ${
+                      selectedId === lead.id ? "bg-gold/5" : ""
                     } ${lead.status === "new" ? "font-semibold" : ""}`}
                     data-testid={`row-lead-${lead.id}`}
                   >

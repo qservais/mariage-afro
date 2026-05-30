@@ -163,7 +163,7 @@ export default function CagnottePage() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => startEdit(c)} className="text-neutral-400 hover:text-primary" aria-label={t("cagnotte.edit", { defaultValue: "Modifier" })}><Edit2 className="w-4 h-4" aria-hidden="true" /></button>
-                  <button onClick={() => confirm(t("cagnotte.confirm_delete")) && del.mutate(c.id)} className="text-neutral-400 hover:text-rose-600" aria-label={t("cagnotte.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
+                  <button onClick={() => confirm(t("cagnotte.confirm_delete")) && del.mutate(c.id)} className="text-neutral-400 hover:text-primary" aria-label={t("cagnotte.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
                 </div>
               </div>
               {c.iban && <p className="text-xs text-neutral-500">IBAN: <span className="font-mono">{c.iban}</span></p>}

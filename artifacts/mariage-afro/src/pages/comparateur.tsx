@@ -230,7 +230,7 @@ export default function Comparateur() {
               <RowLabel label={t("comparateur.row_verified")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
-                  {v.verified ? <Check className="w-4 h-4 text-emerald-700" /> : <X className="w-4 h-4 text-wine-deep/60" />}
+                  {v.verified ? <Check className="w-4 h-4 text-gold-deep" /> : <X className="w-4 h-4 text-wine-deep/60" />}
                 </Cell>
               ))}
 
@@ -372,7 +372,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
     <div>
       <label className="block text-[10px] uppercase tracking-[0.3em] text-gold font-medium mb-2">{label}</label>
       {children}
-      {error && <p className="text-xs text-rose-300 mt-1">{error}</p>}
+      {error && <p className="text-xs text-primary/70 mt-1">{error}</p>}
     </div>
   );
 }

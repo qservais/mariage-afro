@@ -111,10 +111,10 @@ export default function VendorLayout({ children }: { children?: ReactNode }) {
                 key={item.to}
                 to={item.to}
                 aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 transition-colors ${
+                className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors ${
                   active
-                    ? "border-gold bg-wine-deep/60 text-gold"
-                    : "border-transparent text-cream/80 hover:bg-wine-deep/60 hover:text-gold"
+                    ? "bg-gold/15 text-gold font-semibold"
+                    : "text-cream/80 hover:bg-wine-deep/60 hover:text-gold"
                 }`}
                 data-testid={`link-vendor-${item.to.split("/").pop()}`}
               >

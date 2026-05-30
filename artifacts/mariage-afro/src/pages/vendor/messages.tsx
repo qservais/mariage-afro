@@ -103,7 +103,7 @@ export default function VendorMessagesPage() {
           <h1 className="text-2xl font-bold text-wine-deep">{t("vendor.messages.title")}</h1>
           <p className="text-sm text-neutral-600">{t("vendor.messages.subtitle")}</p>
         </div>
-        <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1">
+        <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-gold-deep bg-gold/10 border border-gold/30 px-2.5 py-1">
           <ShieldCheck className="w-3 h-3" />
           {t("vendor.messages.secure")}
         </span>

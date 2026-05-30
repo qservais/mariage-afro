@@ -220,7 +220,7 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-xl bg-white border border-gold-deep shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-xl bg-cream border border-gold-deep shadow-2xl max-h-[90vh] overflow-y-auto">
         <button
           type="button"
           onClick={onClose}

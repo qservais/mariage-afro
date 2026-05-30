@@ -212,7 +212,7 @@ export default function ClientDashboard() {
                 <span
                   className={`text-xs px-2 py-0.5 font-medium ${
                     jourJCfg.enabled
-                      ? "bg-green-100 text-green-800"
+                      ? "bg-gold/10 text-gold-deep"
                       : "bg-neutral-100 text-neutral-500"
                   }`}
                 >

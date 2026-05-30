@@ -38,7 +38,7 @@ interface MyReview {
   createdAt: string;
 }
 
-const STATUS_COLORS: Record<string, string> = { contacted: "bg-neutral-100", negotiating: "bg-amber-100 text-amber-800", booked: "bg-blue-100 text-blue-800", paid: "bg-emerald-100 text-emerald-800" };
+const STATUS_COLORS: Record<string, string> = { contacted: "bg-neutral-100 text-neutral-600", negotiating: "bg-gold/10 text-gold-deep", booked: "bg-wine-deep/5 text-wine-deep", paid: "bg-gold/15 text-gold-deep" };
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
 
 export default function VendorsPage() {

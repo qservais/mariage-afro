@@ -388,7 +388,7 @@ export default function VendorProfilePage() {
           >
             {save.isPending ? t("vendor.profile.saving") : t("vendor.profile.save")}
           </Button>
-          {saved && <p className="text-sm text-emerald-700">{t("vendor.profile.saved")}</p>}
+          {saved && <p className="text-sm text-gold-deep">{t("vendor.profile.saved")}</p>}
           {save.isError && <p className="text-sm text-red-600">{(save.error as Error).message}</p>}
         </div>
       </form>

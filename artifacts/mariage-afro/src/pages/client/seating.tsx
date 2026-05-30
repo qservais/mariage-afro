@@ -372,11 +372,11 @@ export default function SeatingPage() {
         </div>
         <div className="bg-cream p-4 border border-wine-deep/10">
           <p className="text-xs uppercase text-wine-deep/50 tracking-widest">{t("seating.seated")}</p>
-          <p className="text-2xl font-bold text-emerald-700">{seatedCount}</p>
+          <p className="text-2xl font-bold text-gold-deep">{seatedCount}</p>
         </div>
         <div className="bg-cream p-4 border border-wine-deep/10">
           <p className="text-xs uppercase text-wine-deep/50 tracking-widest">{t("seating.to_place")}</p>
-          <p className="text-2xl font-bold text-amber-700">
+          <p className="text-2xl font-bold text-wine-deep">
             {confirmedGuests.length - seatedCount}
           </p>
         </div>
@@ -420,7 +420,7 @@ export default function SeatingPage() {
       </form>
 
       {error && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-2 text-sm flex justify-between">
+        <div className="bg-primary/5 border border-primary/20 text-primary px-4 py-2 text-sm flex justify-between">
           <span>{error}</span>
           <button onClick={() => setError(null)} aria-label={t("seating.dismiss_error", { defaultValue: "Fermer" })}>
             <X className="w-4 h-4" aria-hidden="true" />
