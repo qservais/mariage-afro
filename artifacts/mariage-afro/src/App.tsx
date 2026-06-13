@@ -181,16 +181,6 @@ function LangUrlSync({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-// REDIRECTION TEMPORAIRE — QR code imprimé
-// Retirer quand mariage-afro.com sera prêt à servir le site complet
-const TEMP_ROOT_REDIRECT = "https://dev.mariage-afro.com/mariage/prescillia--arnaud";
-
-function RootRedirect() {
-  useEffect(() => {
-    window.location.replace(TEMP_ROOT_REDIRECT);
-  }, []);
-  return null;
-}
 
 function AppRoutes() {
   const { pathname } = useLocation();
@@ -308,7 +298,7 @@ function AppRoutes() {
     <PublicLayout>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
-          <Route path="/" element={<RootRedirect />} />
+          <Route path="/" element={<Navigate to="/mariage/prescillia--arnaud" replace />} />
           <Route path="/plateforme" element={<Plateforme />} />
           <Route path="/services" element={<Services />} />
           <Route path="/partenaires" element={<Partenaires />} />
