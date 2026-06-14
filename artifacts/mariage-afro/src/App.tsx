@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
-import ComingSoon from "@/pages/coming-soon";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -182,7 +181,6 @@ function LangUrlSync({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-
 function AppRoutes() {
   const { pathname } = useLocation();
   const isClient = pathname.startsWith("/espace-client") || pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
@@ -299,7 +297,7 @@ function AppRoutes() {
     <PublicLayout>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
-          <Route path="/" element={<ComingSoon />} />
+          <Route path="/" element={<Home />} />
           <Route path="/plateforme" element={<Plateforme />} />
           <Route path="/services" element={<Services />} />
           <Route path="/partenaires" element={<Partenaires />} />
