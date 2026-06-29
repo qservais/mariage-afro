@@ -1403,7 +1403,7 @@ router.patch("/vendor/quotes/:id", async (req, res) => {
     .where(and(eq(vendorQuotesTable.id, id), eq(vendorQuotesTable.vendorAccountId, r.vendorAccountId)))
     .limit(1);
   if (!quote) { res.status(404).json({ error: "Quote not found" }); return; }
-  if (quote.status !== "draft") { res.status(409).json({ error: "Only draft quotes can be edited" }); return; }
+  if (quote.status !== "draft" && quote.status !== "sent") { res.status(409).json({ error: "Only draft or sent quotes can be edited" }); return; }
   const parsed = quoteCreateSchema.partial().safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
   const services = parsed.data.services ?? quote.services;
@@ -1411,10 +1411,12 @@ router.patch("/vendor/quotes/:id", async (req, res) => {
   const { amountHt, amountTtc } = computeAmounts(services, vatRate);
   const [updated] = await db.update(vendorQuotesTable).set({
     ...parsed.data,
+    status: "draft",
     services,
     vatRate,
     amountHt,
     amountTtc,
+    sentAt: null,
     updatedAt: new Date(),
   }).where(eq(vendorQuotesTable.id, id)).returning();
   res.json(updated);

@@ -665,6 +665,10 @@ export function getCategoryConfig(category: string): CategoryConfig | null {
   return CATEGORY_CONFIG[category] ?? null;
 }
 
+export function getCategoryHeroUrl(_category: string): string | null {
+  return null;
+}
+
 export function getCategoryLabel(
   field: CategoryField,
   lang: string,

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { storageUrl as objectUrl } from "@/lib/storage-url";
+import fallbackHeroImg from "@assets/pexels-nudethephotographer-34543838_1776285262172.jpg";
 import type { BreadcrumbItem } from "@/components/SEO";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -282,13 +283,11 @@ export default function PrestataireDetail() {
 
       {/* Full-width hero with cover photo */}
       <section className="relative min-h-[70vh] flex items-end bg-wine-deep overflow-hidden">
-        {vendor.coverImage ? (
-          <img
-            src={objectUrl(vendor.coverImage)}
-            alt={vendor.name}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : null}
+        <img
+          src={(vendor.coverImage && objectUrl(vendor.coverImage)) || (fallbackHeroImg as unknown as string)}
+          alt={vendor.name}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         {/* Gradient overlay — stronger at bottom where text lives */}
         <div className="absolute inset-0 bg-gradient-to-t from-wine-deep via-wine-deep/65 to-wine-deep/25" />
 
@@ -334,9 +333,6 @@ export default function PrestataireDetail() {
                         {vendor.averageRating!.toFixed(1)} ({t("vendor_detail.review_count", { count: vendor.reviewCount! })})
                       </span>
                     </span>
-                  )}
-                  {vendor.priceTier && (
-                    <span className="font-medium">{PRICE_LABEL[vendor.priceTier]}</span>
                   )}
                   {vendor.indicativePrice && (
                     <span className="text-cream/80 text-sm">{vendor.indicativePrice}</span>
@@ -651,7 +647,7 @@ export default function PrestataireDetail() {
         </div>
 
         <aside className="space-y-6 md:sticky md:top-24 md:self-start">
-          <VendorActionPanel vendor={{ id: vendor.id, name: vendor.name, category: vendor.category }} />
+          <VendorActionPanel vendor={{ id: vendor.id, name: vendor.name, category: vendor.category, services: vendor.services }} />
 
           <div className="bg-white p-6 border border-wine-deep/10 rounded-sm space-y-3">
             {vendor.website && (

@@ -26,6 +26,7 @@ import {
   Send,
   Crown,
   Sparkles,
+  ExternalLink,
 } from "lucide-react";
 
 import VendorAvailabilityCalendar from "@/components/VendorAvailabilityCalendar";
@@ -1133,14 +1134,16 @@ export default function Prestations() {
                             </span>
                           </button>
                         ))}
+                        <Link
+                          to={`/partenaires/${vendor.slug || vendor.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="btn-editorial-compact col-span-2 lg:col-span-1"
+                          data-testid={`view-detail-${vendor.id}`}
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span className="truncate">{t("partners.view_profile")}</span>
+                        </Link>
                       </div>
-                      <Link
-                        to={`/partenaires/${vendor.slug || vendor.id}`}
-                        className="btn-editorial-outline w-full justify-center text-[10px] mt-1"
-                        data-testid={`view-detail-${vendor.id}`}
-                      >
-                        {t("partners.view_profile")}
-                      </Link>
                     </div>
                   </div>
                 </motion.article>

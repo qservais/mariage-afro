@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Plus, Trash2, Send, X, ChevronDown, ChevronUp, FileText, Eye } from "lucide-react";
+import { Loader2, Plus, Trash2, Send, X, ChevronDown, ChevronUp, FileText, Eye, Pencil } from "lucide-react";
 import { vendorApi } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +71,7 @@ export default function VendorQuotesPage() {
   const [priceInputs, setPriceInputs] = useState<string[]>([""]);
   const [prefillLeadId, setPrefillLeadId] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   // Prefill form when navigated from the Leads page (?email=&name=&leadId=)
   useEffect(() => {
@@ -104,6 +105,20 @@ export default function VendorQuotesPage() {
       setPriceInputs([""]);
       setPrefillLeadId(null);
       toast({ title: t("vendor.quotes.created") });
+    },
+    onError: () => toast({ title: t("vendor.quotes.error"), variant: "destructive" }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, body }: { id: number; body: typeof EMPTY_FORM }) =>
+      vendorApi.patch<VendorQuote>(`/api/vendor/quotes/${id}`, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["vendor", "quotes"] });
+      setShowForm(false);
+      setEditingId(null);
+      setForm({ ...EMPTY_FORM });
+      setPriceInputs([""]);
+      toast({ title: t("vendor.quotes.updated", { defaultValue: "Devis mis à jour" }) });
     },
     onError: () => toast({ title: t("vendor.quotes.error"), variant: "destructive" }),
   });
@@ -144,6 +159,29 @@ export default function VendorQuotesPage() {
     setPriceInputs((p) => p.filter((_, i) => i !== idx));
   }
 
+  function startEditing(q: VendorQuote) {
+    setEditingId(q.id);
+    setForm({
+      recipientEmail: q.recipientEmail,
+      recipientName: q.recipientName,
+      subject: q.subject,
+      message: q.message,
+      vatRate: q.vatRate,
+      validityDays: q.validityDays,
+      services: q.services.length > 0 ? q.services : [{ label: "", qty: 1, unitPrice: 0 }],
+    });
+    setPriceInputs(q.services.map((s) => s.unitPrice > 0 ? (s.unitPrice / 100).toFixed(2).replace(".", ",") : ""));
+    setShowForm(true);
+    setSelectedId(null);
+  }
+
+  function cancelEditing() {
+    setEditingId(null);
+    setForm({ ...EMPTY_FORM });
+    setPriceInputs([""]);
+    setShowForm(false);
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const hasEmptyLabel = form.services.some((s) => !s.label.trim());
@@ -151,7 +189,11 @@ export default function VendorQuotesPage() {
       toast({ title: t("vendor.quotes.service_label_required", { defaultValue: "Chaque prestation doit avoir un intitulé." }), variant: "destructive" });
       return;
     }
-    createMutation.mutate({ ...form, leadId: prefillLeadId ?? undefined } as typeof EMPTY_FORM & { leadId?: number });
+    if (editingId !== null) {
+      updateMutation.mutate({ id: editingId, body: form });
+    } else {
+      createMutation.mutate({ ...form, leadId: prefillLeadId ?? undefined } as typeof EMPTY_FORM & { leadId?: number });
+    }
   }
 
   return (
@@ -177,7 +219,11 @@ export default function VendorQuotesPage() {
           className="bg-cream border border-neutral-200 p-6 space-y-5"
           data-testid="form-new-quote"
         >
-          <h2 className="font-semibold text-wine-deep text-lg">{t("vendor.quotes.form_title")}</h2>
+          <h2 className="font-semibold text-wine-deep text-lg">
+            {editingId !== null
+              ? t("vendor.quotes.edit_form_title", { defaultValue: "Modifier le devis" })
+              : t("vendor.quotes.form_title")}
+          </h2>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
@@ -330,13 +376,17 @@ export default function VendorQuotesPage() {
           <div className="flex gap-3">
             <Button
               type="submit"
-              disabled={createMutation.isPending || !form.recipientEmail}
+              disabled={(editingId !== null ? updateMutation.isPending : createMutation.isPending) || !form.recipientEmail}
               className="bg-wine-deep text-cream hover:bg-wine-deep/90 rounded-none uppercase tracking-wider"
               data-testid="button-create-quote"
             >
-              {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t("vendor.quotes.save_draft")}
+              {(editingId !== null ? updateMutation.isPending : createMutation.isPending)
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : editingId !== null
+                  ? t("vendor.quotes.save_edit", { defaultValue: "Mettre à jour" })
+                  : t("vendor.quotes.save_draft")}
             </Button>
-            <Button type="button" variant="outline" className="rounded-none uppercase tracking-wider" onClick={() => setShowForm(false)}>
+            <Button type="button" variant="outline" className="rounded-none uppercase tracking-wider" onClick={editingId !== null ? cancelEditing : () => setShowForm(false)}>
               {t("vendor.quotes.cancel")}
             </Button>
           </div>
@@ -405,6 +455,16 @@ export default function VendorQuotesPage() {
                               <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                             </button>
                           </>
+                        )}
+                        {q.status === "sent" && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); startEditing(q); }}
+                            aria-label={t("vendor.quotes.edit_btn", { defaultValue: "Modifier" })}
+                            className="p-1.5 border border-neutral-300 text-neutral-500 hover:border-wine-deep hover:text-wine-deep transition-colors"
+                            data-testid={`button-edit-${q.id}`}
+                          >
+                            <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                          </button>
                         )}
                       </div>
                     </td>
@@ -498,6 +558,16 @@ export default function VendorQuotesPage() {
                   data-testid="button-send-detail"
                 >
                   {sendMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4" /> {t("vendor.quotes.send_btn")}</>}
+                </Button>
+              )}
+              {selected.status === "sent" && (
+                <Button
+                  onClick={() => startEditing(selected)}
+                  className="w-full bg-wine-deep/10 text-wine-deep hover:bg-wine-deep/20 rounded-none uppercase tracking-wider gap-2"
+                  data-testid="button-edit-detail"
+                >
+                  <Pencil className="w-4 h-4" />
+                  {t("vendor.quotes.edit_btn", { defaultValue: "Modifier le devis" })}
                 </Button>
               )}
               {selected.viewToken && selected.status !== "draft" && (

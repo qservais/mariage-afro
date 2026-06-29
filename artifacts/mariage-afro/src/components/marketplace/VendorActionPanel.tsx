@@ -32,6 +32,7 @@ interface VendorLite {
   id: number;
   name: string;
   category?: string;
+  services?: Array<{ name: string; price?: number; price_unit?: string; price_on_request?: boolean }>;
 }
 
 interface VendorActionPanelProps {
@@ -145,6 +146,7 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
   const [weddingDate, setWeddingDate] = useState("");
   const [message, setMessage] = useState("");
   const [categoryFieldValues, setCategoryFieldValues] = useState<Record<string, string>>({});
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -174,6 +176,10 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
     try {
       // Merge category-specific fields into the message body (same format the API uses
       // for the old /vendor-request endpoint, so leads.tsx parseCategoryFields works)
+      const servicesSuffix =
+        selectedServices.length > 0
+          ? "\n\n--- Services souhaités ---\n" + selectedServices.map((s) => `• ${s}`).join("\n")
+          : "";
       const catFieldsSuffix =
         catConfig && Object.keys(categoryFieldValues).length > 0
           ? "\n\n--- Informations spécifiques ---\n" +
@@ -181,9 +187,9 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
               .map(([k, v]) => `${k}: ${v}`)
               .join("\n")
           : "";
-      const fullMessage = message
-        ? message + catFieldsSuffix
-        : catFieldsSuffix.trim() || null;
+      const fullMessage = (message || servicesSuffix || catFieldsSuffix)
+        ? (message + servicesSuffix + catFieldsSuffix).trim()
+        : null;
 
       const res = await fetch(`${BASE}/api/marketplace/vendors/${vendor.id}/lead`, {
         method: "POST",
@@ -307,6 +313,42 @@ function VendorActionModal({ action, vendor, onClose }: VendorActionModalProps) 
                 />
               </div>
             </div>
+
+            {/* Vendor services — selectable when action is quote */}
+            {action === "quote" && vendor.services && vendor.services.length > 0 && (
+              <div className="space-y-3 border-t border-wine-deep/10 pt-5">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold">
+                  {t("vendor_detail.services_label", { defaultValue: "Services souhaités" })}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {vendor.services.map((svc) => {
+                    const checked = selectedServices.includes(svc.name);
+                    return (
+                      <label key={svc.name} className="flex items-start gap-2 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() =>
+                            setSelectedServices((prev) =>
+                              checked ? prev.filter((s) => s !== svc.name) : [...prev, svc.name]
+                            )
+                          }
+                          className="mt-0.5 accent-wine-deep"
+                        />
+                        <span className="text-sm text-wine-deep/90 leading-snug group-hover:text-wine-deep">
+                          {svc.name}
+                          {svc.price != null && (
+                            <span className="text-wine-deep/50 ml-1 text-xs">
+                              {" "}({svc.price.toLocaleString("fr-BE")} €)
+                            </span>
+                          )}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Dynamic category-specific fields — quote only */}
             {catConfig && catConfig.quoteFields.length > 0 && (
