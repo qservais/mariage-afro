@@ -60,9 +60,34 @@ function parseVideoEmbed(url: string): { embedUrl: string | null; type: "youtube
 }
 
 const CATEGORIES = [
-  "Photographie", "Vidéo", "DJ & Animation", "Décoration", "Traiteur",
-  "Coiffure & Maquillage", "Robe de mariée", "Transport", "Invitations",
-  "Lieu de réception", "Autre",
+  "Salle & lieu de réception",
+  "Traiteur",
+  "Wedding planner & coordination",
+  "Décoration & wedding design",
+  "Fleurs & décoration florale",
+  "Photo & vidéo",
+  "Content creator",
+  "DJ",
+  "MC & Animation",
+  "Sonorisation, lumière & effets spéciaux",
+  "Wedding cake & dessert",
+  "Maquillage",
+  "Coiffure",
+  "Tenues & accessoires",
+  "Hôtesses & serveurs",
+  "Personnel événementiel",
+  "Transport, voitures & navettes",
+  "Papeterie, impression & signalétique",
+  "Location de matériel, mobilier & logistique",
+  "Photobooth, miroir photo & animations photos",
+  "Artistes live & musiciens",
+  "Danseurs & animations culturelles",
+  "Officiant",
+  "Cadeaux invités & souvenirs personnalisés",
+  "Hébergement, hôtel & logements invités",
+  "Voyage de noces & organisation lune de miel",
+  "Services enfants & garderie événementielle",
+  "Autre service",
 ];
 
 export default function VendorProfilePage() {

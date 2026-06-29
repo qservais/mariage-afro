@@ -37,22 +37,52 @@ interface Props {
 }
 
 const CATEGORY_VALUES = [
-  "Photographie",
-  "Vidéo",
-  "DJ & Animation",
-  "Décoration",
+  "Salle & lieu de réception",
   "Traiteur",
-  "Coiffure & Maquillage",
-  "Robe de mariée",
-  "Transport",
-  "Invitations",
-  "Lieu de réception",
-  "Coordinateur de mariage",
-  "Wedding Designer",
-  "Autre",
+  "Wedding planner & coordination",
+  "Décoration & wedding design",
+  "Fleurs & décoration florale",
+  "Photo & vidéo",
+  "Content creator",
+  "DJ",
+  "MC & Animation",
+  "Sonorisation, lumière & effets spéciaux",
+  "Wedding cake & dessert",
+  "Maquillage",
+  "Coiffure",
+  "Tenues & accessoires",
+  "Hôtesses & serveurs",
+  "Personnel événementiel",
+  "Transport, voitures & navettes",
+  "Papeterie, impression & signalétique",
+  "Location de matériel, mobilier & logistique",
+  "Photobooth, miroir photo & animations photos",
+  "Artistes live & musiciens",
+  "Danseurs & animations culturelles",
+  "Officiant",
+  "Cadeaux invités & souvenirs personnalisés",
+  "Hébergement, hôtel & logements invités",
+  "Voyage de noces & organisation lune de miel",
+  "Services enfants & garderie événementielle",
+  "Autre service",
 ] as const;
 
-const REGION_KEYS = ["bruxelles", "wallonie", "flandre", "luxembourg"] as const;
+const REGION_VALUES = [
+  "Belgique",
+  "France",
+  "Pays-Bas",
+  "Luxembourg",
+  "Allemagne",
+  "Suisse",
+  "Royaume-Uni",
+  "Espagne",
+  "Portugal",
+  "Italie",
+  "Toute l'Europe",
+  "Toute l'Afrique",
+  "Destination wedding / international",
+  "Autre pays",
+] as const;
 const PRICE_KEYS = ["tier_1", "tier_2", "tier_3", "tier_4"] as const;
 const SPECIALTY_KEYS = [
   "afro",
@@ -144,9 +174,9 @@ export default function VendorOnboardingGate({ account, children }: Props) {
     value: v,
     label: t(`vendor.onboarding.categories.${v}`, { defaultValue: v }),
   }));
-  const regionOptions = REGION_KEYS.map((k) => ({
-    value: k,
-    label: t(`vendor.onboarding.regions.${k}`),
+  const regionOptions = REGION_VALUES.map((v) => ({
+    value: v,
+    label: t(`vendor.onboarding.regions.${v}`, { defaultValue: v }),
   }));
   const priceOptions = PRICE_KEYS.map((k) => ({
     value: k,
