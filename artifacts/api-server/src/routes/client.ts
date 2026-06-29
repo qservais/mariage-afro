@@ -791,6 +791,7 @@ router.get("/client/conversations", async (req, res) => {
       vendorCity: marketplaceVendorsTable.city,
       vendorCoverImage: marketplaceVendorsTable.coverImage,
       vendorActive: marketplaceVendorsTable.active,
+      vendorVerified: marketplaceVendorsTable.verified,
     })
     .from(conversationsTable)
     .leftJoin(marketplaceVendorsTable, eq(marketplaceVendorsTable.id, conversationsTable.vendorId))
@@ -843,6 +844,7 @@ router.get("/client/conversations", async (req, res) => {
         city: c.vendorCity,
         coverImage: c.vendorCoverImage,
         active: c.vendorActive,
+        verified: c.vendorVerified,
       },
       lastMessageAt: c.lastMessageAt,
       lastMessage: stats.lastContent,

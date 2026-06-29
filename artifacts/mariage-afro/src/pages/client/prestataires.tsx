@@ -26,6 +26,7 @@ interface ConversationVendor {
   city: string;
   coverImage: string | null;
   active: boolean | null;
+  verified: boolean | null;
 }
 interface Conversation {
   id: number;
@@ -238,7 +239,7 @@ export default function VendorsPage() {
     queryFn: () => clientApi.get<Conversation[]>("/api/client/conversations"),
   });
   const platformVendors = useMemo(
-    () => conversations.filter((c) => c.kind === "vendor" && c.vendor != null && c.vendor.active === true),
+    () => conversations.filter((c) => c.kind === "vendor" && c.vendor != null && c.vendor.active === true && c.vendor.verified === true),
     [conversations],
   );
 

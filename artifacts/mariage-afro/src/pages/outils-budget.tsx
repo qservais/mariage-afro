@@ -42,11 +42,19 @@ interface BreakdownLine {
   label: string;
   min: number;
   max: number;
+  exact?: boolean;
 }
 
-const SERVICE_BASE: Record<ServiceKey, { label: string; perGuest?: [number, number]; flat?: [number, number] }> = {
+type ServiceDef = {
+  label: string;
+  perGuest?: [number, number];
+  perGuestByStanding?: Record<Standing, number>;
+  flat?: [number, number];
+};
+
+const SERVICE_BASE: Record<ServiceKey, ServiceDef> = {
   venue: { label: "Lieu de réception", flat: [3500, 12000] },
-  catering: { label: "Traiteur (par invité)", perGuest: [40, 75] },
+  catering: { label: "Traiteur (par invité)", perGuestByStanding: { essentiel: 40, premium: 50, luxe: 75 } },
   decoration: { label: "Décoration & scénographie", flat: [4000, 10000] },
   photo_video: { label: "Photo & vidéo", flat: [4200, 7500] },
   dj_music: { label: "DJ", flat: [800, 2500] },
@@ -84,6 +92,11 @@ function computeBreakdown(inputs: Inputs): BreakdownLine[] {
   const factor = standing * region * monthMultiplier;
   return inputs.services.map<BreakdownLine>((key) => {
     const base = SERVICE_BASE[key];
+    if (base.perGuestByStanding) {
+      const pricePerGuest = base.perGuestByStanding[inputs.standing];
+      const total = Math.round((pricePerGuest * inputs.guestCount * region * monthMultiplier) / 50) * 50;
+      return { key, label: base.label, min: total, max: total, exact: true };
+    }
     const [minBase, maxBase] = base.perGuest
       ? [base.perGuest[0] * inputs.guestCount, base.perGuest[1] * inputs.guestCount]
       : (base.flat ?? [0, 0]);
@@ -352,7 +365,7 @@ export default function OutilsBudget() {
                           <div className="flex justify-between items-baseline text-sm">
                             <span className="text-wine-deep">{b.label}</span>
                             <span className="font-medium text-wine-deep tabular-nums">
-                              {fmt(b.min)} – {fmt(b.max)}
+                              {b.exact ? fmt(b.min) : `${fmt(b.min)} – ${fmt(b.max)}`}
                             </span>
                           </div>
                           <div className="relative h-2 bg-wine-deep/8 overflow-hidden">
