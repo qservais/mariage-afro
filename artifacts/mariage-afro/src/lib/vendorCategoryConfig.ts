@@ -665,8 +665,49 @@ export function getCategoryConfig(category: string): CategoryConfig | null {
   return CATEGORY_CONFIG[category] ?? null;
 }
 
-export function getCategoryHeroUrl(_category: string): string | null {
-  return null;
+const CATEGORY_HERO_IMAGES: Record<string, string> = {
+  "Salle & lieu de réception": "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=80&auto=format&fit=crop",
+  "Traiteur": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
+  "Wedding planner & coordination": "https://images.unsplash.com/photo-1511795409834-432f7b1728b2?w=1200&q=80&auto=format&fit=crop",
+  "Décoration & wedding design": "https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80&auto=format&fit=crop",
+  "Fleurs & décoration florale": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1200&q=80&auto=format&fit=crop",
+  "Photo & vidéo": "https://images.unsplash.com/photo-1537907690979-68b1b98e0ba5?w=1200&q=80&auto=format&fit=crop",
+  "Content creator": "https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=1200&q=80&auto=format&fit=crop",
+  "DJ": "https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=1200&q=80&auto=format&fit=crop",
+  "MC & Animation": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&q=80&auto=format&fit=crop",
+  "Sonorisation, lumière & effets spéciaux": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80&auto=format&fit=crop",
+  "Wedding cake & dessert": "https://images.unsplash.com/photo-1568051243857-b40626d8f66b?w=1200&q=80&auto=format&fit=crop",
+  "Maquillage": "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1200&q=80&auto=format&fit=crop",
+  "Coiffure": "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=1200&q=80&auto=format&fit=crop",
+  "Tenues & accessoires": "https://images.unsplash.com/photo-1594463750939-ebb28c3f7f75?w=1200&q=80&auto=format&fit=crop",
+  "Hôtesses & serveurs": "https://images.unsplash.com/photo-1555244162-803834f70033?w=1200&q=80&auto=format&fit=crop",
+  "Personnel événementiel": "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=1200&q=80&auto=format&fit=crop",
+  "Transport, voitures & navettes": "https://images.unsplash.com/photo-1555684598-8ace31564f25?w=1200&q=80&auto=format&fit=crop",
+  "Papeterie, impression & signalétique": "https://images.unsplash.com/photo-1607532941433-304659e8198a?w=1200&q=80&auto=format&fit=crop",
+  "Location de matériel, mobilier & logistique": "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=1200&q=80&auto=format&fit=crop",
+  "Photobooth, miroir photo & animations photos": "https://images.unsplash.com/photo-1498612753354-772a30629934?w=1200&q=80&auto=format&fit=crop",
+  "Artistes live & musiciens": "https://images.unsplash.com/photo-1470019693664-1d202d2c0907?w=1200&q=80&auto=format&fit=crop",
+  "Danseurs & animations culturelles": "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=1200&q=80&auto=format&fit=crop",
+  "Officiant": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1200&q=80&auto=format&fit=crop",
+  "Cadeaux invités & souvenirs personnalisés": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=1200&q=80&auto=format&fit=crop",
+  "Hébergement, hôtel & logements invités": "https://images.unsplash.com/photo-1566073771259-470c3e0571f2?w=1200&q=80&auto=format&fit=crop",
+  "Voyage de noces & organisation lune de miel": "https://images.unsplash.com/photo-1518599807935-37015b9cefcb?w=1200&q=80&auto=format&fit=crop",
+  "Services enfants & garderie événementielle": "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=1200&q=80&auto=format&fit=crop",
+  "Autre service": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1200&q=80&auto=format&fit=crop",
+  "Vidéo": "https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=1200&q=80&auto=format&fit=crop",
+  "DJ & Animation": "https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=1200&q=80&auto=format&fit=crop",
+  "Décoration": "https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80&auto=format&fit=crop",
+  "Coiffure & Maquillage": "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1200&q=80&auto=format&fit=crop",
+  "Robe de mariée": "https://images.unsplash.com/photo-1594463750939-ebb28c3f7f75?w=1200&q=80&auto=format&fit=crop",
+  "Coordinateur de mariage": "https://images.unsplash.com/photo-1511795409834-432f7b1728b2?w=1200&q=80&auto=format&fit=crop",
+  "Wedding Designer": "https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80&auto=format&fit=crop",
+  "Photographie": "https://images.unsplash.com/photo-1537907690979-68b1b98e0ba5?w=1200&q=80&auto=format&fit=crop",
+};
+
+const CATEGORY_HERO_FALLBACK = "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1200&q=80&auto=format&fit=crop";
+
+export function getCategoryHeroUrl(category: string): string {
+  return CATEGORY_HERO_IMAGES[category] ?? CATEGORY_HERO_FALLBACK;
 }
 
 export function getCategoryLabel(

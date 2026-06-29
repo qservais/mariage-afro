@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { storageUrl as objectUrl } from "@/lib/storage-url";
-import fallbackHeroImg from "@assets/pexels-nudethephotographer-34543838_1776285262172.jpg";
 import type { BreadcrumbItem } from "@/components/SEO";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +10,7 @@ import { ReviewStars } from "@/components/marketplace/ReviewStars";
 import VendorActionPanel from "@/components/marketplace/VendorActionPanel";
 import VendorAvailabilityCalendar from "@/components/VendorAvailabilityCalendar";
 import { SEO } from "@/components/SEO";
-import { getCategoryConfig } from "@/lib/vendorCategoryConfig";
+import { getCategoryConfig, getCategoryHeroUrl } from "@/lib/vendorCategoryConfig";
 
 interface VendorDetail {
   id: number;
@@ -284,7 +283,7 @@ export default function PrestataireDetail() {
       {/* Full-width hero with cover photo */}
       <section className="relative min-h-[70vh] flex items-end bg-wine-deep overflow-hidden">
         <img
-          src={(vendor.coverImage && objectUrl(vendor.coverImage)) || (fallbackHeroImg as unknown as string)}
+          src={(vendor.coverImage && objectUrl(vendor.coverImage)) || getCategoryHeroUrl(vendor.category ?? "")}
           alt={vendor.name}
           className="absolute inset-0 w-full h-full object-cover"
         />

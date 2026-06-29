@@ -53,7 +53,7 @@ import { useToast } from "@/hooks/use-toast";
 
 import VendorActionModal, { type VendorAction } from "@/components/VendorActionModal";
 
-import fallbackImg from "@assets/pexels-nudethephotographer-34543838_1776285262172.jpg";
+import { getCategoryHeroUrl } from "@/lib/vendorCategoryConfig";
 import bannerImg from "@assets/New-Project-12_1776614330308.png";
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
@@ -671,7 +671,7 @@ export default function Prestations() {
         typeof s === "string" ? { name: s } : (s as { name: string; price?: number; price_unit?: string })
       ),
       rating: v.rating as number,
-      image: objectUrl(v.coverImage as string | null) ?? objectUrl(((v.images as string[]) ?? [])[0]) ?? (fallbackImg as unknown as string),
+      image: objectUrl(v.coverImage as string | null) ?? objectUrl(((v.images as string[]) ?? [])[0]) ?? getCategoryHeroUrl(v.category as string),
       gallery: ((v.images as string[]) ?? []).slice(0, 3).map((img) => objectUrl(img) ?? img),
       verified: v.verified as boolean,
       averageRating: typeof v.averageRating === "number" ? v.averageRating : 0,
