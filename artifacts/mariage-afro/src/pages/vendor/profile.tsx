@@ -23,6 +23,7 @@ interface VendorProfile {
   id: number;
   name: string;
   category: string;
+  region?: string | null;
   city: string;
   tagline: string;
   description: string;
@@ -58,6 +59,23 @@ function parseVideoEmbed(url: string): { embedUrl: string | null; type: "youtube
   if (url.startsWith("/objects/") || url.match(/\.(mp4|webm|mov)$/i)) return { embedUrl: storageUrl(url) ?? null, type: "upload" };
   return { embedUrl: null, type: null };
 }
+
+const REGION_VALUES = [
+  "Belgique",
+  "France",
+  "Pays-Bas",
+  "Luxembourg",
+  "Allemagne",
+  "Suisse",
+  "Royaume-Uni",
+  "Espagne",
+  "Portugal",
+  "Italie",
+  "Toute l'Europe",
+  "Toute l'Afrique",
+  "Destination wedding / international",
+  "Autre pays",
+];
 
 const CATEGORIES = [
   "Salle & lieu de réception",
@@ -102,6 +120,7 @@ export default function VendorProfilePage() {
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
+  const [zone, setZone] = useState("");
   const [city, setCity] = useState("");
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
@@ -130,6 +149,7 @@ export default function VendorProfilePage() {
     if (!vendor) return;
     setName(vendor.name || "");
     setCategory(vendor.category || CATEGORIES[0]);
+    setZone(vendor.region || "");
     setCity(vendor.city || "");
     setTagline(vendor.tagline || "");
     setDescription(vendor.description || "");
@@ -232,7 +252,7 @@ export default function VendorProfilePage() {
         onSubmit={(e) => {
           e.preventDefault();
           save.mutate({
-            name, category, city, tagline, description,
+            name, category, region: zone || null, city, tagline, description,
             videoUrl: videoUrl || null,
             indicativePrice: indicativePrice || null,
             website: website || null,
@@ -321,6 +341,18 @@ export default function VendorProfilePage() {
               data-testid="select-profile-category"
             >
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.onboarding.regions_label", { defaultValue: "Zone d'intervention" })}</label>
+            <select
+              value={zone}
+              onChange={(e) => setZone(e.target.value)}
+              className="w-full border border-input bg-background px-3 py-2 text-sm"
+              data-testid="select-profile-zone"
+            >
+              <option value="">{t("vendor.profile.zone_placeholder", { defaultValue: "— Sélectionner —" })}</option>
+              {REGION_VALUES.map((r) => <option key={r} value={r}>{t(`vendor.onboarding.regions.${r}`, { defaultValue: r })}</option>)}
             </select>
           </div>
           <div>
