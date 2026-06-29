@@ -57,7 +57,7 @@ EMAIL_FROM = "Mariage Afro <hello@mariage-afro.com>"
 
 [userenv.production]
 ALLOWED_ORIGINS = "https://mariage.madebydone.be"
-PUBLIC_APP_URL = "https://mariage.madebydone.be"
+PUBLIC_APP_URL = "https://mariage-afro.be"
 
 [objectStorage]
 defaultBucketID = "replit-objstore-df07f969-f68e-4617-b2be-afaafe79910e"
