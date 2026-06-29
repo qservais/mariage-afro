@@ -192,7 +192,7 @@ export default function QuoteViewPage() {
           )}
 
           <footer className="border-t border-neutral-100 pt-4 text-[10px] text-neutral-400 text-center">
-            {t("quote_view.footer", { defaultValue: "Devis généré via Mariage Afro — mariage.madebydone.be" })}
+            {t("quote_view.footer", { defaultValue: "Devis généré via Mariage Afro — mariage-afro.com" })}
           </footer>
         </div>
       </div>

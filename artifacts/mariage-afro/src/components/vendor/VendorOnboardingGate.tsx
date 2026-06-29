@@ -388,10 +388,10 @@ export default function VendorOnboardingGate({ account, children }: Props) {
           <p className="text-xs text-wine-deep/50">
             {t("vendor.onboarding.pending_contact")}{" "}
             <a
-              href="mailto:info@mariageafro.be"
+              href="mailto:info@mariage-afro.com"
               className="text-gold hover:text-wine-deep transition-colors underline underline-offset-2"
             >
-              info@mariageafro.be
+              info@mariage-afro.com
             </a>
           </p>
         </div>

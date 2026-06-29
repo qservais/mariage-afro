@@ -83,7 +83,7 @@ export async function sendLeadEmails(payload: LeadEmailPayload, log = logger): P
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] ${adminTitle} — ${payload.name}`,
+    subject: `Mariage Afro — ${adminTitle} — ${payload.name}`,
     html: wrap({ title: adminTitle, intro: pick(T.intro, "fr"), rows, locale: "fr" }),
     text: plainText({ title: adminSubject, intro: pick(T.intro, "fr"), lines: [`${payload.email}`, payload.phone ?? ""] }),
   }, log);
@@ -133,7 +133,7 @@ export async function sendVendorRequestEmails(p: VendorRequestEmailPayload, log 
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] ${reqLabelFR} pour ${p.vendorName} — ${p.name}`,
+    subject: `Mariage Afro — ${reqLabelFR} pour ${p.vendorName} — ${p.name}`,
     html: wrap({ title: `${reqLabelFR} — ${p.vendorName}`, rows, locale: "fr" }),
   }, log);
 
@@ -238,7 +238,7 @@ export async function sendVenueRequestEmails(p: VenueRequestEmailPayload, log = 
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] ${reqLabelFR} pour ${p.venueName} — ${p.name}`,
+    subject: `Mariage Afro — ${reqLabelFR} pour ${p.venueName} — ${p.name}`,
     html: wrap({ title: `${reqLabelFR} — ${p.venueName}`, rows: rowsAdmin, locale: "fr" }),
   }, log);
 
@@ -308,7 +308,7 @@ export async function notifyAdminNewLead(p: NotifyAdminLeadPayload, log = logger
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] ${sourceLabel[p.source]} — ${p.name}`,
+    subject: `Mariage Afro — ${sourceLabel[p.source]} — ${p.name}`,
     html: wrap({
       title: pick(T.title, "fr"),
       intro: pick(T.intro, "fr"),
@@ -632,7 +632,7 @@ export async function notifyBudgetResult(p: NotifyBudgetResultPayload, log = log
   // Admin copy
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] Calculateur budget — ${p.name}`,
+    subject: `Mariage Afro — Calculateur budget — ${p.name}`,
     html: wrap({
       title: "Lead calculateur budget",
       intro: `${p.name} (${p.to}) a complété le calculateur de budget.`,
@@ -682,7 +682,7 @@ export async function notifyQuizResult(p: NotifyQuizResultPayload, log = logger)
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] Quiz — ${p.name} (${p.profileName})`,
+    subject: `Mariage Afro — Quiz — ${p.name} (${p.profileName})`,
     html: wrap({
       title: "Lead quiz mariage",
       intro: `${p.name} (${p.to}) a complété le quiz. Profil : ${p.profileName}.`,
@@ -717,7 +717,7 @@ export async function notifyLeadMagnet(p: NotifyLeadMagnetPayload, log = logger)
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] Lead magnet téléchargé — ${p.name}`,
+    subject: `Mariage Afro — Lead magnet téléchargé — ${p.name}`,
     html: wrap({
       title: "Téléchargement lead magnet",
       intro: `${p.name} (${p.to}) a téléchargé "${p.magnetTitle ?? "Mon mariage afro en 12 étapes"}".`,
@@ -782,7 +782,7 @@ export interface NotifyAdminSubscriptionRequestPayload {
 
 export async function notifyAdminSubscriptionRequest(p: NotifyAdminSubscriptionRequestPayload, log = logger): Promise<void> {
   const tierLabel = p.tier === "featured" ? "Featured" : p.tier === "premium" ? "Premium" : "Basic";
-  const subject = `[Mariage Afro] Demande d'abonnement ${tierLabel} — ${p.vendorName}`;
+  const subject = `Mariage Afro — Demande d'abonnement ${tierLabel} — ${p.vendorName}`;
   const adminLink = `${appUrl()}/admin`;
   const rows =
     row("Prestataire", p.vendorName) +
@@ -908,7 +908,7 @@ export async function sendPartnerApplicationEmails(p: PartnerApplicationEmailPay
 
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] Candidature partenaire — ${p.businessName}`,
+    subject: `Mariage Afro — Candidature partenaire — ${p.businessName}`,
     html: wrap({ title: "Nouvelle candidature partenaire", rows, locale: "fr" }),
   }, log);
 
@@ -1043,7 +1043,7 @@ export async function notifyQuoteReceived(p: NotifyQuoteReceivedPayload, log = l
   const ctaUrl = directUrl ?? (p.isRegisteredCouple ? `${appUrl()}/espace-client/devis` : undefined);
   await sendOne({
     to: p.to,
-    subject: `[Mariage Afro] ${title} — ${p.vendorName}`,
+    subject: `Mariage Afro — ${title} — ${p.vendorName}`,
     html: wrap({
       title,
       intro: greeting ? `${greeting}\n${intro}` : intro,
@@ -1077,7 +1077,7 @@ export async function notifyQuoteResponded(p: NotifyQuoteRespondedPayload, log =
   const rows = p.message ? row({ fr: "Message", nl: "Bericht", en: "Message" }[locale], p.message) : "";
   await sendOne({
     to: p.to,
-    subject: `[Mariage Afro] ${title}`,
+    subject: `Mariage Afro — ${title}`,
     html: wrap({
       title,
       intro,
@@ -1114,7 +1114,7 @@ export async function notifyQuoteAccepted(p: NotifyQuoteAcceptedPayload, log = l
     row({ fr: "Montant TTC", nl: "Bedrag incl. BTW", en: "Amount incl. VAT" }[locale], fmtEur(p.amountTtc / 100));
   await sendOne({
     to: p.to,
-    subject: `[Mariage Afro] ${title}`,
+    subject: `Mariage Afro — ${title}`,
     html: wrap({
       title,
       intro: greeting ? `${greeting}\n${intro}` : intro,
@@ -1136,7 +1136,7 @@ export async function sendContactFormEmail(p: ContactFormPayload, log = logger):
     row("Message", p.message);
   await sendOne({
     to: ADMIN_TO,
-    subject: `[Mariage Afro] Nouvelle demande de RDV — ${p.name}`,
+    subject: `Mariage Afro — Nouvelle demande de RDV — ${p.name}`,
     html: wrap({ title: "Nouvelle demande de rendez-vous", rows, locale: "fr" }),
   }, log);
 }

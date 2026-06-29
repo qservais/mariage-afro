@@ -117,9 +117,9 @@ export const dict: Dictionary = {
     en: `Hello ${name},`,
   }),
   footer: {
-    fr: "Mariage Afro — Bruxelles, Belgique",
-    nl: "Mariage Afro — Brussel, België",
-    en: "Mariage Afro — Brussels, Belgium",
+    fr: "MARIAGE AFRO | La plateforme dédiée aux mariages afro et mixtes",
+    nl: "MARIAGE AFRO | Het platform voor Afrikaanse & gemengde bruiloften",
+    en: "MARIAGE AFRO | The platform dedicated to Afro & mixed weddings",
   },
   ctaOpen: {
     fr: "Ouvrir",
@@ -134,9 +134,9 @@ export const dict: Dictionary = {
 
   adminNewLead: {
     subject: (name) => ({
-      fr: `[Mariage Afro] Nouveau lead — ${name}`,
-      nl: `[Mariage Afro] Nieuwe lead — ${name}`,
-      en: `[Mariage Afro] New lead — ${name}`,
+      fr: `Mariage Afro — Nouveau lead — ${name}`,
+      nl: `Mariage Afro — Nieuwe lead — ${name}`,
+      en: `Mariage Afro — New lead — ${name}`,
     }),
     title: {
       fr: "Nouveau lead reçu",
