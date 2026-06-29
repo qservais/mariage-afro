@@ -16,8 +16,9 @@ const videoSrc = "/trailer-hero.mp4";
 const heroImage = "/images/g-m-00756.webp";
 const aboutImage = "/images/dsc05077.webp";
 const servicesImg = "/images/m-sj2-05790.webp";
-const filmVideo1 = "/film-de-miel-2.mp4";
-const filmVideo2 = "/film-de-miel-1.mp4";
+const FILM_DE_MIEL_BG_ID = "M-2u3gL83is";
+const FILM_DE_MIEL_V1_ID = "S3WDQgITC6w";
+const FILM_DE_MIEL_V2_ID = "S3WDQgITC6w";
 
 type IntroMode = "skip" | "full" | "mobile-fade";
 
@@ -631,14 +632,23 @@ export default function Home() {
 
       {/* Film de Miel — Sub-brand Section */}
       <section className="relative py-32 md:py-44 bg-wine-deep text-cream overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-30">
-          <video
-            src={videoSrc}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
+        <div className="absolute inset-0 z-0 opacity-20 overflow-hidden pointer-events-none">
+          <iframe
+            src={`https://www.youtube.com/embed/${FILM_DE_MIEL_BG_ID}?autoplay=1&mute=1&loop=1&controls=0&playlist=${FILM_DE_MIEL_BG_ID}&playsinline=1&rel=0&disablekb=1&fs=0&modestbranding=1`}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              width: "177.78vh",
+              height: "100vh",
+              minWidth: "100%",
+              minHeight: "56.25vw",
+              transform: "translate(-50%, -50%)",
+              border: "none",
+              pointerEvents: "none",
+            }}
+            allow="autoplay; encrypted-media"
+            title="Film de Miel background"
           />
         </div>
         <div className="absolute inset-0 bg-wine-deep/60" />
@@ -663,21 +673,32 @@ export default function Home() {
               {t("film_de_miel.desc")}
             </p>
 
-            {/* Foreground video player grid */}
+            {/* Foreground YouTube player grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-              {[filmVideo1, filmVideo2].map((src, idx) => (
-                <div key={idx} className="relative overflow-hidden bg-black/30 border border-gold/20">
-                  <video
-                    src={src}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full aspect-[9/16] sm:aspect-video object-cover"
+              <div className="relative overflow-hidden bg-black/30 border border-gold/20">
+                <div className="aspect-video">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${FILM_DE_MIEL_V1_ID}?start=54&rel=0&modestbranding=1`}
+                    className="w-full h-full"
+                    style={{ border: "none" }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Film de Miel — Extrait 1"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/40 via-transparent to-transparent pointer-events-none" />
                 </div>
-              ))}
+              </div>
+              <div className="relative overflow-hidden bg-black/30 border border-gold/20">
+                <div className="aspect-video">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${FILM_DE_MIEL_V2_ID}?rel=0&modestbranding=1`}
+                    className="w-full h-full"
+                    style={{ border: "none" }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Film de Miel — Extrait 2"
+                  />
+                </div>
+              </div>
             </div>
 
             <p className="text-[10px] uppercase tracking-[0.3em] text-cream/50 font-medium mb-8">

@@ -12,7 +12,7 @@ import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 import { storageUrl } from "@/lib/storage-url";
 
-const BANNER_URL = "https://images.unsplash.com/photo-1637749713740-1cd07067c4fd?auto=format&fit=crop&w=1920&q=80";
+const BANNER_URL = "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=80";
 
 interface Venue {
   name: string;
@@ -31,20 +31,19 @@ interface VenueApi extends Venue {
   longitude?: string | null;
 }
 
-interface VisitSlot { date: string; time: string }
-
 export default function Lieux() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState<"list" | "map">("list");
   const [formData, setFormData] = useState({
-    name: "", email: "", phone: "", venue: "", weddingDate: "", guestCount: "", message: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    weddingDate: "",
+    guestCount: "",
+    eventType: "",
+    message: "",
   });
-  const [visitSlots, setVisitSlots] = useState<VisitSlot[]>([
-    { date: "", time: "" },
-    { date: "", time: "" },
-    { date: "", time: "" },
-  ]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -57,20 +56,17 @@ export default function Lieux() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const slots = visitSlots.filter((s) => s.date);
-      const res = await fetch("/api/venue-request", {
+      const res = await fetch("/api/leads/venue-inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          venueName: formData.venue || t("venues.form_venue_placeholder"),
-          requestType: "visit",
-          name: formData.name,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           email: formData.email,
-          phone: formData.phone || null,
           weddingDate: formData.weddingDate || null,
           guestCount: formData.guestCount ? Number(formData.guestCount) : null,
+          eventType: formData.eventType || null,
           message: formData.message || null,
-          visitSlots: slots.length > 0 ? slots : null,
         }),
       });
       if (!res.ok) throw new Error("error");
@@ -81,11 +77,6 @@ export default function Lieux() {
       setSubmitting(false);
     }
   };
-
-  const updateSlot = (i: number, field: keyof VisitSlot, value: string) => {
-    setVisitSlots((prev) => prev.map((s, idx) => idx === i ? { ...s, [field]: value } : s));
-  };
-
 
   const apiQueryString = searchParams.toString();
 
@@ -130,7 +121,7 @@ export default function Lieux() {
   return (
     <div className="w-full">
       <SEO title="Lieux de réception" description="Sélection de lieux d'exception pour mariages afro et mixtes : châteaux, domaines champêtres, salles de réception premium, en Europe et au-delà." />
-      {/* Hero éditorial — wine-deep style lamangue */}
+      {/* Hero éditorial — wine-deep style */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
           style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
@@ -293,7 +284,7 @@ export default function Lieux() {
         </div>
       </section>
 
-      {/* Form */}
+      {/* Venue Inquiry Form */}
       <section className="py-24 md:py-32 bg-wine-deep text-cream relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
           style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
@@ -305,7 +296,9 @@ export default function Lieux() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="section-eyebrow section-eyebrow-light mb-6">{t("venues.form_eyebrow") !== "venues.form_eyebrow" ? t("venues.form_eyebrow") : "Demande personnalisée"}</span>
+            <span className="section-eyebrow section-eyebrow-light mb-6">
+              {t("venues.form_eyebrow") !== "venues.form_eyebrow" ? t("venues.form_eyebrow") : "Demande personnalisée"}
+            </span>
             <h2 className="font-display uppercase text-cream text-3xl md:text-5xl mt-4 mb-6 leading-[0.95] tracking-tight">
               {t("venues.form_title")}
             </h2>
@@ -334,70 +327,55 @@ export default function Lieux() {
             className="space-y-6"
             data-testid="form-venues"
           >
-            {/* Name */}
-            <div>
-              <label htmlFor="venues-name" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                {t("venues.form_name")} *
-              </label>
-              <input
-                id="venues-name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
-                data-testid="input-venues-name"
-              />
-            </div>
-
-            {/* Email + Phone */}
+            {/* Prénom + Nom */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="venues-email" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                  {t("venues.form_email")} *
+                <label htmlFor="venues-firstname" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                  Prénom *
                 </label>
                 <input
-                  id="venues-email"
-                  type="email"
+                  id="venues-firstname"
+                  type="text"
                   required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
-                  data-testid="input-venues-email"
+                  data-testid="input-venues-firstname"
                 />
               </div>
               <div>
-                <label htmlFor="venues-phone" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                  {t("venues.form_phone")}
+                <label htmlFor="venues-lastname" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                  {t("venues.form_name")} *
                 </label>
                 <input
-                  id="venues-phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  id="venues-lastname"
+                  type="text"
+                  required
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
-                  data-testid="input-venues-phone"
+                  data-testid="input-venues-lastname"
                 />
               </div>
             </div>
 
-            {/* Venue */}
+            {/* Email */}
             <div>
-              <label htmlFor="venues-venue" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                {t("venues.form_venue")}
+              <label htmlFor="venues-email" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                {t("venues.form_email")} *
               </label>
               <input
-                id="venues-venue"
-                type="text"
-                placeholder={t("venues.form_venue_placeholder")}
-                value={formData.venue}
-                onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
+                id="venues-email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
-                data-testid="input-venues-venue"
+                data-testid="input-venues-email"
               />
             </div>
 
-            {/* Wedding date + guest count */}
+            {/* Date + Invités */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="venues-date" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
@@ -429,44 +407,25 @@ export default function Lieux() {
               </div>
             </div>
 
-            {/* Visit slots */}
+            {/* Type d'événement */}
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-4">
-                {t("venues.form_slots_label")}
-              </p>
-              <div className="space-y-4">
-                {visitSlots.map((slot, i) => (
-                  <div key={i} className="grid grid-cols-2 gap-4 items-end">
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-[0.2em] text-cream/50 mb-2">
-                        {t("venues.form_slot_date", { n: i + 1 })}
-                      </label>
-                      <input
-                        type="date"
-                        value={slot.date}
-                        onChange={(e) => updateSlot(i, "date", e.target.value)}
-                        className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors"
-                        data-testid={`input-slot-date-${i}`}
-                      />
-                      <p className="text-[10px] text-cream/40 mt-1">{dateHint}</p>
-                    </div>
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-[0.2em] text-cream/50 mb-2">
-                        {t("venues.form_slot_time")}
-                      </label>
-                      <input
-                        type="time"
-                        value={slot.time}
-                        onChange={(e) => updateSlot(i, "time", e.target.value)}
-                        disabled={!slot.date}
-                        className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream placeholder-cream/40 focus:outline-none focus:border-gold transition-colors disabled:opacity-40"
-                        data-testid={`input-slot-time-${i}`}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="text-[10px] text-cream/40 mt-3">{t("venues.form_slots_hint")}</p>
+              <label htmlFor="venues-event-type" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
+                Type d'événement
+              </label>
+              <select
+                id="venues-event-type"
+                value={formData.eventType}
+                onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
+                className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream focus:outline-none focus:border-gold transition-colors appearance-none cursor-pointer"
+                data-testid="input-venues-event-type"
+              >
+                <option value="" className="bg-wine-deep">— Choisir —</option>
+                <option value="Mariage civil" className="bg-wine-deep">Mariage civil</option>
+                <option value="Mariage traditionnel" className="bg-wine-deep">Mariage traditionnel</option>
+                <option value="Mariage mixte / interculturel" className="bg-wine-deep">Mariage mixte / interculturel</option>
+                <option value="Anniversaire" className="bg-wine-deep">Anniversaire</option>
+                <option value="Autre" className="bg-wine-deep">Autre</option>
+              </select>
             </div>
 
             {/* Message */}

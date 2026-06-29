@@ -8,6 +8,7 @@ import {
   sendVenueRequestEmails,
   sendPartnerApplicationEmails,
   notifyVendorNewLead,
+  notifyAdminNewLead,
   notifyBudgetResult,
   notifyQuizResult,
   notifyLeadMagnet,
@@ -239,6 +240,56 @@ router.post("/venue-request", async (req, res) => {
     res.json({ success: true, id: row.id });
   } catch (err) {
     req.log.error({ err }, "Failed to insert venue request");
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+
+// POST /leads/venue-inquiry — simple venue inquiry stored in leads table
+const venueInquirySchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email(),
+  weddingDate: isoDateOrNull,
+  guestCount: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? null : v),
+    z.coerce.number().int().nonnegative().nullable(),
+  ),
+  eventType: z.string().optional().nullable(),
+  message: z.string().optional().nullable(),
+});
+
+router.post("/leads/venue-inquiry", async (req, res) => {
+  const parsed = venueInquirySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+    return;
+  }
+  const data = parsed.data;
+  const fullName = `${data.firstName} ${data.lastName}`.trim();
+  try {
+    const [row] = await db.insert(leadsTable).values({
+      category: "venue-inquiry",
+      name: fullName,
+      email: data.email,
+      weddingDate: data.weddingDate ?? null,
+      guestCount: data.guestCount ?? null,
+      weddingType: data.eventType ?? null,
+      message: data.message ?? null,
+    }).returning();
+    void notifyAdminNewLead({
+      source: "venue-request",
+      name: fullName,
+      email: data.email,
+      weddingDate: data.weddingDate ?? null,
+      guestCount: data.guestCount ?? null,
+      weddingType: data.eventType ?? null,
+      message: data.message ?? null,
+    }, req.log).catch((err) => {
+      req.log.error({ err }, "Venue inquiry saved but admin email failed");
+    });
+    res.json({ success: true, id: row.id });
+  } catch (err) {
+    req.log.error({ err }, "Failed to insert venue inquiry");
     res.status(500).json({ error: "Internal error" });
   }
 });
