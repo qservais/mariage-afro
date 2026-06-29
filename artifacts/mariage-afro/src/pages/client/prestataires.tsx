@@ -254,7 +254,7 @@ export default function VendorsPage() {
     queryKey: ["marketplace", "vendors", "picker"],
     queryFn: () =>
       clientApi
-        .get<VendorsPage>("/api/marketplace/vendors?limit=200")
+        .get<VendorsPage>("/api/marketplace/vendors?limit=200&verified=true")
         .then((r) => r.vendors ?? []),
     enabled: showPicker && isValidated,
     staleTime: 5 * 60 * 1000,

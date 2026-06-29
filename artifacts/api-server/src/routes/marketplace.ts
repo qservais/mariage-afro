@@ -38,6 +38,9 @@ function parseIntList(q: unknown): number[] {
 
 function buildVendorFilters(req: Request) {
   const conds = [eq(marketplaceVendorsTable.active, true)];
+  if (req.query.verified === "true" || req.query.verified === "1") {
+    conds.push(eq(marketplaceVendorsTable.verified, true));
+  }
   const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
   if (q.length >= 1) {
     const like = `%${q.replace(/[%_]/g, (m) => `\\${m}`)}%`;

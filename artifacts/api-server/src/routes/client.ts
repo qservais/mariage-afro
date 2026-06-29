@@ -871,9 +871,9 @@ router.post("/client/conversations", async (req, res) => {
     return;
   }
   const [vendor] = await db.select().from(marketplaceVendorsTable)
-    .where(eq(marketplaceVendorsTable.id, parsed.data.vendorId))
+    .where(and(eq(marketplaceVendorsTable.id, parsed.data.vendorId), eq(marketplaceVendorsTable.active, true), eq(marketplaceVendorsTable.verified, true)))
     .limit(1);
-  if (!vendor) { res.status(404).json({ error: "Vendor not found" }); return; }
+  if (!vendor) { res.status(404).json({ error: "Prestataire non trouvé ou non référencé par Mariage Afro." }); return; }
   const convId = await getOrCreateVendorConversation(r.coupleId, parsed.data.vendorId);
   const [conv] = await db.select().from(conversationsTable).where(eq(conversationsTable.id, convId)).limit(1);
   res.status(201).json({
