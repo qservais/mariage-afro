@@ -13,6 +13,7 @@ import ScrollToTop from "@/components/layout/ScrollToTop";
 import BackToTop from "@/components/layout/BackToTop";
 import { StickyCTA } from "@/components/StickyCTA";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { ReviewTool } from "@/components/ReviewTool";
 import "./i18n";
 
 // Public routes — code-split (only home stays eager for fast LCP)
@@ -337,6 +338,7 @@ function App() {
             <LangUrlSync>
               <AppRoutes />
             </LangUrlSync>
+            <ReviewTool />
           </AuthProvider>
         </BrowserRouter>
         <Toaster />

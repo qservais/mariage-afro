@@ -628,3 +628,20 @@ export type VendorSubscription = typeof vendorSubscriptionsTable.$inferSelect;
 export type VendorView = typeof vendorViewsTable.$inferSelect;
 export type UploadIntent = typeof uploadIntentsTable.$inferSelect;
 export type WeddingJourJ = typeof weddingJourJTable.$inferSelect;
+
+// ---------------------------------------------------------------------------
+// Review comments — agentation webhook
+// ---------------------------------------------------------------------------
+export const reviewCommentsTable = pgTable("review_comments", {
+  id: serial("id").primaryKey(),
+  pageUrl: text("page_url"),
+  comment: text("comment"),
+  element: text("element"),
+  elementPath: text("element_path"),
+  event: text("event"),
+  raw: jsonb("raw").$type<Record<string, unknown>>(),
+  resolved: integer("resolved").default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type ReviewComment = typeof reviewCommentsTable.$inferSelect;

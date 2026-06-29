@@ -6,6 +6,7 @@ import quotesPublicRouter from "./quotes-public";
 import clientRouter from "./client";
 import storageRouter from "./storage";
 import vendorRouter from "./vendor";
+import agentationRouter from "./agentation";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(quotesPublicRouter);
 router.use(storageRouter);
 router.use(clientRouter);
 router.use(vendorRouter);
+router.use(agentationRouter);
 
 export default router;
