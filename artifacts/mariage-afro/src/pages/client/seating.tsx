@@ -290,13 +290,31 @@ export default function SeatingPage() {
     assignGuest.mutate({ guestId, tableId });
   };
 
-  const handleExportPng = async () => {
-    if (!canvasRef.current) return;
-    const canvas = await html2canvas(canvasRef.current, { backgroundColor: resolveColor("--color-white"), scale: 2 });
+  const handleExportCsv = () => {
+    const rows: string[] = [["Table", "Nom invité", "Places", "Statut"].join(",")];
+    for (const table of tables) {
+      const seated = guestsByTable.get(table.id) ?? [];
+      if (seated.length === 0) {
+        rows.push([`"${table.name}"`, "", table.capacity, ""].join(","));
+      } else {
+        for (const g of seated) {
+          const name = `${g.firstName} ${g.lastName}`.trim();
+          rows.push([`"${table.name}"`, `"${name}"`, table.capacity, g.rsvp].join(","));
+        }
+      }
+    }
+    const unassignedGuests = confirmedGuests.filter((g) => g.tableId == null);
+    for (const g of unassignedGuests) {
+      const name = `${g.firstName} ${g.lastName}`.trim();
+      rows.push(["", `"${name}"`, "", g.rsvp].join(","));
+    }
+    const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.download = `plan-de-table-${new Date().toISOString().slice(0, 10)}.png`;
-    link.href = canvas.toDataURL("image/png");
+    link.download = `plan-de-table-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.href = url;
     link.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleExportPdf = async () => {
@@ -343,11 +361,11 @@ export default function SeatingPage() {
           <Button
             variant="outline"
             className="rounded-none uppercase tracking-wider text-xs gap-2"
-            onClick={handleExportPng}
+            onClick={handleExportCsv}
             disabled={tables.length === 0}
-            data-testid="button-export-png"
+            data-testid="button-export-csv"
           >
-            <Download className="w-3 h-3" /> PNG
+            <Download className="w-3 h-3" /> CSV
           </Button>
           <Button
             variant="outline"

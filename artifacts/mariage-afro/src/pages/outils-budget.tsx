@@ -18,7 +18,14 @@ type ServiceKey =
   | "decoration"
   | "photo_video"
   | "dj_music"
+  | "mc"
+  | "live_band"
+  | "cocktail_bar"
   | "wedding_planner"
+  | "coordination_jour_j"
+  | "drinks"
+  | "sound_light"
+  | "service_staff"
   | "tenue"
   | "flowers";
 
@@ -39,11 +46,18 @@ interface BreakdownLine {
 
 const SERVICE_BASE: Record<ServiceKey, { label: string; perGuest?: [number, number]; flat?: [number, number] }> = {
   venue: { label: "Lieu de réception", flat: [3500, 12000] },
-  catering: { label: "Traiteur (par invité)", perGuest: [70, 180] },
-  decoration: { label: "Décoration florale & scénographie", flat: [1800, 8500] },
-  photo_video: { label: "Photo & vidéo", flat: [2200, 7500] },
-  dj_music: { label: "DJ / animation musicale", flat: [900, 3500] },
-  wedding_planner: { label: "Wedding planner", flat: [2500, 9000] },
+  catering: { label: "Traiteur (par invité)", perGuest: [40, 75] },
+  decoration: { label: "Décoration & scénographie", flat: [4000, 10000] },
+  photo_video: { label: "Photo & vidéo", flat: [4200, 7500] },
+  dj_music: { label: "DJ", flat: [800, 2500] },
+  mc: { label: "MC / animateur de cérémonie", flat: [750, 1500] },
+  live_band: { label: "Live band / groupe musical", flat: [1000, 3000] },
+  cocktail_bar: { label: "Cocktail bar & open bar", flat: [2000, 3500] },
+  wedding_planner: { label: "Wedding planner", flat: [2500, 7000] },
+  coordination_jour_j: { label: "Coordination Jour J", flat: [2000, 3500] },
+  drinks: { label: "Boissons (par invité)", perGuest: [30, 40] },
+  sound_light: { label: "Sonorisation, lumières & effets spéciaux", flat: [2000, 2000] },
+  service_staff: { label: "Service (personnel)", flat: [2000, 4850] },
   tenue: { label: "Tenues mariés (robe, costume, accessoires)", flat: [1500, 6000] },
   flowers: { label: "Fleurs (bouquet, boutonnières, autels)", flat: [600, 3000] },
 };
@@ -61,7 +75,7 @@ const REGION_FACTOR: Record<Region, number> = {
 };
 
 const HIGH_DEMAND_MONTHS = ["mai", "juin", "juillet", "aout", "septembre"];
-const ALL_SERVICES: ServiceKey[] = ["venue", "catering", "decoration", "photo_video", "dj_music", "wedding_planner", "tenue", "flowers"];
+const ALL_SERVICES: ServiceKey[] = ["venue", "catering", "drinks", "decoration", "photo_video", "dj_music", "mc", "live_band", "cocktail_bar", "wedding_planner", "coordination_jour_j", "sound_light", "service_staff", "tenue", "flowers"];
 
 function computeBreakdown(inputs: Inputs): BreakdownLine[] {
   const standing = STANDING_FACTOR[inputs.standing];
