@@ -1137,7 +1137,7 @@ export default function Prestations() {
                         <Link
                           to={`/partenaires/${vendor.slug || vendor.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="btn-editorial-compact col-span-2 lg:col-span-1"
+                          className="btn-editorial-compact"
                           data-testid={`view-detail-${vendor.id}`}
                         >
                           <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
