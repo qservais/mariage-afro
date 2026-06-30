@@ -673,32 +673,29 @@ export default function Home() {
               {t("film_de_miel.desc")}
             </p>
 
-            {/* Foreground YouTube player grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-              <div className="relative overflow-hidden bg-black/30 border border-gold/20">
-                <div className="aspect-video">
+            {/* Foreground YouTube player grid — vertical crop, autoplay muted, no controls */}
+            <div className="grid grid-cols-2 gap-4 mb-10 max-w-xl mx-auto">
+              {[
+                { id: FILM_DE_MIEL_V1_ID, start: 54, title: "Film de Miel — Extrait 1" },
+                { id: FILM_DE_MIEL_V2_ID, start: 0,  title: "Film de Miel — Extrait 2" },
+              ].map(({ id, start, title }) => (
+                <div key={title} className="relative overflow-hidden bg-black border border-gold/20" style={{ aspectRatio: "9/16" }}>
                   <iframe
-                    src={`https://www.youtube.com/embed/${FILM_DE_MIEL_V1_ID}?start=54&rel=0&modestbranding=1`}
-                    className="w-full h-full"
-                    style={{ border: "none" }}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Film de Miel — Extrait 1"
+                    src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1${start ? `&start=${start}` : ""}`}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: "-108%",
+                      width: "316%",
+                      height: "100%",
+                      border: "none",
+                      pointerEvents: "none",
+                    }}
+                    allow="autoplay; encrypted-media"
+                    title={title}
                   />
                 </div>
-              </div>
-              <div className="relative overflow-hidden bg-black/30 border border-gold/20">
-                <div className="aspect-video">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${FILM_DE_MIEL_V2_ID}?rel=0&modestbranding=1`}
-                    className="w-full h-full"
-                    style={{ border: "none" }}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Film de Miel — Extrait 2"
-                  />
-                </div>
-              </div>
+              ))}
             </div>
 
             <p className="text-[10px] uppercase tracking-[0.3em] text-cream/50 font-medium mb-8">
