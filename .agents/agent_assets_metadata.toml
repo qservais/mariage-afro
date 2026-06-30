@@ -1,5 +1,124 @@
 uploads = []
-generated = []
+
+[[generated]]
+id = "XqFkPibM07PYv-LjC1wix"
+uri = "file://artifacts/mariage-afro/public/images/categories/photographie.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "hrnRHvYvL7P_otwn36uu1"
+uri = "file://artifacts/mariage-afro/public/images/categories/video.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jS9kH8NpDaLwhWJwKRhtX"
+uri = "file://artifacts/mariage-afro/public/images/categories/dj-animation.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ljlsYmYU8P2SlJJqVntqT"
+uri = "file://artifacts/mariage-afro/public/images/categories/decoration.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "rOWWiUbozYgw6xNmJYGdA"
+uri = "file://artifacts/mariage-afro/public/images/categories/fleurs.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ccWDh9Q_PrxgPMNPJuDvC"
+uri = "file://artifacts/mariage-afro/public/images/categories/traiteur.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "5_MXbv9R1kuFtC--Fe6OA"
+uri = "file://artifacts/mariage-afro/public/images/categories/wedding-cake.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7UEuKBbOyw67jEYVxz1vV"
+uri = "file://artifacts/mariage-afro/public/images/categories/coiffure-maquillage.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "O1FMX9X5FT2C5_cbe3--q"
+uri = "file://artifacts/mariage-afro/public/images/categories/salle-reception.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "PA0S63kR05KDRKmwOEp_R"
+uri = "file://artifacts/mariage-afro/public/images/categories/transport.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "uadI0geapMGOcmRBRGhGN"
+uri = "file://artifacts/mariage-afro/public/images/categories/coordination.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "5NDey4jdl6hnWFmv4dRQi"
+uri = "file://artifacts/mariage-afro/public/images/categories/tenues.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dsdMfxXzm3I94LPrcVnKQ"
+uri = "file://artifacts/mariage-afro/public/images/categories/artistes.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "w2ybMGnkHQSPRxBpK593z"
+uri = "file://artifacts/mariage-afro/public/images/categories/sonorisation.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dQv6Dkzc9u9dOEmrewBdj"
+uri = "file://artifacts/mariage-afro/public/images/categories/photobooth.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "-Rf9seiJ7vvpJCYCbqY8e"
+uri = "file://artifacts/mariage-afro/public/images/categories/papeterie.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "04T9Gs64l-3qTy3-T-ay3"
+uri = "file://artifacts/mariage-afro/public/images/categories/officiant.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "XpDJwlod_GFMrqC8guPrZ"
+uri = "file://artifacts/mariage-afro/public/images/categories/voyage-noces.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "LqfKXxGn8PRHDBmdj4XuR"
+uri = "file://artifacts/mariage-afro/public/images/categories/hebergement.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "vktrrxdGNNM5bJGGP157x"
+uri = "file://artifacts/mariage-afro/public/images/categories/autre.png"
+type = "image"
+title = "generated_image"
 
 [[outputs]]
 id = "qJEmQhISQGs5eeK2QlfUj"
