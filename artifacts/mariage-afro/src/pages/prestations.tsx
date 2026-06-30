@@ -1186,17 +1186,11 @@ export default function Prestations() {
       <ServiceRequestSection />
       <BecomePartnerSection />
 
-      <section className="py-32 md:py-40 relative flex items-center justify-center text-center">
-        <div className="absolute inset-0 z-0">
-          <Picture
-            src={bannerImg}
-            alt="Mariage afro inspirant"
-            width={1920}
-            height={1080}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-wine-deep/80" />
-        </div>
+      <section
+        className="py-32 md:py-40 relative flex items-center justify-center text-center bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${bannerImg})` }}
+      >
+        <div className="absolute inset-0 bg-wine-deep/80" />
         <div className="relative z-10 container mx-auto px-6 max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

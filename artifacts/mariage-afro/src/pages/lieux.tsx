@@ -13,7 +13,7 @@ import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 import { storageUrl } from "@/lib/storage-url";
 
-const BANNER_URL = "/images/dsc05608.webp";
+import lieuxBannerImg from "@assets/Screenshot_2026-05-19_at_10.08.13_1782821970682.png";
 
 interface Venue {
   name: string;
@@ -130,6 +130,12 @@ export default function Lieux() {
       <SEO title="Lieux de réception" description="Sélection de lieux d'exception pour mariages afro et mixtes : châteaux, domaines champêtres, salles de réception premium, en Europe et au-delà." />
       {/* Hero éditorial — wine-deep style */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${lieuxBannerImg})` }}
+        >
+          <div className="absolute inset-0 bg-wine-deep/65" />
+        </div>
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
           style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}
         />
@@ -479,15 +485,11 @@ export default function Lieux() {
       </section>
 
       {/* Banner */}
-      <section className="h-[300px] md:h-[400px] relative overflow-hidden">
-        <Picture
-          src={BANNER_URL}
-          alt="Lieu de réception de mariage premium"
-          width={1920}
-          height={1080}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section
+        className="h-[300px] md:h-[400px] relative overflow-hidden bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${lieuxBannerImg})` }}
+      >
+        <div className="absolute inset-0 bg-black/30" />
       </section>
     </div>
 
