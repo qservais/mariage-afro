@@ -15,7 +15,7 @@ import {
   BarChart3,
 } from "lucide-react";
 
-import heroImg from "@assets/MielmagMS-70of267.jpg_1776614313615.jpeg";
+import heroImg from "@assets/MARIAGE_AFRO_WEB_IMAGES_1_1782820420005.jpg";
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 
