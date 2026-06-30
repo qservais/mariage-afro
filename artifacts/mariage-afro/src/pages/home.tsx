@@ -14,7 +14,7 @@ import { HeroCursor } from "@/components/HeroCursor";
 
 const videoSrc = "/trailer-hero.mp4";
 const heroImage = "/images/g-m-00756.webp";
-const aboutImage = "/images/dsc05077.webp";
+const aboutImage = "/images/about-union-cultures.jpg";
 const servicesImg = "/images/m-sj2-05790.webp";
 const FILM_DE_MIEL_BG_ID = "M-2u3gL83is";
 const FILM_DE_MIEL_V1_ID = "S3WDQgITC6w";
