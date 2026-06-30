@@ -37,16 +37,11 @@ export default function Plateforme() {
       <SEO title="La plateforme" description="Découvrez Mariage Afro : marketplace de prestataires vérifiés, espace client complet et outils pour organiser un mariage afro ou mixte partout en Europe et en Afrique." />
       {/* Hero — wine-deep editorial */}
       <section className="relative pt-40 pb-28 md:pt-48 md:pb-36 overflow-hidden bg-wine-deep text-cream">
-        <div className="absolute inset-0 z-0">
-          <Picture
-            src={heroImg}
-            alt="Couple afro célébrant son mariage"
-            width={2048}
-            height={1365}
-            loading="eager"
-            className="w-full h-full object-cover opacity-50"
-          />
-          <div className="absolute inset-0 bg-wine-deep/40" />
+        <div
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroImg})` }}
+        >
+          <div className="absolute inset-0 bg-wine-deep/55" />
         </div>
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
           style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>\")" }}

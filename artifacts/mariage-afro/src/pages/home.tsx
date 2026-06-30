@@ -829,13 +829,10 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <Picture
+              <img
                 src={aboutImage}
                 alt="Cérémonie de mariage mixte"
-                width={1200}
-                height={1600}
                 className="w-full h-[500px] md:h-[680px] object-cover"
-                style={{ aspectRatio: "auto" }}
               />
               <div className="absolute -bottom-6 -right-6 hidden md:flex w-32 h-32 border border-gold-deep items-center justify-center bg-cream">
                 <span className="font-display text-5xl text-gold-deep leading-none italic">M.A</span>
