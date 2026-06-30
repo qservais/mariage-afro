@@ -12,7 +12,7 @@ import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
 import { storageUrl } from "@/lib/storage-url";
 
-const BANNER_URL = "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=80";
+const BANNER_URL = "/images/dsc05608.webp";
 
 interface Venue {
   name: string;
