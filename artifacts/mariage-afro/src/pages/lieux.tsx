@@ -1,12 +1,13 @@
-import { useState, FormEvent, useMemo } from "react";
+import { useState, FormEvent, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Users, Sparkles, List as ListIcon, Map as MapIcon, CheckCircle2 } from "lucide-react";
 
 import MarketplaceFilters from "@/components/marketplace/MarketplaceFilters";
 import MarketplaceMap from "@/components/marketplace/MarketplaceMap";
+import VenueRequestModal from "@/components/VenueRequestModal";
 
 import { Picture } from "@/components/Picture";
 import { SEO } from "@/components/SEO";
@@ -35,6 +36,11 @@ export default function Lieux() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState<"list" | "map">("list");
+  const [modal, setModal] = useState<{ venueName: string; requestType: "visit" | "quote" } | null>(null);
+  const openModal = useCallback((venueName: string, requestType: "visit" | "quote") => {
+    setModal({ venueName, requestType });
+  }, []);
+  const closeModal = useCallback(() => setModal(null), []);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -119,6 +125,7 @@ export default function Lieux() {
   }, [apiVenues, i18nVenues]);
 
   return (
+    <>
     <div className="w-full">
       <SEO title="Lieux de réception" description="Sélection de lieux d'exception pour mariages afro et mixtes : châteaux, domaines champêtres, salles de réception premium, en Europe et au-delà." />
       {/* Hero éditorial — wine-deep style */}
@@ -190,7 +197,7 @@ export default function Lieux() {
                 category: "Lieu",
                 latitude: v.latitude ?? null,
                 longitude: v.longitude ?? null,
-                href: "/contact",
+                href: "#",
                 image: v.image,
               }))}
               height={640}
@@ -264,12 +271,20 @@ export default function Lieux() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                    <Link to="/contact" className="btn-editorial-compact flex-1">
+                    <button
+                      type="button"
+                      onClick={() => openModal(venue.name, "visit")}
+                      className="btn-editorial-compact flex-1"
+                    >
                       {t("venues.cta_visit")}
-                    </Link>
-                    <Link to="/contact" className="btn-editorial-compact-solid flex-1">
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openModal(venue.name, "quote")}
+                      className="btn-editorial-compact-solid flex-1"
+                    >
                       {t("venues.cta_quote")}
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -475,5 +490,14 @@ export default function Lieux() {
         <div className="absolute inset-0 bg-black/30"></div>
       </section>
     </div>
+
+    {modal && (
+      <VenueRequestModal
+        venueName={modal.venueName}
+        requestType={modal.requestType}
+        onClose={closeModal}
+      />
+    )}
+    </>
   );
 }
