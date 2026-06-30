@@ -471,13 +471,7 @@ export default function VendorOnboardingGate({ account, children }: Props) {
                       .map((r) => t(`vendor.onboarding.regions.${r}`, { defaultValue: r }))
                       .join(", ")
                   : "Belgique";
-                const enrichedDescription = [
-                  v.description,
-                  v.priceRange ? `\n\n${t("vendor.onboarding.summary_price")}: ${t(`vendor.onboarding.price_options.${v.priceRange}`)}` : "",
-                  v.specialties.length > 0
-                    ? `\n${t("vendor.onboarding.summary_specialties")}: ${v.specialties.map((s) => t(`vendor.onboarding.specialty_options.${s}`)).join(", ")}`
-                    : "",
-                ].join("");
+                const enrichedDescription = v.description;
                 save.mutate(
                   {
                     businessName: v.businessName,

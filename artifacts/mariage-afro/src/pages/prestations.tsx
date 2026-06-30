@@ -1059,9 +1059,11 @@ export default function Prestations() {
                   </div>
 
                   <div className="p-7 md:p-8 flex flex-col flex-grow relative z-20">
-                    <p className="text-wine-deep/70 text-sm leading-relaxed mb-7 font-light italic">
-                      {vendor.tagline}
-                    </p>
+                    {vendor.tagline && !vendor.tagline.startsWith("Gamme:") && (
+                      <p className="text-wine-deep/70 text-sm leading-relaxed mb-7 font-light italic">
+                        {vendor.tagline}
+                      </p>
+                    )}
 
                     <div className="mb-8">
                       <p className="text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">

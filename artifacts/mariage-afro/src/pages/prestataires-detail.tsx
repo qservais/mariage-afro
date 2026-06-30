@@ -58,6 +58,17 @@ interface VendorDetail {
 
 const PRICE_LABEL = ["—", "€", "€€", "€€€", "€€€€"];
 
+function stripLegacyLines(text: string): string {
+  return text
+    .split("\n")
+    .filter((line) => {
+      const t = line.trimStart();
+      return !t.startsWith("Gamme:") && !t.startsWith("Spécialités:");
+    })
+    .join("\n")
+    .trim();
+}
+
 function escapeJsonLd(s: string) {
   return s
     .replace(/<\/(script)/gi, "<\\/$1")
@@ -126,10 +137,13 @@ export default function PrestataireDetail() {
   const localizedDescription = useMemo(() => {
     if (!vendor) return "";
     const lang = i18n.language?.slice(0, 2) ?? "fr";
-    if (lang === "nl" && vendor.descriptionNl) return vendor.descriptionNl;
-    if (lang === "en" && vendor.descriptionEn) return vendor.descriptionEn;
-    if (vendor.descriptionFr) return vendor.descriptionFr;
-    return vendor.description || vendor.tagline || "";
+    const raw = (() => {
+      if (lang === "nl" && vendor.descriptionNl) return vendor.descriptionNl;
+      if (lang === "en" && vendor.descriptionEn) return vendor.descriptionEn;
+      if (vendor.descriptionFr) return vendor.descriptionFr;
+      return vendor.description || vendor.tagline || "";
+    })();
+    return stripLegacyLines(raw);
   }, [vendor, i18n.language]);
 
   const embedUrl = useMemo(() => {
@@ -148,7 +162,7 @@ export default function PrestataireDetail() {
   const seoDescription = useMemo(
     () =>
       vendor
-        ? (vendor.tagline || vendor.description || "").slice(0, 158)
+        ? stripLegacyLines(vendor.tagline || vendor.description || "").slice(0, 158)
         : "Fiche détaillée d'un prestataire de mariage afro ou mixte : services, galerie, avis, contact — Europe et Afrique.",
     [vendor]
   );
