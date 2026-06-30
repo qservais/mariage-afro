@@ -106,6 +106,16 @@ export default function Footer() {
             <Link to="/cookies" className="hover:text-gold hover:underline underline-offset-4 transition-colors">{t("footer.cookies")}</Link>
           </div>
         </div>
+        <div className="mt-6 text-center">
+          <a
+            href="https://boost-agency.be"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] text-cream/30 hover:text-cream/60 tracking-[0.25em] uppercase transition-colors"
+          >
+            Site réalisé par Boost Agency
+          </a>
+        </div>
       </div>
     </footer>
   );
