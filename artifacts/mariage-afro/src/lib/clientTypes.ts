@@ -28,6 +28,7 @@ export interface Guest {
   diet: string | null;
   email: string | null;
   notes: string | null;
+  arrived: boolean;
   source: "manual" | "personal_invite" | "from_rsvp";
 }
 export interface GuestCreate {
@@ -40,6 +41,7 @@ export interface GuestCreate {
   diet?: string | null;
   email?: string | null;
   notes?: string | null;
+  arrived?: boolean;
 }
 export type GuestPatch = Partial<GuestCreate>;
 

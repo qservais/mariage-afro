@@ -116,6 +116,7 @@ export const guestsTable = pgTable("guests", {
   diet: text("diet"),
   email: text("email"),
   notes: text("notes"),
+  arrived: boolean("arrived").notNull().default(false), // day-of check-in
   source: text("source").notNull().default("manual"), // manual | personal_invite | from_rsvp
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

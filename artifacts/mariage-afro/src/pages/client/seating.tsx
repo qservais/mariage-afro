@@ -24,9 +24,11 @@ interface DraggableGuestProps {
   inTable?: boolean;
   onRemove?: () => void;
   removeLabel?: string;
+  onToggleArrived?: () => void;
+  arrivedLabel?: string;
 }
 
-function DraggableGuest({ guest, inTable, onRemove, removeLabel }: DraggableGuestProps) {
+function DraggableGuest({ guest, inTable, onRemove, removeLabel, onToggleArrived, arrivedLabel }: DraggableGuestProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `guest-${guest.id}`,
     data: { guestId: guest.id },
@@ -44,7 +46,20 @@ function DraggableGuest({ guest, inTable, onRemove, removeLabel }: DraggableGues
       className={`flex items-center justify-between gap-2 px-3 py-2 text-sm bg-cream border border-wine-deep/10 cursor-grab active:cursor-grabbing select-none ${inTable ? "" : "hover:border-primary"}`}
       data-testid={`guest-card-${guest.id}`}
     >
-      <span className="truncate">
+      {onToggleArrived && (
+        <input
+          type="checkbox"
+          checked={guest.arrived}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => { e.stopPropagation(); onToggleArrived(); }}
+          className="w-3.5 h-3.5 shrink-0 accent-primary cursor-pointer"
+          aria-label={arrivedLabel}
+          title={arrivedLabel}
+          data-testid={`arrived-${guest.id}`}
+        />
+      )}
+      <span className={`truncate flex-1 ${guest.arrived ? "line-through text-wine-deep/40" : ""}`}>
         {guest.firstName} {guest.lastName}
       </span>
       {inTable && onRemove && (
@@ -69,6 +84,7 @@ interface DroppableTableProps {
   onShape: (shape: GuestTable["shape"]) => void;
   onDelete: () => void;
   onRemoveGuest: (guestId: number) => void;
+  onToggleArrived: (guestId: number, arrived: boolean) => void;
   shapeLabels: Record<GuestTable["shape"], string>;
   labels: {
     full: string;
@@ -79,10 +95,11 @@ interface DroppableTableProps {
     chairFree: string;
     chairsAria: (s: number, c: number) => string;
     remove: string;
+    arrived: string;
   };
 }
 
-function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete, onRemoveGuest, shapeLabels, labels }: DroppableTableProps) {
+function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete, onRemoveGuest, onToggleArrived, shapeLabels, labels }: DroppableTableProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: `table-${table.id}`,
     data: { tableId: table.id },
@@ -155,7 +172,15 @@ function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete
         className={`min-h-[140px] p-3 ${shapeClass} bg-background/40 border border-dashed border-wine-deep/20 flex flex-col gap-1.5`}
       >
         {seated.map((g) => (
-          <DraggableGuest key={g.id} guest={g} inTable onRemove={() => onRemoveGuest(g.id)} removeLabel={labels.remove} />
+          <DraggableGuest
+            key={g.id}
+            guest={g}
+            inTable
+            onRemove={() => onRemoveGuest(g.id)}
+            removeLabel={labels.remove}
+            onToggleArrived={() => onToggleArrived(g.id, !g.arrived)}
+            arrivedLabel={labels.arrived}
+          />
         ))}
         {seated.length === 0 && (
           <p className="text-xs text-wine-deep/40 text-center my-auto">{labels.dropHere}</p>
@@ -210,6 +235,7 @@ export default function SeatingPage() {
     chairFree: t("seating.chair_free"),
     chairsAria: (s: number, c: number) => t("seating.chairs_aria", { seated: s, capacity: c }),
     remove: t("seating.remove"),
+    arrived: t("seating.arrived", { defaultValue: "Arrivé" }),
   };
   const qc = useQueryClient();
   const { data: tables = [] } = useQuery<GuestTable[]>({
@@ -255,6 +281,22 @@ export default function SeatingPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
     onError: (e: Error) => setError(e.message.includes("409") ? t("seating.table_full_error") : e.message),
   });
+  const setArrived = useMutation({
+    mutationFn: ({ guestId, arrived }: { guestId: number; arrived: boolean }) =>
+      clientApi.patch<Guest>(`/api/client/guests/${guestId}`, { arrived }),
+    onMutate: async ({ guestId, arrived }) => {
+      await qc.cancelQueries({ queryKey: ["client", "guests"] });
+      const prev = qc.getQueryData<Guest[]>(["client", "guests"]);
+      qc.setQueryData<Guest[]>(["client", "guests"], (old) =>
+        (old ?? []).map((g) => (g.id === guestId ? { ...g, arrived } : g)),
+      );
+      return { prev };
+    },
+    onError: (_e, _vars, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["client", "guests"], ctx.prev);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
+  });
 
   const confirmedGuests = useMemo(() => guests.filter((g) => g.rsvp === "confirmed"), [guests]);
   const unassigned = useMemo(
@@ -291,24 +333,41 @@ export default function SeatingPage() {
   };
 
   const handleExportCsv = () => {
-    const rows: string[] = [["Table", "Nom invité", "Places", "Statut"].join(",")];
+    const yes = t("seating.arrived_yes", { defaultValue: "Oui" });
+    const no = t("seating.arrived_no", { defaultValue: "Non" });
+    const notPlaced = t("seating.not_placed", { defaultValue: "Non placés" });
+    const cell = (v: string | number) => {
+      const s = String(v ?? "");
+      return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows: string[] = [
+      ["Table", "Forme", "Places", "Prénom", "Nom", "Arrivé"].map(cell).join(","),
+    ];
     for (const table of tables) {
+      const shape = SHAPE_LABEL[table.shape];
       const seated = guestsByTable.get(table.id) ?? [];
       if (seated.length === 0) {
-        rows.push([`"${table.name}"`, "", table.capacity, ""].join(","));
+        rows.push([table.name, shape, table.capacity, "", "", ""].map(cell).join(","));
       } else {
         for (const g of seated) {
-          const name = `${g.firstName} ${g.lastName}`.trim();
-          rows.push([`"${table.name}"`, `"${name}"`, table.capacity, g.rsvp].join(","));
+          rows.push(
+            [table.name, shape, table.capacity, g.firstName, g.lastName, g.arrived ? yes : no]
+              .map(cell)
+              .join(","),
+          );
         }
       }
     }
     const unassignedGuests = confirmedGuests.filter((g) => g.tableId == null);
-    for (const g of unassignedGuests) {
-      const name = `${g.firstName} ${g.lastName}`.trim();
-      rows.push(["", `"${name}"`, "", g.rsvp].join(","));
+    if (unassignedGuests.length > 0) {
+      rows.push("");
+      for (const g of unassignedGuests) {
+        rows.push(
+          [notPlaced, "", "", g.firstName, g.lastName, g.arrived ? yes : no].map(cell).join(","),
+        );
+      }
     }
-    const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob(["\uFEFF" + rows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.download = `plan-de-table-${new Date().toISOString().slice(0, 10)}.csv`;
@@ -362,10 +421,10 @@ export default function SeatingPage() {
             variant="outline"
             className="rounded-none uppercase tracking-wider text-xs gap-2"
             onClick={handleExportCsv}
-            disabled={tables.length === 0}
+            disabled={tables.length === 0 && confirmedGuests.length === 0}
             data-testid="button-export-csv"
           >
-            <Download className="w-3 h-3" /> CSV
+            <Download className="w-3 h-3" /> {t("seating.export_list", { defaultValue: "Liste" })}
           </Button>
           <Button
             variant="outline"
@@ -456,7 +515,16 @@ export default function SeatingPage() {
             <div className="space-y-2">
               {unassigned.map((g) => (
                 <div key={g.id} className="flex items-center justify-between gap-2 text-sm">
-                  <span className="truncate">{g.firstName} {g.lastName}</span>
+                  <label className="flex items-center gap-1.5 min-w-0 flex-1">
+                    <input
+                      type="checkbox"
+                      checked={g.arrived}
+                      onChange={() => setArrived.mutate({ guestId: g.id, arrived: !g.arrived })}
+                      className="w-3.5 h-3.5 shrink-0 accent-primary cursor-pointer"
+                      aria-label={t("seating.arrived", { defaultValue: "Arrivé" })}
+                    />
+                    <span className={`truncate ${g.arrived ? "line-through text-wine-deep/40" : ""}`}>{g.firstName} {g.lastName}</span>
+                  </label>
                   <select
                     className="border border-wine-deep/20 px-2 py-1 text-xs"
                     value=""
@@ -501,8 +569,17 @@ export default function SeatingPage() {
               ) : (
                 <ul className="space-y-1 text-sm">
                   {seated.map((g) => (
-                    <li key={g.id} className="flex justify-between items-center">
-                      <span>{g.firstName} {g.lastName}</span>
+                    <li key={g.id} className="flex justify-between items-center gap-2">
+                      <label className="flex items-center gap-1.5 min-w-0 flex-1">
+                        <input
+                          type="checkbox"
+                          checked={g.arrived}
+                          onChange={() => setArrived.mutate({ guestId: g.id, arrived: !g.arrived })}
+                          className="w-3.5 h-3.5 shrink-0 accent-primary cursor-pointer"
+                          aria-label={t("seating.arrived", { defaultValue: "Arrivé" })}
+                        />
+                        <span className={`truncate ${g.arrived ? "line-through text-wine-deep/40" : ""}`}>{g.firstName} {g.lastName}</span>
+                      </label>
                       <button
                         onClick={() => assignGuest.mutate({ guestId: g.id, tableId: null })}
                         className="text-wine-deep/40"
@@ -549,7 +626,12 @@ export default function SeatingPage() {
                   ) : (
                     <div className="space-y-1.5">
                       {unassigned.map((g) => (
-                        <DraggableGuest key={g.id} guest={g} />
+                        <DraggableGuest
+                          key={g.id}
+                          guest={g}
+                          onToggleArrived={() => setArrived.mutate({ guestId: g.id, arrived: !g.arrived })}
+                          arrivedLabel={t("seating.arrived", { defaultValue: "Arrivé" })}
+                        />
                       ))}
                     </div>
                   )}
@@ -579,6 +661,7 @@ export default function SeatingPage() {
                         }
                       }}
                       onRemoveGuest={(guestId) => assignGuest.mutate({ guestId, tableId: null })}
+                      onToggleArrived={(guestId, arrived) => setArrived.mutate({ guestId, arrived })}
                       shapeLabels={SHAPE_LABEL}
                       labels={tableLabels}
                     />

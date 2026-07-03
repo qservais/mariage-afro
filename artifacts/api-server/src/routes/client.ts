@@ -160,6 +160,7 @@ const guestSchema = z.object({
   diet: z.string().optional().nullable(),
   email: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
+  arrived: z.boolean().optional(),
 });
 
 router.get("/client/guests", async (req, res) => {

@@ -402,6 +402,11 @@
     "table_full_error": "Deze tafel is vol.",
     "assign_placeholder": "— Toewijzen —",
     "dismiss_error": "Sluiten",
+    "arrived": "Aangekomen",
+    "arrived_yes": "Ja",
+    "arrived_no": "Nee",
+    "not_placed": "Niet geplaatst",
+    "export_list": "Lijst",
     "free": "({{count}} vrij)"
   },
   "site_mariage": {

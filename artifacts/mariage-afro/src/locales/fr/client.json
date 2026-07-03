@@ -402,6 +402,11 @@
     "table_full_error": "Cette table est pleine.",
     "assign_placeholder": "— Assigner —",
     "dismiss_error": "Fermer",
+    "arrived": "Arrivé",
+    "arrived_yes": "Oui",
+    "arrived_no": "Non",
+    "not_placed": "Non placés",
+    "export_list": "Liste",
     "free": "({{count}} libre)"
   },
   "site_mariage": {
