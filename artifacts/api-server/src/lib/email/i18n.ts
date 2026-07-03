@@ -104,6 +104,52 @@ interface Dictionary {
     body: Record<Locale, string>;
     rowVendors: Record<Locale, string>;
   };
+
+  authEmail: {
+    verify: {
+      subject: Record<Locale, string>;
+      title: Record<Locale, string>;
+      intro: Record<Locale, string>;
+      ctaLabel: Record<Locale, string>;
+    };
+    reset: {
+      subject: Record<Locale, string>;
+      title: Record<Locale, string>;
+      intro: Record<Locale, string>;
+      ctaLabel: Record<Locale, string>;
+    };
+  };
+
+  vendorSubscription: {
+    active: {
+      subject: (tier: string) => Record<Locale, string>;
+      title: Record<Locale, string>;
+      intro: (name: string, tier: string) => Record<Locale, string>;
+    };
+    cancelled: {
+      subject: (tier: string) => Record<Locale, string>;
+      title: Record<Locale, string>;
+      intro: (name: string, tier: string) => Record<Locale, string>;
+    };
+    expired: {
+      subject: (tier: string) => Record<Locale, string>;
+      title: Record<Locale, string>;
+      intro: (name: string, tier: string) => Record<Locale, string>;
+    };
+    rowTier: Record<Locale, string>;
+    rowStatus: Record<Locale, string>;
+    rowExpiry: Record<Locale, string>;
+    cta: Record<Locale, string>;
+  };
+
+  vendorLeadFollowup: {
+    subject: (count: number) => Record<Locale, string>;
+    title: Record<Locale, string>;
+    intro: (name: string) => Record<Locale, string>;
+    rowNew: Record<Locale, string>;
+    rowContacted: Record<Locale, string>;
+    cta: Record<Locale, string>;
+  };
 }
 
 export const dict: Dictionary = {
@@ -404,6 +450,116 @@ export const dict: Dictionary = {
       nl: "Gecontacteerde leveranciers",
       en: "Vendors contacted",
     },
+  },
+
+  authEmail: {
+    verify: {
+      subject: {
+        fr: "Vérifiez votre adresse email — Mariage Afro",
+        nl: "Verifieer uw e-mailadres — Mariage Afro",
+        en: "Verify your email address — Mariage Afro",
+      },
+      title: {
+        fr: "Confirmez votre email",
+        nl: "Bevestig uw e-mailadres",
+        en: "Confirm your email address",
+      },
+      intro: {
+        fr: "Merci de vous être inscrit(e) sur Mariage Afro. Cliquez sur le bouton ci-dessous pour vérifier votre adresse email. Ce lien expire dans 24 heures.",
+        nl: "Bedankt voor uw registratie bij Mariage Afro. Klik op de onderstaande knop om uw e-mailadres te verifiëren. Deze link verloopt na 24 uur.",
+        en: "Thank you for registering on Mariage Afro. Click the button below to verify your email address. This link expires in 24 hours.",
+      },
+      ctaLabel: {
+        fr: "Vérifier mon email",
+        nl: "Mijn e-mailadres bevestigen",
+        en: "Verify my email",
+      },
+    },
+    reset: {
+      subject: {
+        fr: "Réinitialisation de votre mot de passe — Mariage Afro",
+        nl: "Wachtwoord opnieuw instellen — Mariage Afro",
+        en: "Reset your password — Mariage Afro",
+      },
+      title: {
+        fr: "Réinitialisez votre mot de passe",
+        nl: "Wachtwoord opnieuw instellen",
+        en: "Reset your password",
+      },
+      intro: {
+        fr: "Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe. Ce lien expire dans 1 heure.",
+        nl: "U heeft verzocht uw wachtwoord opnieuw in te stellen. Klik op de onderstaande knop om een nieuw wachtwoord te kiezen. Deze link verloopt na 1 uur.",
+        en: "You requested a password reset. Click the button below to choose a new password. This link expires in 1 hour.",
+      },
+      ctaLabel: {
+        fr: "Réinitialiser mon mot de passe",
+        nl: "Mijn wachtwoord opnieuw instellen",
+        en: "Reset my password",
+      },
+    },
+  },
+
+  vendorSubscription: {
+    active: {
+      subject: (tier) => ({
+        fr: `Votre formule ${tier} est active — Mariage Afro`,
+        nl: `Uw formule ${tier} is actief — Mariage Afro`,
+        en: `Your ${tier} plan is now active — Mariage Afro`,
+      }),
+      title: { fr: "Formule activée", nl: "Formule geactiveerd", en: "Plan activated" },
+      intro: (name, tier) => ({
+        fr: `Bonne nouvelle ${name} ! Votre formule ${tier} est maintenant active sur la marketplace.`,
+        nl: `Goed nieuws ${name}! Uw formule ${tier} is nu actief op de marketplace.`,
+        en: `Great news ${name}! Your ${tier} plan is now active on the marketplace.`,
+      }),
+    },
+    cancelled: {
+      subject: (tier) => ({
+        fr: `Votre abonnement ${tier} a été annulé — Mariage Afro`,
+        nl: `Uw abonnement ${tier} is opgezegd — Mariage Afro`,
+        en: `Your ${tier} subscription has been cancelled — Mariage Afro`,
+      }),
+      title: { fr: "Abonnement annulé", nl: "Abonnement opgezegd", en: "Subscription cancelled" },
+      intro: (name, tier) => ({
+        fr: `${name}, votre abonnement ${tier} a été annulé.`,
+        nl: `${name}, uw abonnement ${tier} is opgezegd.`,
+        en: `${name}, your ${tier} subscription has been cancelled.`,
+      }),
+    },
+    expired: {
+      subject: (tier) => ({
+        fr: `Votre abonnement ${tier} a expiré — Mariage Afro`,
+        nl: `Uw abonnement ${tier} is verlopen — Mariage Afro`,
+        en: `Your ${tier} subscription has expired — Mariage Afro`,
+      }),
+      title: { fr: "Mise à jour de votre abonnement", nl: "Update van uw abonnement", en: "Subscription update" },
+      intro: (name, tier) => ({
+        fr: `${name}, votre abonnement ${tier} a expiré.`,
+        nl: `${name}, uw abonnement ${tier} is verlopen.`,
+        en: `${name}, your ${tier} subscription has expired.`,
+      }),
+    },
+    rowTier: { fr: "Formule", nl: "Formule", en: "Plan" },
+    rowStatus: { fr: "Statut", nl: "Status", en: "Status" },
+    rowExpiry: { fr: "Échéance", nl: "Vervaldatum", en: "Expires" },
+    cta: { fr: "Ouvrir mon Espace Pro", nl: "Mijn Pro-ruimte openen", en: "Open my Pro Space" },
+  },
+
+  vendorLeadFollowup: {
+    subject: (count) => ({
+      fr: `Rappel : ${count} demande${count > 1 ? "s" : ""} en attente — Mariage Afro`,
+      nl: `Herinnering: ${count} verzoek${count > 1 ? "en" : ""} in behandeling — Mariage Afro`,
+      en: `Reminder: ${count} pending request${count > 1 ? "s" : ""} — Mariage Afro`,
+    }),
+    title: { fr: "Demandes en attente", nl: "Openstaande verzoeken", en: "Pending requests" },
+    intro: (name) => ({
+      fr: `Bonjour ${name}, vous avez encore des demandes sans réponse depuis plusieurs jours. Une réponse rapide augmente nettement vos chances de conversion.`,
+      nl: `Hallo ${name}, u heeft nog openstaande verzoeken zonder antwoord van de afgelopen dagen. Een snelle reactie vergroot uw kansen op conversie aanzienlijk.`,
+      en: `Hello ${name}, you still have unanswered requests from the past few days. A quick response significantly increases your conversion chances.`,
+    }),
+    rowNew: { fr: "Nouvelles non vues", nl: "Nieuwe niet-gezien", en: "New unseen" },
+    rowContacted: { fr: "Contactées sans relance", nl: "Gecontacteerd zonder follow-up", en: "Contacted without follow-up" },
+    cta: { fr: "Voir mes demandes", nl: "Mijn verzoeken bekijken", en: "View my requests" },
   },
 };
 

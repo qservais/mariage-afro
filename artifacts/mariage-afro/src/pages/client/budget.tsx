@@ -13,13 +13,6 @@ import { getBudgetChartColors } from "@/lib/brand-colors";
 
 const LOCALE_MAP: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
 
-const SUGGESTED_CATEGORIES = [
-  "Lieu de réception", "Traiteur", "Photographe", "Vidéaste",
-  "Robe / Tenue", "Décoration", "Musique / DJ", "Fleurs",
-  "Coiffure & Maquillage", "Transport", "Faire-part", "Gâteau",
-  "Cérémonie", "Lune de miel", "Cadeaux invités", "Animation",
-  "Officiant", "Divers",
-];
 
 interface EditRow {
   id: number;
@@ -32,6 +25,7 @@ interface EditRow {
 export default function BudgetPage() {
   const COLORS = getBudgetChartColors();
   const { t, i18n } = useTranslation();
+  const SUGGESTED_CATEGORIES = t("budget.suggested_categories", { returnObjects: true }) as string[];
   const lang = (i18n.resolvedLanguage || i18n.language || "fr").split("-")[0];
   const locale = LOCALE_MAP[lang] || "fr-BE";
 

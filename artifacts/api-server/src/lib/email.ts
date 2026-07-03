@@ -821,37 +821,32 @@ export interface NotifyVendorSubscriptionPayload {
 }
 
 export async function notifyVendorSubscriptionActivated(p: NotifyVendorSubscriptionPayload, log = logger): Promise<void> {
+  const locale = normalizeLocale(p.locale);
   const tierLabel = p.tier === "featured" ? "Featured" : p.tier === "premium" ? "Premium" : "Basic";
-  const isActive = p.status === "active";
-  const subject = isActive
-    ? `Votre formule ${tierLabel} est active — Mariage Afro`
-    : p.status === "cancelled"
-      ? `Votre abonnement ${tierLabel} a été annulé — Mariage Afro`
-      : `Votre abonnement ${tierLabel} a expiré — Mariage Afro`;
-  const intro = isActive
-    ? `Bonne nouvelle ${p.vendorName} ! Votre formule ${tierLabel} est maintenant active sur la marketplace.`
-    : p.status === "cancelled"
-      ? `${p.vendorName}, votre abonnement ${tierLabel} a été annulé.`
-      : `${p.vendorName}, votre abonnement ${tierLabel} a expiré.`;
+  const statusKey = p.status === "active" ? "active" : p.status === "cancelled" ? "cancelled" : "expired";
+  const T = dict.vendorSubscription;
+  const Ts = T[statusKey];
+  const subject = pick(Ts.subject(tierLabel), locale);
+  const intro = pick(Ts.intro(p.vendorName, tierLabel), locale);
   const rows =
-    row("Formule", tierLabel) +
-    row("Statut", p.status) +
-    (p.endsAt ? row("Échéance", p.endsAt.slice(0, 10)) : "");
+    row(pick(T.rowTier, locale), tierLabel) +
+    row(pick(T.rowStatus, locale), p.status) +
+    (p.endsAt ? row(pick(T.rowExpiry, locale), p.endsAt.slice(0, 10)) : "");
   await sendOne({
     to: p.to,
     subject,
     html: wrap({
-      title: isActive ? "Formule activée" : "Mise à jour de votre abonnement",
+      title: pick(Ts.title, locale),
       intro,
       rows,
-      ctaLabel: "Ouvrir mon Espace Pro",
+      ctaLabel: pick(T.cta, locale),
       ctaUrl: `${appUrl()}/espace-pro/abonnement`,
-      locale: "fr",
+      locale,
     }),
     text: plainText({
       title: subject,
-      lines: [intro, `Formule: ${tierLabel}`, `Statut: ${p.status}`],
-      ctaLabel: "Espace Pro",
+      lines: [intro],
+      ctaLabel: pick(T.cta, locale),
       ctaUrl: `${appUrl()}/espace-pro/abonnement`,
     }),
   }, log);
@@ -866,26 +861,29 @@ export interface NotifyVendorLeadFollowupPayload {
 }
 
 export async function notifyVendorLeadFollowup(p: NotifyVendorLeadFollowupPayload, log = logger): Promise<void> {
-  const subject = `Rappel : ${p.newCount + p.contactedCount} demande(s) en attente — Mariage Afro`;
-  const intro = `Bonjour ${p.vendorName}, vous avez encore des demandes sans réponse depuis plusieurs jours. Une réponse rapide augmente nettement vos chances de conversion.`;
+  const locale = normalizeLocale(p.locale);
+  const T = dict.vendorLeadFollowup;
+  const total = p.newCount + p.contactedCount;
+  const subject = pick(T.subject(total), locale);
+  const intro = pick(T.intro(p.vendorName), locale);
   const rows =
-    row("Nouvelles non vues", String(p.newCount)) +
-    row("Contactées sans relance", String(p.contactedCount));
+    row(pick(T.rowNew, locale), String(p.newCount)) +
+    row(pick(T.rowContacted, locale), String(p.contactedCount));
   await sendOne({
     to: p.to,
     subject,
     html: wrap({
-      title: "Demandes en attente",
+      title: pick(T.title, locale),
       intro,
       rows,
-      ctaLabel: "Voir mes demandes",
+      ctaLabel: pick(T.cta, locale),
       ctaUrl: `${appUrl()}/espace-pro/demandes`,
-      locale: "fr",
+      locale,
     }),
     text: plainText({
       title: subject,
-      lines: [intro, `Nouvelles non vues: ${p.newCount}`, `Contactées sans relance: ${p.contactedCount}`, "Vous pouvez désactiver ces rappels dans vos paramètres."],
-      ctaLabel: "Espace Pro",
+      lines: [intro],
+      ctaLabel: pick(T.cta, locale),
       ctaUrl: `${appUrl()}/espace-pro/demandes`,
     }),
   }, log);
@@ -1217,23 +1215,20 @@ export async function notifyVendorInvitation(p: NotifyVendorInvitationPayload, l
 
 export async function notifyAuthEmail(
   type: "verify" | "reset",
-  p: { email: string; token: string },
+  p: { email: string; token: string; locale?: string | null },
   log = logger,
 ): Promise<void> {
+  const locale = normalizeLocale(p.locale);
   const base = appUrl();
   const isVerify = type === "verify";
   const url = isVerify
     ? `${base}/api/auth/verify-email?token=${p.token}`
     : `${base}/espace-client/reset-password?token=${p.token}`;
 
-  const subject = isVerify
-    ? "Vérifiez votre adresse email — Mariage Afro"
-    : "Réinitialisation de votre mot de passe — Mariage Afro";
-  const title = isVerify ? "Confirmez votre email" : "Réinitialisez votre mot de passe";
-  const intro = isVerify
-    ? "Merci de vous être inscrit(e) sur Mariage Afro. Cliquez sur le bouton ci-dessous pour vérifier votre adresse email. Ce lien expire dans 24 heures."
-    : "Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe. Ce lien expire dans 1 heure.";
-  const ctaLabel = isVerify ? "Vérifier mon email" : "Réinitialiser mon mot de passe";
-
-  await sendOne({ to: p.email, subject, html: wrap({ title, intro, ctaLabel, ctaUrl: url, locale: "fr" }) }, log);
+  const T = dict.authEmail[isVerify ? "verify" : "reset"];
+  await sendOne({
+    to: p.email,
+    subject: pick(T.subject, locale),
+    html: wrap({ title: pick(T.title, locale), intro: pick(T.intro, locale), ctaLabel: pick(T.ctaLabel, locale), ctaUrl: url, locale }),
+  }, log);
 }

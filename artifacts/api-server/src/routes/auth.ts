@@ -43,6 +43,7 @@ const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
   role: z.enum(["client", "vendor"]).default("client"),
+  locale: z.string().max(10).optional(),
 });
 
 router.post("/auth/register", async (req: Request, res: Response): Promise<void> => {
@@ -73,7 +74,8 @@ router.post("/auth/register", async (req: Request, res: Response): Promise<void>
     verifyTokenExpiresAt,
   }).returning();
 
-  void notifyAuthEmail("verify", { email: emailLower, token: verifyToken }, req.log).catch((err) =>
+  const regLocale = parsed.data.locale || req.cookies?.lang || (req.headers["accept-language"] ?? "fr").split(",")[0].split(";")[0].split("-")[0];
+  void notifyAuthEmail("verify", { email: emailLower, token: verifyToken, locale: regLocale }, req.log).catch((err) =>
     logger.warn({ err }, "Failed to send verification email"),
   );
 
@@ -180,7 +182,8 @@ router.post("/auth/forgot-password", async (req: Request, res: Response): Promis
     const resetToken = nanoid(32);
     const resetTokenExpiresAt = new Date(Date.now() + 60 * 60 * 1000);
     await db.update(usersTable).set({ resetToken, resetTokenExpiresAt, updatedAt: new Date() }).where(eq(usersTable.id, user.id));
-    void notifyAuthEmail("reset", { email: emailLower, token: resetToken }, req.log).catch((err) =>
+    const resetLocale = req.cookies?.lang || (req.headers["accept-language"] ?? "fr").split(",")[0].split(";")[0].split("-")[0];
+    void notifyAuthEmail("reset", { email: emailLower, token: resetToken, locale: resetLocale }, req.log).catch((err) =>
       logger.warn({ err }, "Failed to send reset email"),
     );
   }

@@ -79,7 +79,7 @@ export default function SignInPage() {
                 <button
                   type="button"
                   onClick={() => setShowPwd(!showPwd)}
-                  aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  aria-label={showPwd ? t("auth.password_hide") : t("auth.password_show")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-wine-deep/40 hover:text-wine-deep transition-colors"
                 >
                   {showPwd ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}

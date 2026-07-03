@@ -340,7 +340,7 @@ export default function VendorProfilePage() {
               className="w-full border border-input bg-background px-3 py-2 text-sm"
               data-testid="select-profile-category"
             >
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              {CATEGORIES.map((c) => <option key={c} value={c}>{t(`vendor.onboarding.categories.${c}`, { defaultValue: c })}</option>)}
             </select>
           </div>
           <div>

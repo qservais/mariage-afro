@@ -91,7 +91,7 @@ export default function VendorSignUpPage() {
                 <button
                   type="button"
                   onClick={() => setShowPwd(!showPwd)}
-                  aria-label={showPwd ? "Masquer" : "Afficher"}
+                  aria-label={showPwd ? t("auth.password_hide") : t("auth.password_show")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-cream/40 hover:text-gold"
                 >
                   {showPwd ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}

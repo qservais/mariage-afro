@@ -134,7 +134,27 @@
     "budget_saved": "Globaal budget bijgewerkt",
     "edit": "Bewerken",
     "cancel": "Annuleren",
-    "save": "Opslaan"
+    "save": "Opslaan",
+    "suggested_categories": [
+      "Receptielocatie",
+      "Catering",
+      "Fotograaf",
+      "Videograaf",
+      "Outfit",
+      "Decoratie",
+      "Muziek / DJ",
+      "Bloemen",
+      "Haar & Make-up",
+      "Vervoer",
+      "Uitnodigingen",
+      "Bruidstaart",
+      "Ceremonie",
+      "Huwelijksreis",
+      "Gastgeschenken",
+      "Entertainment",
+      "Officiante",
+      "Diversen"
+    ]
   },
   "invites": {
     "title": "Gasten",
@@ -204,7 +224,8 @@
     "rsvp_reject": "Weigeren",
     "th_status": "Status",
     "invite_success": "Uitnodiging verzonden!",
-    "rsvp_question_label_required": "Het label van de vraag is verplicht."
+    "rsvp_question_label_required": "Het label van de vraag is verplicht.",
+    "csv_message": "Bericht"
   },
   "planning": {
     "title": "Planning",
@@ -410,7 +431,13 @@
     "arrived_no": "Nee",
     "not_placed": "Niet geplaatst",
     "export_list": "Lijst",
-    "free": "({{count}} vrij)"
+    "free": "({{count}} vrij)",
+    "csv_table": "Tafel",
+    "csv_shape": "Vorm",
+    "csv_capacity": "Capaciteit",
+    "csv_first_name": "Voornaam",
+    "csv_last_name": "Achternaam",
+    "csv_arrived": "Aangekomen"
   },
   "site_mariage": {
     "title": "Mijn trouwsite",

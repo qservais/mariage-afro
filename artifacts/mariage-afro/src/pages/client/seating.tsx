@@ -341,7 +341,7 @@ export default function SeatingPage() {
       return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
     const rows: string[] = [
-      ["Table", "Forme", "Places", "Prénom", "Nom", "Arrivé"].map(cell).join(","),
+      [t("seating.csv_table"), t("seating.csv_shape"), t("seating.csv_capacity"), t("seating.csv_first_name"), t("seating.csv_last_name"), t("seating.csv_arrived")].map(cell).join(","),
     ];
     for (const table of tables) {
       const shape = SHAPE_LABEL[table.shape];

@@ -334,7 +334,7 @@ export default function Home() {
             {/* Petit accent gold flottant */}
             <div className="hidden lg:block absolute -bottom-6 -left-6 bg-wine-deep border border-gold/40 px-5 py-3 backdrop-blur-sm">
               <span className="text-[10px] uppercase tracking-[0.3em] text-gold/80 font-medium block">
-                Europe · Afrique · 2026
+                {t("home.hero_accent")}
               </span>
             </div>
           </motion.div>

@@ -314,7 +314,9 @@
       "tiktok": "TikTok",
       "tiktok_placeholder": "https://tiktok.com/@yourhandle",
       "youtube_channel": "YouTube channel",
-      "youtube_channel_placeholder": "https://youtube.com/@yourchannel"
+      "youtube_channel_placeholder": "https://youtube.com/@yourchannel",
+      "zone_placeholder": "— Select —",
+      "save_error": "Unable to save changes"
     },
     "gallery": {
       "title": "Gallery",

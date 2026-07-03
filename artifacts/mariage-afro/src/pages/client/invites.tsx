@@ -138,7 +138,7 @@ export default function GuestsPage() {
   const exportRsvpCsv = () => {
     const v = rsvpsView; if (!v || v.rsvps.length === 0) return;
     const escape = (s: string) => `"${(s || "").replace(/"/g, '""')}"`;
-    const header = ["Date", "Nom", "Email", "Présent", "Pers.", "Statut", "Message", ...questions.map((q) => q.label)];
+    const header = [t("invites.th_date"), t("invites.th_name"), t("invites.th_email"), t("invites.th_attending"), t("invites.th_guests"), t("invites.th_status"), t("invites.csv_message"), ...questions.map((q) => q.label)];
     const lines = [header.map(escape).join(",")];
     for (const r of v.rsvps) {
       const ansMap = new Map((v.answers[r.id] || []).map((a) => [a.questionId, a.answer]));

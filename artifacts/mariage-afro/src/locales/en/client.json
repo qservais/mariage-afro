@@ -134,7 +134,27 @@
     "budget_saved": "Global budget updated",
     "edit": "Edit",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "suggested_categories": [
+      "Reception venue",
+      "Catering",
+      "Photographer",
+      "Videographer",
+      "Outfit",
+      "Decoration",
+      "Music / DJ",
+      "Flowers",
+      "Hair & Makeup",
+      "Transport",
+      "Invitations",
+      "Wedding cake",
+      "Ceremony",
+      "Honeymoon",
+      "Guest gifts",
+      "Entertainment",
+      "Officiant",
+      "Miscellaneous"
+    ]
   },
   "invites": {
     "title": "Guests",
@@ -204,7 +224,8 @@
     "rsvp_reject": "Reject",
     "th_status": "Status",
     "invite_success": "Invitation sent!",
-    "rsvp_question_label_required": "The question label is required."
+    "rsvp_question_label_required": "The question label is required.",
+    "csv_message": "Message"
   },
   "planning": {
     "title": "Planning",
@@ -410,7 +431,13 @@
     "arrived_no": "No",
     "not_placed": "Not seated",
     "export_list": "List",
-    "free": "({{count}} free)"
+    "free": "({{count}} free)",
+    "csv_table": "Table",
+    "csv_shape": "Shape",
+    "csv_capacity": "Capacity",
+    "csv_first_name": "First name",
+    "csv_last_name": "Last name",
+    "csv_arrived": "Arrived"
   },
   "site_mariage": {
     "title": "My wedding website",

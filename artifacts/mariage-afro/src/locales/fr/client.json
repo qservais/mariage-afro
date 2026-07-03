@@ -134,7 +134,27 @@
     "budget_saved": "Budget global mis à jour",
     "edit": "Modifier",
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "suggested_categories": [
+      "Lieu de réception",
+      "Traiteur",
+      "Photographe",
+      "Vidéaste",
+      "Robe / Tenue",
+      "Décoration",
+      "Musique / DJ",
+      "Fleurs",
+      "Coiffure & Maquillage",
+      "Transport",
+      "Faire-part",
+      "Gâteau",
+      "Cérémonie",
+      "Lune de miel",
+      "Cadeaux invités",
+      "Animation",
+      "Officiant",
+      "Divers"
+    ]
   },
   "invites": {
     "title": "Invités",
@@ -204,7 +224,8 @@
     "rsvp_reject": "Refuser",
     "th_status": "Statut",
     "invite_success": "Invitation envoyée !",
-    "rsvp_question_label_required": "L'intitulé de la question est obligatoire."
+    "rsvp_question_label_required": "L'intitulé de la question est obligatoire.",
+    "csv_message": "Message"
   },
   "planning": {
     "title": "Planning",
@@ -410,7 +431,13 @@
     "arrived_no": "Non",
     "not_placed": "Non placés",
     "export_list": "Liste",
-    "free": "({{count}} libre)"
+    "free": "({{count}} libre)",
+    "csv_table": "Table",
+    "csv_shape": "Forme",
+    "csv_capacity": "Places",
+    "csv_first_name": "Prénom",
+    "csv_last_name": "Nom",
+    "csv_arrived": "Arrivé"
   },
   "site_mariage": {
     "title": "Mon site mariage",

@@ -73,7 +73,24 @@
       "eyebrow": "Espace Pro",
       "title": "Mariage Afro",
       "subtitle": "Créez votre compte prestataire"
-    }
+    },
+    "email_label": "Adresse email",
+    "password_label": "Mot de passe",
+    "password_hide": "Masquer le mot de passe",
+    "password_show": "Afficher le mot de passe",
+    "forgot_password": "Mot de passe oublié ?",
+    "signing_in": "Connexion…",
+    "sign_in": "Se connecter",
+    "no_account": "Pas encore de compte ?",
+    "create_account": "Créer un compte",
+    "register_title": "Créer votre compte",
+    "register_subtitle": "Rejoignez Mariage Afro",
+    "passwords_mismatch": "Les mots de passe ne correspondent pas",
+    "password_too_short": "Le mot de passe doit contenir au moins 8 caractères",
+    "password_hint": "8 caractères minimum",
+    "confirm_password": "Confirmer le mot de passe",
+    "creating": "Création…",
+    "already_account": "Déjà un compte ?"
   },
   "not_found": {
     "title": "Page introuvable",

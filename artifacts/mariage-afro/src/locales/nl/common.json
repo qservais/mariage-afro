@@ -73,7 +73,24 @@
       "eyebrow": "Pro-ruimte",
       "title": "Mariage Afro",
       "subtitle": "Maak uw leveranciersaccount aan"
-    }
+    },
+    "email_label": "E-mailadres",
+    "password_label": "Wachtwoord",
+    "password_hide": "Wachtwoord verbergen",
+    "password_show": "Wachtwoord tonen",
+    "forgot_password": "Wachtwoord vergeten?",
+    "signing_in": "Aanmelden…",
+    "sign_in": "Aanmelden",
+    "no_account": "Nog geen account?",
+    "create_account": "Account aanmaken",
+    "register_title": "Account aanmaken",
+    "register_subtitle": "Word lid van Mariage Afro",
+    "passwords_mismatch": "Wachtwoorden komen niet overeen",
+    "password_too_short": "Wachtwoord moet minimaal 8 tekens bevatten",
+    "password_hint": "Minimaal 8 tekens",
+    "confirm_password": "Wachtwoord bevestigen",
+    "creating": "Aanmaken…",
+    "already_account": "Al een account?"
   },
   "not_found": {
     "title": "Pagina niet gevonden",

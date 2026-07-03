@@ -314,7 +314,9 @@
       "tiktok": "TikTok",
       "tiktok_placeholder": "https://tiktok.com/@uwaccount",
       "youtube_channel": "YouTube-kanaal",
-      "youtube_channel_placeholder": "https://youtube.com/@uwkanaal"
+      "youtube_channel_placeholder": "https://youtube.com/@uwkanaal",
+      "zone_placeholder": "— Selecteer —",
+      "save_error": "Wijzigingen konden niet worden opgeslagen"
     },
     "gallery": {
       "title": "Galerij",
