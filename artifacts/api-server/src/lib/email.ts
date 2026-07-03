@@ -1172,10 +1172,14 @@ export async function notifyPersonalInvitation(p: NotifyPersonalInvitationPayloa
     nl: "Trouwsite bekijken",
     en: "View wedding site",
   }[locale];
+  const introHtml = intro
+    .split("\n\n")
+    .map((para) => `<p style="margin:0 0 16px;">${esc(para).replace(/\n/g, "<br>")}</p>`)
+    .join("");
   await sendOne({
     to: p.to,
     subject,
-    html: wrap({ title, intro: intro.replace(/\n/g, "<br>"), ctaLabel, ctaUrl: p.siteUrl, locale }),
+    html: wrap({ title, bodyHtml: introHtml, ctaLabel, ctaUrl: p.siteUrl, locale }),
   }, log);
 }
 

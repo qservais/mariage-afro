@@ -47,7 +47,7 @@ export function wrap(opts: WrapOpts): string {
     ${cta}
   </div>
   <div style="padding:16px 32px;background:#fff4e4;color:#666;font-size:12px;text-align:center;border-top:1px solid #e8d9bf;">
-    ${escapeHtml(footer)}<br><span style="font-size:11px;color:#999;">${escapeHtml(pick(dict.brandTagline, locale))}</span>
+    ${escapeHtml(footer)}<br><span style="font-size:11px;color:#999;">${escapeHtml(pick(dict.brandTagline, locale))}</span><br><span style="font-size:11px;color:#999;">${escapeHtml(pick(dict.footerBy, locale))}</span>
   </div>
 </div></body></html>`;
 }

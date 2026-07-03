@@ -11,6 +11,7 @@ interface Dictionary {
   brandTagline: Record<Locale, string>;
   greeting: (name: string) => Record<Locale, string>;
   footer: Record<Locale, string>;
+  footerBy: Record<Locale, string>;
   ctaOpen: Record<Locale, string>;
   signature: Record<Locale, string>;
 
@@ -120,6 +121,11 @@ export const dict: Dictionary = {
     fr: "MARIAGE AFRO | La plateforme dédiée aux mariages afro et mixtes",
     nl: "MARIAGE AFRO | Het platform voor Afrikaanse & gemengde bruiloften",
     en: "MARIAGE AFRO | The platform dedicated to Afro & mixed weddings",
+  },
+  footerBy: {
+    fr: "Par : MARIAGE AFRO — La plateforme dédiée aux mariages afro et mixtes",
+    nl: "Door: MARIAGE AFRO — Het platform voor Afrikaanse & gemengde bruiloften",
+    en: "By: MARIAGE AFRO — The platform dedicated to Afro & mixed weddings",
   },
   ctaOpen: {
     fr: "Ouvrir",
