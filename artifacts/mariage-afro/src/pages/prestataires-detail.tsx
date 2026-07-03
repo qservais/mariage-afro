@@ -549,7 +549,7 @@ export default function PrestataireDetail() {
                 <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
                   <iframe
                     src={embedUrl}
-                    title={`${vendor.name} — vidéo`}
+                    title={t("vendor_detail.video_title", { name: vendor.name })}
                     className="absolute inset-0 w-full h-full rounded-sm"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -584,7 +584,7 @@ export default function PrestataireDetail() {
                       <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
                         <iframe
                           src={embed}
-                          title={`${vendor.name} — vidéo ${idx + 2}`}
+                          title={t("vendor_detail.video_title_n", { name: vendor.name, index: idx + 2 })}
                           className="absolute inset-0 w-full h-full rounded-sm"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
@@ -707,7 +707,7 @@ export default function PrestataireDetail() {
             {(vendor.instagram || vendor.facebook || vendor.tiktok || vendor.youtube || vendor.pinterest) && (
               <div className="pt-3 border-t border-wine-deep/10">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
-                  Réseaux sociaux
+                  {t("vendor_detail.social_media")}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {vendor.instagram && (
@@ -797,7 +797,7 @@ export default function PrestataireDetail() {
             type="button"
             onClick={closeLightbox}
             className="absolute top-4 right-4 p-2 text-white/80 hover:text-white"
-            aria-label="Fermer"
+            aria-label={t("vendor_detail.lightbox_close")}
           >
             <X className="w-7 h-7" />
           </button>
@@ -808,7 +808,7 @@ export default function PrestataireDetail() {
               type="button"
               onClick={(e) => { e.stopPropagation(); prevLightbox(); }}
               className="absolute left-4 p-2 text-white/80 hover:text-white"
-              aria-label="Photo précédente"
+              aria-label={t("vendor_detail.lightbox_prev")}
             >
               <ChevronLeft className="w-8 h-8" />
             </button>
@@ -828,7 +828,7 @@ export default function PrestataireDetail() {
               type="button"
               onClick={(e) => { e.stopPropagation(); nextLightbox(); }}
               className="absolute right-4 p-2 text-white/80 hover:text-white"
-              aria-label="Photo suivante"
+              aria-label={t("vendor_detail.lightbox_next")}
             >
               <ChevronRight className="w-8 h-8" />
             </button>

@@ -131,7 +131,10 @@
     "set_budget": "Set my budget",
     "edit_budget": "Edit budget",
     "save_budget": "Save",
-    "budget_saved": "Global budget updated"
+    "budget_saved": "Global budget updated",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "invites": {
     "title": "Guests",

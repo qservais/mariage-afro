@@ -127,7 +127,7 @@ export default function Lieux() {
   return (
     <>
     <div className="w-full">
-      <SEO title="Lieux de réception" description="Sélection de lieux d'exception pour mariages afro et mixtes : châteaux, domaines champêtres, salles de réception premium, en Europe et au-delà." />
+      <SEO title={t("venues.seo_title")} description={t("venues.seo_description")} />
       {/* Hero éditorial — wine-deep style */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div
@@ -177,7 +177,7 @@ export default function Lieux() {
               className={`px-3 py-2 text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1.5 border ${view === "list" ? "bg-wine-deep text-cream border-wine-deep" : "border-wine-deep/20 text-wine-deep hover:border-wine-deep/60"}`}
               data-testid="view-list-venues"
             >
-              <ListIcon className="w-3.5 h-3.5" /> Liste
+              <ListIcon className="w-3.5 h-3.5" /> {t("venues.view_list")}
             </button>
             <button
               type="button"
@@ -185,7 +185,7 @@ export default function Lieux() {
               className={`px-3 py-2 text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1.5 border ${view === "map" ? "bg-wine-deep text-cream border-wine-deep" : "border-wine-deep/20 text-wine-deep hover:border-wine-deep/60"}`}
               data-testid="view-map-venues"
             >
-              <MapIcon className="w-3.5 h-3.5" /> Carte
+              <MapIcon className="w-3.5 h-3.5" /> {t("venues.view_map")}
             </button>
           </div>
         </div>
@@ -297,7 +297,7 @@ export default function Lieux() {
             ))}
             {venues.length === 0 && (
               <div className="col-span-full text-center py-16 text-wine-deep/60">
-                Aucun lieu trouvé pour ces filtres. Essayez de réinitialiser.
+                {t("venues.empty_filtered")}
               </div>
             )}
           </div>
@@ -352,7 +352,7 @@ export default function Lieux() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="venues-firstname" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                  Prénom *
+                  {t("venues.form_firstname")} *
                 </label>
                 <input
                   id="venues-firstname"
@@ -366,7 +366,7 @@ export default function Lieux() {
               </div>
               <div>
                 <label htmlFor="venues-lastname" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                  {t("venues.form_name")} *
+                  {t("venues.form_lastname")} *
                 </label>
                 <input
                   id="venues-lastname"
@@ -431,7 +431,7 @@ export default function Lieux() {
             {/* Type d'événement */}
             <div>
               <label htmlFor="venues-event-type" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
-                Type d'événement
+                {t("venues.form_event_type")}
               </label>
               <select
                 id="venues-event-type"
@@ -440,12 +440,12 @@ export default function Lieux() {
                 className="w-full bg-transparent border-b border-cream/30 px-0 py-3 text-base text-cream focus:outline-none focus:border-gold transition-colors appearance-none cursor-pointer"
                 data-testid="input-venues-event-type"
               >
-                <option value="" className="bg-wine-deep">— Choisir —</option>
-                <option value="Mariage civil" className="bg-wine-deep">Mariage civil</option>
-                <option value="Mariage traditionnel" className="bg-wine-deep">Mariage traditionnel</option>
-                <option value="Mariage mixte / interculturel" className="bg-wine-deep">Mariage mixte / interculturel</option>
-                <option value="Anniversaire" className="bg-wine-deep">Anniversaire</option>
-                <option value="Autre" className="bg-wine-deep">Autre</option>
+                <option value="" className="bg-wine-deep">{t("venues.event_choose")}</option>
+                <option value="Mariage civil" className="bg-wine-deep">{t("venues.event_civil")}</option>
+                <option value="Mariage traditionnel" className="bg-wine-deep">{t("venues.event_traditional")}</option>
+                <option value="Mariage mixte / interculturel" className="bg-wine-deep">{t("venues.event_mixed")}</option>
+                <option value="Anniversaire" className="bg-wine-deep">{t("venues.event_birthday")}</option>
+                <option value="Autre" className="bg-wine-deep">{t("venues.event_other")}</option>
               </select>
             </div>
 

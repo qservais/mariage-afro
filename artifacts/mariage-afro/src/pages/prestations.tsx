@@ -93,8 +93,9 @@ const ACTIONS: { key: VendorAction; icon: typeof FileText }[] = [
 ];
 
 function StarRating({ count }: { count: number }) {
+  const { t } = useTranslation();
   return (
-    <div className="flex gap-0.5" aria-label={`${count} étoiles sur 5`}>
+    <div className="flex gap-0.5" aria-label={t("partners.stars_aria", { count })}>
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
@@ -819,7 +820,7 @@ export default function Prestations() {
 
   return (
     <div className="w-full">
-      <SEO title="Prestataires de mariage" description="Annuaire de prestataires spécialisés mariages afro et mixtes : photographes, traiteurs, DJ, fleuristes, beauté, transport, décoration — vérifiés à travers l'Europe." />
+      <SEO title={t("partners.seo_title")} description={t("partners.seo_description")} />
       {/* Hero éditorial — wine-deep style lamangue */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay"
@@ -907,7 +908,7 @@ export default function Prestations() {
               className={`px-3 py-2 text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1.5 border ${view === "list" ? "bg-wine-deep text-cream border-wine-deep" : "border-wine-deep/20 text-wine-deep hover:border-wine-deep/60"}`}
               data-testid="view-list"
             >
-              <ListIcon className="w-3.5 h-3.5" /> Liste
+              <ListIcon className="w-3.5 h-3.5" /> {t("partners.view_list")}
             </button>
             <button
               type="button"
@@ -915,7 +916,7 @@ export default function Prestations() {
               className={`px-3 py-2 text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1.5 border ${view === "map" ? "bg-wine-deep text-cream border-wine-deep" : "border-wine-deep/20 text-wine-deep hover:border-wine-deep/60"}`}
               data-testid="view-map"
             >
-              <MapIcon className="w-3.5 h-3.5" /> Carte
+              <MapIcon className="w-3.5 h-3.5" /> {t("partners.view_map")}
             </button>
           </div>
         </div>
@@ -1170,9 +1171,9 @@ export default function Prestations() {
                 data-testid="load-more"
               >
                 {apiLoading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Chargement…</>
+                  <><Loader2 className="w-4 h-4 animate-spin" /> {t("partners.loading")}</>
                 ) : (
-                  `Charger plus (${totalVendors - filtered.length} restants)`
+                  t("partners.load_more", { count: totalVendors - filtered.length })
                 )}
               </button>
             </div>

@@ -2,6 +2,7 @@
 - [Editorial grid pattern](editorial-grid.md) — canonical card grid: gap-px bg-wine-deep/10 border; ordinal numbers (01/02/03) over icon boxes for editorial sections
 - [Accessibility baseline](a11y-baseline.md) — skip link in PublicLayout; aria-current="page" on all nav links; aria-hidden on decorative SVGs (never aria-label on non-interactive SVG)
 - [Custom JWT Auth](custom-jwt-auth.md) — Clerk fully replaced by bcrypt+JWT; httpOnly cookie `ma_token` 30d; `app_users` table; lib/db needs `tsc --build` after schema changes.
+- [i18n hardcoded literals](i18n-hardcoded-literals.md) — fr/nl/en key parity is already complete; i18n bugs = hardcoded FR in JSX (incl. template-literal aria-label/title a detector misses), not missing keys.
 - [drizzle push drift](drizzle-push-drift.md) — push-force silently no-ops (exits 0) when a unique-constraint prompt blocks it in non-TTY; clear index-vs-constraint drift, apply columns via direct SQL.
 - [api-server dev no hot-reload](api-server-dev-no-hot-reload.md) — dev workflow builds then starts (not tsx watch); restart the workflow after backend edits or curl shows stale behavior.
 - [Onboarding validation caps](onboarding-validation-caps.md) — onboarding `city` stores comma-joined region list; zod caps must match what the form sends (DB cols are unbounded text) or valid signups 400 silently.

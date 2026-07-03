@@ -260,7 +260,7 @@ export default function BudgetPage() {
                     type="button"
                     onClick={() => setEditingBudget(false)}
                     className="p-1 text-neutral-400 hover:text-neutral-700"
-                    aria-label="Annuler"
+                    aria-label={t("budget.cancel")}
                   >
                     <XIcon className="w-4 h-4" />
                   </button>
@@ -309,10 +309,10 @@ export default function BudgetPage() {
                   aria-valuenow={progressPct}
                   aria-valuemin={0}
                   aria-valuemax={100}
-                  aria-label={`${progressPct}% du budget engagé`}
+                  aria-label={t("budget.progress_label", { pct: progressPct })}
                 />
               </div>
-              <p className="text-sm text-neutral-600">{progressPct}% {t("budget.progress_label", { pct: progressPct, defaultValue: "du budget engagé" })}</p>
+              <p className="text-sm text-neutral-600">{t("budget.progress_label", { pct: progressPct })}</p>
             </div>
           )}
         </div>
@@ -463,14 +463,14 @@ export default function BudgetPage() {
                         onClick={saveEditRow}
                         disabled={update.isPending}
                         className="p-1.5 text-primary hover:bg-primary/10 transition-colors"
-                        aria-label="Enregistrer"
+                        aria-label={t("budget.save")}
                       >
                         <Save className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setEditRow(null)}
                         className="p-1.5 text-neutral-400 hover:text-neutral-700 transition-colors"
-                        aria-label="Annuler"
+                        aria-label={t("budget.cancel")}
                       >
                         <XIcon className="w-4 h-4" />
                       </button>
@@ -498,7 +498,7 @@ export default function BudgetPage() {
                       <button
                         onClick={() => startEditRow(it)}
                         className="p-1 text-neutral-400 hover:text-primary transition-colors"
-                        aria-label="Modifier"
+                        aria-label={t("budget.edit")}
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>

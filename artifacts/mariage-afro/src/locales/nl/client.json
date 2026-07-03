@@ -131,7 +131,10 @@
     "set_budget": "Mijn budget instellen",
     "edit_budget": "Budget aanpassen",
     "save_budget": "Opslaan",
-    "budget_saved": "Globaal budget bijgewerkt"
+    "budget_saved": "Globaal budget bijgewerkt",
+    "edit": "Bewerken",
+    "cancel": "Annuleren",
+    "save": "Opslaan"
   },
   "invites": {
     "title": "Gasten",

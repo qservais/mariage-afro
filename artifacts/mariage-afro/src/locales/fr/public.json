@@ -319,7 +319,21 @@
           "Espace séparé cérémonie"
         ]
       }
-    ]
+    ],
+    "view_list": "Liste",
+    "view_map": "Carte",
+    "empty_filtered": "Aucun lieu trouvé pour ces filtres. Essayez de réinitialiser.",
+    "form_firstname": "Prénom",
+    "form_lastname": "Nom",
+    "form_event_type": "Type d'événement",
+    "event_choose": "— Choisir —",
+    "event_civil": "Mariage civil",
+    "event_traditional": "Mariage traditionnel",
+    "event_mixed": "Mariage mixte / interculturel",
+    "event_birthday": "Anniversaire",
+    "event_other": "Autre",
+    "seo_title": "Lieux de réception",
+    "seo_description": "Sélection de lieux d'exception pour mariages afro et mixtes : châteaux, domaines champêtres, salles de réception premium, en Europe et au-delà."
   },
   "shop": {
     "tagline": "Boutique Mariage Afro",
@@ -516,7 +530,14 @@
     "add_to_project": "Ajouter à mon projet",
     "in_my_project": "Dans mon projet",
     "add_to_project_max": "Limite atteinte (3 prestataires max)",
-    "view_profile": "Voir la fiche complète"
+    "view_profile": "Voir la fiche complète",
+    "view_list": "Liste",
+    "view_map": "Carte",
+    "loading": "Chargement…",
+    "load_more": "Charger plus ({{count}} restants)",
+    "stars_aria": "{{count}} étoiles sur 5",
+    "seo_title": "Prestataires de mariage",
+    "seo_description": "Annuaire de prestataires spécialisés mariages afro et mixtes : photographes, traiteurs, DJ, fleuristes, beauté, transport, décoration — vérifiés à travers l'Europe."
   },
   "marketplace": {
     "availability": {
@@ -874,7 +895,13 @@
     "gallery": "Galerie",
     "other_services": "Prestations supplémentaires",
     "title_fallback": "Prestataire",
-    "category_fields_title": "Informations spécifiques"
+    "category_fields_title": "Informations spécifiques",
+    "social_media": "Réseaux sociaux",
+    "lightbox_close": "Fermer",
+    "lightbox_prev": "Photo précédente",
+    "lightbox_next": "Photo suivante",
+    "video_title": "{{name}} — vidéo",
+    "video_title_n": "{{name}} — vidéo {{index}}"
   },
   "mariage_public": {
     "not_found_title": "Page introuvable",

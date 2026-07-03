@@ -131,7 +131,10 @@
     "set_budget": "Définir mon budget",
     "edit_budget": "Modifier le budget",
     "save_budget": "Enregistrer",
-    "budget_saved": "Budget global mis à jour"
+    "budget_saved": "Budget global mis à jour",
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
   },
   "invites": {
     "title": "Invités",
