@@ -166,10 +166,6 @@
   --color-accent-deep: #8a6d3b;
   --color-surface:     #fff4e4;
 
-  /* External-brand utility: WhatsApp green — only used in StickyCTA */
-  --color-whatsapp:       #25d366;
-  --color-whatsapp-hover: #1eb85a;
-
   /* External-brand: Google logo colours (mandated by Google brand guidelines) */
   --color-google-blue:   #4285F4;
   --color-google-green:  #34A853;

@@ -11,7 +11,6 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import BackToTop from "@/components/layout/BackToTop";
-import { StickyCTA } from "@/components/StickyCTA";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { ReviewTool } from "@/components/ReviewTool";
 import "./i18n";
@@ -141,7 +140,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <main id="main-content" className="flex-1">{children}</main>
       <Footer />
       <ExitIntentPopup />
-      <StickyCTA />
     </div>
   );
 }
