@@ -97,7 +97,7 @@ export default function ProfilPage() {
           </div>
           <div>
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.city")}</label>
-            <Input value={ceremonyCity} onChange={(e) => setCity(e.target.value)} placeholder="Bruxelles" />
+            <Input value={ceremonyCity} onChange={(e) => setCity(e.target.value)} placeholder={t("ui.city_placeholder")} />
           </div>
           <div className="sm:col-span-2">
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.venue")}</label>

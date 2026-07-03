@@ -648,7 +648,9 @@
     "intro": "Votre présence est notre plus beau cadeau. Si vous souhaitez nous gâter, voici comment.",
     "empty": "Aucune cagnotte n'est encore disponible.",
     "contribute": "Contribuer",
-    "back_to_site": "Retour au site"
+    "back_to_site": "Retour au site",
+    "qr_alt": "QR code IBAN pour virement",
+    "iban_label": "IBAN :"
   },
   "shared_board": {
     "title": "Tableau d'inspiration partagé",

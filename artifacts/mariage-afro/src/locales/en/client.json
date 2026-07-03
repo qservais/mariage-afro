@@ -648,7 +648,9 @@
     "intro": "Your presence is our greatest gift. If you'd still like to spoil us, here's how.",
     "empty": "No fund is available yet.",
     "contribute": "Contribute",
-    "back_to_site": "Back to site"
+    "back_to_site": "Back to site",
+    "qr_alt": "QR code for IBAN bank transfer",
+    "iban_label": "IBAN:"
   },
   "shared_board": {
     "title": "Shared mood board",

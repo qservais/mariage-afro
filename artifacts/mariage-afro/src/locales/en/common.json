@@ -320,5 +320,49 @@
     "metric2_label": "Countries represented",
     "metric3_label": "Weddings accompanied",
     "metric4_label": "Available languages"
+  },
+  "ui": {
+    "loading": "Loading",
+    "loading_ellipsis": "Loading…",
+    "close": "Close",
+    "cancel": "Cancel",
+    "add": "Add",
+    "delete": "Delete",
+    "preview": "Preview",
+    "five_stars": "5 out of 5 stars",
+    "city_placeholder": "Brussels",
+    "iban_label": "IBAN:"
+  },
+  "gallery": {
+    "close": "Close gallery",
+    "prev": "Previous image",
+    "next": "Next image",
+    "photo_alt": "Wedding photo {{current}} of {{total}}",
+    "featured": "Featured"
+  },
+  "venue_request": {
+    "title_visit": "Visit request",
+    "title_quote": "Quote request",
+    "done_title": "Request sent!",
+    "done_body": "Our team will get back to you very soon to finalise the details.",
+    "field_name": "Full name of the couple",
+    "placeholder_name": "Marie & Jean Dupont",
+    "field_phone": "Phone",
+    "placeholder_phone": "+32 4xx xx xx xx",
+    "field_wedding_date": "Wedding date",
+    "field_guests": "Number of guests",
+    "placeholder_guests": "e.g. 150",
+    "field_availability": "Your availability",
+    "availability_hint": "up to 3 slots",
+    "field_message": "Message / details",
+    "placeholder_message": "Describe your wedding, your specific needs…",
+    "submit": "Send request",
+    "submitting": "Sending…",
+    "error_server": "Server error",
+    "error_unexpected": "Unexpected error"
+  },
+  "home_images": {
+    "about_alt": "Mixed wedding ceremony",
+    "gallery_alt": "Details of an Afro wedding"
   }
 }

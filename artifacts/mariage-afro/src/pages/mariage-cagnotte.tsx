@@ -18,9 +18,10 @@ import { storageUrlOrEmpty as objectUrl } from "@/lib/storage-url";
 import { ImgWithFallback } from "@/components/Picture";
 
 function QrPreview({ value }: { value: string }) {
+  const { t } = useTranslation();
   const [src, setSrc] = useState("");
   useEffect(() => { QRCode.toDataURL(value, { margin: 1, width: 180 }).then(setSrc).catch(() => setSrc("")); }, [value]);
-  return src ? <img src={src} alt="QR code IBAN pour virement" width={160} height={160} loading="lazy" decoding="async" className="w-40 h-40 border border-border bg-white p-2" /> : null;
+  return src ? <img src={src} alt={t("mariage_cagnotte.qr_alt")} width={160} height={160} loading="lazy" decoding="async" className="w-40 h-40 border border-border bg-white p-2" /> : null;
 }
 
 export default function MariageCagnottePage() {
@@ -66,7 +67,7 @@ export default function MariageCagnottePage() {
               {c.description && <p className="text-sm text-foreground/80 leading-relaxed">{c.description}</p>}
               {c.iban && (
                 <div className="text-sm">
-                  <span className="text-muted-foreground">IBAN : </span>
+                  <span className="text-muted-foreground">{t("mariage_cagnotte.iban_label")} </span>
                   <span className="font-mono text-foreground">{c.iban}</span>
                 </div>
               )}

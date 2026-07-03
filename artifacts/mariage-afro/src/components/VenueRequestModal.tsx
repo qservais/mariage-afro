@@ -65,18 +65,18 @@ export default function VenueRequestModal({ venueName, requestType, onClose }: P
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(json.error ?? "Erreur serveur");
+        throw new Error(json.error ?? t("venue_request.error_server"));
       }
       setDone(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur inattendue");
+      setError(err instanceof Error ? err.message : t("venue_request.error_unexpected"));
     } finally {
       setSubmitting(false);
     }
   }
 
-  const isVisit = requestType === "visit";
-  const title   = isVisit ? "Demande de visite" : "Demande de devis";
+  const isVisit  = requestType === "visit";
+  const title    = isVisit ? t("venue_request.title_visit") : t("venue_request.title_quote");
   const labelCls = "block text-[10px] uppercase tracking-[0.3em] font-medium text-gold-deep mb-2";
 
   return (
@@ -84,13 +84,12 @@ export default function VenueRequestModal({ venueName, requestType, onClose }: P
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
 
       <div className="relative bg-cream w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-        {/* Header */}
         <div className="sticky top-0 bg-wine-deep text-cream px-8 py-6 flex items-start justify-between z-10">
           <div>
             <p className="text-[10px] uppercase tracking-[0.35em] text-gold mb-1">{venueName}</p>
             <h2 className="font-display text-2xl md:text-3xl tracking-tight leading-tight">{title}</h2>
           </div>
-          <button onClick={onClose} className="text-cream/60 hover:text-cream transition-colors ml-4 mt-1 flex-shrink-0" aria-label="Fermer">
+          <button onClick={onClose} className="text-cream/60 hover:text-cream transition-colors ml-4 mt-1 flex-shrink-0" aria-label={t("ui.close")}>
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -98,63 +97,59 @@ export default function VenueRequestModal({ venueName, requestType, onClose }: P
         {done ? (
           <div className="px-8 py-16 text-center">
             <CheckCircle2 className="w-12 h-12 text-gold mx-auto mb-5" strokeWidth={1.5} />
-            <h3 className="font-display text-2xl text-wine-deep mb-3">Demande envoyée !</h3>
+            <h3 className="font-display text-2xl text-wine-deep mb-3">{t("venue_request.done_title")}</h3>
             <p className="text-wine-deep/70 text-sm leading-relaxed max-w-xs mx-auto mb-8">
-              Notre équipe reviendra vers vous très rapidement pour finaliser les détails.
+              {t("venue_request.done_body")}
             </p>
-            <button onClick={onClose} className="btn-editorial">Fermer</button>
+            <button onClick={onClose} className="btn-editorial">{t("ui.close")}</button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="px-8 py-8 space-y-6">
 
-            {/* Nom */}
             <div>
-              <label className={labelCls}>Nom complet des mariés <span className="text-wine-deep">*</span></label>
+              <label className={labelCls}>{t("venue_request.field_name")} <span className="text-wine-deep">*</span></label>
               <input type="text" required value={name} onChange={(e) => setName(e.target.value)}
-                placeholder="Marie & Jean Dupont" className={INPUT_CLS} />
+                placeholder={t("venue_request.placeholder_name")} className={INPUT_CLS} />
             </div>
 
-            {/* Email + Téléphone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className={labelCls}>Email <span className="text-wine-deep">*</span></label>
+                <label className={labelCls}>{t("auth.email_label")} <span className="text-wine-deep">*</span></label>
                 <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder="marie@example.com" className={INPUT_CLS} />
               </div>
               <div>
-                <label className={labelCls}>Téléphone</label>
+                <label className={labelCls}>{t("venue_request.field_phone")}</label>
                 <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+32 4xx xx xx xx" className={INPUT_CLS} />
+                  placeholder={t("venue_request.placeholder_phone")} className={INPUT_CLS} />
               </div>
             </div>
 
-            {/* Date mariage + Invités */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className={labelCls}>Date du mariage</label>
+                <label className={labelCls}>{t("venue_request.field_wedding_date")}</label>
                 <input type="date" value={weddingDate} onChange={(e) => setWeddingDate(e.target.value)} className={INPUT_CLS} />
               </div>
               <div>
-                <label className={labelCls}>Nombre d'invités</label>
+                <label className={labelCls}>{t("venue_request.field_guests")}</label>
                 <input type="number" min="1" value={guestCount} onChange={(e) => setGuestCount(e.target.value)}
-                  placeholder="ex. 150" className={INPUT_CLS} />
+                  placeholder={t("venue_request.placeholder_guests")} className={INPUT_CLS} />
               </div>
             </div>
 
-            {/* Disponibilités (visite uniquement) */}
             {isVisit && (
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <label className={labelCls}>
-                    Vos disponibilités
+                    {t("venue_request.field_availability")}
                     <span className="ml-2 normal-case tracking-normal font-light text-wine-deep/40 text-[10px]">
-                      (jusqu'à 3 créneaux)
+                      ({t("venue_request.availability_hint")})
                     </span>
                   </label>
                   {slots.length < 3 && (
                     <button type="button" onClick={addSlot}
                       className="flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] text-gold-deep hover:text-wine-deep transition-colors font-semibold">
-                      <Plus className="w-3 h-3" /> Ajouter
+                      <Plus className="w-3 h-3" /> {t("ui.add")}
                     </button>
                   )}
                 </div>
@@ -167,7 +162,8 @@ export default function VenueRequestModal({ venueName, requestType, onClose }: P
                         className={INPUT_CLS + " w-28"} />
                       {slots.length > 1 && (
                         <button type="button" onClick={() => removeSlot(i)}
-                          className="text-wine-deep/25 hover:text-wine-deep/60 transition-colors flex-shrink-0" aria-label="Supprimer">
+                          className="text-wine-deep/25 hover:text-wine-deep/60 transition-colors flex-shrink-0"
+                          aria-label={t("ui.delete")}>
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}
@@ -177,11 +173,10 @@ export default function VenueRequestModal({ venueName, requestType, onClose }: P
               </div>
             )}
 
-            {/* Message */}
             <div>
-              <label className={labelCls}>Message / précisions</label>
+              <label className={labelCls}>{t("venue_request.field_message")}</label>
               <textarea rows={3} value={message} onChange={(e) => setMessage(e.target.value)}
-                placeholder="Décrivez votre mariage, vos besoins particuliers…"
+                placeholder={t("venue_request.placeholder_message")}
                 className={INPUT_CLS + " resize-none"} />
             </div>
 
@@ -191,11 +186,11 @@ export default function VenueRequestModal({ venueName, requestType, onClose }: P
 
             <div className="pt-2 flex flex-col sm:flex-row gap-3">
               <button type="button" onClick={onClose} className="btn-editorial-compact flex-1 justify-center">
-                Annuler
+                {t("ui.cancel")}
               </button>
               <button type="submit" disabled={submitting}
                 className="btn-editorial-compact-solid flex-1 justify-center disabled:opacity-60">
-                {submitting ? "Envoi en cours…" : "Envoyer la demande"}
+                {submitting ? t("venue_request.submitting") : t("venue_request.submit")}
               </button>
             </div>
           </form>

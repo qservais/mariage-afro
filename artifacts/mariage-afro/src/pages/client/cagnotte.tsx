@@ -121,7 +121,7 @@ export default function CagnottePage() {
         <div className="space-y-2">
           <Label>{t("cagnotte.field_photo")}</Label>
           <div className="flex items-center gap-3">
-            {form.photo && <img src={objectUrl(form.photo)} alt="Aperçu" width={64} height={64} loading="lazy" decoding="async" className="w-16 h-16 object-cover" />}
+            {form.photo && <img src={objectUrl(form.photo)} alt={t("ui.preview")} width={64} height={64} loading="lazy" decoding="async" className="w-16 h-16 object-cover" />}
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && upload.mutate(e.target.files[0])} />
             <Button type="button" variant="outline" className="rounded-none" onClick={() => fileRef.current?.click()} disabled={upload.isPending}>
               {upload.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ImagePlus className="w-4 h-4 mr-2" />}

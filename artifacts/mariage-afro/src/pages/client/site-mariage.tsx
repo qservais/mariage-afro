@@ -781,7 +781,7 @@ export default function SiteMariagePage() {
             <Input
               value={form.city}
               onChange={(e) => setForm({ ...form, city: e.target.value })}
-              placeholder="Bruxelles"
+              placeholder={t("ui.city_placeholder")}
               className="rounded-none"
             />
           </div>

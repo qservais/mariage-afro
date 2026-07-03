@@ -320,5 +320,49 @@
     "metric2_label": "Landen vertegenwoordigd",
     "metric3_label": "Bruiloften begeleid",
     "metric4_label": "Beschikbare talen"
+  },
+  "ui": {
+    "loading": "Laden",
+    "loading_ellipsis": "Laden…",
+    "close": "Sluiten",
+    "cancel": "Annuleren",
+    "add": "Toevoegen",
+    "delete": "Verwijderen",
+    "preview": "Voorbeeld",
+    "five_stars": "5 van de 5 sterren",
+    "city_placeholder": "Brussel",
+    "iban_label": "IBAN:"
+  },
+  "gallery": {
+    "close": "Galerij sluiten",
+    "prev": "Vorige afbeelding",
+    "next": "Volgende afbeelding",
+    "photo_alt": "Trouwfoto {{current}} van {{total}}",
+    "featured": "Uitgelicht"
+  },
+  "venue_request": {
+    "title_visit": "Bezoekaanvraag",
+    "title_quote": "Offerteverzoek",
+    "done_title": "Aanvraag verzonden!",
+    "done_body": "Ons team neemt zeer binnenkort contact met u op om de details te bevestigen.",
+    "field_name": "Volledige naam van het koppel",
+    "placeholder_name": "Marie & Jean Dupont",
+    "field_phone": "Telefoon",
+    "placeholder_phone": "+32 4xx xx xx xx",
+    "field_wedding_date": "Trouwdatum",
+    "field_guests": "Aantal gasten",
+    "placeholder_guests": "bijv. 150",
+    "field_availability": "Uw beschikbaarheid",
+    "availability_hint": "tot 3 tijdsloten",
+    "field_message": "Bericht / details",
+    "placeholder_message": "Beschrijf uw bruiloft, uw specifieke wensen…",
+    "submit": "Aanvraag verzenden",
+    "submitting": "Verzenden…",
+    "error_server": "Serverfout",
+    "error_unexpected": "Onverwachte fout"
+  },
+  "home_images": {
+    "about_alt": "Gemengde huwelijksceremonie",
+    "gallery_alt": "Details van een Afro-bruiloft"
   }
 }

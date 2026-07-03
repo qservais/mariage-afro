@@ -1,6 +1,7 @@
 import { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import i18n, { SUPPORTED_LANGS, type SupportedLang } from "@/i18n";
+import { useTranslation } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -100,15 +101,16 @@ const queryClient = new QueryClient({
 });
 
 function RouteFallback() {
+  const { t } = useTranslation();
   return (
     <div
       className="min-h-[40vh] flex items-center justify-center"
       role="status"
       aria-live="polite"
-      aria-label="Chargement"
+      aria-label={t("ui.loading")}
     >
       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-      <span className="sr-only">Chargement…</span>
+      <span className="sr-only">{t("ui.loading_ellipsis")}</span>
     </div>
   );
 }

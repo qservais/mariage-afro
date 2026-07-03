@@ -320,5 +320,49 @@
     "metric2_label": "Pays représentés",
     "metric3_label": "Mariages accompagnés",
     "metric4_label": "Langues disponibles"
+  },
+  "ui": {
+    "loading": "Chargement",
+    "loading_ellipsis": "Chargement…",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "add": "Ajouter",
+    "delete": "Supprimer",
+    "preview": "Aperçu",
+    "five_stars": "5 étoiles sur 5",
+    "city_placeholder": "Bruxelles",
+    "iban_label": "IBAN :"
+  },
+  "gallery": {
+    "close": "Fermer la galerie",
+    "prev": "Image précédente",
+    "next": "Image suivante",
+    "photo_alt": "Photo de mariage {{current}} sur {{total}}",
+    "featured": "À la une"
+  },
+  "venue_request": {
+    "title_visit": "Demande de visite",
+    "title_quote": "Demande de devis",
+    "done_title": "Demande envoyée !",
+    "done_body": "Notre équipe reviendra vers vous très rapidement pour finaliser les détails.",
+    "field_name": "Nom complet des mariés",
+    "placeholder_name": "Marie & Jean Dupont",
+    "field_phone": "Téléphone",
+    "placeholder_phone": "+32 4xx xx xx xx",
+    "field_wedding_date": "Date du mariage",
+    "field_guests": "Nombre d'invités",
+    "placeholder_guests": "ex. 150",
+    "field_availability": "Vos disponibilités",
+    "availability_hint": "jusqu'à 3 créneaux",
+    "field_message": "Message / précisions",
+    "placeholder_message": "Décrivez votre mariage, vos besoins particuliers…",
+    "submit": "Envoyer la demande",
+    "submitting": "Envoi en cours…",
+    "error_server": "Erreur serveur",
+    "error_unexpected": "Erreur inattendue"
+  },
+  "home_images": {
+    "about_alt": "Cérémonie de mariage mixte",
+    "gallery_alt": "Détails d'un mariage afro"
   }
 }

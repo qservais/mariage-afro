@@ -136,6 +136,7 @@ function VideoPlayer({ url, label, className = "" }: VideoPlayerProps) {
 /* ─── GalleryModal ────────────────────────────────────────────────────────── */
 
 function GalleryModal({ images, startIndex, onClose }: { images: string[]; startIndex: number; onClose: () => void }) {
+  const { t } = useTranslation();
   const [idx, setIdx] = useState(startIndex);
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -156,12 +157,12 @@ function GalleryModal({ images, startIndex, onClose }: { images: string[]; start
         className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
         onClick={onClose}
       >
-        <button onClick={onClose} aria-label="Fermer la galerie" className="absolute top-4 right-4 text-white/70 hover:text-white z-10">
+        <button onClick={onClose} aria-label={t("gallery.close")} className="absolute top-4 right-4 text-white/70 hover:text-white z-10">
           <X className="w-8 h-8" aria-hidden="true" />
         </button>
         <button
           onClick={e => { e.stopPropagation(); setIdx(i => (i - 1 + images.length) % images.length); }}
-          aria-label="Image précédente"
+          aria-label={t("gallery.prev")}
           className="absolute left-4 text-white/70 hover:text-white"
         >
           <ChevronLeft className="w-10 h-10" aria-hidden="true" />
@@ -171,7 +172,7 @@ function GalleryModal({ images, startIndex, onClose }: { images: string[]; start
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           src={images[idx]}
-          alt={`Photo de mariage ${idx + 1} sur ${images.length}`}
+          alt={t("gallery.photo_alt", { current: idx + 1, total: images.length })}
           className="max-w-[90vw] max-h-[85vh] object-contain"
           onClick={e => e.stopPropagation()}
           onError={e => {
@@ -192,7 +193,7 @@ function GalleryModal({ images, startIndex, onClose }: { images: string[]; start
         </div>
         <button
           onClick={e => { e.stopPropagation(); setIdx(i => (i + 1) % images.length); }}
-          aria-label="Image suivante"
+          aria-label={t("gallery.next")}
           className="absolute right-4 text-white/70 hover:text-white"
         >
           <ChevronRight className="w-10 h-10" aria-hidden="true" />
@@ -446,7 +447,7 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
               <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/60 via-wine-deep/10 to-transparent pointer-events-none" />
 
               {r.featured && (
-                <span className="badge-editorial-dark absolute top-4 left-4 z-10">À la une</span>
+                <span className="badge-editorial-dark absolute top-4 left-4 z-10">{t("gallery.featured")}</span>
               )}
               {singleVideoUrl && (
                 <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-wine-deep/70 text-cream text-[10px] uppercase tracking-[0.25em] px-3 py-2 backdrop-blur-sm font-medium z-10">
