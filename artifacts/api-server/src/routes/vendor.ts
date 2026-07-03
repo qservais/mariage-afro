@@ -146,87 +146,73 @@ router.post("/vendor/onboarding", async (req, res) => {
   const parsed = onboardingSchema.safeParse(req.body);
   if (!parsed.success) {
     const message = onboardingIssueMessage(parsed.error.issues[0]);
+    req.log.warn(
+      { vendorAccountId: r.vendorAccountId, issues: parsed.error.issues },
+      "Vendor onboarding validation failed",
+    );
     res.status(400).json({ error: message, message, issues: parsed.error.issues });
     return;
   }
   const data = parsed.data;
 
-  const [existing] = await db
-    .select()
-    .from(vendorAccountsTable)
-    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
-    .limit(1);
+  let account: typeof vendorAccountsTable.$inferSelect | undefined;
+  let vendorId: number | null = null;
 
-  let vendorId = existing?.vendorId ?? null;
-
-  // Verify the marketplace vendor still exists (may have been deleted externally)
-  if (vendorId) {
-    const [existingVendor] = await db
-      .select({ id: marketplaceVendorsTable.id })
-      .from(marketplaceVendorsTable)
-      .where(eq(marketplaceVendorsTable.id, vendorId))
+  // ---- Critical path: persist the marketplace vendor + vendor account. ----
+  // If any of this fails the vendor profile was NOT saved, so surface a clear
+  // error and log the cause so regressions are catchable in the API logs.
+  try {
+    const [existing] = await db
+      .select()
+      .from(vendorAccountsTable)
+      .where(eq(vendorAccountsTable.id, r.vendorAccountId))
       .limit(1);
-    if (!existingVendor) vendorId = null;
-  }
 
-  const baseSlug = slugify(data.businessName);
+    vendorId = existing?.vendorId ?? null;
 
-  // Process profile photo uploaded via proxy: consume intent and make it public
-  let onboardingLogoUrl: string | null = null;
-  if (data.photoPath && data.photoPath.startsWith("/objects/")) {
-    const intentOk = await consumeUploadIntent(data.photoPath, r.userId);
-    if (intentOk) {
-      try {
-        onboardingLogoUrl = await storageService.trySetObjectEntityAclPolicy(data.photoPath, {
-          owner: r.userId,
-          visibility: "public",
-        });
-      } catch (err) {
-        logger.error({ err }, "Failed to set onboarding photo ACL");
-        onboardingLogoUrl = data.photoPath;
+    // Verify the marketplace vendor still exists (may have been deleted externally)
+    if (vendorId) {
+      const [existingVendor] = await db
+        .select({ id: marketplaceVendorsTable.id })
+        .from(marketplaceVendorsTable)
+        .where(eq(marketplaceVendorsTable.id, vendorId))
+        .limit(1);
+      if (!existingVendor) vendorId = null;
+    }
+
+    const baseSlug = slugify(data.businessName);
+
+    // Process profile photo uploaded via proxy: consume intent and make it public.
+    // A storage/ACL failure here is non-critical — never let it abort onboarding.
+    let onboardingLogoUrl: string | null = null;
+    if (data.photoPath && data.photoPath.startsWith("/objects/")) {
+      const intentOk = await consumeUploadIntent(data.photoPath, r.userId);
+      if (intentOk) {
+        try {
+          onboardingLogoUrl = await storageService.trySetObjectEntityAclPolicy(data.photoPath, {
+            owner: r.userId,
+            visibility: "public",
+          });
+        } catch (err) {
+          req.log.error({ err, vendorAccountId: r.vendorAccountId }, "Failed to set onboarding photo ACL (non-blocking)");
+          onboardingLogoUrl = data.photoPath;
+        }
       }
     }
-  }
 
-  // Shared extra fields derived from onboarding form selections
-  const onboardingExtras = {
-    ...(onboardingLogoUrl !== null ? { logoUrl: onboardingLogoUrl } : {}),
-    ...(data.specialties && data.specialties.length > 0 ? { culturalStyles: data.specialties } : {}),
-    ...(data.regions && data.regions.length > 0 ? { region: data.regions[0] } : {}),
-    instagram: data.instagram ?? null,
-    facebook: data.facebook ?? null,
-    tiktok: data.tiktok ?? null,
-    youtube: data.youtube ?? null,
-  };
+    // Shared extra fields derived from onboarding form selections
+    const onboardingExtras = {
+      ...(onboardingLogoUrl !== null ? { logoUrl: onboardingLogoUrl } : {}),
+      ...(data.specialties && data.specialties.length > 0 ? { culturalStyles: data.specialties } : {}),
+      ...(data.regions && data.regions.length > 0 ? { region: data.regions[0] } : {}),
+      instagram: data.instagram ?? null,
+      facebook: data.facebook ?? null,
+      tiktok: data.tiktok ?? null,
+      youtube: data.youtube ?? null,
+    };
 
-  if (vendorId) {
-    const slug = await resolveVendorSlug(baseSlug, vendorId);
-    await db
-      .update(marketplaceVendorsTable)
-      .set({
-        name: data.businessName,
-        category: data.category,
-        city: data.city,
-        tagline: "",
-        description: data.description ?? "",
-        website: data.website ?? null,
-        phone: data.phone ?? null,
-        email: data.email,
-        slug,
-        ...onboardingExtras,
-      })
-      .where(eq(marketplaceVendorsTable.id, vendorId));
-  } else {
-    // Check if admin pre-linked this email to an existing vendor profile (invitation flow)
-    const [invitedVendor] = await db
-      .select({ id: marketplaceVendorsTable.id })
-      .from(marketplaceVendorsTable)
-      .where(sql`lower(${marketplaceVendorsTable.invitedEmail}) = lower(${data.email})`)
-      .limit(1);
-
-    if (invitedVendor) {
-      // Auto-link: update the pre-existing vendor profile with the submitted data
-      const slug = await resolveVendorSlug(baseSlug, invitedVendor.id);
+    if (vendorId) {
+      const slug = await resolveVendorSlug(baseSlug, vendorId);
       await db
         .update(marketplaceVendorsTable)
         .set({
@@ -241,110 +227,163 @@ router.post("/vendor/onboarding", async (req, res) => {
           slug,
           ...onboardingExtras,
         })
-        .where(eq(marketplaceVendorsTable.id, invitedVendor.id));
-      vendorId = invitedVendor.id;
-    } else {
-      const [vendor] = await db
-        .insert(marketplaceVendorsTable)
-        .values({
-          name: data.businessName,
-          category: data.category,
-          city: data.city,
-          tagline: "",
-          description: data.description ?? "",
-          services: [],
-          images: [],
-          website: data.website ?? null,
-          phone: data.phone ?? null,
-          email: data.email,
-          verified: false,
-          active: false,
-          rating: 5,
-        })
-        .returning();
-      vendorId = vendor.id;
-      // Set slug after insert so we have the id for collision-safe uniqueness
-      const slug = await resolveVendorSlug(baseSlug, vendorId);
-      await db
-        .update(marketplaceVendorsTable)
-        .set({ slug, ...onboardingExtras })
         .where(eq(marketplaceVendorsTable.id, vendorId));
+    } else {
+      // Check if admin pre-linked this email to an existing vendor profile (invitation flow)
+      const [invitedVendor] = await db
+        .select({ id: marketplaceVendorsTable.id })
+        .from(marketplaceVendorsTable)
+        .where(sql`lower(${marketplaceVendorsTable.invitedEmail}) = lower(${data.email})`)
+        .limit(1);
+
+      if (invitedVendor) {
+        // Auto-link: update the pre-existing vendor profile with the submitted data
+        const slug = await resolveVendorSlug(baseSlug, invitedVendor.id);
+        await db
+          .update(marketplaceVendorsTable)
+          .set({
+            name: data.businessName,
+            category: data.category,
+            city: data.city,
+            tagline: "",
+            description: data.description ?? "",
+            website: data.website ?? null,
+            phone: data.phone ?? null,
+            email: data.email,
+            slug,
+            ...onboardingExtras,
+          })
+          .where(eq(marketplaceVendorsTable.id, invitedVendor.id));
+        vendorId = invitedVendor.id;
+      } else {
+        const [vendor] = await db
+          .insert(marketplaceVendorsTable)
+          .values({
+            name: data.businessName,
+            category: data.category,
+            city: data.city,
+            tagline: "",
+            description: data.description ?? "",
+            services: [],
+            images: [],
+            website: data.website ?? null,
+            phone: data.phone ?? null,
+            email: data.email,
+            verified: false,
+            active: false,
+            rating: 5,
+          })
+          .returning();
+        vendorId = vendor.id;
+        // Set slug after insert so we have the id for collision-safe uniqueness
+        const slug = await resolveVendorSlug(baseSlug, vendorId);
+        await db
+          .update(marketplaceVendorsTable)
+          .set({ slug, ...onboardingExtras })
+          .where(eq(marketplaceVendorsTable.id, vendorId));
+      }
     }
+
+    // Don't downgrade status if already approved (e.g. pre-approved from a partner application)
+    const [existingStatus] = await db
+      .select({ status: vendorAccountsTable.status })
+      .from(vendorAccountsTable)
+      .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+      .limit(1);
+    const newStatus = existingStatus?.status === "approved" ? "approved" : "pending";
+
+    [account] = await db
+      .update(vendorAccountsTable)
+      .set({
+        vendorId,
+        businessName: data.businessName,
+        contactName: data.contactName,
+        email: data.email,
+        phone: data.phone ?? null,
+        category: data.category,
+        city: data.city,
+        website: data.website ?? null,
+        description: data.description ?? "",
+        locale: data.locale,
+        status: newStatus,
+        onboardedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+      .returning();
+  } catch (err) {
+    req.log.error(
+      { err, vendorAccountId: r.vendorAccountId },
+      "Vendor onboarding failed to save vendor profile",
+    );
+    res.status(500).json({
+      error: "onboarding_save_failed",
+      message: "Nous n'avons pas pu enregistrer votre fiche. Veuillez réessayer.",
+    });
+    return;
   }
 
-  // Don't downgrade status if already approved (e.g. pre-approved from a partner application)
-  const [existingStatus] = await db
-    .select({ status: vendorAccountsTable.status })
-    .from(vendorAccountsTable)
-    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
-    .limit(1);
-  const newStatus = existingStatus?.status === "approved" ? "approved" : "pending";
-
-  let [account] = await db
-    .update(vendorAccountsTable)
-    .set({
-      vendorId,
-      businessName: data.businessName,
-      contactName: data.contactName,
-      email: data.email,
-      phone: data.phone ?? null,
-      category: data.category,
-      city: data.city,
-      website: data.website ?? null,
-      description: data.description ?? "",
-      locale: data.locale,
-      status: newStatus,
-      onboardedAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .where(eq(vendorAccountsTable.id, r.vendorAccountId))
-    .returning();
-
-  // Auto-grant featured subscription to every new vendor (no charge)
-  const [existingSub] = await db
-    .select({ id: vendorSubscriptionsTable.id })
-    .from(vendorSubscriptionsTable)
-    .where(eq(vendorSubscriptionsTable.vendorAccountId, r.vendorAccountId))
-    .limit(1);
-  if (!existingSub) {
-    await db.insert(vendorSubscriptionsTable).values({
-      vendorAccountId: r.vendorAccountId,
-      vendorId: vendorId ?? undefined,
-      tier: "featured",
-      status: "active",
-      startedAt: new Date(),
-    });
-  } else {
-    await db
-      .update(vendorSubscriptionsTable)
-      .set({
+  // ---- Non-blocking: auto-grant featured subscription (no charge). ----
+  // The vendor profile is already saved; a subscription failure must not turn
+  // a successful onboarding into a 500, so we log and continue (partial success).
+  try {
+    const [existingSub] = await db
+      .select({ id: vendorSubscriptionsTable.id })
+      .from(vendorSubscriptionsTable)
+      .where(eq(vendorSubscriptionsTable.vendorAccountId, r.vendorAccountId))
+      .limit(1);
+    if (!existingSub) {
+      await db.insert(vendorSubscriptionsTable).values({
+        vendorAccountId: r.vendorAccountId,
+        vendorId: vendorId ?? undefined,
         tier: "featured",
         status: "active",
-        startedAt: sql`COALESCE(${vendorSubscriptionsTable.startedAt}, NOW())`,
-        updatedAt: new Date(),
-        vendorId: vendorId ?? undefined,
-      })
-      .where(eq(vendorSubscriptionsTable.id, existingSub.id));
+        startedAt: new Date(),
+      });
+    } else {
+      await db
+        .update(vendorSubscriptionsTable)
+        .set({
+          tier: "featured",
+          status: "active",
+          startedAt: sql`COALESCE(${vendorSubscriptionsTable.startedAt}, NOW())`,
+          updatedAt: new Date(),
+          vendorId: vendorId ?? undefined,
+        })
+        .where(eq(vendorSubscriptionsTable.id, existingSub.id));
+    }
+  } catch (err) {
+    req.log.error(
+      { err, vendorAccountId: r.vendorAccountId, vendorId },
+      "Vendor onboarding saved but subscription grant failed (non-blocking)",
+    );
   }
 
-  // Auto-approve if a matching approved partner application exists
-  if (account && account.status !== "approved") {
-    const [approvedApp] = await db
-      .select({ id: partnerApplicationsTable.id })
-      .from(partnerApplicationsTable)
-      .where(and(
-        eq(partnerApplicationsTable.email, data.email),
-        eq(partnerApplicationsTable.status, "approved")
-      ))
-      .limit(1);
-    if (approvedApp) {
-      const [updatedAccount] = await db
-        .update(vendorAccountsTable)
-        .set({ status: "approved", validatedAt: new Date(), updatedAt: new Date() })
-        .where(eq(vendorAccountsTable.id, r.vendorAccountId))
-        .returning();
-      if (updatedAccount) account = updatedAccount;
+  // ---- Non-blocking: auto-approve if a matching approved partner application exists. ----
+  try {
+    if (account && account.status !== "approved") {
+      const [approvedApp] = await db
+        .select({ id: partnerApplicationsTable.id })
+        .from(partnerApplicationsTable)
+        .where(and(
+          eq(partnerApplicationsTable.email, data.email),
+          eq(partnerApplicationsTable.status, "approved")
+        ))
+        .limit(1);
+      if (approvedApp) {
+        const [updatedAccount] = await db
+          .update(vendorAccountsTable)
+          .set({ status: "approved", validatedAt: new Date(), updatedAt: new Date() })
+          .where(eq(vendorAccountsTable.id, r.vendorAccountId))
+          .returning();
+        if (updatedAccount) account = updatedAccount;
+      }
     }
+  } catch (err) {
+    req.log.error(
+      { err, vendorAccountId: r.vendorAccountId },
+      "Vendor onboarding saved but auto-approve check failed (non-blocking)",
+    );
   }
 
   // Email: if auto-approved send approval email, otherwise send "received" confirmation + admin

@@ -1,24 +1,19 @@
 ---
-name: Vendor onboarding validation caps
-description: Why the onboarding zod caps must be generous and match what the form actually sends.
+name: Vendor onboarding city field holds comma-joined regions
+description: Why the onboarding city field can be long and its validation cap must stay generous.
 ---
 
-The vendor onboarding form (`VendorOnboardingGate.tsx`) repurposes the `city`
-field to hold the comma-joined list of every region/country the vendor selected,
-and `description` is a free-text business pitch. The backend
-`onboardingSchema` (`artifacts/api-server/src/routes/vendor.ts`) validates these.
+The vendor onboarding form (`VendorOnboardingGate.tsx`) does NOT put a single
+town in the `city` field — it stores the comma-joined list of every region /
+country the vendor selected. So `city` can legitimately be 100+ chars for a
+multi-region vendor.
 
-**Rule:** zod max caps on onboarding fields must comfortably exceed what the form
-can legitimately produce. The underlying DB columns are all `text` (unbounded),
-so the caps are only abuse guards — keep them generous (city ~500, description
-~5000).
+**Why:** A tight `city` cap (originally 80) silently 400'd normal multi-region
+submissions; the frontend collapsed that into a generic error, so the real cause
+stayed invisible for a long time. The DB columns are unbounded `text`, so the
+zod caps are only abuse guards, not storage limits.
 
-**Why:** Tight caps (city 80, description 2000) silently rejected normal
-submissions (multi-region vendors, detailed descriptions) with HTTP 400. The
-frontend collapsed that into a generic "Une erreur est survenue.", so the real
-cause was invisible for a long time.
-
-**How to apply:** If you change the onboarding form to add fields or feed more
-data into an existing field, re-check the matching zod cap. On a 400 the route
-now returns a specific human-readable `message`; the frontend surfaces it only
-for status 400.
+**How to apply:** Keep onboarding zod caps comfortably above what the form can
+produce. If you feed more data into `city` (or any onboarding field), re-check
+its cap. On a 400 the route returns a specific human-readable `message`, shown by
+the frontend only for status 400.

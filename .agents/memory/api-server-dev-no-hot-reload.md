@@ -8,9 +8,9 @@ The `artifacts/api-server` dev workflow runs `build && start` (esbuild bundle to
 backend source file does nothing until you restart the workflow
 `artifacts/api-server: API Server`.
 
-**Why:** Verifying an API fix with curl right after editing will show the OLD
-behavior and mislead you into thinking the fix failed. This cost a wasted
-verification cycle on the vendor-onboarding fix.
+**Why:** Testing an API change with curl right after editing shows the OLD
+behavior (the running process still serves the previous bundle), which misleads
+you into thinking the change failed.
 
 **How to apply:** After any edit under `artifacts/api-server/src`, restart the
 API Server workflow before re-testing endpoints (curl, e2e, etc.).
