@@ -498,20 +498,18 @@ export default function VendorOnboardingGate({ account, children }: Props) {
             data-testid="vendor-onboarding-stepper"
           />
           {save.isError && (() => {
-            const raw = (save.error as Error).message ?? "";
+            const err = save.error as Error & { status?: number };
+            const raw = (err.message ?? "").trim();
+            const generic = ["Une erreur est survenue.", "Internal server error"];
             let msg = t("vendor.onboarding.error_generic");
             if (raw.includes("couple_account_conflict")) {
               msg = t("vendor.onboarding.error_couple_conflict");
-            } else {
-              try {
-                const jsonStart = raw.indexOf("{");
-                if (jsonStart !== -1) {
-                  const parsed = JSON.parse(raw.slice(jsonStart));
-                  if (parsed.message) msg = parsed.message;
-                }
-              } catch {
-                /* keep default */
-              }
+            } else if (err.status === 400 && raw && !generic.includes(raw)) {
+              // On a 400 the backend returns a specific, human-readable message
+              // (e.g. a field that is too long). Surface it so the user can fix
+              // their input. Other statuses (network/500) keep the generic error
+              // to avoid leaking raw or untranslated messages.
+              msg = raw;
             }
             return (
               <p

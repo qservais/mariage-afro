@@ -2,6 +2,8 @@
 - [Editorial grid pattern](editorial-grid.md) — canonical card grid: gap-px bg-wine-deep/10 border; ordinal numbers (01/02/03) over icon boxes for editorial sections
 - [Accessibility baseline](a11y-baseline.md) — skip link in PublicLayout; aria-current="page" on all nav links; aria-hidden on decorative SVGs (never aria-label on non-interactive SVG)
 - [Custom JWT Auth](custom-jwt-auth.md) — Clerk fully replaced by bcrypt+JWT; httpOnly cookie `ma_token` 30d; `app_users` table; lib/db needs `tsc --build` after schema changes.
+- [api-server dev no hot-reload](api-server-dev-no-hot-reload.md) — dev workflow builds then starts (not tsx watch); restart the workflow after backend edits or curl shows stale behavior.
+- [Onboarding validation caps](onboarding-validation-caps.md) — onboarding `city` stores comma-joined region list; zod caps must match what the form sends (DB cols are unbounded text) or valid signups 400 silently.
 - [Conversation tab bug pattern](conversation-tab-bug.md) — useEffect override d'activeConvId : toujours setTab("vendors") avant setActiveConvId dans onSuccess; ne pas tester vendorConvs.find dans la branche else.
 - [storageUrl return type](design-tokens.md) — storageUrl retourne string|undefined (pas null) pour compatibilité prop src JSX; callers qui veulent string|null ajoutent ?? null.
 - [Storage URL helper](storage-url-pattern.md) — Use `@/lib/storage-url` (storageUrl / storageUrlOrEmpty) everywhere; never hardcode `/api/storage${path}` or `${BASE}/storage${path}` — those miss either BASE_URL or the `/api` segment.

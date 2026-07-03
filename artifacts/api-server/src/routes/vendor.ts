@@ -81,30 +81,72 @@ router.get("/vendor/me", async (req, res) => {
   res.json({ account, vendor });
 });
 
+// Limits are generous guards against abuse — the underlying DB columns are all
+// `text` (unbounded). They must comfortably fit what the onboarding form sends;
+// notably `city` stores the comma-joined list of every region the vendor covers,
+// and `description` is a free-text business pitch. Previously these were capped
+// at 80/2000, which silently rejected normal submissions (multi-region vendors,
+// detailed descriptions) with a generic error. See onboardingIssueMessage below.
 const onboardingSchema = z.object({
-  businessName: z.string().min(1).max(120),
-  contactName: z.string().min(1).max(120),
+  businessName: z.string().min(1).max(200),
+  contactName: z.string().min(1).max(200),
   email: z.string().email(),
-  phone: z.string().optional().nullable(),
-  category: z.string().min(1).max(80),
-  city: z.string().min(1).max(80),
-  website: z.string().optional().nullable(),
-  description: z.string().max(2000).optional().default(""),
+  phone: z.string().max(60).optional().nullable(),
+  category: z.string().min(1).max(120),
+  city: z.string().min(1).max(500),
+  website: z.string().max(500).optional().nullable(),
+  description: z.string().max(5000).optional().default(""),
   locale: z.enum(["fr", "nl", "en"]).optional().default("fr"),
   photoPath: z.string().max(2000).optional().nullable(),
-  regions: z.array(z.string().max(80)).optional().default([]),
-  specialties: z.array(z.string().max(80)).optional().default([]),
-  instagram: z.string().max(200).optional().nullable(),
-  facebook: z.string().max(200).optional().nullable(),
-  tiktok: z.string().max(200).optional().nullable(),
-  youtube: z.string().max(200).optional().nullable(),
+  regions: z.array(z.string().max(120)).optional().default([]),
+  specialties: z.array(z.string().max(120)).optional().default([]),
+  instagram: z.string().max(300).optional().nullable(),
+  facebook: z.string().max(300).optional().nullable(),
+  tiktok: z.string().max(300).optional().nullable(),
+  youtube: z.string().max(300).optional().nullable(),
 });
+
+// Human-readable French labels for onboarding fields, used to build a specific
+// validation error the frontend can display instead of a generic "error occurred".
+const ONBOARDING_FIELD_LABELS: Record<string, string> = {
+  businessName: "Nom de l'entreprise",
+  contactName: "Nom du contact",
+  email: "Adresse email",
+  phone: "Téléphone",
+  category: "Catégorie",
+  city: "Zone d'intervention",
+  website: "Site web",
+  description: "Description",
+  regions: "Zones d'intervention",
+  specialties: "Spécialités",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+};
+
+function onboardingIssueMessage(issue: z.ZodIssue): string {
+  const key = String(issue.path[0] ?? "");
+  const label = ONBOARDING_FIELD_LABELS[key] ?? key;
+  if (key === "email" && issue.code === "invalid_string") {
+    return "L'adresse email n'est pas valide.";
+  }
+  if (issue.code === "too_small") {
+    return `Le champ « ${label} » est requis.`;
+  }
+  if (issue.code === "too_big") {
+    const max = (issue as z.ZodTooBigIssue).maximum;
+    return `Le champ « ${label} » est trop long (maximum ${max} caractères).`;
+  }
+  return `Le champ « ${label} » est invalide.`;
+}
 
 router.post("/vendor/onboarding", async (req, res) => {
   const r = req as unknown as AuthedVendorRequest;
   const parsed = onboardingSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: "Invalid", issues: parsed.error.issues });
+    const message = onboardingIssueMessage(parsed.error.issues[0]);
+    res.status(400).json({ error: message, message, issues: parsed.error.issues });
     return;
   }
   const data = parsed.data;
