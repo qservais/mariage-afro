@@ -127,6 +127,17 @@ app.use("/api", marketplaceRouter);
 
 // Auth-protected routes
 app.use("/api", router);
+
+// Admin CSP override — Helmet's strict CSP (script-src 'self', no 'unsafe-inline')
+// blocks the inline <script> blocks required by server-rendered admin pages.
+// Override with a permissive policy scoped only to /admin routes.
+app.use("/admin", (_req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'none';script-src 'self' 'unsafe-inline';script-src-attr 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data:;connect-src 'self';form-action 'self';base-uri 'self';frame-ancestors 'none'",
+  );
+  next();
+});
 app.use("/admin", adminRouter);
 app.use("/admin", adminContentRouter);
 
