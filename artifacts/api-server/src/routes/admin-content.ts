@@ -101,7 +101,10 @@ router.get("/content/vendors", async (_req: Request, res: Response) => {
   const body = `
     <div class="page-header">
       <h1>Partenaires Marketplace <span style="font-size:14px;font-weight:400;color:#888">(${rows.length})</span></h1>
-      <a class="btn primary" href="/admin/content/vendors/new">+ Ajouter un partenaire</a>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <a class="btn primary" href="/admin/content/vendors/new">+ Ajouter un partenaire</a>
+        ${rows.length > 0 ? `<form method="post" action="/admin/content/vendors/clear-all" style="margin:0" onsubmit="return confirm('Supprimer TOUS les ${rows.length} prestataires ? Action irréversible.')"><button class="btn danger" type="submit">🗑 Tout vider</button></form>` : ""}
+      </div>
     </div>
     ${listHtml}`;
   res.type("html").send(contentLayout("Partenaires", body, toast, csrfToken, "/content/vendors"));
@@ -431,6 +434,11 @@ router.post("/content/vendors/:id/delete", async (req: Request, res: Response) =
   res.redirect("/admin/content/vendors");
 });
 
+router.post("/content/vendors/clear-all", adminAuth, async (_req: Request, res: Response) => {
+  await db.delete(marketplaceVendorsTable);
+  res.redirect("/admin/content/vendors");
+});
+
 // ============ VENUES ============
 
 router.get("/content/venues", async (_req: Request, res: Response) => {
@@ -459,7 +467,10 @@ router.get("/content/venues", async (_req: Request, res: Response) => {
   const body = `
     <div class="page-header">
       <h1>Lieux <span style="font-size:14px;font-weight:400;color:#888">(${venues.length})</span></h1>
-      <a class="btn primary" href="/admin/content/venues/new">+ Ajouter un lieu</a>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <a class="btn primary" href="/admin/content/venues/new">+ Ajouter un lieu</a>
+        ${venues.length > 0 ? `<form method="post" action="/admin/content/venues/clear-all" style="margin:0" onsubmit="return confirm('Supprimer TOUS les ${venues.length} lieux ? Action irréversible.')"><button class="btn danger" type="submit">🗑 Tout vider</button></form>` : ""}
+      </div>
     </div>
     ${listHtml}`;
   res.type("html").send(contentLayout("Lieux", body, "", csrfToken, "/content/venues"));
@@ -646,6 +657,11 @@ router.post("/content/venues/:id/toggle", async (req: Request, res: Response) =>
 
 router.post("/content/venues/:id/delete", async (req: Request, res: Response) => {
   await db.delete(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.id, Number(req.params.id)));
+  res.redirect("/admin/content/venues");
+});
+
+router.post("/content/venues/clear-all", adminAuth, async (_req: Request, res: Response) => {
+  await db.delete(marketplaceVenuesTable);
   res.redirect("/admin/content/venues");
 });
 
