@@ -502,11 +502,11 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
 
       <div class="form-section">
         <div class="form-section-title">Photos</div>
-        <div class="upload-zone" id="venue-upload-zone" style="cursor:pointer">
+        <label for="venue-photo-input" class="upload-zone" id="venue-upload-zone" style="display:block">
           <div style="font-size:28px">🏛️</div>
           <p>Cliquez pour ajouter des photos, ou glissez-déposez ici</p>
           <p style="font-size:11px;color:#aaa">JPG, PNG, WEBP — max 10 Mo par fichier</p>
-        </div>
+        </label>
         <input type="file" id="venue-photo-input" accept="image/*" multiple style="display:none">
         <div class="photo-previews" id="venue-photo-previews"></div>
         <div id="venue-upload-status" role="status" aria-live="assertive" aria-atomic="true" class="upload-progress"></div>
@@ -595,7 +595,6 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
       }
       var zone = document.getElementById("venue-upload-zone");
       var fileInput = document.getElementById("venue-photo-input");
-      zone.addEventListener("click", function() { fileInput.click(); });
       fileInput.addEventListener("change", function() { handleFiles(this.files); });
       zone.addEventListener("dragover", function(e){ e.preventDefault(); zone.classList.add("drag"); });
       zone.addEventListener("dragleave", function(){ zone.classList.remove("drag"); });
