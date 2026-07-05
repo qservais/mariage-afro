@@ -502,12 +502,12 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
 
       <div class="form-section">
         <div class="form-section-title">Photos</div>
-        <div class="upload-zone" id="venue-upload-zone" onclick="document.getElementById('venue-photo-input').click()" style="cursor:pointer">
+        <div class="upload-zone" id="venue-upload-zone" style="cursor:pointer">
           <div style="font-size:28px">🏛️</div>
           <p>Cliquez pour ajouter des photos, ou glissez-déposez ici</p>
           <p style="font-size:11px;color:#aaa">JPG, PNG, WEBP — max 10 Mo par fichier</p>
-          <input type="file" id="venue-photo-input" accept="image/*" multiple style="display:none" onchange="venueHandleFiles(this.files)">
         </div>
+        <input type="file" id="venue-photo-input" accept="image/*" multiple style="display:none">
         <div class="photo-previews" id="venue-photo-previews"></div>
         <div id="venue-upload-status" role="status" aria-live="assertive" aria-atomic="true" class="upload-progress"></div>
         <p style="font-size:11px;color:#aaa;margin-top:6px">Vous pouvez aussi coller des URLs directement :</p>
@@ -589,16 +589,19 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
         xhr.onerror = function(){ status.textContent = "Erreur réseau."; };
         xhr.send(file);
       }
-      window.venueHandleFiles = function(files) {
+      function handleFiles(files) {
         if (!files || !files.length) return;
         Array.from(files).forEach(function(f){ uploadFile(f); });
-      };
+      }
       var zone = document.getElementById("venue-upload-zone");
+      var fileInput = document.getElementById("venue-photo-input");
+      zone.addEventListener("click", function() { fileInput.click(); });
+      fileInput.addEventListener("change", function() { handleFiles(this.files); });
       zone.addEventListener("dragover", function(e){ e.preventDefault(); zone.classList.add("drag"); });
       zone.addEventListener("dragleave", function(){ zone.classList.remove("drag"); });
       zone.addEventListener("drop", function(e){
         e.preventDefault(); zone.classList.remove("drag");
-        window.venueHandleFiles(e.dataTransfer.files);
+        handleFiles(e.dataTransfer.files);
       });
       renderPreviews();
       syncHidden();
