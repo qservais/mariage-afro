@@ -1,7 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { resolveColor } from "@/lib/brand-colors";
 import {
   DndContext,
   PointerSensor,
@@ -12,7 +11,6 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { Plus, Trash2, Search, Download, X, Pencil, FileText } from "lucide-react";
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
@@ -250,8 +248,6 @@ export default function SeatingPage() {
   const [search, setSearch] = useState("");
   const [newTable, setNewTable] = useState<GuestTableCreate>({ name: "", shape: "round", capacity: 8 });
   const [error, setError] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
-
   const createTable = useMutation({
     mutationFn: (b: GuestTableCreate) => clientApi.post<GuestTable>("/api/client/tables", b),
     onSuccess: () => {
@@ -376,21 +372,55 @@ export default function SeatingPage() {
     URL.revokeObjectURL(url);
   };
 
-  const handleExportPdf = async () => {
-    if (!canvasRef.current) return;
-    const canvas = await html2canvas(canvasRef.current, { backgroundColor: resolveColor("--color-white"), scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
-    const orientation = canvas.width >= canvas.height ? "landscape" : "portrait";
-    const pdf = new jsPDF({ orientation, unit: "pt", format: "a4" });
+  const handleExportPdf = () => {
+    const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const margin = 24;
-    const availW = pageW - margin * 2;
-    const availH = pageH - margin * 2;
-    const ratio = Math.min(availW / canvas.width, availH / canvas.height);
-    const w = canvas.width * ratio;
-    const h = canvas.height * ratio;
-    pdf.addImage(imgData, "PNG", (pageW - w) / 2, (pageH - h) / 2, w, h);
+    const margin = 40;
+    let y = margin;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(18);
+    pdf.text(t("seating.title"), pageW / 2, y, { align: "center" });
+    y += 24;
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    pdf.setTextColor(120);
+    pdf.text(new Date().toLocaleDateString("fr-BE"), pageW / 2, y, { align: "center" });
+    pdf.setTextColor(0);
+    y += 28;
+
+    for (const tb of tables) {
+      const seated = guestsByTable.get(tb.id) ?? [];
+
+      if (y + 30 + seated.length * 14 > pageH - margin) {
+        pdf.addPage();
+        y = margin;
+      }
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(12);
+      pdf.text(`${tb.name}  ·  ${SHAPE_LABEL[tb.shape]}  ·  ${seated.length}/${tb.capacity}`, margin, y);
+      y += 16;
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(10);
+      if (seated.length === 0) {
+        pdf.setTextColor(160);
+        pdf.text("—", margin + 10, y);
+        pdf.setTextColor(0);
+        y += 14;
+      } else {
+        for (const g of seated) {
+          if (y + 14 > pageH - margin) { pdf.addPage(); y = margin; }
+          pdf.text(`•  ${g.firstName} ${g.lastName}`, margin + 10, y);
+          y += 14;
+        }
+      }
+      y += 12;
+    }
+
     pdf.save(`plan-de-table-${new Date().toISOString().slice(0, 10)}.pdf`);
   };
 
@@ -640,7 +670,7 @@ export default function SeatingPage() {
             </div>
 
             {/* Right: tables canvas */}
-            <div ref={canvasRef} className="bg-background/30 p-4 border border-wine-deep/10">
+            <div className="bg-background/30 p-4 border border-wine-deep/10">
               {tables.length === 0 ? (
                 <p className="text-center text-wine-deep/40 py-12">
                   {t("seating.create_first")}
