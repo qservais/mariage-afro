@@ -1,5 +1,5 @@
 import express, { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
-import { Readable } from "stream";
+import { pipeline } from "stream/promises";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../middlewares/jwtAuth";
 import {
@@ -7,7 +7,7 @@ import {
   RequestUploadUrlResponse,
 } from "@workspace/api-zod";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
-import { ObjectAclPolicy, ObjectPermission } from "../lib/objectAcl";
+import { ObjectAclPolicy, ObjectPermission, getObjectAclPolicy } from "../lib/objectAcl";
 import { recordUploadIntent } from "../lib/uploadIntents";
 
 const router: IRouter = Router();
@@ -151,20 +151,21 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
       return;
     }
 
-    const response = await objectStorageService.downloadObject(file);
+    const [metadata] = await file.getMetadata();
+    res.status(200);
+    res.setHeader("Content-Type", (metadata.contentType as string) || "application/octet-stream");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    if (metadata.size) res.setHeader("Content-Length", String(metadata.size));
 
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
-      nodeStream.pipe(res);
-    } else {
-      res.end();
-    }
+    const stream = file.createReadStream();
+    stream.on("error", (streamErr) => {
+      req.log.error({ err: streamErr }, "Error streaming public object");
+      if (!res.headersSent) res.status(500).json({ error: "Streaming failed" });
+    });
+    await pipeline(stream, res);
   } catch (error) {
     req.log.error({ err: error }, "Error serving public object");
-    res.status(500).json({ error: "Failed to serve public object" });
+    if (!res.headersSent) res.status(500).json({ error: "Failed to serve public object" });
   }
 });
 
@@ -198,25 +199,29 @@ router.get("/storage/objects/*path", async (req: Request, res: Response) => {
       return;
     }
 
-    const response = await objectStorageService.downloadObject(objectFile);
+    const [metadata] = await objectFile.getMetadata();
+    const aclPolicy = await getObjectAclPolicy(objectFile);
+    const isPublic = aclPolicy?.visibility === "public";
 
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
+    res.status(200);
+    res.setHeader("Content-Type", (metadata.contentType as string) || "application/octet-stream");
+    res.setHeader("Cache-Control", `${isPublic ? "public" : "private"}, max-age=3600`);
+    if (metadata.size) res.setHeader("Content-Length", String(metadata.size));
 
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
-      nodeStream.pipe(res);
-    } else {
-      res.end();
-    }
+    const stream = objectFile.createReadStream();
+    stream.on("error", (streamErr) => {
+      req.log.error({ err: streamErr }, "Error streaming object");
+      if (!res.headersSent) res.status(500).json({ error: "Streaming failed" });
+    });
+    await pipeline(stream, res);
   } catch (error) {
     if (error instanceof ObjectNotFoundError) {
       req.log.warn({ err: error }, "Object not found");
-      res.status(404).json({ error: "Object not found" });
+      if (!res.headersSent) res.status(404).json({ error: "Object not found" });
       return;
     }
     req.log.error({ err: error }, "Error serving object");
-    res.status(500).json({ error: "Failed to serve object" });
+    if (!res.headersSent) res.status(500).json({ error: "Failed to serve object" });
   }
 });
 

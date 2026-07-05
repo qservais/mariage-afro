@@ -1,4 +1,4 @@
-import { type CSSProperties, type ImgHTMLAttributes, useState } from "react";
+import { type CSSProperties, type ImgHTMLAttributes, useState, useEffect } from "react";
 
 type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "loading"> & {
   /** The original asset URL (JPG/JPEG/PNG) imported via `@assets/...` */
@@ -71,6 +71,10 @@ export function Picture({
   ...rest
 }: Props) {
   const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
 
   const lastDot = src.lastIndexOf(".");
   const ext = lastDot > 0 ? src.slice(lastDot).toLowerCase() : "";

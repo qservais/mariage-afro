@@ -10,3 +10,4 @@
 - [Conversation tab bug pattern](conversation-tab-bug.md) — useEffect override d'activeConvId : toujours setTab("vendors") avant setActiveConvId dans onSuccess; ne pas tester vendorConvs.find dans la branche else.
 - [storageUrl return type](design-tokens.md) — storageUrl retourne string|undefined (pas null) pour compatibilité prop src JSX; callers qui veulent string|null ajoutent ?? null.
 - [Storage URL helper](storage-url-pattern.md) — Use `@/lib/storage-url` (storageUrl / storageUrlOrEmpty) everywhere; never hardcode `/api/storage${path}` or `${BASE}/storage${path}` — those miss either BASE_URL or the `/api` segment.
+- [GCS streaming pattern](gcs-streaming.md) — Never double-convert Node↔Web streams (Readable.toWeb/fromWeb) when piping GCS to Express; use file.createReadStream() + stream/promises pipeline() directly. Also: Picture component needs useEffect reset on src change.
