@@ -104,7 +104,7 @@ function paragraph(doc, text) {
   doc.fillColor(BORDEAUX).font("Helvetica-Bold").fontSize(22).text("Et maintenant ?", 56, 220);
   doc.moveDown(0.8);
   doc.fillColor(WINE_DEEP).font("Helvetica").fontSize(12).text(
-    "Retrouvez-nous sur mariage-afro.be pour comparer les prestataires, demander plusieurs devis en 1 clic et accéder à notre quiz « Quel style de mariage est fait pour vous ? ».",
+    "Retrouvez-nous sur mariage-afro.com pour comparer les prestataires, demander plusieurs devis en 1 clic et accéder à notre quiz « Quel style de mariage est fait pour vous ? ».",
     { width: doc.page.width - 112, align: "justify" },
   );
   doc.moveDown(1.2);
@@ -154,7 +154,7 @@ function paragraph(doc, text) {
     "Demandez plusieurs devis en 1 clic via notre marketplace, ou prenez rendez-vous avec un wedding planner partenaire pour cadrer votre budget.",
     { width: doc.page.width - 112, align: "justify" },
   );
-  doc.fillColor(GOLD).font("Helvetica-Oblique").fontSize(11).text("Mariage Afro · mariage-afro.be", 56, doc.page.height - 80);
+  doc.fillColor(GOLD).font("Helvetica-Oblique").fontSize(11).text("Mariage Afro · mariage-afro.com", 56, doc.page.height - 80);
   doc.end();
 }
 

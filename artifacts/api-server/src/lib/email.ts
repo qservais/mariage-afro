@@ -14,7 +14,7 @@ export function appUrl(): string {
   if (explicit) return explicit.replace(/\/$/, "");
   const dom = process.env.REPLIT_DEPLOYMENT_DOMAIN || process.env.REPLIT_DEV_DOMAIN;
   if (dom) return `https://${dom}`;
-  return "https://mariage-afro.be";
+  return "https://mariage-afro.com";
 }
 
 interface SendArgs {
