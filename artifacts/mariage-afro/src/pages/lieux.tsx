@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, FormEvent, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -30,6 +30,7 @@ interface Venue {
 
 interface VenueApi extends Venue {
   id: number;
+  slug?: string | null;
   /** Cover photo (first of gallery, resolved URL) */
   image?: string;
   /** Normalized gallery: coverImage merged with images[], deduped, all resolved */
@@ -318,6 +319,7 @@ export default function Lieux() {
         );
         return {
           id: v.id as number,
+          slug: (v.slug as string | null) ?? null,
           name: v.name as string,
           city: v.city as string,
           capacity: v.capacity as string,
@@ -424,7 +426,7 @@ export default function Lieux() {
                 category: "Lieu",
                 latitude: v.latitude ?? null,
                 longitude: v.longitude ?? null,
-                href: "#",
+                href: v.slug ? `/lieux/${v.slug}` : "#",
                 image: v.image,
               }))}
               height={640}
@@ -516,7 +518,16 @@ export default function Lieux() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                      {hasGallery && (
+                      {venue.slug && (
+                        <Link
+                          to={`/lieux/${venue.slug}`}
+                          className="btn-editorial-compact sm:flex-none flex items-center gap-2"
+                          data-testid={`btn-detail-${venue.id}`}
+                        >
+                          {t("venues.cta_gallery", { defaultValue: "Voir la galerie" })}
+                        </Link>
+                      )}
+                      {!venue.slug && hasGallery && (
                         <button
                           type="button"
                           onClick={() => openLightbox(venue, 0)}

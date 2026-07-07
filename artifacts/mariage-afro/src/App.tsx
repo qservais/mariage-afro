@@ -22,6 +22,7 @@ const Plateforme = lazy(() => import("@/pages/plateforme"));
 const Partenaires = lazy(() => import("@/pages/prestations"));
 const PartenaireDetail = lazy(() => import("@/pages/prestataires-detail"));
 const Lieux = lazy(() => import("@/pages/lieux"));
+const LieuDetail = lazy(() => import("@/pages/lieux-detail"));
 const Comparateur = lazy(() => import("@/pages/comparateur"));
 const Shop = lazy(() => import("@/pages/shop"));
 const Realisations = lazy(() => import("@/pages/realisations"));
@@ -306,6 +307,7 @@ function AppRoutes() {
           <Route path="/prestations" element={<Navigate to="/partenaires" replace />} />
           <Route path="/comparateur" element={<Comparateur />} />
           <Route path="/lieux" element={<Lieux />} />
+          <Route path="/lieux/:slug" element={<LieuDetail />} />
           <Route path="/realisations" element={<Realisations />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/a-propos" element={<About />} />

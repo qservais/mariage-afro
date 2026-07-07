@@ -505,6 +505,16 @@ router.post("/marketplace/vendors/:id/add-to-project", async (req: Request, res:
 
 // ---------- Marketplace : venues ----------
 
+function generateVenueSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
 router.get("/marketplace/venues", async (req: Request, res: Response) => {
   const conds = buildVenueFilters(req);
   const venues = await db
@@ -513,6 +523,34 @@ router.get("/marketplace/venues", async (req: Request, res: Response) => {
     .where(and(...conds))
     .orderBy(asc(marketplaceVenuesTable.name));
   res.json(venues);
+});
+
+router.get("/marketplace/venues/:id", async (req: Request, res: Response) => {
+  const idParam = String(req.params.id);
+  const numId = Number(idParam);
+  let venue: typeof marketplaceVenuesTable.$inferSelect | undefined;
+
+  if (!isNaN(numId) && Number.isFinite(numId)) {
+    [venue] = await db
+      .select()
+      .from(marketplaceVenuesTable)
+      .where(and(eq(marketplaceVenuesTable.id, numId), eq(marketplaceVenuesTable.active, true)));
+    if (!venue) {
+      [venue] = await db
+        .select()
+        .from(marketplaceVenuesTable)
+        .where(and(eq(marketplaceVenuesTable.slug, idParam), eq(marketplaceVenuesTable.active, true)));
+    }
+  } else {
+    [venue] = await db
+      .select()
+      .from(marketplaceVenuesTable)
+      .where(and(eq(marketplaceVenuesTable.slug, idParam), eq(marketplaceVenuesTable.active, true)));
+  }
+
+  if (!venue) { res.status(404).json({ error: "Not found" }); return; }
+  res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+  res.json(venue);
 });
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;

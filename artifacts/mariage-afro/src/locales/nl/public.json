@@ -334,7 +334,21 @@
     "event_birthday": "Verjaardag",
     "event_other": "Andere",
     "seo_title": "Ontvangstlocaties",
-    "seo_description": "Een selectie van uitzonderlijke locaties voor Afro- en gemengde huwelijken: kastelen, landelijke domeinen en premium feestzalen, in Europa en daarbuiten."
+    "seo_description": "Een selectie van uitzonderlijke locaties voor Afro- en gemengde huwelijken: kastelen, landelijke domeinen en premium feestzalen, in Europa en daarbuiten.",
+    "cta_gallery": "Galerij bekijken",
+    "detail_back": "← Terug naar locaties",
+    "detail_not_found": "Locatie niet gevonden",
+    "detail_not_found_desc": "Deze locatie bestaat niet of is verwijderd.",
+    "detail_capacity": "Capaciteit",
+    "detail_style": "Stijl",
+    "detail_options": "Inbegrepen opties",
+    "detail_gallery_btn": "Fotogalerij",
+    "detail_map_title": "Localisatie",
+    "detail_contact_title": "Neem contact op",
+    "detail_contact_desc": "Vertel ons over uw project en wij helpen u bij de boeking van deze locatie.",
+    "detail_contact_eyebrow": "Contactaanvraag",
+    "detail_form_title": "Uw project",
+    "detail_seo_suffix": "— Mariage Afro"
   },
   "shop": {
     "tagline": "Mariage Afro Boutique",

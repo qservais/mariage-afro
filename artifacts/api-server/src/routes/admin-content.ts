@@ -476,7 +476,17 @@ router.get("/content/venues", async (_req: Request, res: Response) => {
   res.type("html").send(contentLayout("Lieux", body, "", csrfToken, "/content/venues"));
 });
 
-function venueForm(v: Partial<{name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];coverImage:string|null;active:boolean}> = {}, error = "", csrfToken = ""): string {
+function generateVenueSlugAdmin(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean;latitude?:string|null;longitude?:string|null;coverImage?:string|null}> = {}, error = "", csrfToken = ""): string {
   const existingImages = v.images ?? [];
   const uploadedPathsJson = JSON.stringify(existingImages.filter(u => !u.startsWith("http")));
   const manualUrlsText = existingImages.filter(u => u.startsWith("http")).join("\n");
@@ -491,7 +501,10 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
 
       <div class="form-section">
         <div class="form-section-title">Informations</div>
-        <label>Nom *<input name="name" required value="${escHtml(v.name)}"></label>
+        <label>Nom *<input name="name" required value="${escHtml(v.name)}" oninput="if(!document.getElementById('venue-slug-manual').dataset.touched)document.getElementById('venue-slug-manual').value=this.value.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80);"></label>
+        <label>Slug URL <span style="font-size:11px;color:#888">(auto-généré · utilisé dans /lieux/<em>slug</em>)</span>
+          <input id="venue-slug-manual" name="slug" value="${escHtml(v.slug ?? "")}" placeholder="ex: domaine-des-palmes" data-touched="${v.slug ? "1" : ""}" oninput="this.dataset.touched='1'">
+        </label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
           <label>Ville *<input name="city" required value="${escHtml(v.city)}"></label>
           <label>Capacité (ex: 50–500)<input name="capacity" value="${escHtml(v.capacity)}"></label>
@@ -499,6 +512,10 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
         <label>Style (ex: Moderne, Château, Industriel)<input name="style" value="${escHtml(v.style)}"></label>
         <label>Description<textarea name="description">${escHtml(v.description)}</textarea></label>
         <label>Options (une par ligne)<textarea name="options">${(v.options ?? []).join("\n")}</textarea></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <label>Latitude<input name="latitude" value="${escHtml(v.latitude ?? "")}"></label>
+          <label>Longitude<input name="longitude" value="${escHtml(v.longitude ?? "")}"></label>
+        </div>
       </div>
 
       <div class="form-section">
@@ -706,13 +723,25 @@ router.post("/content/venues/new", async (req: Request, res: Response) => {
     res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom et ville sont requis.", csrfToken)}`, "", csrfToken, "/content/venues"));
     return;
   }
+  const rawSlug = (b.slug ?? "").trim() || generateVenueSlugAdmin(b.name);
+  const baseSlug = rawSlug.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+  let slug = baseSlug;
+  let suffix = 1;
+  while (true) {
+    const [existing] = await db.select({ id: marketplaceVenuesTable.id }).from(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.slug, slug));
+    if (!existing) break;
+    slug = `${baseSlug}-${++suffix}`;
+  }
   await db.insert(marketplaceVenuesTable).values({
     name: b.name, city: b.city, capacity: b.capacity ?? "", style: b.style ?? "",
     description: b.description ?? "",
+    slug,
     options: b.options ? b.options.split("\n").map(s=>s.trim()).filter(Boolean) : [],
     images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     coverImage: (b.coverImage && isSafeImagePath(b.coverImage)) ? b.coverImage : null,
     active: b.active === "1",
+    latitude: b.latitude?.trim() || null,
+    longitude: b.longitude?.trim() || null,
   });
   res.redirect("/admin/content/venues");
 });
@@ -727,13 +756,27 @@ router.get("/content/venues/:id/edit", async (req: Request, res: Response) => {
 router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const b = req.body as Record<string, string>;
+  const [existing] = await db.select({ slug: marketplaceVenuesTable.slug }).from(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.id, id));
+  const rawSlug = (b.slug ?? "").trim() || generateVenueSlugAdmin(b.name);
+  const baseSlug = rawSlug.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+  let slug = baseSlug;
+  let suffix = 1;
+  while (true) {
+    const [conflict] = await db.select({ id: marketplaceVenuesTable.id }).from(marketplaceVenuesTable)
+      .where(and(eq(marketplaceVenuesTable.slug, slug), sql`${marketplaceVenuesTable.id} != ${id}`));
+    if (!conflict) break;
+    slug = `${baseSlug}-${++suffix}`;
+  }
   await db.update(marketplaceVenuesTable).set({
     name: b.name, city: b.city, capacity: b.capacity ?? "", style: b.style ?? "",
     description: b.description ?? "",
+    slug: slug || existing?.slug || null,
     options: b.options ? b.options.split("\n").map(s=>s.trim()).filter(Boolean) : [],
     images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     coverImage: (b.coverImage && isSafeImagePath(b.coverImage)) ? b.coverImage : null,
     active: b.active === "1",
+    latitude: b.latitude?.trim() || null,
+    longitude: b.longitude?.trim() || null,
   }).where(eq(marketplaceVenuesTable.id, id));
   res.redirect("/admin/content/venues");
 });

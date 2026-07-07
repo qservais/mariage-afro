@@ -334,7 +334,21 @@
     "event_birthday": "Anniversaire",
     "event_other": "Autre",
     "seo_title": "Lieux de réception",
-    "seo_description": "Sélection de lieux d'exception pour mariages afro et mixtes : châteaux, domaines champêtres, salles de réception premium, en Europe et au-delà."
+    "seo_description": "Sélection de lieux d'exception pour mariages afro et mixtes : châteaux, domaines champêtres, salles de réception premium, en Europe et au-delà.",
+    "cta_gallery": "Voir la galerie",
+    "detail_back": "← Retour aux lieux",
+    "detail_not_found": "Lieu introuvable",
+    "detail_not_found_desc": "Ce lieu n'existe pas ou a été retiré.",
+    "detail_capacity": "Capacité",
+    "detail_style": "Style",
+    "detail_options": "Options incluses",
+    "detail_gallery_btn": "Galerie photos",
+    "detail_map_title": "Localisation",
+    "detail_contact_title": "Nous contacter",
+    "detail_contact_desc": "Décrivez votre projet et nous vous accompagnerons pour réserver ce lieu.",
+    "detail_contact_eyebrow": "Demande de contact",
+    "detail_form_title": "Votre projet",
+    "detail_seo_suffix": "— Mariage Afro"
   },
   "shop": {
     "tagline": "Boutique Mariage Afro",

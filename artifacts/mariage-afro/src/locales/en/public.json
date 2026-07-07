@@ -334,7 +334,21 @@
     "event_birthday": "Birthday",
     "event_other": "Other",
     "seo_title": "Reception venues",
-    "seo_description": "A selection of exceptional venues for Afro and mixed weddings: castles, countryside estates and premium reception halls, in Europe and beyond."
+    "seo_description": "A selection of exceptional venues for Afro and mixed weddings: castles, countryside estates and premium reception halls, in Europe and beyond.",
+    "cta_gallery": "View gallery",
+    "detail_back": "← Back to venues",
+    "detail_not_found": "Venue not found",
+    "detail_not_found_desc": "This venue does not exist or has been removed.",
+    "detail_capacity": "Capacity",
+    "detail_style": "Style",
+    "detail_options": "Included options",
+    "detail_gallery_btn": "Photo gallery",
+    "detail_map_title": "Location",
+    "detail_contact_title": "Contact us",
+    "detail_contact_desc": "Tell us about your project and we will help you book this venue.",
+    "detail_contact_eyebrow": "Contact request",
+    "detail_form_title": "Your project",
+    "detail_seo_suffix": "— Mariage Afro"
   },
   "shop": {
     "tagline": "Mariage Afro Shop",

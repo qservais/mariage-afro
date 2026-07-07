@@ -240,6 +240,7 @@ export const marketplaceVendorsTable = pgTable("marketplace_vendors", {
 
 export const marketplaceVenuesTable = pgTable("marketplace_venues", {
   id: serial("id").primaryKey(),
+  slug: text("slug").unique(),
   name: text("name").notNull(),
   city: text("city").notNull(),
   capacity: text("capacity").notNull().default(""),
