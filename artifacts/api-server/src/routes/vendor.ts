@@ -536,6 +536,16 @@ router.patch("/vendor/profile", async (req, res) => {
     return;
   }
 
+  // Enforce cover photo requirement — reject profile saves when vendor has no gallery photos
+  const vendorImages = (vendor.images as string[] | null) ?? [];
+  if (vendorImages.length === 0 && !vendor.coverImage) {
+    res.status(422).json({
+      error: "cover_required",
+      message: "Ajoutez au moins une photo de couverture dans la Galerie avant de sauvegarder votre profil.",
+    });
+    return;
+  }
+
   // Auto-translate description to FR/NL/EN when it has changed
   if (typeof data.description === "string" && data.description !== vendor.description) {
     const translations = await translateDescription(data.description, req.log ?? logger);

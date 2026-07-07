@@ -279,6 +279,16 @@ export default function VendorProfilePage() {
         className="bg-cream border border-neutral-200 p-6 space-y-5"
         onSubmit={(e) => {
           e.preventDefault();
+          const vendorImages: string[] = (vendor as unknown as { images?: string[] })?.images ?? [];
+          if (vendorImages.length === 0) {
+            toast({
+              title: t("vendor.profile.cover_required_error", {
+                defaultValue: "Ajoutez au moins une photo dans la Galerie avant de sauvegarder votre profil.",
+              }),
+              variant: "destructive",
+            });
+            return;
+          }
           save.mutate({
             name, category, region: zone || null, city, tagline, description,
             videoUrl: videoUrl || null,

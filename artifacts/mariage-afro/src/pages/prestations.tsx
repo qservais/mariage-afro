@@ -1050,20 +1050,6 @@ export default function Prestations() {
                     </div>
                   </div>
 
-                  {vendor.image && (
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <img
-                        src={vendor.image}
-                        alt={vendor.name}
-                        width={600}
-                        height={450}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                        style={{ aspectRatio: "4 / 3" }}
-                      />
-                    </div>
-                  )}
 
                   <div className="p-7 md:p-8 flex flex-col flex-grow relative z-20">
                     {vendor.tagline && !vendor.tagline.startsWith("Gamme:") && (
