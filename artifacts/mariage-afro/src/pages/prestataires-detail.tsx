@@ -247,6 +247,27 @@ export default function PrestataireDetail() {
     [vendor]
   );
 
+  type GalleryMedia =
+    | { kind: "photo"; src: string; photoIdx: number }
+    | { kind: "video"; url: string; embed: string | null };
+
+  const allMedia = useMemo<Array<GalleryMedia | null>>(() => {
+    const items: GalleryMedia[] = [];
+    (vendor?.images ?? []).slice(0, 6).forEach((src, photoIdx) => {
+      items.push({ kind: "photo", src, photoIdx });
+    });
+    if (vendor?.videoUrl) {
+      items.push({ kind: "video", url: vendor.videoUrl, embed: embedUrl });
+    }
+    (vendor?.videoUrls ?? []).forEach((url) => {
+      items.push({ kind: "video", url, embed: getYouTubeEmbed(url) });
+    });
+    const MIN_SLOTS = 3;
+    const filled: Array<GalleryMedia | null> = [...items];
+    while (filled.length < MIN_SLOTS) filled.push(null);
+    return filled;
+  }, [vendor, embedUrl]);
+
   const seoImage = useMemo(() => {
     const raw = vendor?.coverImage || vendor?.images?.[0];
     if (!raw) return undefined;
@@ -511,102 +532,66 @@ export default function PrestataireDetail() {
             </div>
           )}
 
-          {/* Gallery — click to open lightbox */}
-          {galleryImages.length > 0 && (
-            <div>
-              <h2 className="font-display uppercase text-2xl text-wine-deep mb-3">{t("vendor_detail.gallery", { defaultValue: "Galerie" })}</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {galleryImages.map((img, idx) => (
-                  <button
-                    key={img}
-                    type="button"
-                    onClick={() => setLightboxIdx(idx)}
-                    className="block w-full overflow-hidden rounded-sm focus:outline-none focus:ring-2 focus:ring-gold group"
-                    aria-label={`${vendor.name} — photo ${idx + 1}`}
-                  >
-                    <img
-                      src={objectUrl(img)}
-                      alt={`${vendor.name} ${idx + 1}`}
-                      className="w-full h-40 object-cover transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
+          {/* Unified media gallery — photos + videos, min 3 slots */}
+          <div>
+            <h2 className="font-display uppercase text-2xl text-wine-deep mb-3">{t("vendor_detail.gallery", { defaultValue: "Galerie" })}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {allMedia.map((item, i) => {
+                if (!item) {
+                  return (
+                    <div
+                      key={`ph-${i}`}
+                      className="h-40 bg-wine-deep/5 border border-dashed border-wine-deep/20"
+                      aria-hidden="true"
                     />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Video */}
-          {vendor.videoUrl && (
-            <div>
-              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-4 flex items-center gap-2">
-                <Play className="w-3.5 h-3.5" />
-                {t("vendor_detail.video", { defaultValue: "Vidéo de présentation" })}
-              </h3>
-              {vendor.videoUrl.startsWith("/objects/") || vendor.videoUrl.startsWith("http") && !embedUrl ? (
-                /* Uploaded video file — serve via storage proxy */
-                <video
-                  src={objectUrl(vendor.videoUrl)}
-                  controls
-                  className="w-full rounded-sm max-h-[480px]"
-                  preload="metadata"
-                />
-              ) : embedUrl ? (
-                <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                  <iframe
-                    src={embedUrl}
-                    title={t("vendor_detail.video_title", { name: vendor.name })}
-                    className="absolute inset-0 w-full h-full rounded-sm"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-              ) : (
-                <a
-                  href={vendor.videoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-wine-deep hover:text-gold text-sm underline"
-                >
-                  <Play className="w-4 h-4" />
-                  {vendor.videoUrl}
-                </a>
-              )}
-            </div>
-          )}
-
-          {/* Additional videos */}
-          {vendor.videoUrls && vendor.videoUrls.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold flex items-center gap-2">
-                <Play className="w-3.5 h-3.5" />
-                {t("vendor_detail.more_videos", { defaultValue: "Autres vidéos" })}
-              </h3>
-              {vendor.videoUrls.map((url, idx) => {
-                const embed = getYouTubeEmbed(url);
+                  );
+                }
+                if (item.kind === "photo") {
+                  return (
+                    <button
+                      key={item.src}
+                      type="button"
+                      onClick={() => setLightboxIdx(item.photoIdx)}
+                      className="block w-full overflow-hidden rounded-sm focus:outline-none focus:ring-2 focus:ring-gold group"
+                      aria-label={`${vendor.name} — photo ${item.photoIdx + 1}`}
+                    >
+                      <img
+                        src={objectUrl(item.src)}
+                        alt={`${vendor.name} ${item.photoIdx + 1}`}
+                        className="w-full h-40 object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </button>
+                  );
+                }
+                // video item
+                const ytId = item.embed ? item.embed.match(/\/embed\/([^?]+)/)?.[1] ?? null : null;
+                const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
+                const href = item.url.startsWith("/objects/")
+                  ? (objectUrl(item.url) ?? item.url)
+                  : ensureHttps(item.url);
                 return (
-                  <div key={idx}>
-                    {embed ? (
-                      <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                        <iframe
-                          src={embed}
-                          title={t("vendor_detail.video_title_n", { name: vendor.name, index: idx + 2 })}
-                          className="absolute inset-0 w-full h-full rounded-sm"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      </div>
+                  <a
+                    key={item.url + i}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative block h-40 overflow-hidden rounded-sm group"
+                    aria-label={t("vendor_detail.watch_video", { defaultValue: "Voir la vidéo" })}
+                  >
+                    {thumb ? (
+                      <img src={thumb} alt="" className="w-full h-full object-cover" aria-hidden="true" />
                     ) : (
-                      <a href={url} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-wine-deep hover:text-gold text-sm underline">
-                        <Play className="w-4 h-4" /> {url}
-                      </a>
+                      <div className="w-full h-full bg-wine-deep/80" />
                     )}
-                  </div>
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
+                      <Play className="w-10 h-10 text-white drop-shadow-lg" aria-hidden="true" />
+                    </span>
+                  </a>
                 );
               })}
             </div>
-          )}
+          </div>
 
           {/* Instagram section */}
           {vendor.instagram && (

@@ -148,14 +148,17 @@ export default function VendorGalleryPage() {
                   </button>
                   <button
                     type="button"
+                    disabled={images.length === 1}
+                    title={images.length === 1 ? t("vendor.gallery.cannot_remove_last", { defaultValue: "Impossible de supprimer la dernière photo de couverture" }) : undefined}
                     onClick={() => {
+                      if (images.length === 1) return;
                       const next = images.filter((_, i) => i !== idx);
                       const nextCover = cover === img ? (next[0] ?? null) : cover;
                       setImages(next);
                       setCover(nextCover);
                       save.mutate({ images: next, coverImage: nextCover });
                     }}
-                    className="bg-cream/90 hover:bg-cream p-2 text-wine-deep"
+                    className="bg-cream/90 hover:bg-cream p-2 text-wine-deep disabled:opacity-40 disabled:cursor-not-allowed"
                     aria-label={t("vendor.gallery.remove")}
                     data-testid={`button-remove-${idx}`}
                   >
