@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, FormEvent, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,7 +30,9 @@ interface Venue {
 
 interface VenueApi extends Venue {
   id: number;
+  /** Cover photo (first of gallery, resolved URL) */
   image?: string;
+  /** Normalized gallery: coverImage merged with images[], deduped, all resolved */
   images: string[];
   latitude?: string | null;
   longitude?: string | null;
@@ -50,6 +52,21 @@ function resolveVenueImageUrl(src: string | null | undefined): string | undefine
   return `${window.location.origin}${base}/${rel}`;
 }
 
+/** Merge coverImage + images[] into one deduplicated, resolved gallery array. */
+function buildGallery(
+  coverRaw: string | null | undefined,
+  imagesRaw: string[],
+): string[] {
+  const set = new Set<string>();
+  const coverResolved = resolveVenueImageUrl(coverRaw);
+  if (coverResolved) set.add(coverResolved);
+  for (const src of imagesRaw) {
+    const resolved = resolveVenueImageUrl(src);
+    if (resolved) set.add(resolved);
+  }
+  return Array.from(set);
+}
+
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1549224174-8c0e61705985?auto=format&fit=crop&w=1200&q=80";
 
@@ -66,6 +83,19 @@ function VenueLightbox({ state, onClose, onChange }: {
   const total = images.length;
   const current = images[idx] ?? venue.image ?? FALLBACK_IMG;
 
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const prevFocusRef = useRef<Element | null>(null);
+
+  // Focus management: focus close button on mount, restore on unmount
+  useEffect(() => {
+    prevFocusRef.current = document.activeElement;
+    closeButtonRef.current?.focus();
+    return () => {
+      (prevFocusRef.current as HTMLElement | null)?.focus?.();
+    };
+  }, []);
+
+  // Keyboard navigation
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") { onClose(); return; }
@@ -97,6 +127,7 @@ function VenueLightbox({ state, onClose, onChange }: {
           {venue.name} — {idx + 1}/{total}
         </span>
         <button
+          ref={closeButtonRef}
           type="button"
           onClick={onClose}
           aria-label="Fermer la galerie"
@@ -253,11 +284,11 @@ export default function Lieux() {
       if (!res.ok) return [];
       const rows = await res.json();
       return rows.map((v: Record<string, unknown>) => {
-        const rawImages = (v.images as string[]) ?? [];
-        const resolvedImages = rawImages
-          .map(resolveVenueImageUrl)
-          .filter((u): u is string => Boolean(u));
-        const coverSrc = resolveVenueImageUrl((v.coverImage as string | null) ?? rawImages[0]);
+        // Build a deduplicated gallery: coverImage first, then extra gallery images
+        const gallery = buildGallery(
+          v.coverImage as string | null,
+          (v.images as string[]) ?? [],
+        );
         return {
           id: v.id as number,
           name: v.name as string,
@@ -266,8 +297,8 @@ export default function Lieux() {
           style: v.style as string,
           desc: v.description as string,
           options: (v.options as string[]) ?? [],
-          image: coverSrc ?? (resolvedImages[0] ?? FALLBACK_IMG),
-          images: resolvedImages,
+          image: gallery[0] ?? FALLBACK_IMG,
+          images: gallery,
           latitude: (v.latitude as string | null) ?? null,
           longitude: (v.longitude as string | null) ?? null,
         } satisfies VenueApi;
@@ -279,13 +310,18 @@ export default function Lieux() {
 
   const venues: VenueApi[] = useMemo(() => {
     if (apiVenues.length > 0) return apiVenues;
-    return i18nVenues.map((v, i) => ({ ...v, id: i, images: v.image ? [v.image] : [] }));
+    return i18nVenues.map((v, i) => ({
+      ...v,
+      id: i,
+      images: v.image ? [v.image] : [],
+    }));
   }, [apiVenues, i18nVenues]);
 
   return (
     <>
     <div className="w-full">
       <SEO title={t("venues.seo_title")} description={t("venues.seo_description")} />
+
       {/* Hero éditorial — wine-deep style */}
       <section className="relative bg-wine-deep text-cream pt-40 pb-24 md:pt-48 md:pb-32 lg:pl-16 overflow-hidden">
         <div
@@ -368,118 +404,121 @@ export default function Lieux() {
             />
           ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
-            {venues.map((venue, i) => (
-              <motion.div
-                key={venue.id ?? i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.55, delay: (i % 2) * 0.1 }}
-                className="card-editorial overflow-hidden flex flex-col group"
-              >
-                {/* Image — clickable to open gallery if multiple images */}
-                <div
-                  className={`relative h-80 overflow-hidden flex-shrink-0 ${venue.images.length > 1 ? "cursor-pointer" : ""}`}
-                  onClick={venue.images.length > 1 ? () => openLightbox(venue, 0) : undefined}
-                  role={venue.images.length > 1 ? "button" : undefined}
-                  aria-label={venue.images.length > 1 ? `Voir la galerie de ${venue.name}` : undefined}
-                  tabIndex={venue.images.length > 1 ? 0 : undefined}
-                  onKeyDown={venue.images.length > 1 ? (e) => { if (e.key === "Enter" || e.key === " ") openLightbox(venue, 0); } : undefined}
+            {venues.map((venue, i) => {
+              const hasGallery = venue.images.length > 1;
+              return (
+                <motion.div
+                  key={venue.id ?? i}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.55, delay: (i % 2) * 0.1 }}
+                  className="card-editorial overflow-hidden flex flex-col group"
                 >
-                  <Picture
-                    src={venue.image || ""}
-                    alt={venue.name}
-                    width={1200}
-                    height={900}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/85 via-wine-deep/20 to-transparent" />
+                  {/* Cover image — clickable to open gallery when multiple photos */}
+                  <div
+                    className={`relative h-80 overflow-hidden flex-shrink-0 ${hasGallery ? "cursor-pointer" : ""}`}
+                    onClick={hasGallery ? () => openLightbox(venue, 0) : undefined}
+                    role={hasGallery ? "button" : undefined}
+                    aria-label={hasGallery ? `Voir la galerie de ${venue.name}` : undefined}
+                    tabIndex={hasGallery ? 0 : undefined}
+                    onKeyDown={hasGallery ? (e) => { if (e.key === "Enter" || e.key === " ") openLightbox(venue, 0); } : undefined}
+                  >
+                    <Picture
+                      src={venue.image || ""}
+                      alt={venue.name}
+                      width={1200}
+                      height={900}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-wine-deep/85 via-wine-deep/20 to-transparent" />
 
-                  {/* Gallery badge */}
-                  {venue.images.length > 1 && (
-                    <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/50 text-cream text-[10px] uppercase tracking-[0.2em] px-2.5 py-1.5 backdrop-blur-sm pointer-events-none">
-                      <Images className="w-3 h-3" aria-hidden="true" />
-                      {venue.images.length}
-                    </div>
-                  )}
+                    {/* Photo count badge */}
+                    {hasGallery && (
+                      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/50 text-cream text-[10px] uppercase tracking-[0.2em] px-2.5 py-1.5 backdrop-blur-sm pointer-events-none">
+                        <Images className="w-3 h-3" aria-hidden="true" />
+                        {venue.images.length}
+                      </div>
+                    )}
 
-                  <div className="absolute bottom-6 left-6 right-6 text-cream">
-                    <span className="badge-editorial-dark mb-3">
-                      <MapPin className="w-3 h-3" />
-                      {venue.city}
-                    </span>
-                    <h3 className="font-display uppercase text-3xl md:text-4xl tracking-tight leading-[0.95] mt-3">
-                      {venue.name}
-                    </h3>
-                  </div>
-                </div>
-
-                {/* Body */}
-                <div className="p-8 md:p-10 flex flex-col flex-grow">
-                  <div className="flex flex-wrap gap-x-10 gap-y-4 mb-7 pb-7 border-b border-wine-deep/10">
-                    <div>
-                      <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-1.5">
-                        <Users className="w-3 h-3" /> {t("venues.capacity_label")}
+                    <div className="absolute bottom-6 left-6 right-6 text-cream">
+                      <span className="badge-editorial-dark mb-3">
+                        <MapPin className="w-3 h-3" />
+                        {venue.city}
                       </span>
-                      <span className="text-wine-deep font-display text-lg">{venue.capacity}</span>
+                      <h3 className="font-display uppercase text-3xl md:text-4xl tracking-tight leading-[0.95] mt-3">
+                        {venue.name}
+                      </h3>
                     </div>
-                    <div>
-                      <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-1.5">
-                        <Sparkles className="w-3 h-3" /> {t("venues.style_label")}
+                  </div>
+
+                  {/* Body */}
+                  <div className="p-8 md:p-10 flex flex-col flex-grow">
+                    <div className="flex flex-wrap gap-x-10 gap-y-4 mb-7 pb-7 border-b border-wine-deep/10">
+                      <div>
+                        <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-1.5">
+                          <Users className="w-3 h-3" /> {t("venues.capacity_label")}
+                        </span>
+                        <span className="text-wine-deep font-display text-lg">{venue.capacity}</span>
+                      </div>
+                      <div>
+                        <span className="flex items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-1.5">
+                          <Sparkles className="w-3 h-3" /> {t("venues.style_label")}
+                        </span>
+                        <span className="text-wine-deep font-display text-lg">{venue.style}</span>
+                      </div>
+                    </div>
+
+                    <p className="text-wine-deep/70 text-sm leading-relaxed mb-7 font-light italic">
+                      {venue.desc}
+                    </p>
+
+                    <div className="mb-8">
+                      <span className="block text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
+                        {t("venues.options_label")}
                       </span>
-                      <span className="text-wine-deep font-display text-lg">{venue.style}</span>
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                        {venue.options.map((opt, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm text-wine-deep/85 font-light">
+                            <span className="block w-3 h-px bg-gold flex-shrink-0 mt-2.5" />
+                            <span>{opt}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
 
-                  <p className="text-wine-deep/70 text-sm leading-relaxed mb-7 font-light italic">
-                    {venue.desc}
-                  </p>
-
-                  <div className="mb-8">
-                    <span className="block text-xs uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
-                      {t("venues.options_label")}
-                    </span>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                      {venue.options.map((opt, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-wine-deep/85 font-light">
-                          <span className="block w-3 h-px bg-gold flex-shrink-0 mt-2.5" />
-                          <span>{opt}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                    {venue.images.length > 1 && (
+                    <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+                      {hasGallery && (
+                        <button
+                          type="button"
+                          onClick={() => openLightbox(venue, 0)}
+                          className="btn-editorial-compact sm:flex-none flex items-center gap-2"
+                          data-testid={`btn-gallery-${venue.id}`}
+                        >
+                          <Images className="w-3.5 h-3.5" aria-hidden="true" />
+                          {t("venues.cta_gallery", { defaultValue: "Voir la galerie" })}
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={() => openLightbox(venue, 0)}
-                        className="btn-editorial-compact sm:flex-none flex items-center gap-2"
-                        data-testid={`btn-gallery-${venue.id}`}
+                        onClick={() => openModal(venue.name, "visit")}
+                        className="btn-editorial-compact flex-1"
                       >
-                        <Images className="w-3.5 h-3.5" aria-hidden="true" />
-                        {t("venues.cta_gallery", { defaultValue: "Voir la galerie" })}
+                        {t("venues.cta_visit")}
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => openModal(venue.name, "visit")}
-                      className="btn-editorial-compact flex-1"
-                    >
-                      {t("venues.cta_visit")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openModal(venue.name, "quote")}
-                      className="btn-editorial-compact-solid flex-1"
-                    >
-                      {t("venues.cta_quote")}
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => openModal(venue.name, "quote")}
+                        className="btn-editorial-compact-solid flex-1"
+                      >
+                        {t("venues.cta_quote")}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
             {venues.length === 0 && (
               <div className="col-span-full text-center py-16 text-wine-deep/60">
                 {t("venues.empty_filtered")}
@@ -533,7 +572,6 @@ export default function Lieux() {
             className="space-y-6"
             data-testid="form-venues"
           >
-            {/* Prénom + Nom */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="venues-firstname" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
@@ -565,7 +603,6 @@ export default function Lieux() {
               </div>
             </div>
 
-            {/* Email */}
             <div>
               <label htmlFor="venues-email" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
                 {t("venues.form_email")} *
@@ -581,7 +618,6 @@ export default function Lieux() {
               />
             </div>
 
-            {/* Date + Invités */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="venues-date" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
@@ -613,7 +649,6 @@ export default function Lieux() {
               </div>
             </div>
 
-            {/* Type d'événement */}
             <div>
               <label htmlFor="venues-event-type" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
                 {t("venues.form_event_type")}
@@ -634,7 +669,6 @@ export default function Lieux() {
               </select>
             </div>
 
-            {/* Message */}
             <div>
               <label htmlFor="venues-message" className="block text-[10px] uppercase tracking-[0.3em] font-medium text-gold mb-3">
                 {t("venues.form_message")}
