@@ -73,6 +73,9 @@ const FALLBACK_IMG =
 // ---------------------------------------------------------------------------
 // Lightbox component
 // ---------------------------------------------------------------------------
+const FOCUSABLE_SELECTORS =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 function VenueLightbox({ state, onClose, onChange }: {
   state: LightboxState;
   onClose: () => void;
@@ -83,6 +86,7 @@ function VenueLightbox({ state, onClose, onChange }: {
   const total = images.length;
   const current = images[idx] ?? venue.image ?? FALLBACK_IMG;
 
+  const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const prevFocusRef = useRef<Element | null>(null);
 
@@ -95,7 +99,29 @@ function VenueLightbox({ state, onClose, onChange }: {
     };
   }, []);
 
-  // Keyboard navigation
+  // Focus trap: keep Tab/Shift+Tab cycling within the dialog
+  useEffect(() => {
+    const el = dialogRef.current;
+    if (!el) return;
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const focusable = Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS)).filter(
+        (node) => !node.hasAttribute("disabled") && node.offsetParent !== null
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    el.addEventListener("keydown", trap);
+    return () => el.removeEventListener("keydown", trap);
+  }, []);
+
+  // Keyboard navigation (Escape + arrows)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") { onClose(); return; }
@@ -112,6 +138,7 @@ function VenueLightbox({ state, onClose, onChange }: {
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-label={`Galerie photos — ${venue.name}`}
@@ -422,7 +449,7 @@ export default function Lieux() {
                     role={hasGallery ? "button" : undefined}
                     aria-label={hasGallery ? `Voir la galerie de ${venue.name}` : undefined}
                     tabIndex={hasGallery ? 0 : undefined}
-                    onKeyDown={hasGallery ? (e) => { if (e.key === "Enter" || e.key === " ") openLightbox(venue, 0); } : undefined}
+                    onKeyDown={hasGallery ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(venue, 0); } } : undefined}
                   >
                     <Picture
                       src={venue.image || ""}
