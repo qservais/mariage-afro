@@ -325,7 +325,7 @@ export default function Lieux() {
           capacity: v.capacity as string,
           style: v.style as string,
           desc: v.description as string,
-          options: (v.options as string[]) ?? [],
+          options: Array.isArray(v.options) ? (v.options as string[]) : [],
           image: gallery[0] ?? FALLBACK_IMG,
           images: gallery,
           latitude: (v.latitude as string | null) ?? null,
