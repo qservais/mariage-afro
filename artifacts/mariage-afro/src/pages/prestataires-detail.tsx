@@ -85,6 +85,12 @@ function extractInstagramHandle(url: string): string {
   }
 }
 
+function ensureHttps(url: string): string {
+  if (!url) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `https://${url}`;
+}
+
 function getYouTubeEmbed(url: string): string | null {
   try {
     const u = new URL(url);
@@ -187,14 +193,14 @@ export default function PrestataireDetail() {
   const prevLightbox = useCallback(() => {
     setLightboxIdx((i) => {
       if (i === null) return null;
-      const len = (vendor?.images && vendor.images.length > 1 ? vendor.images.slice(0, 6) : []).length;
+      const len = (vendor?.images && vendor.images.length > 0 ? vendor.images.slice(0, 6) : []).length;
       return len ? (i - 1 + len) % len : null;
     });
   }, [vendor?.images]);
   const nextLightbox = useCallback(() => {
     setLightboxIdx((i) => {
       if (i === null) return null;
-      const len = (vendor?.images && vendor.images.length > 1 ? vendor.images.slice(0, 6) : []).length;
+      const len = (vendor?.images && vendor.images.length > 0 ? vendor.images.slice(0, 6) : []).length;
       return len ? (i + 1) % len : null;
     });
   }, [vendor?.images]);
@@ -237,7 +243,7 @@ export default function PrestataireDetail() {
   }, [vendor]);
 
   const galleryImages = useMemo(
-    () => (vendor?.images && vendor.images.length > 1 ? vendor.images.slice(0, 6) : []),
+    () => (vendor?.images && vendor.images.length > 0 ? vendor.images.slice(0, 6) : []),
     [vendor]
   );
 
@@ -621,7 +627,7 @@ export default function PrestataireDetail() {
                     </p>
                   </div>
                   <a
-                    href={vendor.instagram}
+                    href={ensureHttps(vendor.instagram)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shrink-0 px-5 py-2.5 bg-wine-deep text-cream text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-gold hover:text-wine-deep transition-colors"
@@ -662,25 +668,14 @@ export default function PrestataireDetail() {
         <aside className="space-y-6 md:sticky md:top-24 md:self-start">
           <VendorActionPanel vendor={{ id: vendor.id, name: vendor.name, category: vendor.category, services: vendor.services }} />
 
-          <div className="bg-white p-6 border border-wine-deep/10 rounded-sm space-y-3">
-            {vendor.website && (
-              <a
-                href={vendor.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-wine-deep hover:text-gold text-sm break-all"
-              >
-                <Globe className="w-4 h-4 shrink-0" />
-                {vendor.website}
-              </a>
-            )}
+          <div className="bg-cream border border-wine-deep/10 p-5 space-y-3">
             {vendor.phone && (
               <a
-                href={`tel:${vendor.phone}`}
-                className="flex items-center gap-2 text-wine-deep hover:text-gold text-sm"
+                href={`tel:${vendor.phone.replace(/\s/g, "")}`}
+                className="flex items-center gap-2.5 px-4 py-2.5 border border-wine-deep/15 text-wine-deep hover:bg-wine-deep hover:text-cream transition-colors text-sm font-medium group"
               >
-                <Phone className="w-4 h-4 shrink-0" />
-                {vendor.phone}
+                <Phone className="w-4 h-4 shrink-0" aria-hidden="true" />
+                <span>{vendor.phone}</span>
               </a>
             )}
             {whatsappHref && (
@@ -688,61 +683,99 @@ export default function PrestataireDetail() {
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-[#25D366] hover:text-green-700 text-sm font-medium"
+                className="flex items-center gap-2.5 px-4 py-2.5 bg-[#25D366] text-white hover:bg-[#1ebe5a] transition-colors text-sm font-medium"
               >
-                <MessageCircle className="w-4 h-4 shrink-0" />
+                <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
                 WhatsApp
               </a>
             )}
             {vendor.email && (
               <a
                 href={`mailto:${vendor.email}`}
-                className="flex items-center gap-2 text-wine-deep hover:text-gold text-sm break-all"
+                className="flex items-center gap-2.5 text-wine-deep/70 hover:text-wine-deep text-sm transition-colors break-all"
               >
-                <Mail className="w-4 h-4 shrink-0" />
+                <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
                 {vendor.email}
               </a>
             )}
+            {vendor.website && (
+              <a
+                href={ensureHttps(vendor.website)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 text-wine-deep/70 hover:text-wine-deep text-sm transition-colors break-all"
+              >
+                <Globe className="w-4 h-4 shrink-0" aria-hidden="true" />
+                {vendor.website.replace(/^https?:\/\//, "")}
+              </a>
+            )}
+
             {/* Social media links */}
             {(vendor.instagram || vendor.facebook || vendor.tiktok || vendor.youtube || vendor.pinterest) && (
               <div className="pt-3 border-t border-wine-deep/10">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-3">
                   {t("vendor_detail.social_media")}
                 </p>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2">
                   {vendor.instagram && (
-                    <a href={vendor.instagram} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
-                      title="Instagram">
-                      <span className="text-base">📸</span> Instagram
+                    <a
+                      href={ensureHttps(vendor.instagram)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Instagram"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-85"
+                      style={{ background: "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)" }}
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                      Instagram
                     </a>
                   )}
                   {vendor.facebook && (
-                    <a href={vendor.facebook} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
-                      title="Facebook">
-                      <span className="text-base">👤</span> Facebook
+                    <a
+                      href={ensureHttps(vendor.facebook)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Facebook"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1877F2] text-white text-xs font-semibold hover:opacity-85 transition-opacity"
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                      Facebook
                     </a>
                   )}
                   {vendor.tiktok && (
-                    <a href={vendor.tiktok} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
-                      title="TikTok">
-                      <span className="text-base">🎵</span> TikTok
+                    <a
+                      href={ensureHttps(vendor.tiktok)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="TikTok"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#010101] text-white text-xs font-semibold hover:opacity-80 transition-opacity"
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.23 8.23 0 004.83 1.56V6.79a4.84 4.84 0 01-1.06-.1z"/></svg>
+                      TikTok
                     </a>
                   )}
                   {vendor.youtube && (
-                    <a href={vendor.youtube} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
-                      title="YouTube">
-                      <span className="text-base">▶️</span> YouTube
+                    <a
+                      href={ensureHttps(vendor.youtube)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="YouTube"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FF0000] text-white text-xs font-semibold hover:opacity-85 transition-opacity"
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                      YouTube
                     </a>
                   )}
                   {vendor.pinterest && (
-                    <a href={vendor.pinterest} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-wine-deep hover:text-gold text-xs font-medium transition-colors"
-                      title="Pinterest">
-                      <span className="text-base">📌</span> Pinterest
+                    <a
+                      href={ensureHttps(vendor.pinterest)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Pinterest"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#E60023] text-white text-xs font-semibold hover:opacity-85 transition-opacity"
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+                      Pinterest
                     </a>
                   )}
                 </div>

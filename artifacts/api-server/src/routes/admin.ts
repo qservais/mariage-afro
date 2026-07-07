@@ -398,7 +398,7 @@ router.get("/", adminAuth, async (req, res) => {
     db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(isNotNull(couplesTable.onboardedAt)),
     db.select({ count: sql<number>`count(*)::int` }).from(marketplaceVendorsTable).where(eq(marketplaceVendorsTable.active, true)),
     db.select({ count: sql<number>`count(*)::int` }).from(couplesTable).where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected"))),
-    db.select({ count: sql<number>`count(*)::int` }).from(vendorAccountsTable).where(eq(vendorAccountsTable.status, "pending")),
+    db.select({ count: sql<number>`count(*)::int` }).from(vendorAccountsTable).where(and(eq(vendorAccountsTable.status, "pending"), isNotNull(vendorAccountsTable.onboardedAt))),
     db.select({ count: sql<number>`count(*)::int` }).from(vendorLeadsTable),
     db.select({ count: sql<number>`count(*)::int` }).from(vendorLeadsTable).where(gte(vendorLeadsTable.createdAt, thirtyDaysAgo)),
     db.select({ count: sql<number>`count(*)::int` }).from(leadsTable).where(gte(leadsTable.createdAt, thirtyDaysAgo)),

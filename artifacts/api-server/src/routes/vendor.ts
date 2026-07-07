@@ -447,7 +447,7 @@ const profileSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   category: z.string().min(1).max(80).optional(),
   region: z.string().max(80).optional().nullable(),
-  city: z.string().min(1).max(80).optional(),
+  city: z.string().min(1).max(500).optional(),
   tagline: z.string().max(200).optional(),
   description: z.string().max(4000).optional(),
   videoUrl: z.string().max(2000).optional().nullable(),

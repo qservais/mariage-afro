@@ -60,6 +60,31 @@ function parseVideoEmbed(url: string): { embedUrl: string | null; type: "youtube
   return { embedUrl: null, type: null };
 }
 
+const PHONE_PREFIXES = [
+  { label: "+32 (BE)", value: "+32" },
+  { label: "+33 (FR)", value: "+33" },
+  { label: "+31 (NL)", value: "+31" },
+  { label: "+44 (UK)", value: "+44" },
+  { label: "+352 (LU)", value: "+352" },
+  { label: "+49 (DE)", value: "+49" },
+  { label: "+34 (ES)", value: "+34" },
+  { label: "+39 (IT)", value: "+39" },
+  { label: "+351 (PT)", value: "+351" },
+  { label: "+1 (US/CA)", value: "+1" },
+  { label: "+237 (CM)", value: "+237" },
+  { label: "+225 (CI)", value: "+225" },
+  { label: "+221 (SN)", value: "+221" },
+];
+
+function parsePhoneField(raw: string): { prefix: string; number: string } {
+  const sorted = [...PHONE_PREFIXES].sort((a, b) => b.value.length - a.value.length);
+  for (const p of sorted) {
+    if (raw.startsWith(p.value + " ")) return { prefix: p.value, number: raw.slice(p.value.length + 1) };
+    if (raw.startsWith(p.value)) return { prefix: p.value, number: raw.slice(p.value.length) };
+  }
+  return { prefix: "+32", number: raw };
+}
+
 const REGION_VALUES = [
   "Belgique",
   "France",
@@ -127,7 +152,8 @@ export default function VendorProfilePage() {
   const [videoUrl, setVideoUrl] = useState("");
   const [indicativePrice, setIndicativePrice] = useState("");
   const [website, setWebsite] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phonePrefix, setPhonePrefix] = useState("+32");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [instagram, setInstagram] = useState("");
   const [facebook, setFacebook] = useState("");
   const [tiktok, setTiktok] = useState("");
@@ -156,7 +182,9 @@ export default function VendorProfilePage() {
     setVideoUrl(vendor.videoUrl || "");
     setIndicativePrice(vendor.indicativePrice || "");
     setWebsite(vendor.website || "");
-    setPhone(vendor.phone || "");
+    const parsed = parsePhoneField(vendor.phone || "");
+    setPhonePrefix(parsed.prefix);
+    setPhoneNumber(parsed.number);
     setInstagram(vendor.instagram || "");
     setFacebook(vendor.facebook || "");
     setTiktok(vendor.tiktok || "");
@@ -256,7 +284,7 @@ export default function VendorProfilePage() {
             videoUrl: videoUrl || null,
             indicativePrice: indicativePrice || null,
             website: website || null,
-            phone: phone || null,
+            phone: phoneNumber.trim() ? `${phonePrefix} ${phoneNumber.trim()}` : null,
             email: email || undefined,
             logoUrl: logoUrl || null,
             instagram: instagram || null,
@@ -447,7 +475,26 @@ export default function VendorProfilePage() {
           </div>
           <div>
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.phone")}</label>
-            <Input value={phone} onChange={(e) => setPhone(e.target.value)} data-testid="input-profile-phone" />
+            <div className="flex gap-0">
+              <select
+                value={phonePrefix}
+                onChange={(e) => setPhonePrefix(e.target.value)}
+                className="border border-input bg-background px-2 py-2 text-sm shrink-0 border-r-0"
+                data-testid="select-phone-prefix"
+                style={{ minWidth: "7.5rem" }}
+              >
+                {PHONE_PREFIXES.map((p) => (
+                  <option key={p.value} value={p.value}>{p.label}</option>
+                ))}
+              </select>
+              <Input
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="475 12 34 56"
+                className="flex-1 rounded-none"
+                data-testid="input-profile-phone"
+              />
+            </div>
           </div>
           <div className="sm:col-span-2">
             <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("vendor.profile.website")}</label>

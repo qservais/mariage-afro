@@ -809,7 +809,15 @@ export default function Prestations() {
       if (res.ok) {
         toast({ title: `${vendor.name} ajouté à votre projet !` });
       } else {
-        toast({ title: "Erreur lors de l'ajout", variant: "destructive" });
+        const body = await res.json().catch(() => ({})) as { error?: string; message?: string };
+        if (res.status === 422 && body?.error === "vendor_no_account") {
+          toast({
+            title: body.message ?? "Ce prestataire n'a pas encore de compte Mariage Afro — invitez-le à s'inscrire.",
+            variant: "destructive",
+          });
+        } else {
+          toast({ title: "Erreur lors de l'ajout", variant: "destructive" });
+        }
       }
     } catch {
       toast({ title: "Erreur réseau", variant: "destructive" });

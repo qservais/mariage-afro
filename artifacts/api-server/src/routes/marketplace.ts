@@ -469,6 +469,20 @@ router.post("/marketplace/vendors/:id/add-to-project", async (req: Request, res:
     .where(and(eq(marketplaceVendorsTable.id, vendorId), eq(marketplaceVendorsTable.active, true)));
   if (!vendor) { res.status(404).json({ error: "Vendor not found" }); return; }
 
+  const [vendorAccount] = await db
+    .select({ id: vendorAccountsTable.id })
+    .from(vendorAccountsTable)
+    .where(eq(vendorAccountsTable.vendorId, vendorId))
+    .limit(1);
+
+  if (!vendorAccount) {
+    res.status(422).json({
+      error: "vendor_no_account",
+      message: "Ce prestataire n'a pas encore de compte Mariage Afro — invitez-le à s'inscrire.",
+    });
+    return;
+  }
+
   const [couple] = await db
     .select()
     .from(couplesTable)

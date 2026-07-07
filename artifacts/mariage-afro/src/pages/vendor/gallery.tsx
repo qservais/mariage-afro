@@ -59,6 +59,12 @@ export default function VendorGalleryPage() {
       </div>
 
       <div className="bg-cream border border-neutral-200 p-6 space-y-5">
+        {images.length === 0 && (
+          <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-xs px-4 py-3">
+            <span className="shrink-0 mt-0.5">⚠️</span>
+            <span>{t("vendor.gallery.no_cover_warning", { defaultValue: "Votre profil est moins visible sans photo de couverture. Ajoutez au moins une photo." })}</span>
+          </div>
+        )}
         <div>
           <label
             data-testid="button-upload-gallery"
