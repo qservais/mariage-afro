@@ -136,7 +136,10 @@ export default function VendorGalleryPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      const nextCover = isCover ? null : img;
+                      // Cover is required — when unsetting, move to another image, never null
+                      const nextCover = isCover
+                        ? images.find((i) => i !== img) ?? img
+                        : img;
                       setCover(nextCover);
                       save.mutate({ images, coverImage: nextCover });
                     }}

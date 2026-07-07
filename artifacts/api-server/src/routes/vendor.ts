@@ -561,7 +561,7 @@ router.patch("/vendor/profile", async (req, res) => {
 
 // ---------- Gallery ----------
 const imagesSchema = z.object({
-  images: z.array(z.string().min(1)).max(10),
+  images: z.array(z.string().min(1)).min(1).max(10),
   coverImage: z.string().optional().nullable(),
 });
 
@@ -608,6 +608,8 @@ router.patch("/vendor/profile/images", async (req, res) => {
   if (cover && !normalizedImages.includes(cover) && !cover.startsWith("http")) {
     cover = normalizedImages[0] ?? null;
   }
+  // Cover photo is required — always default to first image if unset
+  if (!cover) cover = normalizedImages[0];
 
   const [updated] = await db
     .update(marketplaceVendorsTable)
