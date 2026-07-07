@@ -476,11 +476,12 @@ router.get("/content/venues", async (_req: Request, res: Response) => {
   res.type("html").send(contentLayout("Lieux", body, "", csrfToken, "/content/venues"));
 });
 
-function venueForm(v: Partial<{name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean}> = {}, error = "", csrfToken = ""): string {
+function venueForm(v: Partial<{name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];coverImage:string|null;active:boolean}> = {}, error = "", csrfToken = ""): string {
   const existingImages = v.images ?? [];
   const uploadedPathsJson = JSON.stringify(existingImages.filter(u => !u.startsWith("http")));
   const manualUrlsText = existingImages.filter(u => u.startsWith("http")).join("\n");
   const allImagesValue = existingImages.join("\n");
+  const coverImageJson = JSON.stringify(v.coverImage ?? null);
 
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
@@ -502,6 +503,7 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
 
       <div class="form-section">
         <div class="form-section-title">Photos</div>
+        <p style="font-size:12px;color:#888;margin-bottom:10px">La photo de couverture s'affiche en premier sur la page publique. Réordonnez avec les flèches ↑ ↓.</p>
         <label for="venue-photo-input" class="upload-zone" id="venue-upload-zone" style="display:block">
           <div style="font-size:28px">🏛️</div>
           <p>Cliquez pour ajouter des photos, ou glissez-déposez ici</p>
@@ -515,6 +517,7 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
           <textarea id="venue-images-manual" style="min-height:55px;font-size:12px" placeholder="https://example.com/photo.jpg" onchange="venueSyncManual()">${escHtml(manualUrlsText)}</textarea>
         </label>
         <input type="hidden" name="images" id="venue-images-hidden" value="${escHtml(allImagesValue)}">
+        <input type="hidden" name="coverImage" id="venue-cover-hidden" value="${escHtml(v.coverImage ?? "")}">
       </div>
 
       <div class="form-section">
@@ -531,10 +534,20 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
     </form>
     </div>
 
+    <style>
+    .venue-thumb-wrap { display:flex; flex-direction:column; align-items:center; gap:4px; position:relative; }
+    .venue-thumb-actions { display:flex; gap:3px; flex-wrap:wrap; justify-content:center; }
+    .venue-thumb-actions button { font-size:11px; padding:2px 6px; border:1px solid #ccc; background:#fff; cursor:pointer; border-radius:3px; white-space:nowrap; }
+    .venue-thumb-actions button:hover { background:#f0f0f0; }
+    .venue-thumb-actions button.cover-active { background:#b8860b; color:#fff; border-color:#b8860b; }
+    .venue-cover-badge { position:absolute; top:4px; left:4px; background:#b8860b; color:#fff; font-size:10px; padding:1px 5px; border-radius:2px; pointer-events:none; }
+    </style>
+
     <script>
     (function() {
       var uploadedPaths = ${uploadedPathsJson};
       var manualUrls = ${JSON.stringify(manualUrlsText ? manualUrlsText.split("\n").filter(Boolean) : [])};
+      var coverImagePath = ${coverImageJson};
 
       function safeImgUrl(path) {
         if (path.startsWith("/objects/")) return window.location.origin + "/api/storage" + path;
@@ -543,6 +556,7 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
       }
       function syncHidden() {
         document.getElementById("venue-images-hidden").value = uploadedPaths.concat(manualUrls).join("\\n");
+        document.getElementById("venue-cover-hidden").value = coverImagePath || "";
       }
       window.venueSyncManual = function() {
         var raw = document.getElementById("venue-images-manual").value;
@@ -555,17 +569,88 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
         uploadedPaths.forEach(function(path, i) {
           var url = safeImgUrl(path);
           if (!url) return;
-          var thumb = document.createElement("div");
-          thumb.className = "photo-thumb";
+          var isCover = (coverImagePath === path);
+
+          var wrap = document.createElement("div");
+          wrap.className = "venue-thumb-wrap";
+          wrap.style.cssText = "display:inline-flex;flex-direction:column;align-items:center;gap:4px;margin:4px;";
+
+          var thumbBox = document.createElement("div");
+          thumbBox.className = "photo-thumb";
+          thumbBox.style.position = "relative";
+          thumbBox.style.margin = "0";
+
           var img = document.createElement("img");
           img.src = url;
           img.onerror = function(){ img.style.display = "none"; };
-          var btn = document.createElement("button");
-          btn.type = "button"; btn.className = "remove-btn"; btn.textContent = "×";
+
+          if (isCover) {
+            var badge = document.createElement("span");
+            badge.className = "venue-cover-badge";
+            badge.textContent = "⭐ Couverture";
+            thumbBox.appendChild(badge);
+          }
+
+          var removeBtn = document.createElement("button");
+          removeBtn.type = "button"; removeBtn.className = "remove-btn"; removeBtn.textContent = "×";
           (function(idx){
-            btn.addEventListener("click", function(){ uploadedPaths.splice(idx, 1); renderPreviews(); syncHidden(); });
+            removeBtn.addEventListener("click", function(){
+              if (coverImagePath === uploadedPaths[idx]) coverImagePath = null;
+              uploadedPaths.splice(idx, 1);
+              renderPreviews(); syncHidden();
+            });
           })(i);
-          thumb.appendChild(img); thumb.appendChild(btn); c.appendChild(thumb);
+
+          thumbBox.appendChild(img); thumbBox.appendChild(removeBtn);
+
+          var actions = document.createElement("div");
+          actions.className = "venue-thumb-actions";
+
+          var coverBtn = document.createElement("button");
+          coverBtn.type = "button";
+          coverBtn.textContent = isCover ? "⭐ Couverture" : "⭐ Définir couverture";
+          if (isCover) coverBtn.className = "cover-active";
+          (function(idx){
+            coverBtn.addEventListener("click", function(){
+              coverImagePath = uploadedPaths[idx];
+              renderPreviews(); syncHidden();
+            });
+          })(i);
+          actions.appendChild(coverBtn);
+
+          if (i > 0) {
+            var upBtn = document.createElement("button");
+            upBtn.type = "button"; upBtn.textContent = "↑";
+            upBtn.title = "Déplacer vers le haut";
+            (function(idx){
+              upBtn.addEventListener("click", function(){
+                var tmp = uploadedPaths[idx - 1];
+                uploadedPaths[idx - 1] = uploadedPaths[idx];
+                uploadedPaths[idx] = tmp;
+                renderPreviews(); syncHidden();
+              });
+            })(i);
+            actions.appendChild(upBtn);
+          }
+
+          if (i < uploadedPaths.length - 1) {
+            var downBtn = document.createElement("button");
+            downBtn.type = "button"; downBtn.textContent = "↓";
+            downBtn.title = "Déplacer vers le bas";
+            (function(idx){
+              downBtn.addEventListener("click", function(){
+                var tmp = uploadedPaths[idx + 1];
+                uploadedPaths[idx + 1] = uploadedPaths[idx];
+                uploadedPaths[idx] = tmp;
+                renderPreviews(); syncHidden();
+              });
+            })(i);
+            actions.appendChild(downBtn);
+          }
+
+          wrap.appendChild(thumbBox);
+          wrap.appendChild(actions);
+          c.appendChild(wrap);
         });
       }
       function uploadFile(file) {
@@ -578,6 +663,7 @@ function venueForm(v: Partial<{name:string;city:string;capacity:string;style:str
           if (xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
             uploadedPaths.push(data.objectPath);
+            if (!coverImagePath) coverImagePath = data.objectPath;
             renderPreviews();
             syncHidden();
             status.textContent = "Photo ajoutée.";
@@ -625,6 +711,7 @@ router.post("/content/venues/new", async (req: Request, res: Response) => {
     description: b.description ?? "",
     options: b.options ? b.options.split("\n").map(s=>s.trim()).filter(Boolean) : [],
     images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
+    coverImage: (b.coverImage && isSafeImagePath(b.coverImage)) ? b.coverImage : null,
     active: b.active === "1",
   });
   res.redirect("/admin/content/venues");
@@ -634,7 +721,7 @@ router.get("/content/venues/:id/edit", async (req: Request, res: Response) => {
   const [v] = await db.select().from(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.id, Number(req.params.id)));
   if (!v) { res.status(404).type("html").send(contentLayout("Introuvable","<p>Introuvable</p>")); return; }
   const csrfToken = generateCsrfToken(req, res);
-  res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier "${escHtml(v.name)}"</h1>${venueForm(v, "", csrfToken)}`, "", csrfToken, "/content/venues"));
+  res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier "${escHtml(v.name)}"</h1>${venueForm({ ...v, coverImage: v.coverImage ?? null }, "", csrfToken)}`, "", csrfToken, "/content/venues"));
 });
 
 router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
@@ -645,6 +732,7 @@ router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
     description: b.description ?? "",
     options: b.options ? b.options.split("\n").map(s=>s.trim()).filter(Boolean) : [],
     images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
+    coverImage: (b.coverImage && isSafeImagePath(b.coverImage)) ? b.coverImage : null,
     active: b.active === "1",
   }).where(eq(marketplaceVenuesTable.id, id));
   res.redirect("/admin/content/venues");
