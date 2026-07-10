@@ -57,6 +57,13 @@
       "when": 1747584000000,
       "tag": "0011_venue_visit_slots_photo_album",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1783810800000,
+      "tag": "0012_venue_slug",
+      "breakpoints": true
     }
   ]
 }
