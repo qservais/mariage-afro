@@ -492,7 +492,7 @@ export default function LieuDetail() {
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {(venue.culturalStyles ?? []).map((s, i) => (
-                      <span key={i} className="badge-editorial">{s}</span>
+                      <span key={i} className="badge-editorial">{t(`marketplace.cultural.${s}`, { defaultValue: s.replace(/_/g, " ") })}</span>
                     ))}
                   </div>
                 </div>

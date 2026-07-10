@@ -232,7 +232,9 @@ export default function Comparateur() {
               <RowLabel label={t("comparateur.row_cultural")} />
               {vendors.map((v) => (
                 <Cell key={v.id}>
-                  {v.culturalStyles?.length > 0 ? v.culturalStyles.join(", ") : "—"}
+                  {v.culturalStyles?.length > 0
+                    ? v.culturalStyles.map((s) => t(`marketplace.cultural.${s}`, { defaultValue: s.replace(/_/g, " ") })).join(", ")
+                    : "—"}
                 </Cell>
               ))}
 

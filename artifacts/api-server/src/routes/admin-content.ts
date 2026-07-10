@@ -130,14 +130,18 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
   const isAutre = v.category ? !stdCats.includes(v.category) || v.category === "Autre" : false;
   const selectVal = isAutre && v.category !== "Autre" ? "Autre" : (v.category ?? "Photographie");
   const autreVal = isAutre && v.category !== "Autre" ? (v.category ?? "") : "";
-  const imagesJson = JSON.stringify(v.images ?? []).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
+  const imagesArr: string[] = Array.isArray(v.images)
+    ? v.images
+    : typeof v.images === "string"
+      ? (v.images as string).split("\n").map(s => s.trim()).filter(Boolean)
+      : [];
+  const imagesJson = JSON.stringify(imagesArr).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
     <form method="post" id="vendor-form">
       ${csrfInp(csrfToken)}
-      <input type="hidden" name="images" id="images-hidden" value="${escHtml((v.images ?? []).join("\n"))}">
-      ${csrfToken ? `<input type="hidden" name="_csrf" value="${escHtml(csrfToken)}">` : ""}
+      <input type="hidden" name="images" id="images-hidden" value="${escHtml(imagesArr.join("\n"))}">
 
       <div class="form-section">
         <div class="form-section-title">Informations générales</div>
@@ -155,7 +159,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
         </div>
         <label>Tagline (résumé court)<input name="tagline" value="${escHtml(v.tagline)}"></label>
         <label>Description<textarea name="description" style="min-height:100px">${escHtml(v.description)}</textarea></label>
-        <label>Services (un par ligne)<textarea name="services" style="min-height:80px">${(v.services ?? []).map((s: unknown) => (typeof s === "string" ? s : (s as { name: string }).name)).join("\n")}</textarea></label>
+        <label>Services (un par ligne)<textarea name="services" style="min-height:80px">${(Array.isArray(v.services) ? v.services : typeof v.services === "string" ? (v.services as unknown as string).split("\n").map(s => s.trim()).filter(Boolean) : []).map((s: unknown) => (typeof s === "string" ? s : (s as { name: string }).name)).join("\n")}</textarea></label>
       </div>
 
       <div class="form-section">
@@ -169,7 +173,7 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
         <div class="photo-previews" id="photo-previews"></div>
         <div id="upload-status" role="status" aria-live="assertive" aria-atomic="true" class="upload-progress"></div>
         <p style="font-size:11px;color:#aaa;margin-top:4px">Vous pouvez aussi coller des URLs directement :</p>
-        <label style="font-size:12px">URLs manuelles (une par ligne)<textarea id="images-manual" style="min-height:60px;font-size:12px" placeholder="https://example.com/photo.jpg" onchange="syncManualUrls()">${(v.images ?? []).filter(u => u.startsWith("http")).join("\n")}</textarea></label>
+        <label style="font-size:12px">URLs manuelles (une par ligne)<textarea id="images-manual" style="min-height:60px;font-size:12px" placeholder="https://example.com/photo.jpg" onchange="syncManualUrls()">${imagesArr.filter(u => u.startsWith("http")).join("\n")}</textarea></label>
       </div>
 
       <div class="form-section">
@@ -403,6 +407,11 @@ router.post("/content/vendors/new", async (req: Request, res: Response) => {
     res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm(b, "Nom, ville et catégorie sont requis.", csrfToken)}`, "", csrfToken, "/content/vendors"));
     return;
   }
+  if (parsed.images.length === 0) {
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm(b, "Ajoutez au moins une photo de couverture avant d'enregistrer.", csrfToken)}`, "", csrfToken, "/content/vendors"));
+    return;
+  }
   await db.insert(marketplaceVendorsTable).values(parsed);
   res.redirect("/admin/content/vendors?saved=1");
 });
@@ -418,6 +427,11 @@ router.post("/content/vendors/:id/edit", async (req: Request, res: Response) => 
   const id = Number(req.params.id);
   const b = req.body as Record<string, string>;
   const parsed = parseVendorBody(b);
+  if (parsed.images.length === 0) {
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Modifier partenaire", `<h1>Modifier</h1>${vendorForm(b, "Ajoutez au moins une photo de couverture avant d'enregistrer.", csrfToken)}`, "", csrfToken, "/content/vendors"));
+    return;
+  }
   await db.update(marketplaceVendorsTable).set(parsed).where(eq(marketplaceVendorsTable.id, id));
   res.redirect("/admin/content/vendors?saved=1");
 });
@@ -487,7 +501,11 @@ function generateVenueSlugAdmin(name: string): string {
 }
 
 function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean;latitude?:string|null;longitude?:string|null;coverImage?:string|null}> = {}, error = "", csrfToken = ""): string {
-  const existingImages = v.images ?? [];
+  const existingImages: string[] = Array.isArray(v.images)
+    ? v.images
+    : typeof v.images === "string"
+      ? (v.images as string).split("\n").map(s => s.trim()).filter(Boolean)
+      : [];
   const uploadedPathsJson = JSON.stringify(existingImages.filter(u => !u.startsWith("http")));
   const manualUrlsText = existingImages.filter(u => u.startsWith("http")).join("\n");
   const allImagesValue = existingImages.join("\n");
@@ -511,7 +529,7 @@ function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:str
         </div>
         <label>Style (ex: Moderne, Château, Industriel)<input name="style" value="${escHtml(v.style)}"></label>
         <label>Description<textarea name="description">${escHtml(v.description)}</textarea></label>
-        <label>Options (une par ligne)<textarea name="options">${(v.options ?? []).join("\n")}</textarea></label>
+        <label>Options (une par ligne)<textarea name="options">${(Array.isArray(v.options) ? v.options : typeof v.options === "string" ? (v.options as string).split("\n").map(s => s.trim()).filter(Boolean) : []).join("\n")}</textarea></label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
           <label>Latitude<input name="latitude" value="${escHtml(v.latitude ?? "")}"></label>
           <label>Longitude<input name="longitude" value="${escHtml(v.longitude ?? "")}"></label>

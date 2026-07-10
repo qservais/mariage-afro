@@ -14,3 +14,4 @@
 - [E2E testing quirks](e2e-testing-quirks.md) — stale Clerk auth helper, unreliable in-test `[DB]` steps, and a validation gate to know about before writing runTest() plans.
 - [SEO audit tooling on CSR SPAs](seo-audit-csr-spa.md) — squirrel needs `NODE_TLS_REJECT_UNAUTHORIZED=0`; most `--http` findings on a CSR app are false positives from not executing JS.
 - [Build-time DB scripts in Vite artifacts](vite-artifact-buildtime-scripts.md) — use raw `pg` + `DATABASE_URL`, not `@workspace/db`, since leaf artifacts have no TS loader for scripts.
+- [Dev DB ≠ production during QA](prod-vs-dev-data-drift.md) — sandbox DATABASE_URL/localhost are always dev; cross-check every data/behavior claim against production directly before drafting stats.

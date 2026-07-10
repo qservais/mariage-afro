@@ -91,6 +91,29 @@ function ensureHttps(url: string): string {
   return `https://${url}`;
 }
 
+const SOCIAL_PROFILE_BASES: Record<string, string> = {
+  instagram: "https://instagram.com/",
+  facebook: "https://facebook.com/",
+  tiktok: "https://tiktok.com/@",
+  youtube: "https://youtube.com/@",
+  pinterest: "https://pinterest.com/",
+};
+
+/**
+ * Builds a safe, working profile URL from a stored social field value that may be
+ * a full URL, a bare domain, or a raw handle (with or without a leading "@").
+ * Prevents broken links like "https://@handle" when a user pastes a handle
+ * instead of a full profile URL.
+ */
+function socialProfileUrl(raw: string, platform: keyof typeof SOCIAL_PROFILE_BASES): string {
+  if (!raw) return raw;
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+  if (trimmed.includes(".") && !trimmed.startsWith("@")) return `https://${trimmed}`;
+  const handle = trimmed.replace(/^@+/, "");
+  return `${SOCIAL_PROFILE_BASES[platform]}${handle}`;
+}
+
 function getYouTubeEmbed(url: string): string | null {
   try {
     const u = new URL(url);
@@ -612,7 +635,7 @@ export default function PrestataireDetail() {
                     </p>
                   </div>
                   <a
-                    href={ensureHttps(vendor.instagram)}
+                    href={socialProfileUrl(vendor.instagram, "instagram")}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shrink-0 px-5 py-2.5 bg-wine-deep text-cream text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-gold hover:text-wine-deep transition-colors"
@@ -704,7 +727,7 @@ export default function PrestataireDetail() {
                 <div className="flex flex-wrap gap-2">
                   {vendor.instagram && (
                     <a
-                      href={ensureHttps(vendor.instagram)}
+                      href={socialProfileUrl(vendor.instagram, "instagram")}
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Instagram"
@@ -717,7 +740,7 @@ export default function PrestataireDetail() {
                   )}
                   {vendor.facebook && (
                     <a
-                      href={ensureHttps(vendor.facebook)}
+                      href={socialProfileUrl(vendor.facebook, "facebook")}
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Facebook"
@@ -729,7 +752,7 @@ export default function PrestataireDetail() {
                   )}
                   {vendor.tiktok && (
                     <a
-                      href={ensureHttps(vendor.tiktok)}
+                      href={socialProfileUrl(vendor.tiktok, "tiktok")}
                       target="_blank"
                       rel="noopener noreferrer"
                       title="TikTok"
@@ -741,7 +764,7 @@ export default function PrestataireDetail() {
                   )}
                   {vendor.youtube && (
                     <a
-                      href={ensureHttps(vendor.youtube)}
+                      href={socialProfileUrl(vendor.youtube, "youtube")}
                       target="_blank"
                       rel="noopener noreferrer"
                       title="YouTube"
@@ -753,7 +776,7 @@ export default function PrestataireDetail() {
                   )}
                   {vendor.pinterest && (
                     <a
-                      href={ensureHttps(vendor.pinterest)}
+                      href={socialProfileUrl(vendor.pinterest, "pinterest")}
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Pinterest"
@@ -778,7 +801,7 @@ export default function PrestataireDetail() {
                   <div className="flex flex-wrap gap-1.5">
                     {vendor.culturalStyles.map((s) => (
                       <span key={s} className="px-2 py-0.5 bg-wine-deep/5 text-xs">
-                        {s}
+                        {t(`marketplace.cultural.${s}`, { defaultValue: s.replace(/_/g, " ") })}
                       </span>
                     ))}
                   </div>

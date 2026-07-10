@@ -796,6 +796,10 @@ export default function Prestations() {
 
   async function handleAddToProject(vendor: DisplayVendor) {
     if (!isSignedIn) {
+      toast({
+        title: "Connectez-vous pour ajouter ce prestataire",
+        description: "Créez un compte ou connectez-vous à votre espace client pour l'ajouter à votre projet de mariage.",
+      });
       navigate("/espace-client/login");
       return;
     }
@@ -815,6 +819,19 @@ export default function Prestations() {
             title: body.message ?? "Ce prestataire n'a pas encore de compte Mariage Afro — invitez-le à s'inscrire.",
             variant: "destructive",
           });
+        } else if (res.status === 404) {
+          toast({
+            title: "Complétez votre profil de couple avant d'ajouter un prestataire",
+            description: "Terminez votre inscription dans votre espace client pour créer votre projet de mariage.",
+            variant: "destructive",
+          });
+        } else if (res.status === 401) {
+          toast({
+            title: "Votre session a expiré",
+            description: "Reconnectez-vous pour ajouter ce prestataire à votre projet.",
+            variant: "destructive",
+          });
+          navigate("/espace-client/login");
         } else {
           toast({ title: "Erreur lors de l'ajout", variant: "destructive" });
         }

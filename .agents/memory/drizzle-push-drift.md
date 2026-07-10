@@ -34,3 +34,13 @@ no-ops should clear the pre-existing unique-index-vs-constraint drift (vendor_qu
 marketplace_vendors were the known ones) so post-merge.sh (`set -e`, stdin closed) reliably
 applies the schema on merge. Always confirm the actual DB state with `information_schema` /
 `pg_constraint`, never trust the push-force exit code alone (it's masked by pipes and no-ops).
+
+**Same trap hits the Publish flow's prod schema diff, not just dev push-force.** Found
+`marketplace_venues.slug` (a `.unique()` text column) present in dev schema/DB but silently
+missing in production — the live `/api/marketplace/venues` endpoint 500'd for every real user
+because `db.select()` selects all schema columns including the missing one. A prior publish's
+automatic schema diff must have hit the same unique-constraint prompt and no-op'd for that one
+column while other columns in the same table went through. **Always verify production schema
+directly** (`information_schema.columns` via `executeSql({environment:"production"})`) for any
+column with a `.unique()`/constraint modifier before assuming a publish actually applied it —
+do not trust "it was in a past deploy" as proof it's live.

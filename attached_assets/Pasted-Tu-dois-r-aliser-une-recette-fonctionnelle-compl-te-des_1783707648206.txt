@@ -1,0 +1,914 @@
+Tu dois réaliser une recette fonctionnelle complète des modifications déjà développées sur le site Mariage Afro.
+
+Site public à tester :
+https://www.mariage-afro.com/
+
+Page particulièrement concernée :
+https://www.mariage-afro.com/lieux
+
+IMPORTANT : les fonctionnalités sont supposées avoir déjà été développées.
+
+Ta mission n’est donc pas de répondre que le code semble présent ou que les tâches sont terminées.
+
+Tu dois :
+
+1. Tester réellement chaque fonctionnalité dans le navigateur.
+2. Tester le site déployé sur www.mariage-afro.com, pas uniquement le preview Replit ou localhost.
+3. Comparer le résultat constaté aux critères d’acceptation ci-dessous.
+4. Corriger uniquement les éléments qui échouent.
+5. Redéployer si une correction est nécessaire.
+6. Retester le site public après déploiement.
+7. Fournir des preuves concrètes pour chaque point.
+
+Il est interdit de marquer une fonctionnalité comme validée uniquement parce que :
+
+- un composant existe dans le code ;
+- un champ existe dans la base de données ;
+- une route existe ;
+- une fonction a été créée ;
+- le build passe ;
+- le serveur ne renvoie pas d’erreur au démarrage ;
+- la fonctionnalité fonctionne uniquement sur localhost ;
+- la fonctionnalité a été testée sans rafraîchir la page ;
+- la fonctionnalité a été testée avec des données déjà présentes sans essayer les cas d’erreur.
+
+==================================================
+1. RÈGLES DE VALIDATION
+==================================================
+
+Pour chaque fonctionnalité, utilise obligatoirement l’un des statuts suivants :
+
+- PASS : testé réellement et entièrement fonctionnel.
+- FAIL : le comportement ne correspond pas à la demande.
+- PARTIEL : une partie fonctionne, mais pas l’ensemble du parcours.
+- BLOQUÉ : impossible à tester à cause d’un accès, d’un secret, d’un compte ou d’une donnée manquante.
+- NON TESTÉ : aucun test réel effectué.
+
+Ne jamais utiliser PASS en l’absence de preuve.
+
+Pour chaque test, fournir :
+
+- l’URL exacte testée ;
+- l’environnement testé : production ou preview ;
+- le rôle utilisé : visiteur, couple, prestataire ou administrateur ;
+- les étapes réalisées ;
+- le résultat attendu ;
+- le résultat réellement observé ;
+- le statut ;
+- une capture d’écran ;
+- les erreurs de console éventuelles ;
+- les requêtes réseau en erreur éventuelles ;
+- les corrections apportées, si nécessaire ;
+- le résultat du second test effectué après correction.
+
+Une capture du code ne constitue pas une preuve fonctionnelle.
+
+Les preuves doivent montrer le site réellement rendu dans le navigateur.
+
+==================================================
+2. VÉRIFIER LE BON DÉPLOIEMENT
+==================================================
+
+Avant de tester les fonctionnalités :
+
+- identifier la version actuellement déployée en production ;
+- vérifier que les dernières modifications du projet Replit sont bien incluses dans le déploiement ;
+- comparer la version de production avec la branche ou le commit actuel ;
+- vérifier qu’un ancien build ou un cache ne masque pas les modifications ;
+- vérifier les variables d’environnement nécessaires ;
+- vérifier que la base de données utilisée par le site public est bien celle attendue ;
+- noter la date et l’heure du dernier déploiement ;
+- noter l’identifiant du commit ou du build testé.
+
+Tester directement :
+
+https://www.mariage-afro.com/
+
+et non une URL interne de type :
+
+- localhost ;
+- 127.0.0.1 ;
+- replit.dev ;
+- URL de preview temporaire.
+
+Si le preview fonctionne mais que le site public ne fonctionne pas, le résultat est FAIL.
+
+==================================================
+3. COMPTES ET DONNÉES DE TEST
+==================================================
+
+Les parcours doivent être vérifiés avec les rôles suivants :
+
+- visiteur non connecté ;
+- compte couple connecté ;
+- compte prestataire connecté ;
+- compte administrateur.
+
+Utiliser des comptes de test existants ou créer des comptes clairement identifiés comme comptes de test.
+
+Ne pas modifier ou supprimer des données réelles du client.
+
+Si un accès est manquant :
+
+- ne pas inventer le résultat ;
+- ne pas marquer le point comme PASS ;
+- utiliser le statut BLOQUÉ ;
+- indiquer exactement quel accès ou quelle information est nécessaire.
+
+Après chaque modification de données :
+
+- rafraîchir la page ;
+- fermer puis rouvrir la page ;
+- se déconnecter puis se reconnecter ;
+- vérifier que les données sont toujours présentes ;
+- vérifier directement la valeur enregistrée en base de données lorsque cela est pertinent.
+
+==================================================
+4. GALERIE DES LIEUX
+==================================================
+
+Demande à vérifier :
+
+Les lieux doivent disposer d’une galerie permettant de mieux illustrer chaque lieu.
+
+Effectuer les tests suivants.
+
+TEST 4.1 — Présence d’une photo de couverture
+
+1. Ouvrir :
+   https://www.mariage-afro.com/lieux
+2. Identifier un lieu comportant plusieurs médias.
+3. Vérifier que la carte affichée dans la liste utilise une photo de couverture.
+4. Vérifier qu’une seule image principale est affichée sur la carte.
+5. Vérifier qu’aucune mosaïque désordonnée de plusieurs images n’apparaît dans la liste.
+6. Vérifier que l’image n’est ni cassée, ni étirée, ni déformée.
+
+Résultat attendu :
+
+- chaque lieu possède une couverture identifiable ;
+- une seule couverture est utilisée dans la liste ;
+- la carte reste lisible ;
+- la couverture conserve son ratio ;
+- aucun pictogramme d’image cassée ne s’affiche.
+
+TEST 4.2 — Ouverture de la fiche du lieu
+
+1. Cliquer sur la carte du lieu.
+2. Vérifier que la fiche détaillée s’ouvre.
+3. Vérifier que la galerie du lieu est visible sur la fiche.
+4. Vérifier que les différents médias peuvent être consultés.
+5. Vérifier les éventuels boutons précédent, suivant, miniatures ou lightbox.
+6. Vérifier que le premier média n’est pas le seul réellement accessible.
+
+Résultat attendu :
+
+- la fiche du lieu affiche une vraie galerie ;
+- plusieurs médias sont accessibles ;
+- les images s’ouvrent correctement ;
+- la navigation entre les médias fonctionne ;
+- aucun média ne renvoie une URL invalide ;
+- aucune erreur JavaScript n’est présente.
+
+TEST 4.3 — Gestion de la galerie dans l’administration
+
+Depuis le formulaire de création ou de modification d’un lieu :
+
+1. Ajouter plusieurs photos.
+2. Enregistrer.
+3. Rafraîchir la page d’administration.
+4. Retourner sur la page publique.
+5. Vérifier que les médias enregistrés sont visibles.
+6. Supprimer un média.
+7. Enregistrer à nouveau.
+8. Vérifier que la suppression est également appliquée publiquement.
+9. Vérifier que la photo de couverture reste correctement définie.
+
+La simple présence d’un champ d’upload ne suffit pas.
+
+Le fichier doit être réellement envoyé, enregistré, puis affiché publiquement.
+
+==================================================
+5. COMPTE FANTÔME DANS LE DASHBOARD ADMIN
+==================================================
+
+Problème initial :
+
+Le dashboard administrateur indiquait un compte à valider alors que la liste ne contenait aucun compte en attente.
+
+Le compteur ne doit jamais être corrigé par une valeur codée en dur.
+
+Il doit être calculé à partir des mêmes données et des mêmes critères que la liste des comptes à valider.
+
+TEST 5.1 — Cohérence actuelle
+
+1. Se connecter comme administrateur.
+2. Relever le nombre affiché dans :
+   - le dashboard ;
+   - le badge du menu « Validation » ;
+   - la page listant les comptes à valider.
+3. Comparer ces trois valeurs.
+4. Ouvrir la liste complète des comptes en attente.
+
+Résultat attendu :
+
+- si la liste contient zéro compte, tous les compteurs affichent zéro ou sont masqués ;
+- si la liste contient un compte, le compteur affiche un et le compte est réellement visible ;
+- aucun compte supprimé, archivé, déjà validé ou refusé ne doit être comptabilisé.
+
+TEST 5.2 — Vérification de la requête
+
+Vérifier dans la base de données :
+
+- les statuts utilisés ;
+- les éventuelles valeurs nulles ;
+- les comptes soft-deleted ;
+- les comptes prestataires ;
+- les comptes couples ;
+- les comptes archivés ;
+- les invitations incomplètes ;
+- les anciens statuts de migration.
+
+Comparer la requête utilisée par le compteur avec la requête utilisée par la liste.
+
+Résultat attendu :
+
+Le compteur et la liste utilisent le même périmètre fonctionnel.
+
+TEST 5.3 — Test avec une vraie donnée
+
+1. Créer un compte de test nécessitant une validation.
+2. Vérifier que le compteur augmente immédiatement ou après un rafraîchissement normal.
+3. Vérifier que le compte apparaît dans la liste.
+4. Valider ou refuser ce compte.
+5. Rafraîchir le dashboard.
+6. Vérifier que le compteur diminue.
+7. Se déconnecter et se reconnecter.
+8. Vérifier que la valeur reste correcte.
+
+Tester également l’absence de problème de cache.
+
+Résultat attendu :
+
+Le compteur suit réellement les données et ne conserve aucun compte fantôme.
+
+==================================================
+6. AJOUT D’UN PARTENAIRE À UN PROJET
+==================================================
+
+Problème initial :
+
+Lorsqu’un visiteur essayait d’ajouter un partenaire à un projet, un message générique du type « Erreur lors de l’ajout » apparaissait.
+
+Le message doit expliquer clairement qu’un compte est nécessaire.
+
+TEST 6.1 — Visiteur non connecté
+
+1. Ouvrir une fiche partenaire dans une fenêtre privée.
+2. Vérifier qu’aucune session n’est active.
+3. Cliquer sur « Ajouter à mon projet ».
+
+Résultat attendu :
+
+- aucune erreur technique générique ne doit s’afficher ;
+- aucun message « Erreur lors de l’ajout » ne doit apparaître seul ;
+- aucun code 401, 403 ou 500 ne doit être exposé au visiteur ;
+- le message doit expliquer qu’il faut créer un compte ou se connecter avant d’ajouter le partenaire à un projet ;
+- une action claire doit être proposée vers l’inscription et/ou la connexion.
+
+Message acceptable :
+
+« Vous devez d’abord créer un compte ou vous connecter pour ajouter ce partenaire à votre projet. »
+
+Le texte peut varier légèrement, mais le sens doit être explicite.
+
+TEST 6.2 — Couple connecté avec un projet
+
+1. Se connecter avec un compte couple disposant d’un projet.
+2. Ouvrir une fiche partenaire.
+3. Cliquer sur « Ajouter à mon projet ».
+4. Vérifier le message de confirmation.
+5. Ouvrir le projet du couple.
+6. Vérifier que le partenaire y apparaît.
+7. Rafraîchir la page.
+8. Se déconnecter puis se reconnecter.
+9. Vérifier que le partenaire est toujours présent.
+
+Résultat attendu :
+
+- ajout effectué sans erreur ;
+- partenaire réellement associé au projet en base ;
+- persistance après actualisation et reconnexion ;
+- pas de doublon si le bouton est cliqué deux fois.
+
+TEST 6.3 — Couple connecté sans projet
+
+Si ce cas est possible dans l’application :
+
+1. Se connecter avec un compte couple sans projet.
+2. Cliquer sur « Ajouter à mon projet ».
+
+Résultat attendu :
+
+- aucun message technique générique ;
+- le site explique qu’un projet doit être créé ou sélectionné ;
+- une action permet de poursuivre le parcours.
+
+TEST 6.4 — Contrôle réseau
+
+Pour chaque cas, vérifier dans l’onglet Network :
+
+- le code HTTP ;
+- la réponse de l’API ;
+- l’absence d’erreur 500 ;
+- l’absence de réponse HTML technique dans un toast utilisateur ;
+- l’absence de duplication de requêtes.
+
+==================================================
+7. PHOTO DE COUVERTURE OBLIGATOIRE
+==================================================
+
+La photo de couverture doit être obligatoire lors de la création ou de la publication d’un partenaire.
+
+TEST 7.1 — Enregistrement sans couverture
+
+1. Ouvrir le formulaire de création d’un partenaire.
+2. Compléter les autres champs obligatoires.
+3. Ne pas ajouter de photo de couverture.
+4. Essayer d’enregistrer ou de publier.
+
+Résultat attendu :
+
+- l’enregistrement ou la publication est refusé ;
+- un message clair apparaît près du champ ;
+- le message est compréhensible en français ;
+- aucune fiche incomplète n’est publiée ;
+- la validation existe aussi côté serveur.
+
+La validation ne doit pas être uniquement en JavaScript.
+
+Tester, si possible, la requête sans la validation frontend afin de vérifier que le serveur refuse également l’absence de couverture.
+
+TEST 7.2 — Enregistrement avec couverture
+
+1. Ajouter une image valide.
+2. Enregistrer.
+3. Rafraîchir le formulaire.
+4. Vérifier que l’image est toujours renseignée.
+5. Ouvrir la liste publique des partenaires.
+6. Vérifier que cette image est utilisée comme couverture.
+
+TEST 7.3 — Fiches historiques
+
+Vérifier les partenaires créés avant la mise en place de cette obligation.
+
+Résultat attendu :
+
+- aucune fiche existante ne provoque une erreur ;
+- un placeholder propre peut être utilisé si une ancienne fiche ne possède pas de couverture ;
+- le formulaire doit demander une couverture lors de la prochaine modification ou publication, selon la logique prévue.
+
+==================================================
+8. UNE SEULE IMAGE SUR LA LISTE DES PARTENAIRES
+==================================================
+
+Sur la page listant les partenaires :
+
+- une seule photo principale doit être visible par partenaire ;
+- les autres photos et vidéos sont réservées à la fiche détaillée.
+
+Tester plusieurs partenaires, dont un partenaire possédant au moins trois médias.
+
+Résultat attendu :
+
+- une seule photo sur chaque carte ;
+- pas de galerie complète dans la liste ;
+- pas de carrousel encombrant sur la carte ;
+- pas d’image dupliquée ;
+- couverture correcte ;
+- carte entièrement cliquable ou bouton clairement identifiable ;
+- rendu cohérent sur desktop et mobile.
+
+==================================================
+9. CONTENU DE LA FICHE DÉTAILLÉE DU PARTENAIRE
+==================================================
+
+Après avoir cliqué sur un partenaire, la fiche doit présenter :
+
+- la description du partenaire ;
+- la galerie de photos ou vidéos ;
+- les réseaux sociaux ;
+- le préfixe et le numéro de téléphone ;
+- les styles culturels dans une présentation moderne.
+
+TEST 9.1 — Description
+
+1. Renseigner une description de test dans l’administration.
+2. Enregistrer.
+3. Ouvrir la fiche publique.
+
+Résultat attendu :
+
+- la description s’affiche ;
+- elle correspond au contenu enregistré ;
+- elle n’est pas remplacée par un ancien texte ;
+- les retours à la ligne sont correctement gérés ;
+- aucun HTML non désiré n’est visible ;
+- le texte reste lisible sur mobile.
+
+TEST 9.2 — Champs vides
+
+Vérifier le comportement lorsqu’une information facultative n’est pas renseignée.
+
+Résultat attendu :
+
+- aucune rubrique vide inutile ;
+- aucun texte « undefined », « null » ou tableau vide ;
+- aucune icône sociale sans lien ;
+- aucun grand espace blanc inexpliqué.
+
+==================================================
+10. GALERIE OBLIGATOIRE DE TROIS MÉDIAS
+==================================================
+
+La fiche partenaire doit disposer de trois médias obligatoires, sous forme de photos ou de vidéos.
+
+La règle fonctionnelle minimale à vérifier est la suivante :
+
+- zéro média : refus ;
+- un média : refus ;
+- deux médias : refus ;
+- trois médias valides : acceptation.
+
+Si l’application autorise plus de trois médias, vérifier également l’ajout d’un quatrième média.
+
+Ne pas modifier arbitrairement la limite entre « exactement trois » et « minimum trois » sans signaler le comportement actuel.
+
+TEST 10.1 — Validation
+
+Essayer successivement de publier une fiche avec :
+
+- zéro média ;
+- un média ;
+- deux médias ;
+- trois médias.
+
+Résultat attendu :
+
+Le formulaire refuse la publication tant que les trois médias obligatoires ne sont pas présents.
+
+TEST 10.2 — Formats
+
+Tester les formats réellement annoncés comme compatibles par l’application.
+
+Pour chaque fichier :
+
+- vérifier l’envoi ;
+- vérifier l’enregistrement ;
+- vérifier l’aperçu ;
+- vérifier l’affichage public ;
+- vérifier l’absence d’erreur après actualisation.
+
+Ne pas prétendre que la vidéo fonctionne si seul le champ URL ou upload existe.
+
+La vidéo doit réellement pouvoir être visualisée sur la fiche.
+
+TEST 10.3 — Galerie publique
+
+Sur la fiche détaillée :
+
+- vérifier que les trois médias sont accessibles ;
+- vérifier l’ordre ;
+- vérifier les miniatures éventuelles ;
+- vérifier les boutons suivant et précédent ;
+- vérifier la fermeture de la lightbox ;
+- vérifier la navigation tactile sur mobile ;
+- vérifier l’absence de médias cassés.
+
+==================================================
+11. LIENS DES RÉSEAUX SOCIAUX
+==================================================
+
+Les liens sociaux doivent être testés un par un.
+
+Tester tous les réseaux disponibles dans le formulaire, par exemple :
+
+- Instagram ;
+- Facebook ;
+- TikTok ;
+- Threads ;
+- YouTube ;
+- LinkedIn ;
+- tout autre champ réellement présent.
+
+Pour chaque réseau configuré :
+
+1. Enregistrer une URL de profil valide.
+2. Ouvrir la fiche publique.
+3. Cliquer réellement sur l’icône ou le lien.
+4. Vérifier la destination.
+
+Résultat attendu :
+
+- le clic ouvre le bon profil ;
+- l’URL n’est pas interprétée comme une route interne du site ;
+- le protocole `https://` est correctement géré ;
+- un identifiant commençant par `@` ne crée pas une URL cassée ;
+- aucune URL vide ne produit un lien cliquable ;
+- les icônes correspondent au bon réseau ;
+- l’ouverture dans un nouvel onglet utilise les attributs de sécurité appropriés ;
+- aucune erreur JavaScript ne se produit.
+
+Tester également après :
+
+- actualisation ;
+- déconnexion ;
+- ouverture en navigation privée.
+
+==================================================
+12. INTÉGRATION DES POSTS INSTAGRAM
+==================================================
+
+Une simple icône Instagram ou un lien vers le profil ne constitue pas une intégration Instagram.
+
+La demande est que les publications Instagram du partenaire soient directement visibles sur sa fiche.
+
+TEST 12.1 — Présence réelle du flux
+
+1. Utiliser un partenaire disposant d’un compte Instagram public et configuré.
+2. Ouvrir sa fiche publique.
+3. Vérifier que de vraies publications apparaissent.
+4. Vérifier que les médias correspondent au compte configuré.
+5. Cliquer sur une publication.
+6. Vérifier que le comportement est correct.
+
+Résultat attendu :
+
+- de vraies publications sont visibles ;
+- les publications ne sont pas de simples placeholders ;
+- le flux ne provient pas d’un autre partenaire ;
+- aucune clé API ou token n’est exposé dans le HTML public ;
+- aucune erreur CORS ou API n’apparaît ;
+- le chargement ne bloque pas toute la page ;
+- le flux reste utilisable sur mobile.
+
+TEST 12.2 — Configuration manquante
+
+Tester une fiche ne disposant pas de compte Instagram.
+
+Résultat attendu :
+
+- la section est masquée ou affiche un message propre ;
+- aucune erreur technique ;
+- aucun bloc vide disproportionné ;
+- aucun faux contenu.
+
+TEST 12.3 — Accès API ou token
+
+Si l’intégration nécessite :
+
+- un token Meta ;
+- un compte Business ou Creator ;
+- un identifiant d’application ;
+- une autorisation API ;
+- une URL de callback ;
+- une validation externe ;
+
+vérifier que ces éléments sont réellement configurés en production.
+
+Si un secret ou une autorisation manque :
+
+- utiliser le statut BLOQUÉ ;
+- ne pas marquer l’intégration comme terminée ;
+- indiquer précisément la configuration nécessaire.
+
+Ne jamais simuler les publications avec des images statiques pour faire croire que l’intégration fonctionne.
+
+==================================================
+13. PRÉFIXE ET NUMÉRO DE TÉLÉPHONE
+==================================================
+
+Le préfixe téléphonique doit être enregistré et affiché avec le numéro.
+
+TEST 13.1 — Saisie
+
+Dans le formulaire du prestataire :
+
+1. Choisir ou renseigner un préfixe.
+2. Saisir le numéro.
+3. Enregistrer.
+4. Rafraîchir.
+5. Vérifier les données.
+
+Résultat attendu :
+
+- le préfixe est conservé ;
+- le numéro est conservé ;
+- aucune partie du numéro n’est supprimée ;
+- le préfixe n’est pas dupliqué ;
+- le zéro national est géré correctement selon le format retenu.
+
+TEST 13.2 — Affichage public
+
+Sur la fiche publique :
+
+- vérifier que le préfixe et le numéro sont affichés ensemble ;
+- vérifier les espaces et la lisibilité ;
+- vérifier le lien téléphonique.
+
+Résultat attendu :
+
+Le lien utilise un format de type :
+
+tel:+32XXXXXXXXX
+
+et non une URL web incorrecte.
+
+Tester au minimum :
+
+- un numéro belge ;
+- un numéro utilisant un autre préfixe si le système permet plusieurs pays.
+
+==================================================
+14. PRÉSENTATION DES « CULTURAL STYLES »
+==================================================
+
+La capture initiale montrait un bloc très brut avec des valeurs comme :
+
+- afro ;
+- mixte ;
+- luxe ;
+- grand_format ;
+- intime.
+
+Vérifier que cette partie a été modernisée.
+
+Résultat attendu :
+
+- les styles apparaissent comme des badges ou tags cohérents avec la direction artistique ;
+- les espacements sont réguliers ;
+- la hiérarchie visuelle est claire ;
+- les tags ne ressemblent pas à des champs techniques ;
+- les underscores ne sont pas visibles publiquement ;
+- `grand_format` doit être présenté comme `Grand format` ;
+- la casse est harmonisée ;
+- aucun grand conteneur vide n’entoure quelques petits tags ;
+- le rendu est adapté au mobile ;
+- les tags passent proprement sur plusieurs lignes ;
+- la section est masquée lorsqu’aucun style n’est renseigné.
+
+Vérifier que les valeurs affichées proviennent bien des données du partenaire et ne sont pas codées en dur.
+
+==================================================
+15. ERREUR 403 — TOKEN CSRF INVALIDE
+==================================================
+
+Problème initial :
+
+Lors de la modification d’un prestataire, notamment du champ Instagram ou d’autres informations, l’application affichait :
+
+« Erreur 403 — Token CSRF invalide »
+
+Cette erreur doit être réellement reproduite puis vérifiée après correction.
+
+Il est strictement interdit de résoudre le problème en désactivant globalement la protection CSRF.
+
+TEST 15.1 — Modification du champ Instagram
+
+1. Se connecter avec un compte autorisé à modifier le prestataire.
+2. Ouvrir la page de modification.
+3. Modifier le champ Instagram.
+4. Enregistrer.
+5. Observer la réponse réseau.
+6. Rafraîchir le formulaire.
+7. Ouvrir la fiche publique.
+
+Résultat attendu :
+
+- aucune page 403 ;
+- aucun message « Token CSRF invalide » ;
+- réponse HTTP normale ;
+- message de confirmation clair ;
+- valeur enregistrée en base ;
+- valeur toujours présente après actualisation ;
+- lien Instagram public mis à jour.
+
+TEST 15.2 — Modification d’autres champs
+
+Répéter le test avec :
+
+- la description ;
+- le téléphone ;
+- le préfixe ;
+- les styles culturels ;
+- la photo de couverture ;
+- la galerie ;
+- un autre réseau social.
+
+Résultat attendu :
+
+Tous les champs sont enregistrés sans erreur CSRF.
+
+TEST 15.3 — Plusieurs conditions de session
+
+Effectuer les tests :
+
+- juste après connexion ;
+- après rafraîchissement de la page ;
+- après ouverture du formulaire dans un nouvel onglet ;
+- après plusieurs modifications successives ;
+- depuis le domaine public ;
+- depuis le rôle administrateur ;
+- depuis le rôle prestataire si ce rôle peut modifier sa fiche.
+
+Vérifier notamment :
+
+- la présence du token dans le formulaire ou les headers ;
+- le cookie de session ;
+- les attributs de cookie ;
+- la configuration du domaine ;
+- le comportement derrière le proxy ou le domaine personnalisé ;
+- les méthodes HTTP utilisées ;
+- les appels fetch ou AJAX ;
+- la configuration des credentials ;
+- le renouvellement du token ;
+- les caches éventuels de pages contenant un ancien token.
+
+TEST 15.4 — Session expirée
+
+Si la session a réellement expiré, le site ne doit pas afficher une page technique brute.
+
+Résultat attendu :
+
+- message compréhensible indiquant que la session a expiré ;
+- invitation à se reconnecter ;
+- redirection propre ;
+- aucune désactivation de sécurité.
+
+==================================================
+16. TESTS RESPONSIVE
+==================================================
+
+Effectuer les tests publics aux largeurs suivantes :
+
+- 320 px ;
+- 360 px ;
+- 390 px ;
+- 430 px ;
+- 768 px ;
+- 1024 px ;
+- 1440 px.
+
+Vérifier en particulier :
+
+- les cartes des lieux ;
+- les cartes des partenaires ;
+- la photo de couverture ;
+- la galerie ;
+- la lightbox ;
+- les vidéos ;
+- la description ;
+- les réseaux sociaux ;
+- le téléphone ;
+- les styles culturels ;
+- le bouton « Ajouter à mon projet » ;
+- les messages d’erreur et de confirmation.
+
+Résultat attendu :
+
+- aucun scroll horizontal involontaire ;
+- aucun texte coupé ;
+- aucun bouton inaccessible ;
+- aucune galerie hors écran ;
+- aucune icône sociale superposée ;
+- aucun toast masqué par l’interface ;
+- aucune image déformée ;
+- zones tactiles suffisamment grandes.
+
+==================================================
+17. TESTS TECHNIQUES COMPLÉMENTAIRES
+==================================================
+
+Sur chaque parcours, vérifier la console navigateur.
+
+Aucune erreur non traitée ne doit apparaître, notamment :
+
+- 401 ;
+- 403 ;
+- 404 ;
+- 419 ;
+- 422 non gérée ;
+- 500 ;
+- erreur CORS ;
+- erreur de parsing JSON ;
+- erreur d’image ;
+- erreur de chargement Instagram ;
+- erreur de session ;
+- promesse JavaScript rejetée.
+
+Vérifier également :
+
+- que les boutons ne déclenchent pas deux requêtes ;
+- que les formulaires ne créent pas de doublons ;
+- que les médias supprimés ne restent pas affichés à cause du cache ;
+- que les messages correspondent réellement au résultat serveur ;
+- qu’un message de succès n’apparaît jamais après un échec réseau.
+
+==================================================
+18. CORRECTIONS
+==================================================
+
+Après le premier passage :
+
+1. Lister tous les FAIL, PARTIEL et BLOQUÉ.
+2. Corriger uniquement les FAIL et PARTIEL pouvant être corrigés dans le code.
+3. Ne pas masquer les erreurs.
+4. Ne pas coder de valeur en dur pour faire passer les tests.
+5. Ne pas désactiver CSRF.
+6. Ne pas utiliser de faux posts Instagram.
+7. Ne pas ajouter de faux compte à la liste de validation.
+8. Ne pas modifier les données réelles du client.
+9. Redéployer la version corrigée.
+10. Attendre que le déploiement soit réellement terminé.
+11. Retester la production depuis une nouvelle session privée.
+
+Une correction testée uniquement dans le preview Replit n’est pas considérée comme terminée.
+
+==================================================
+19. RAPPORT FINAL OBLIGATOIRE
+==================================================
+
+Présenter le rapport final sous cette forme pour chacun des points :
+
+ID :
+Fonctionnalité :
+URL :
+Rôle :
+Données de test :
+Étapes effectuées :
+Résultat attendu :
+Résultat observé avant correction :
+Statut avant correction :
+Correction effectuée :
+Fichiers modifiés :
+Résultat observé après correction :
+Statut final :
+Capture avant :
+Capture après :
+Erreurs console :
+Erreurs réseau :
+Vérification en base :
+Version ou commit déployé :
+
+Terminer par un tableau récapitulatif contenant :
+
+- Galerie des lieux.
+- Compteur fantôme admin.
+- Ajout d’un partenaire par un visiteur.
+- Ajout par un couple connecté.
+- Photo de couverture obligatoire.
+- Une seule couverture dans les listes.
+- Description du partenaire.
+- Galerie obligatoire de trois médias.
+- Liens des réseaux sociaux.
+- Intégration des publications Instagram.
+- Préfixe téléphonique.
+- Présentation des styles culturels.
+- Modification Instagram sans erreur CSRF.
+- Modification des autres champs sans erreur CSRF.
+- Persistance des données.
+- Fonctionnement sur production.
+- Responsive mobile.
+
+Pour chaque ligne, indiquer uniquement :
+
+- PASS ;
+- FAIL ;
+- PARTIEL ;
+- BLOQUÉ ;
+- NON TESTÉ.
+
+Ne termine pas le travail avec une phrase générique comme :
+
+« Tout est fonctionnel »
+ou
+« Les modifications ont bien été effectuées ».
+
+La conclusion doit être fondée sur les tests, les captures, les réponses réseau et les données réellement persistées.
+
+==================================================
+20. CRITÈRE DE FIN DE MISSION
+==================================================
+
+La mission est terminée uniquement lorsque :
+
+- tous les parcours accessibles ont été testés ;
+- chaque PASS possède une preuve ;
+- les données persistent après actualisation et reconnexion ;
+- les modifications fonctionnent sur www.mariage-afro.com ;
+- aucune erreur CSRF ne se produit lors des modifications ;
+- le compteur admin correspond à la liste réelle ;
+- les médias sont réellement affichés ;
+- les liens sociaux ouvrent les bons profils ;
+- les posts Instagram sont réellement chargés, ou le point est déclaré BLOQUÉ avec la configuration manquante ;
+- les captures avant et après sont fournies ;
+- le rapport final indique clairement les éventuels éléments encore non fonctionnels.

@@ -108,7 +108,7 @@ async function getPendingCount(): Promise<number> {
       .where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected"))),
     db.select({ count: sql<number>`count(*)::int` })
       .from(vendorAccountsTable)
-      .where(eq(vendorAccountsTable.status, "pending")),
+      .where(and(eq(vendorAccountsTable.status, "pending"), isNotNull(vendorAccountsTable.onboardedAt))),
   ]);
   return (cp?.count ?? 0) + (va?.count ?? 0);
 }
