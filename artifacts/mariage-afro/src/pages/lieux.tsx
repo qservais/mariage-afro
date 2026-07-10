@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, FormEvent, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -518,16 +518,7 @@ export default function Lieux() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                      {venue.slug && (
-                        <Link
-                          to={`/lieux/${venue.slug}`}
-                          className="btn-editorial-compact sm:flex-none flex items-center gap-2"
-                          data-testid={`btn-detail-${venue.id}`}
-                        >
-                          {t("venues.cta_gallery", { defaultValue: "Voir la galerie" })}
-                        </Link>
-                      )}
-                      {!venue.slug && hasGallery && (
+                      {hasGallery && (
                         <button
                           type="button"
                           onClick={() => openLightbox(venue, 0)}

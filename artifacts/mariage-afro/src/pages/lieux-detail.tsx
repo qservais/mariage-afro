@@ -292,7 +292,7 @@ export default function LieuDetail() {
   if (isError || !venue) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center gap-6 px-6">
-        <SEO title={t("venues.detail_not_found")} />
+        <SEO title={t("venues.detail_not_found")} description={t("venues.detail_not_found_desc")} />
         <h1 className="font-display text-3xl text-wine-deep">{t("venues.detail_not_found")}</h1>
         <p className="text-wine-deep/60">{t("venues.detail_not_found_desc")}</p>
         <Link to="/lieux" className="btn-editorial">{t("venues.detail_back")}</Link>
