@@ -223,7 +223,7 @@ export default function GuestsPage() {
 
       {/* Manual add form */}
       <form
-        className="bg-cream p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
+        className="bg-cream p-4 border border-neutral-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"
         onSubmit={(e) => { e.preventDefault(); if (!form.firstName) return; create.mutate({ ...form, table: form.table || null }); }}
       >
         <div>
@@ -249,8 +249,8 @@ export default function GuestsPage() {
         <Button type="submit" className="rounded-none uppercase tracking-wider text-xs gap-2"><Plus className="w-3 h-3" aria-hidden="true" /> {t("invites.add")}</Button>
       </form>
 
-      {/* Guest list table */}
-      <div className="bg-cream border border-neutral-200 overflow-x-auto">
+      {/* Guest list table (tablet/desktop) */}
+      <div className="hidden md:block bg-cream border border-neutral-200 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-background/40">
             <tr className="text-left text-xs uppercase tracking-widest text-neutral-600">
@@ -285,13 +285,60 @@ export default function GuestsPage() {
                   </select>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => del.mutate(g.id)} className="text-neutral-400 hover:text-primary" aria-label={t("invites.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
+                  <button onClick={() => del.mutate(g.id)} className="min-h-9 min-w-9 inline-flex items-center justify-center text-neutral-400 hover:text-primary" aria-label={t("invites.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
                 </td>
               </tr>
             ))}
             {guests.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-neutral-400">{t("invites.empty")}</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      {/* Guest list (mobile cards) */}
+      <div className="md:hidden space-y-3">
+        {guests.map((g) => (
+          <div key={g.id} className="bg-cream border border-neutral-200 p-4" data-testid={`guest-card-${g.id}`}>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="font-medium truncate">
+                  {g.firstName} {g.lastName}
+                  {g.source !== "manual" && (
+                    <span className={`ml-2 text-[10px] px-1.5 py-0.5 ${SOURCE_BADGE[g.source] || ""}`}>
+                      {g.source === "personal_invite" ? t("invites.badge_personal") : t("invites.badge_from_rsvp")}
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-neutral-500 mt-0.5">
+                  {SIDE_LABELS[g.side] || g.side}
+                  {g.table ? ` · ${t("invites.table")} ${g.table}` : ""}
+                </p>
+              </div>
+              <Button
+                size="icon-touch"
+                variant="ghost"
+                onClick={() => del.mutate(g.id)}
+                className="text-neutral-400 hover:text-primary shrink-0 -mr-2 -mt-2"
+                aria-label={t("invites.delete", { defaultValue: "Supprimer" })}
+              >
+                <Trash2 className="w-4 h-4" aria-hidden="true" />
+              </Button>
+            </div>
+            <div className="mt-3 pt-3 border-t border-neutral-100">
+              <label className="sr-only" htmlFor={`rsvp-card-${g.id}`}>{t("invites.rsvp_for", { name: `${g.firstName} ${g.lastName}` })}</label>
+              <select
+                id={`rsvp-card-${g.id}`}
+                value={g.rsvp}
+                onChange={(e) => update.mutate({ id: g.id, body: { rsvp: e.target.value } })}
+                className={`text-xs px-2 py-2 w-full ${RSVP_COLORS[g.rsvp]}`}
+              >
+                {Object.entries(RSVP_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+          </div>
+        ))}
+        {guests.length === 0 && (
+          <div className="bg-cream border border-dashed border-neutral-300 p-8 text-center text-neutral-400">{t("invites.empty")}</div>
+        )}
       </div>
 
       {/* RSVP custom questions */}
@@ -382,7 +429,8 @@ export default function GuestsPage() {
         {!filteredRsvps.length ? (
           <p className="text-sm text-neutral-500">{t("invites.no_rsvps")}</p>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-background/40">
                 <tr className="text-left text-xs uppercase tracking-widest text-neutral-600">
@@ -421,7 +469,7 @@ export default function GuestsPage() {
                           <button
                             onClick={() => approveRsvp.mutate({ id: r.id, status: "accepted" })}
                             disabled={approveRsvp.isPending}
-                            className="p-1.5 bg-gold/10 hover:bg-gold/20 text-gold-deep border border-gold/30 disabled:opacity-50"
+                            className="min-h-9 min-w-9 inline-flex items-center justify-center bg-gold/10 hover:bg-gold/20 text-gold-deep border border-gold/30 disabled:opacity-50"
                             aria-label={t("invites.rsvp_accept")}
                             title={t("invites.rsvp_accept")}
                           >
@@ -430,7 +478,7 @@ export default function GuestsPage() {
                           <button
                             onClick={() => approveRsvp.mutate({ id: r.id, status: "rejected" })}
                             disabled={approveRsvp.isPending}
-                            className="p-1.5 bg-wine-deep/5 hover:bg-wine-deep/10 text-wine-deep border border-wine-deep/20 disabled:opacity-50"
+                            className="min-h-9 min-w-9 inline-flex items-center justify-center bg-wine-deep/5 hover:bg-wine-deep/10 text-wine-deep border border-wine-deep/20 disabled:opacity-50"
                             aria-label={t("invites.rsvp_reject")}
                             title={t("invites.rsvp_reject")}
                           >
@@ -444,6 +492,62 @@ export default function GuestsPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Public RSVPs (mobile cards) */}
+          <div className="md:hidden space-y-3">
+            {filteredRsvps.map((r) => (
+              <div
+                key={r.id}
+                className={`bg-background/40 border border-neutral-200 p-4 ${r.status === "rejected" ? "opacity-50" : ""}`}
+                data-testid={`rsvp-card-${r.id}`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{r.firstName ? `${r.firstName} ${r.lastName}`.trim() : r.name}</p>
+                    {r.companionFirstName && (
+                      <p className="text-xs text-neutral-500 mt-0.5">
+                        + {[r.companionFirstName, r.companionLastName].filter(Boolean).join(" ")}
+                      </p>
+                    )}
+                    <p className="text-xs text-neutral-500 mt-0.5">{new Date(r.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <span className={`text-xs px-2 py-1 shrink-0 ${RSVP_STATUS_COLORS[r.status] || "bg-neutral-100 text-neutral-600"}`}>
+                    {t(`invites.rsvp_status_${r.status}`)}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-3 text-xs">
+                  <span className={`px-2 py-1 ${r.attending ? "bg-gold/10 text-gold-deep" : "bg-wine-deep/5 text-wine-deep"}`}>
+                    {r.attending ? t("invites.yes") : t("invites.no")}
+                  </span>
+                  <span className="px-2 py-1 bg-neutral-100 text-neutral-600">{t("invites.th_guests")}: {r.guestCount}</span>
+                  {r.email && <span className="px-2 py-1 bg-neutral-100 text-neutral-600 truncate max-w-full">{r.email}</span>}
+                </div>
+                {r.status === "pending" && (
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-100">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 rounded-none gap-1.5 bg-gold/10 hover:bg-gold/20 text-gold-deep border-gold/30"
+                      onClick={() => approveRsvp.mutate({ id: r.id, status: "accepted" })}
+                      disabled={approveRsvp.isPending}
+                    >
+                      <Check className="w-3.5 h-3.5" /> {t("invites.rsvp_accept")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 rounded-none gap-1.5 bg-wine-deep/5 hover:bg-wine-deep/10 text-wine-deep border-wine-deep/20"
+                      onClick={() => approveRsvp.mutate({ id: r.id, status: "rejected" })}
+                      disabled={approveRsvp.isPending}
+                    >
+                      <X className="w-3.5 h-3.5" /> {t("invites.rsvp_reject")}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          </>
         )}
       </div>
 

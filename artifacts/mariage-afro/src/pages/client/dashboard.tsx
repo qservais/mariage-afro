@@ -169,7 +169,7 @@ export default function ClientDashboard() {
         )}
       </section>
 
-      <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {TILES.map((tile) => {
           const Icon = tile.icon;
           const label = t(tile.labelKey);
@@ -177,13 +177,13 @@ export default function ClientDashboard() {
             <Link
               key={tile.to}
               to={tile.to}
-              className="bg-cream p-6 border border-neutral-200 hover:border-primary hover:bg-cream-soft transition-colors group"
+              className="bg-cream p-4 sm:p-6 border border-neutral-200 hover:border-primary hover:bg-cream-soft transition-colors group"
               data-testid={`tile-${tile.to.split("/").pop()}`}
             >
-              <div className={`w-12 h-12 ${tile.color} flex items-center justify-center mb-4`}>
-                <Icon className="w-6 h-6 text-primary" />
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 ${tile.color} flex items-center justify-center mb-3 sm:mb-4`}>
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
-              <p className="font-bold text-lg group-hover:text-primary">{label}</p>
+              <p className="font-bold text-base sm:text-lg group-hover:text-primary">{label}</p>
             </Link>
           );
         })}
@@ -191,7 +191,7 @@ export default function ClientDashboard() {
 
       {jourJCfg != null && (
         <section className="bg-cream border border-neutral-200 p-6">
-          <div className="flex flex-wrap gap-6 items-start">
+          <div className="flex flex-col sm:flex-row gap-6 items-start">
             {jourJCfg.qrDataUrl && (
               <div className="shrink-0">
                 <img

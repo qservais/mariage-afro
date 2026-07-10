@@ -617,8 +617,8 @@
     "caption_aria_label": "Image caption",
     "delete_collab": "Remove collaborator",
     "image_alt": "Inspiration image",
-    "move_left": "Move left",
-    "move_right": "Move right",
+    "move_earlier": "Move earlier in order",
+    "move_later": "Move later in order",
     "reorder_label": "Reorder images"
   },
   "cagnotte": {

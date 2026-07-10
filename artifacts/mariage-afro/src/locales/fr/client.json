@@ -617,8 +617,8 @@
     "caption_aria_label": "Légende de l'image",
     "delete_collab": "Retirer le collaborateur",
     "image_alt": "Image d'inspiration",
-    "move_left": "Déplacer vers la gauche",
-    "move_right": "Déplacer vers la droite",
+    "move_earlier": "Déplacer plus tôt dans l'ordre",
+    "move_later": "Déplacer plus tard dans l'ordre",
     "reorder_label": "Réorganiser les images"
   },
   "cagnotte": {

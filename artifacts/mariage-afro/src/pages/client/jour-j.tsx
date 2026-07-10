@@ -141,7 +141,7 @@ export default function JourJPage() {
               <p className={`text-sm ${ev.done ? "line-through text-neutral-400" : ""}`}>{ev.title}</p>
               {ev.responsible && <p className="text-xs text-neutral-500">{t("jour_j.responsible_label", { name: ev.responsible })}</p>}
             </div>
-            <button onClick={() => del.mutate(ev.id)} className="text-neutral-400 hover:text-primary" aria-label={t("jour_j.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
+            <Button size="icon-touch" variant="ghost" onClick={() => del.mutate(ev.id)} className="text-neutral-400 hover:text-primary shrink-0" aria-label={t("jour_j.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></Button>
           </div>
         ))}
         {events.length === 0 && <p className="px-4 py-8 text-center text-neutral-400 text-sm">{t("jour_j.no_event")}</p>}
@@ -281,21 +281,24 @@ export default function JourJPage() {
                   </div>
                 ))}
               </div>
-              <div className="flex gap-2 items-center">
-                <Input
-                  type="time"
-                  value={newStep.time}
-                  onChange={(e) => setNewStep({ ...newStep, time: e.target.value })}
-                  className="w-28 shrink-0"
-                />
-                <Input
-                  value={newStep.label}
-                  onChange={(e) => setNewStep({ ...newStep, label: e.target.value })}
-                  placeholder={t("jour_j_public.timeline_label_ph")}
-                  className="flex-1"
-                />
-                <Button type="button" variant="outline" size="sm" className="rounded-none shrink-0" onClick={addStep}>
+              <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                <div className="flex gap-2">
+                  <Input
+                    type="time"
+                    value={newStep.time}
+                    onChange={(e) => setNewStep({ ...newStep, time: e.target.value })}
+                    className="w-28 shrink-0"
+                  />
+                  <Input
+                    value={newStep.label}
+                    onChange={(e) => setNewStep({ ...newStep, label: e.target.value })}
+                    placeholder={t("jour_j_public.timeline_label_ph")}
+                    className="flex-1"
+                  />
+                </div>
+                <Button type="button" variant="outline" size="sm" className="rounded-none shrink-0 w-full sm:w-auto" onClick={addStep}>
                   <Plus className="w-3 h-3" />
+                  <span className="sm:hidden ml-1.5">{t("jour_j_public.timeline_add", { defaultValue: "Ajouter l'étape" })}</span>
                 </Button>
               </div>
             </div>

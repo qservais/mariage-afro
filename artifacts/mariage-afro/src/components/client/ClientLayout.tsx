@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { clientApi } from "@/lib/clientApi";
 import OnboardingGate from "@/components/client/OnboardingGate";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 
 interface Couple {
   id: number;
@@ -69,6 +70,7 @@ export default function ClientLayout({ children }: { children?: ReactNode }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: couple } = useCouple();
+  useBodyScrollLock(mobileOpen);
 
   const days = daysUntil(couple?.weddingDate);
   const firstName = couple?.partner1Name || user?.email?.split("@")[0] || "";

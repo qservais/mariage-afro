@@ -155,7 +155,7 @@ export default function CommunicationPage() {
   const vendorsUnread = vendorConvs.reduce((acc, c) => acc + c.unread, 0);
 
   return (
-    <div className="max-w-6xl mx-auto h-[calc(100vh-180px)] flex flex-col">
+    <div className="max-w-6xl mx-auto h-[calc(100dvh-180px)] flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
         <MessageCircle className="w-6 h-6 text-primary" />
@@ -204,7 +204,10 @@ export default function CommunicationPage() {
       <div className="flex-1 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4 min-h-0">
         {/* LEFT — list (only on vendors tab; admin tab uses a fixed conv) */}
         {tab === "vendors" && (
-          <div className="flex flex-col border border-border bg-cream min-h-0">
+          <div className={cn(
+            "flex flex-col border border-border bg-cream min-h-0",
+            activeConvId && "hidden md:flex"
+          )}>
             <div className="px-3 py-2 border-b border-border flex items-center justify-between">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">{t("vendor.messages.list_title")}</span>
               <button
@@ -289,6 +292,7 @@ export default function CommunicationPage() {
         <div className={cn(
           "flex flex-col border border-border bg-cream min-h-0",
           tab === "admin" ? "md:col-span-2" : "",
+          tab === "vendors" && !activeConvId && "hidden md:flex"
         )}>
           {tab === "vendors" && activeConv && (
             <div className="px-4 py-3 border-b border-border flex items-center gap-2">

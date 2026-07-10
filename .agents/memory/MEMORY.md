@@ -11,3 +11,4 @@
 - [storageUrl return type](design-tokens.md) — storageUrl retourne string|undefined (pas null) pour compatibilité prop src JSX; callers qui veulent string|null ajoutent ?? null.
 - [Storage URL helper](storage-url-pattern.md) — Use `@/lib/storage-url` (storageUrl / storageUrlOrEmpty) everywhere; never hardcode `/api/storage${path}` or `${BASE}/storage${path}` — those miss either BASE_URL or the `/api` segment.
 - [GCS streaming pattern](gcs-streaming.md) — Never double-convert Node↔Web streams (Readable.toWeb/fromWeb) when piping GCS to Express; use file.createReadStream() + stream/promises pipeline() directly. Also: Picture component needs useEffect reset on src change.
+- [E2E testing quirks](e2e-testing-quirks.md) — old `tests/e2e/*.spec.mjs` Clerk auth helper is stale (use real UI login); `[DB]` steps in runTest unreliable, use executeSql() between two runTest calls instead; couples.validated_at gates vendor-contact features.

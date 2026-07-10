@@ -68,7 +68,7 @@ export default function ProfilPage() {
       </section>
 
       <form
-        className="bg-cream p-6 border border-neutral-200 space-y-5"
+        className="bg-cream border border-neutral-200 relative"
         onSubmit={(e) => {
           e.preventDefault();
           update.mutate({
@@ -82,42 +82,60 @@ export default function ProfilPage() {
           });
         }}
       >
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.partner1")}</label>
-            <Input value={partner1Name} onChange={(e) => setP1(e.target.value)} data-testid="input-partner1" />
+        <div className="p-6 space-y-5 pb-24 md:pb-6">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.partner1")}</label>
+              <Input value={partner1Name} onChange={(e) => setP1(e.target.value)} data-testid="input-partner1" />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.partner2")}</label>
+              <Input value={partner2Name} onChange={(e) => setP2(e.target.value)} data-testid="input-partner2" />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.wedding_date")}</label>
+              <Input type="date" value={weddingDate} onChange={(e) => setDate(e.target.value)} data-testid="input-wedding-date" />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.city")}</label>
+              <Input value={ceremonyCity} onChange={(e) => setCity(e.target.value)} placeholder={t("ui.city_placeholder")} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.venue")}</label>
+              <Input value={ceremonyVenue} onChange={(e) => setVenue(e.target.value)} placeholder={t("profil.venue_placeholder")} />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.guest_estimate")}</label>
+              <Input type="number" min="0" value={guestEstimate} onChange={(e) => setGuests(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.budget")}</label>
+              <Input type="number" min="0" value={budget} onChange={(e) => setBudget(e.target.value)} />
+            </div>
           </div>
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.partner2")}</label>
-            <Input value={partner2Name} onChange={(e) => setP2(e.target.value)} data-testid="input-partner2" />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.wedding_date")}</label>
-            <Input type="date" value={weddingDate} onChange={(e) => setDate(e.target.value)} data-testid="input-wedding-date" />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.city")}</label>
-            <Input value={ceremonyCity} onChange={(e) => setCity(e.target.value)} placeholder={t("ui.city_placeholder")} />
-          </div>
-          <div className="sm:col-span-2">
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.venue")}</label>
-            <Input value={ceremonyVenue} onChange={(e) => setVenue(e.target.value)} placeholder={t("profil.venue_placeholder")} />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.guest_estimate")}</label>
-            <Input type="number" min="0" value={guestEstimate} onChange={(e) => setGuests(e.target.value)} />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-1">{t("profil.budget")}</label>
-            <Input type="number" min="0" value={budget} onChange={(e) => setBudget(e.target.value)} />
+
+          <div className="hidden md:flex items-center gap-3 pt-2">
+            <Button type="submit" className="rounded-none uppercase tracking-wider text-xs" disabled={update.isPending} data-testid="button-save-profile">
+              {update.isPending ? t("profil.saving") : t("profil.save")}
+            </Button>
+            {saved && <p className="text-sm text-gold-deep">{t("profil.saved")}</p>}
           </div>
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
-          <Button type="submit" className="rounded-none uppercase tracking-wider text-xs" disabled={update.isPending} data-testid="button-save-profile">
+        {/* Mobile Sticky Save Bar */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-cream border-t border-neutral-200 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] z-50 flex items-center justify-between">
+          <Button 
+            type="submit" 
+            className="w-full rounded-none uppercase tracking-wider text-xs h-12" 
+            disabled={update.isPending}
+          >
             {update.isPending ? t("profil.saving") : t("profil.save")}
           </Button>
-          {saved && <p className="text-sm text-gold-deep">{t("profil.saved")}</p>}
+          {saved && (
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gold-deep text-white px-3 py-1 text-xs rounded-full shadow-lg animate-in fade-in slide-in-from-bottom-2">
+              {t("profil.saved")}
+            </div>
+          )}
         </div>
       </form>
     </div>

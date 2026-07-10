@@ -339,7 +339,7 @@ export default function BudgetPage() {
 
       {/* Add item form */}
       <form
-        className="bg-cream p-4 border border-neutral-200 grid grid-cols-2 lg:grid-cols-5 gap-3"
+        className="bg-cream p-4 border border-neutral-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"
         onSubmit={(e) => {
           e.preventDefault();
           if (!form.category) return;
@@ -386,8 +386,8 @@ export default function BudgetPage() {
         </Button>
       </form>
 
-      {/* Items table */}
-      <div className="bg-cream border border-neutral-200 overflow-x-auto">
+      {/* Items table (tablet/desktop) */}
+      <div className="hidden md:block bg-cream border border-neutral-200 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-background/40">
             <tr className="text-left text-xs uppercase tracking-widest text-neutral-600">
@@ -488,17 +488,17 @@ export default function BudgetPage() {
                     </button>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-1 can-hover:opacity-0 can-hover:group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                       <button
                         onClick={() => startEditRow(it)}
-                        className="p-1 text-neutral-400 hover:text-primary transition-colors"
+                        className="min-h-9 min-w-9 inline-flex items-center justify-center text-neutral-400 hover:text-primary transition-colors"
                         aria-label={t("budget.edit")}
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => del.mutate(it.id)}
-                        className="p-1 text-neutral-400 hover:text-primary transition-colors"
+                        className="min-h-9 min-w-9 inline-flex items-center justify-center text-neutral-400 hover:text-primary transition-colors"
                         aria-label={t("budget.delete", { defaultValue: "Supprimer" })}
                       >
                         <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
@@ -529,6 +529,124 @@ export default function BudgetPage() {
             </tfoot>
           )}
         </table>
+      </div>
+
+      {/* Items list (mobile cards) */}
+      <div className="md:hidden space-y-3">
+        {items.map((it) =>
+          editRow?.id === it.id ? (
+            /* ── Inline edit card ── */
+            <div key={it.id} className="bg-cream-soft border border-neutral-200 p-4 space-y-3" data-testid={`budget-edit-card-${it.id}`}>
+              <Input
+                list="budget-categories"
+                value={editRow.category}
+                onChange={(e) => setEditRow({ ...editRow, category: e.target.value })}
+                className="rounded-none"
+                aria-label={t("budget.category")}
+                autoFocus
+              />
+              <Input
+                list="budget-vendors"
+                value={editRow.vendor}
+                onChange={(e) => setEditRow({ ...editRow, vendor: e.target.value })}
+                className="rounded-none"
+                placeholder={t("budget.vendor")}
+                aria-label={t("budget.vendor")}
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={editRow.planned}
+                  onChange={(e) => setEditRow({ ...editRow, planned: e.target.value })}
+                  className="rounded-none"
+                  placeholder={t("budget.planned_eur")}
+                  aria-label={t("budget.th_amount_planned")}
+                />
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={editRow.actual}
+                  onChange={(e) => setEditRow({ ...editRow, actual: e.target.value })}
+                  className="rounded-none"
+                  placeholder={t("budget.actual_eur")}
+                  aria-label={t("budget.th_amount_actual")}
+                />
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <button
+                  onClick={() => update.mutate({ id: it.id, body: { paid: !it.paid } })}
+                  className={`flex items-center gap-2 text-xs uppercase tracking-widest ${it.paid ? "text-primary" : "text-neutral-500"}`}
+                  aria-label={t("budget.toggle_paid")}
+                >
+                  <span className={`w-6 h-6 inline-flex items-center justify-center border ${it.paid ? "bg-primary border-primary text-white" : "border-neutral-300"}`}>
+                    {it.paid && <Check className="w-3 h-3" />}
+                  </span>
+                  {t("budget.th_paid")}
+                </button>
+                <div className="flex items-center gap-1">
+                  <Button size="icon-touch" variant="ghost" onClick={saveEditRow} disabled={update.isPending} className="text-primary" aria-label={t("budget.save")}>
+                    <Save className="w-4 h-4" />
+                  </Button>
+                  <Button size="icon-touch" variant="ghost" onClick={() => setEditRow(null)} className="text-neutral-500" aria-label={t("budget.cancel")}>
+                    <XIcon className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* ── Read card ── */
+            <div key={it.id} className="bg-cream border border-neutral-200 p-4" data-testid={`budget-card-${it.id}`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{it.category}</p>
+                  <p className="text-sm text-neutral-600 truncate">{it.vendor || "—"}</p>
+                </div>
+                <div className="flex items-center gap-0.5 shrink-0 -mr-2">
+                  <Button size="icon-touch" variant="ghost" onClick={() => startEditRow(it)} className="text-neutral-400 hover:text-primary" aria-label={t("budget.edit")}>
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button size="icon-touch" variant="ghost" onClick={() => del.mutate(it.id)} className="text-neutral-400 hover:text-primary" aria-label={t("budget.delete", { defaultValue: "Supprimer" })}>
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-end justify-between mt-3 pt-3 border-t border-neutral-100">
+                <div className="flex gap-4 text-sm">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-neutral-400">{t("budget.th_amount_planned")}</p>
+                    <p className="font-medium">{fmt(it.planned)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-neutral-400">{t("budget.th_amount_actual")}</p>
+                    <p className="font-medium">{fmt(it.actual)}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => update.mutate({ id: it.id, body: { paid: !it.paid } })}
+                  className={`w-9 h-9 inline-flex items-center justify-center border transition-colors ${it.paid ? "bg-primary border-primary text-white" : "border-neutral-300"}`}
+                  aria-label={t("budget.toggle_paid")}
+                >
+                  {it.paid && <Check className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+          )
+        )}
+        {items.length === 0 && (
+          <div className="bg-cream border border-dashed border-neutral-300 p-8 text-center text-neutral-400">
+            <p className="mb-1">{t("budget.empty")}</p>
+            <p className="text-xs">{t("budget.empty_hint", { defaultValue: "Ajoutez vos premiers postes de dépenses ci-dessus." })}</p>
+          </div>
+        )}
+        {items.length > 0 && (
+          <div className="bg-background/40 border-2 border-neutral-200 p-4 flex items-center justify-between text-xs uppercase tracking-widest text-neutral-600 font-bold">
+            <span>{t("budget.total", { defaultValue: "Total" })}</span>
+            <span>{fmt(totalPlanned)} / {fmt(totalActual)}</span>
+          </div>
+        )}
       </div>
     </div>
   );

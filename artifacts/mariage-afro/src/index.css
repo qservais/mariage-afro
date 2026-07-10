@@ -4,6 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Touch-visible reveal pattern: hover-only affordances (row/image actions)
+ * must stay visible by default on touch devices and only hide-until-hover on
+ * pointer devices that support real hover. Use as:
+ *   can-hover:opacity-0 can-hover:group-hover:opacity-100 group-focus-within:opacity-100
+ * Do NOT use `pointer: coarse` — hybrid touchscreen laptops have a fine
+ * pointer AND touch, so `hover: hover` is the correct predicate. */
+@custom-variant can-hover (@media (hover: hover));
+
 /* =============================================================================
  * AUDIT LISIBILITÉ — CHECKLIST PAGES AUDITÉES (Tâche #65, mai 2026)
  * =============================================================================

@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, ImagePlus, Mail, Loader2, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, ImagePlus, Mail, Loader2, X, ArrowUp, ArrowDown } from "lucide-react";
 import { clientApi, clientFetch, clientProxyUpload } from "@/lib/clientApi";
 import { storageUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
@@ -120,14 +120,14 @@ export default function InspirationPage() {
    * Reorder images in the active board by swapping two adjacent items.
    * Uses sequential index-based positions so the order is always deterministic.
    */
-  function moveImage(imgId: number, direction: "left" | "right") {
+  function moveImage(imgId: number, direction: "earlier" | "later") {
     if (!activeBoard) return;
     const sorted = [...activeBoard.images].sort(
       (a, b) => a.position - b.position || a.id - b.id,
     );
     const idx = sorted.findIndex((i) => i.id === imgId);
     if (idx === -1) return;
-    const targetIdx = direction === "left" ? idx - 1 : idx + 1;
+    const targetIdx = direction === "earlier" ? idx - 1 : idx + 1;
     if (targetIdx < 0 || targetIdx >= sorted.length) return;
 
     const imgA = sorted[idx];
@@ -236,36 +236,38 @@ export default function InspirationPage() {
                         className="w-full block"
                       />
 
-                      {/* Reorder controls — always accessible via keyboard focus, visible on hover */}
+                      {/* Reorder controls — always visible on touch devices (no hover
+                          affordance exists there); hover-reveal only on pointer devices
+                          that support real hover. Always reachable via keyboard focus. */}
                       <div
-                        className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity"
+                        className="absolute top-2 left-2 flex gap-1 can-hover:opacity-0 can-hover:group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity"
                         role="group"
                         aria-label={t("inspiration.reorder_label", { defaultValue: "Réorganiser" })}
                       >
                         <button
-                          onClick={() => moveImage(img.id, "left")}
+                          onClick={() => moveImage(img.id, "earlier")}
                           disabled={idx === 0 || updateImage.isPending}
-                          aria-label={t("inspiration.move_left", { defaultValue: "Déplacer vers la gauche" })}
-                          className="bg-cream/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                          data-testid={`btn-img-move-left-${img.id}`}
+                          aria-label={t("inspiration.move_earlier", { defaultValue: "Déplacer plus tôt dans l'ordre" })}
+                          className="min-h-11 min-w-11 flex items-center justify-center bg-cream/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          data-testid={`btn-img-move-earlier-${img.id}`}
                         >
-                          <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
+                          <ArrowUp className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                         <button
-                          onClick={() => moveImage(img.id, "right")}
+                          onClick={() => moveImage(img.id, "later")}
                           disabled={idx === arr.length - 1 || updateImage.isPending}
-                          aria-label={t("inspiration.move_right", { defaultValue: "Déplacer vers la droite" })}
-                          className="bg-cream/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                          data-testid={`btn-img-move-right-${img.id}`}
+                          aria-label={t("inspiration.move_later", { defaultValue: "Déplacer plus tard dans l'ordre" })}
+                          className="min-h-11 min-w-11 flex items-center justify-center bg-cream/90 hover:bg-primary hover:text-white disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          data-testid={`btn-img-move-later-${img.id}`}
                         >
-                          <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
+                          <ArrowDown className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                       </div>
 
                       {/* Delete button */}
                       <button
                         onClick={() => deleteImage.mutate(img.id)}
-                        className="absolute top-2 right-2 bg-cream/90 p-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-primary hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        className="absolute top-2 right-2 min-h-11 min-w-11 flex items-center justify-center bg-cream/90 can-hover:opacity-0 can-hover:group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-primary hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         aria-label={t("inspiration.delete_image")}
                       >
                         <X className="w-4 h-4" aria-hidden="true" />

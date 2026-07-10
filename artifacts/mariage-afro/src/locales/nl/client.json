@@ -617,8 +617,8 @@
     "caption_aria_label": "Bijschrift van de afbeelding",
     "delete_collab": "Medewerker verwijderen",
     "image_alt": "Inspiratieafbeelding",
-    "move_left": "Naar links verplaatsen",
-    "move_right": "Naar rechts verplaatsen",
+    "move_earlier": "Eerder in de volgorde verplaatsen",
+    "move_later": "Later in de volgorde verplaatsen",
     "reorder_label": "Afbeeldingen herordenen"
   },
   "cagnotte": {

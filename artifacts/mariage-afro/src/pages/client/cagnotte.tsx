@@ -151,16 +151,32 @@ export default function CagnottePage() {
         )}
         {cagnottes.map((c) => (
           <div key={c.id} className="bg-cream border border-neutral-200 p-5 flex flex-col sm:flex-row gap-5">
-            {c.photo && <img src={objectUrl(c.photo)} alt={c.title} width={300} height={128} loading="lazy" decoding="async" className="w-full sm:w-32 h-32 object-cover" />}
+            {c.photo && <img src={objectUrl(c.photo)} alt={c.title} width={300} height={128} loading="lazy" decoding="async" className="w-full sm:w-32 aspect-square sm:h-32 sm:aspect-auto object-cover" />}
             <div className="flex-1 space-y-2">
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-bold">{c.title}</h3>
                   <p className="text-sm text-neutral-600 mt-1">{c.description}</p>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => startEdit(c)} className="text-neutral-400 hover:text-primary" aria-label={t("cagnotte.edit", { defaultValue: "Modifier" })}><Edit2 className="w-4 h-4" aria-hidden="true" /></button>
-                  <button onClick={() => confirm(t("cagnotte.confirm_delete")) && del.mutate(c.id)} className="text-neutral-400 hover:text-primary" aria-label={t("cagnotte.delete", { defaultValue: "Supprimer" })}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
+                <div className="flex gap-1 -mt-2 -mr-2">
+                  <Button
+                    variant="ghost"
+                    size="icon-touch"
+                    onClick={() => startEdit(c)}
+                    className="text-neutral-400 hover:text-primary"
+                    aria-label={t("cagnotte.edit", { defaultValue: "Modifier" })}
+                  >
+                    <Edit2 className="w-4 h-4" aria-hidden="true" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-touch"
+                    onClick={() => confirm(t("cagnotte.confirm_delete")) && del.mutate(c.id)}
+                    className="text-neutral-400 hover:text-primary"
+                    aria-label={t("cagnotte.delete", { defaultValue: "Supprimer" })}
+                  >
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
+                  </Button>
                 </div>
               </div>
               {c.iban && <p className="text-xs text-neutral-500">IBAN: <span className="font-mono">{c.iban}</span></p>}

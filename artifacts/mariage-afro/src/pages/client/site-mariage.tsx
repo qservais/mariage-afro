@@ -354,7 +354,7 @@ export default function SiteMariagePage() {
         <div
           role="radiogroup"
           aria-label={t("site_mariage.template.title")}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
         >
           {WEDDING_TEMPLATE_IDS.map((id, idx) => {
             const isSelected = currentTemplate === id;
@@ -552,10 +552,10 @@ export default function SiteMariagePage() {
         }}
       >
         <DialogContent
-          className="max-w-5xl w-[95vw] h-[90vh] p-0 gap-0 overflow-hidden flex flex-col rounded-none"
+          className="max-w-5xl w-[95vw] h-[90dvh] p-0 gap-0 overflow-hidden flex flex-col rounded-none"
           data-testid="template-preview-dialog"
         >
-          <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
+          <DialogHeader className="px-4 py-3 sm:px-6 sm:py-4 border-b border-border flex-shrink-0">
             <DialogTitle className="text-base font-bold uppercase tracking-wider">
               {previewTemplate
                 ? t("site_mariage.template.preview_title", {
@@ -563,7 +563,7 @@ export default function SiteMariagePage() {
                   })
                 : ""}
             </DialogTitle>
-            <DialogDescription className="text-xs">
+            <DialogDescription className="text-xs hidden sm:block">
               {t("site_mariage.template.preview_desc")}
             </DialogDescription>
           </DialogHeader>
@@ -576,7 +576,7 @@ export default function SiteMariagePage() {
               />
             )}
           </div>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 px-6 py-4 border-t border-border bg-cream flex-shrink-0">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 px-4 py-3 sm:px-6 sm:py-4 border-t border-border bg-cream flex-shrink-0">
             <Button
               type="button"
               variant="outline"

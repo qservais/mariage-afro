@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { clientApi } from "@/lib/clientApi";
 import { storageUrl as coverUrl } from "@/lib/storage-url";
 import { ImgWithFallback } from "@/components/Picture";
+import { MobileFormSheet } from "@/components/forms/MobileFormSheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ClientVendor, ClientVendorCreate, ClientVendorPatch } from "@/lib/clientTypes";
@@ -114,7 +115,7 @@ function VendorPickerModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
-      <div className="relative bg-cream border border-wine-deep/15 w-full max-w-lg max-h-[82vh] flex flex-col shadow-2xl">
+      <div className="relative bg-cream border border-wine-deep/15 w-full max-w-lg max-h-[82dvh] flex flex-col shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-wine-deep/10">
           <h3 className="font-display text-lg text-wine-deep">{t("vendors_page.pick_vendor")}</h3>
@@ -203,6 +204,7 @@ export default function VendorsPage() {
 
   const [activeTab, setActiveTab] = useState<"platform" | "external">("platform");
   const [showPicker, setShowPicker] = useState(false);
+  const [showExternalForm, setShowExternalForm] = useState(false);
   const [form, setForm] = useState({
     category: "", name: "", contactName: "", contactEmail: "", contactPhone: "", amount: "",
   });
@@ -294,6 +296,7 @@ export default function VendorsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["client", "vendors"] });
       setForm({ category: "", name: "", contactName: "", contactEmail: "", contactPhone: "", amount: "" });
+      setShowExternalForm(false);
     },
   });
   const update = useMutation({
@@ -432,6 +435,7 @@ export default function VendorsPage() {
                           alt=""
                           aria-hidden="true"
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       </div>
                     ) : (
@@ -519,66 +523,121 @@ export default function VendorsPage() {
       {/* ── EXTERNAL TAB ─────────────────────────────────────────────────────── */}
       {activeTab === "external" && (
         <div className="space-y-5">
-          <p className="text-sm text-neutral-500">{t("vendors_page.external_subtitle")}</p>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <p className="text-sm text-neutral-500">{t("vendors_page.external_subtitle")}</p>
+            <Button
+              onClick={() => setShowExternalForm(true)}
+              className="rounded-none uppercase tracking-wider text-xs shrink-0"
+              variant="default"
+              data-testid="add-external-vendor-btn"
+            >
+              <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
+              {t("vendors_page.add_btn")}
+            </Button>
+          </div>
 
-          {/* Add form */}
-          <form
-            className="bg-cream p-4 border border-neutral-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!form.category || !form.name) return;
-              create.mutate({
-                category: form.category,
-                name: form.name,
-                contactName: form.contactName || null,
-                contactEmail: form.contactEmail || null,
-                contactPhone: form.contactPhone || null,
-                amount: Math.round(Number(form.amount || 0) * 100),
-              });
-            }}
-          >
-            <Input
-              placeholder={t("vendors_page.category")}
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              required
-              data-testid="input-vendor-category"
-            />
-            <Input
-              placeholder={t("vendors_page.name")}
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-              data-testid="input-vendor-name"
-            />
-            <Input
-              placeholder={t("vendors_page.contact")}
-              value={form.contactName}
-              onChange={(e) => setForm({ ...form, contactName: e.target.value })}
-            />
-            <Input
-              placeholder={t("vendors_page.email")}
-              value={form.contactEmail}
-              onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
-            />
-            <Input
-              placeholder={t("vendors_page.phone")}
-              value={form.contactPhone}
-              onChange={(e) => setForm({ ...form, contactPhone: e.target.value })}
-            />
-            <div className="flex gap-2">
-              <Input
-                placeholder="€"
-                type="number"
-                min="0"
-                value={form.amount}
-                onChange={(e) => setForm({ ...form, amount: e.target.value })}
-              />
-              <Button type="submit" className="rounded-none px-3" disabled={create.isPending}>
-                <Plus className="w-4 h-4" aria-hidden="true" />
+          <MobileFormSheet
+            open={showExternalForm}
+            onOpenChange={setShowExternalForm}
+            title={t("vendors_page.add_external_vendor")}
+            closeLabel={t("common.close")}
+            footer={
+              <Button
+                type="submit"
+                form="external-vendor-form"
+                className="w-full rounded-none uppercase tracking-wider text-xs"
+                disabled={create.isPending}
+              >
+                {t("vendors_page.add_btn")}
               </Button>
-            </div>
-          </form>
+            }
+          >
+            <form
+              id="external-vendor-form"
+              className="space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!form.category || !form.name) return;
+                create.mutate({
+                  category: form.category,
+                  name: form.name,
+                  contactName: form.contactName || null,
+                  contactEmail: form.contactEmail || null,
+                  contactPhone: form.contactPhone || null,
+                  amount: Math.round(Number(form.amount || 0) * 100),
+                });
+              }}
+            >
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-neutral-500">
+                  {t("vendors_page.category")} *
+                </label>
+                <Input
+                  required
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  placeholder={t("vendors_page.category")}
+                  data-testid="input-vendor-category"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-neutral-500">
+                  {t("vendors_page.name")} *
+                </label>
+                <Input
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder={t("vendors_page.name")}
+                  data-testid="input-vendor-name"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-neutral-500">
+                  {t("vendors_page.contact")}
+                </label>
+                <Input
+                  value={form.contactName}
+                  onChange={(e) => setForm({ ...form, contactName: e.target.value })}
+                  placeholder={t("vendors_page.contact")}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-neutral-500">
+                  {t("vendors_page.email")}
+                </label>
+                <Input
+                  type="email"
+                  value={form.contactEmail}
+                  onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
+                  placeholder={t("vendors_page.email")}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-neutral-500">
+                  {t("vendors_page.phone")}
+                </label>
+                <Input
+                  type="tel"
+                  value={form.contactPhone}
+                  onChange={(e) => setForm({ ...form, contactPhone: e.target.value })}
+                  placeholder={t("vendors_page.phone")}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-neutral-500">
+                  {t("vendors_page.th_amount")}
+                </label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={form.amount}
+                  onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                  placeholder="€"
+                />
+              </div>
+            </form>
+          </MobileFormSheet>
 
           {/* Table */}
           <div className="bg-cream border border-neutral-200 overflow-x-auto">
