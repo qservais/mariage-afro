@@ -101,33 +101,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/outils/quiz" />
   </url>
   <url>
-    <loc>https://www.mariage-afro.com/a-propos</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/a-propos?lang=fr" />
-    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/a-propos?lang=nl" />
-    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/a-propos?lang=en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/a-propos" />
-  </url>
-  <url>
-    <loc>https://www.mariage-afro.com/prestations</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/prestations?lang=fr" />
-    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/prestations?lang=nl" />
-    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/prestations?lang=en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/prestations" />
-  </url>
-  <url>
-    <loc>https://www.mariage-afro.com/about</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/about?lang=fr" />
-    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/about?lang=nl" />
-    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/about?lang=en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/about" />
-  </url>
-  <url>
     <loc>https://www.mariage-afro.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -135,6 +108,15 @@
     <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/contact?lang=nl" />
     <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/contact?lang=en" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/contact" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/a-propos</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/a-propos?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/a-propos?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/a-propos?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/a-propos" />
   </url>
   <url>
     <loc>https://www.mariage-afro.com/mentions-legales</loc>
@@ -162,5 +144,104 @@
     <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/cookies?lang=nl" />
     <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/cookies?lang=en" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/cookies" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/partenaires/lumiere-d-ebene-photography</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/partenaires/lumiere-d-ebene-photography?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/partenaires/lumiere-d-ebene-photography?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/partenaires/lumiere-d-ebene-photography?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/partenaires/lumiere-d-ebene-photography" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/partenaires/fleurs-d-afrique</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/partenaires/fleurs-d-afrique?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/partenaires/fleurs-d-afrique?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/partenaires/fleurs-d-afrique?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/partenaires/fleurs-d-afrique" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/partenaires/saveurs-du-continent</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/partenaires/saveurs-du-continent?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/partenaires/saveurs-du-continent?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/partenaires/saveurs-du-continent?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/partenaires/saveurs-du-continent" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/partenaires/palais-des-congres-events</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/partenaires/palais-des-congres-events?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/partenaires/palais-des-congres-events?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/partenaires/palais-des-congres-events?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/partenaires/palais-des-congres-events" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/partenaires/mariage-afro</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/partenaires/mariage-afro?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/partenaires/mariage-afro?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/partenaires/mariage-afro?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/partenaires/mariage-afro" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/lieux/e2e-lieu-1778180132501</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180132501?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180132501?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180132501?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180132501" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/lieux/e2e-lieu-1778180175421</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180175421?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180175421?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180175421?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180175421" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/lieux/e2e-lieu-1778180248720</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180248720?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180248720?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180248720?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778180248720" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/lieux/e2e-lieu-1778181309584</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778181309584?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778181309584?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778181309584?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778181309584" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/lieux/e2e-lieu-1778182920371</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778182920371?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778182920371?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778182920371?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778182920371" />
+  </url>
+  <url>
+    <loc>https://www.mariage-afro.com/lieux/e2e-lieu-1778182976884</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778182976884?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="nl-BE" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778182976884?lang=nl" />
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778182976884?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.mariage-afro.com/lieux/e2e-lieu-1778182976884" />
   </url>
 </urlset>

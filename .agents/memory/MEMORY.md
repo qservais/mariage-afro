@@ -12,3 +12,5 @@
 - [Storage URL helper](storage-url-pattern.md) — Use `@/lib/storage-url` (storageUrl / storageUrlOrEmpty) everywhere; never hardcode `/api/storage${path}` or `${BASE}/storage${path}` — those miss either BASE_URL or the `/api` segment.
 - [GCS streaming pattern](gcs-streaming.md) — Never double-convert Node↔Web streams (Readable.toWeb/fromWeb) when piping GCS to Express; use file.createReadStream() + stream/promises pipeline() directly. Also: Picture component needs useEffect reset on src change.
 - [E2E testing quirks](e2e-testing-quirks.md) — stale Clerk auth helper, unreliable in-test `[DB]` steps, and a validation gate to know about before writing runTest() plans.
+- [SEO audit tooling on CSR SPAs](seo-audit-csr-spa.md) — squirrel needs `NODE_TLS_REJECT_UNAUTHORIZED=0`; most `--http` findings on a CSR app are false positives from not executing JS.
+- [Build-time DB scripts in Vite artifacts](vite-artifact-buildtime-scripts.md) — use raw `pg` + `DATABASE_URL`, not `@workspace/db`, since leaf artifacts have no TS loader for scripts.
