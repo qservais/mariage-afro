@@ -171,7 +171,7 @@ function KanbanCard({ lead, selectedId, colStatus, colIndex, colTotal, onOpen, t
         {...listeners}
         {...attributes}
         aria-label={handleAriaLabel}
-        className="absolute top-2 left-1.5 p-0.5 text-neutral-300 hover:text-neutral-600 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-deep focus-visible:ring-offset-1"
+        className="absolute top-0 left-0 min-h-11 min-w-11 flex items-center justify-center text-neutral-300 hover:text-neutral-600 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-wine-deep focus-visible:ring-offset-1"
         tabIndex={0}
       >
         <GripVertical className="w-3 h-3" aria-hidden="true" />
@@ -180,7 +180,7 @@ function KanbanCard({ lead, selectedId, colStatus, colIndex, colTotal, onOpen, t
       {/* Card body — opens detail panel */}
       <button
         onClick={() => onOpen(lead)}
-        className="w-full text-left pl-6 pr-2.5 py-2.5 hover:bg-cream-soft focus:outline-none focus-visible:bg-cream-soft"
+        className="w-full text-left pl-11 pr-2.5 py-2.5 hover:bg-cream-soft focus:outline-none focus-visible:bg-cream-soft"
         tabIndex={0}
         aria-label={`${t("vendor.leads.open_lead", { defaultValue: "Ouvrir" })} ${lead.name}`}
       >

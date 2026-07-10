@@ -7,6 +7,17 @@ import { storageUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface MoodImage {
   id: number;
@@ -196,9 +207,25 @@ export default function InspirationPage() {
                 {addImage.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImagePlus className="w-3.5 h-3.5" />}
                 {t("inspiration.add_image")}
               </Button>
-              <Button size="sm" variant="ghost" className="rounded-none text-xs text-primary" onClick={() => confirm(t("inspiration.confirm_delete_board")) && deleteBoard.mutate(activeBoard.id)}>
-                <Trash2 className="w-3.5 h-3.5" />
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button size="sm" variant="ghost" className="rounded-none text-xs text-primary min-h-11 min-w-11" aria-label={t("inspiration.delete_image")}>
+                    <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{t("inspiration.delete_image")}</AlertDialogTitle>
+                    <AlertDialogDescription>{t("inspiration.confirm_delete_board")}</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{t("inspiration.cancel")}</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => deleteBoard.mutate(activeBoard.id)}>
+                      {t("inspiration.delete_image")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />

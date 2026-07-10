@@ -328,7 +328,9 @@
       "unset_cover": "Remove cover",
       "remove": "Remove",
       "saved": "Gallery updated.",
-      "max_reached": "Maximum of 10 photos reached."
+      "max_reached": "Maximum of 10 photos reached.",
+      "confirm_delete_photo": "Delete this photo from your gallery?",
+      "cancel": "Cancel"
     },
     "services": {
       "title": "My services",

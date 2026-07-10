@@ -112,6 +112,7 @@
     "empty": "Aucun poste budgétaire",
     "toggle_paid": "Basculer payé",
     "delete": "Supprimer",
+    "confirm_delete": "Supprimer ce poste budgétaire ? Cette action est irréversible.",
     "mode_label": "Mode budget",
     "mode_libre": "Budget libre",
     "mode_global": "Budget global",

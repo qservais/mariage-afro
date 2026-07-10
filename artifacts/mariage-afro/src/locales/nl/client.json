@@ -112,6 +112,7 @@
     "empty": "Geen budgetposten",
     "toggle_paid": "Schakel betaald",
     "delete": "Verwijderen",
+    "confirm_delete": "Deze budgetpost verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
     "mode_label": "Budgetmodus",
     "mode_libre": "Vrij budget",
     "mode_global": "Globaal budget",

@@ -6,6 +6,17 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { BudgetItem as Item, BudgetItemCreate, BudgetItemPatch, ClientVendor } from "@/lib/clientTypes";
 import { useCouple } from "@/components/client/ClientLayout";
 import { useToast } from "@/hooks/use-toast";
@@ -306,7 +317,16 @@ export default function BudgetPage() {
                   aria-label={t("budget.progress_label", { pct: progressPct })}
                 />
               </div>
-              <p className="text-sm text-neutral-600">{t("budget.progress_label", { pct: progressPct })}</p>
+              <p className="text-sm text-neutral-600 flex items-center gap-1.5">
+                {progressPct >= 100 ? (
+                  <AlertTriangle className="w-3.5 h-3.5 text-wine-deep flex-shrink-0" aria-hidden="true" />
+                ) : progressPct >= 80 ? (
+                  <AlertTriangle className="w-3.5 h-3.5 text-gold-deep flex-shrink-0" aria-hidden="true" />
+                ) : (
+                  <Check className="w-3.5 h-3.5 text-primary flex-shrink-0" aria-hidden="true" />
+                )}
+                {t("budget.progress_label", { pct: progressPct })}
+              </p>
             </div>
           )}
         </div>
@@ -456,14 +476,14 @@ export default function BudgetPage() {
                       <button
                         onClick={saveEditRow}
                         disabled={update.isPending}
-                        className="p-1.5 text-primary hover:bg-primary/10 transition-colors"
+                        className="min-h-11 min-w-11 inline-flex items-center justify-center text-primary hover:bg-primary/10 transition-colors"
                         aria-label={t("budget.save")}
                       >
                         <Save className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setEditRow(null)}
-                        className="p-1.5 text-neutral-400 hover:text-neutral-700 transition-colors"
+                        className="min-h-11 min-w-11 inline-flex items-center justify-center text-neutral-400 hover:text-neutral-700 transition-colors"
                         aria-label={t("budget.cancel")}
                       >
                         <XIcon className="w-4 h-4" />
@@ -491,18 +511,33 @@ export default function BudgetPage() {
                     <div className="flex items-center justify-end gap-1 can-hover:opacity-0 can-hover:group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                       <button
                         onClick={() => startEditRow(it)}
-                        className="min-h-9 min-w-9 inline-flex items-center justify-center text-neutral-400 hover:text-primary transition-colors"
+                        className="min-h-11 min-w-11 inline-flex items-center justify-center text-neutral-400 hover:text-primary transition-colors"
                         aria-label={t("budget.edit")}
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button
-                        onClick={() => del.mutate(it.id)}
-                        className="min-h-9 min-w-9 inline-flex items-center justify-center text-neutral-400 hover:text-primary transition-colors"
-                        aria-label={t("budget.delete", { defaultValue: "Supprimer" })}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
-                      </button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button
+                            className="min-h-11 min-w-11 inline-flex items-center justify-center text-neutral-400 hover:text-primary transition-colors"
+                            aria-label={t("budget.delete", { defaultValue: "Supprimer" })}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("budget.delete", { defaultValue: "Supprimer" })}</AlertDialogTitle>
+                            <AlertDialogDescription>{t("budget.confirm_delete")}</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t("budget.cancel")}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => del.mutate(it.id)}>
+                              {t("budget.delete", { defaultValue: "Supprimer" })}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </td>
                 </tr>

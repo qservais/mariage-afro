@@ -124,7 +124,7 @@ export default function VendorAvailabilityPage() {
           <button
             type="button"
             onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
-            className="p-1.5 hover:bg-neutral-100"
+            className="min-h-11 min-w-11 inline-flex items-center justify-center hover:bg-neutral-100"
             aria-label={t("vendor.availability.prev_month")}
             data-testid="button-prev-month"
           >
@@ -136,7 +136,7 @@ export default function VendorAvailabilityPage() {
           <button
             type="button"
             onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
-            className="p-1.5 hover:bg-neutral-100"
+            className="min-h-11 min-w-11 inline-flex items-center justify-center hover:bg-neutral-100"
             aria-label={t("vendor.availability.next_month")}
             data-testid="button-next-month"
           >
@@ -251,7 +251,7 @@ export default function VendorAvailabilityPage() {
                   <button
                     type="button"
                     onClick={() => unblockMutation.mutate(row.date)}
-                    className="p-1.5 text-neutral-500 hover:text-wine-deep"
+                    className="min-h-11 min-w-11 inline-flex items-center justify-center text-neutral-500 hover:text-wine-deep"
                     aria-label={t("vendor.availability.remove_block")}
                   >
                     <X className="w-4 h-4" />

@@ -112,6 +112,7 @@
     "empty": "No budget items",
     "toggle_paid": "Toggle paid",
     "delete": "Delete",
+    "confirm_delete": "Delete this budget item? This action cannot be undone.",
     "mode_label": "Budget mode",
     "mode_libre": "Free budget",
     "mode_global": "Global budget",

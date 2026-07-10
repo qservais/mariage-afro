@@ -5,6 +5,17 @@ import { UploadCloud, Trash2, Star, StarOff, Loader2 } from "lucide-react";
 import { vendorApi, proxyUpload } from "@/lib/vendorApi";
 import { storageUrl } from "@/lib/storage-url";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
 interface VendorProfile {
@@ -132,7 +143,7 @@ export default function VendorGalleryPage() {
                     {t("vendor.gallery.cover_badge")}
                   </span>
                 )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 group-focus-within:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
+                <div className="absolute inset-0 bg-black/0 can-hover:group-hover:bg-black/40 group-focus-within:bg-black/40 transition-colors flex items-center justify-center gap-2 can-hover:opacity-0 can-hover:group-hover:opacity-100 group-focus-within:opacity-100">
                   <button
                     type="button"
                     onClick={() => {
@@ -143,30 +154,46 @@ export default function VendorGalleryPage() {
                       setCover(nextCover);
                       save.mutate({ images, coverImage: nextCover });
                     }}
-                    className="bg-cream/90 hover:bg-cream p-2"
+                    className="min-h-11 min-w-11 inline-flex items-center justify-center bg-cream/90 hover:bg-cream"
                     aria-label={isCover ? t("vendor.gallery.unset_cover") : t("vendor.gallery.set_cover")}
                     data-testid={`button-cover-${idx}`}
                   >
                     {isCover ? <StarOff className="w-4 h-4" aria-hidden="true" /> : <Star className="w-4 h-4" aria-hidden="true" />}
                   </button>
-                  <button
-                    type="button"
-                    disabled={images.length === 1}
-                    title={images.length === 1 ? t("vendor.gallery.cannot_remove_last", { defaultValue: "Impossible de supprimer la dernière photo de couverture" }) : undefined}
-                    onClick={() => {
-                      if (images.length === 1) return;
-                      const next = images.filter((_, i) => i !== idx);
-                      const nextCover = cover === img ? (next[0] ?? null) : cover;
-                      setImages(next);
-                      setCover(nextCover);
-                      save.mutate({ images: next, coverImage: nextCover });
-                    }}
-                    className="bg-cream/90 hover:bg-cream p-2 text-wine-deep disabled:opacity-40 disabled:cursor-not-allowed"
-                    aria-label={t("vendor.gallery.remove")}
-                    data-testid={`button-remove-${idx}`}
-                  >
-                    <Trash2 className="w-4 h-4" aria-hidden="true" />
-                  </button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        type="button"
+                        disabled={images.length === 1}
+                        title={images.length === 1 ? t("vendor.gallery.cannot_remove_last", { defaultValue: "Impossible de supprimer la dernière photo de couverture" }) : undefined}
+                        className="min-h-11 min-w-11 inline-flex items-center justify-center bg-cream/90 hover:bg-cream text-wine-deep disabled:opacity-40 disabled:cursor-not-allowed"
+                        aria-label={t("vendor.gallery.remove")}
+                        data-testid={`button-remove-${idx}`}
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("vendor.gallery.remove")}</AlertDialogTitle>
+                        <AlertDialogDescription>{t("vendor.gallery.confirm_delete_photo")}</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>{t("vendor.gallery.cancel")}</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            const next = images.filter((_, i) => i !== idx);
+                            const nextCover = cover === img ? (next[0] ?? null) : cover;
+                            setImages(next);
+                            setCover(nextCover);
+                            save.mutate({ images: next, coverImage: nextCover });
+                          }}
+                        >
+                          {t("vendor.gallery.remove")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             );

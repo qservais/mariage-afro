@@ -9,6 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useCouple } from "@/components/client/ClientLayout";
 
 interface Cagnotte {
@@ -168,15 +179,30 @@ export default function CagnottePage() {
                   >
                     <Edit2 className="w-4 h-4" aria-hidden="true" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon-touch"
-                    onClick={() => confirm(t("cagnotte.confirm_delete")) && del.mutate(c.id)}
-                    className="text-neutral-400 hover:text-primary"
-                    aria-label={t("cagnotte.delete", { defaultValue: "Supprimer" })}
-                  >
-                    <Trash2 className="w-4 h-4" aria-hidden="true" />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon-touch"
+                        className="text-neutral-400 hover:text-primary"
+                        aria-label={t("cagnotte.delete", { defaultValue: "Supprimer" })}
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("cagnotte.delete", { defaultValue: "Supprimer" })}</AlertDialogTitle>
+                        <AlertDialogDescription>{t("cagnotte.confirm_delete")}</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>{t("cagnotte.cancel")}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => del.mutate(c.id)}>
+                          {t("cagnotte.delete", { defaultValue: "Supprimer" })}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
               {c.iban && <p className="text-xs text-neutral-500">IBAN: <span className="font-mono">{c.iban}</span></p>}

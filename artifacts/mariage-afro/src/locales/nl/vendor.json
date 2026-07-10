@@ -328,7 +328,9 @@
       "unset_cover": "Omslag verwijderen",
       "remove": "Verwijderen",
       "saved": "Galerij bijgewerkt.",
-      "max_reached": "Maximum van 10 foto's bereikt."
+      "max_reached": "Maximum van 10 foto's bereikt.",
+      "confirm_delete_photo": "Deze foto uit uw galerij verwijderen?",
+      "cancel": "Annuleren"
     },
     "services": {
       "title": "Mijn diensten",

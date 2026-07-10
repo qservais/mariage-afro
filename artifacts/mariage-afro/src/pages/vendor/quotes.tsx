@@ -7,6 +7,17 @@ import { vendorApi } from "@/lib/vendorApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
 interface QuoteService { label: string; qty: number; unitPrice: number }
@@ -440,27 +451,43 @@ export default function VendorQuotesPage() {
                               onClick={(e) => { e.stopPropagation(); sendMutation.mutate(q.id); }}
                               disabled={sendMutation.isPending}
                               aria-label={t("vendor.quotes.send_btn")}
-                              className="p-1.5 border border-wine-deep text-wine-deep hover:bg-wine-deep hover:text-cream transition-colors"
+                              className="min-h-11 min-w-11 inline-flex items-center justify-center border border-wine-deep text-wine-deep hover:bg-wine-deep hover:text-cream transition-colors"
                               data-testid={`button-send-${q.id}`}
                             >
                               <Send className="w-3.5 h-3.5" aria-hidden="true" />
                             </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); if (confirm(t("vendor.quotes.delete_confirm"))) deleteMutation.mutate(q.id); }}
-                              disabled={deleteMutation.isPending}
-                              aria-label={t("vendor.quotes.delete_btn")}
-                              className="p-1.5 border border-neutral-300 text-neutral-500 hover:border-primary hover:text-primary transition-colors"
-                              data-testid={`button-delete-${q.id}`}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
-                            </button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <button
+                                  onClick={(e) => e.stopPropagation()}
+                                  disabled={deleteMutation.isPending}
+                                  aria-label={t("vendor.quotes.delete_btn")}
+                                  className="min-h-11 min-w-11 inline-flex items-center justify-center border border-neutral-300 text-neutral-500 hover:border-primary hover:text-primary transition-colors"
+                                  data-testid={`button-delete-${q.id}`}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                                </button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>{t("vendor.quotes.delete_btn")}</AlertDialogTitle>
+                                  <AlertDialogDescription>{t("vendor.quotes.delete_confirm")}</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>{t("vendor.quotes.cancel", { defaultValue: "Annuler" })}</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deleteMutation.mutate(q.id)}>
+                                    {t("vendor.quotes.delete_btn")}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </>
                         )}
                         {q.status === "sent" && (
                           <button
                             onClick={(e) => { e.stopPropagation(); startEditing(q); }}
                             aria-label={t("vendor.quotes.edit_btn", { defaultValue: "Modifier" })}
-                            className="p-1.5 border border-neutral-300 text-neutral-500 hover:border-wine-deep hover:text-wine-deep transition-colors"
+                            className="min-h-11 min-w-11 inline-flex items-center justify-center border border-neutral-300 text-neutral-500 hover:border-wine-deep hover:text-wine-deep transition-colors"
                             data-testid={`button-edit-${q.id}`}
                           >
                             <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
