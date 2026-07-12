@@ -798,10 +798,13 @@ export default function PrestataireDetail() {
                   <p className="text-[10px] uppercase tracking-[0.3em] text-gold-deep font-semibold mb-2">
                     {t("vendor_detail.cultural_styles")}
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-2">
                     {vendor.culturalStyles.map((s) => (
-                      <span key={s} className="px-2 py-0.5 bg-wine-deep/5 text-xs">
-                        {t(`marketplace.cultural.${s}`, { defaultValue: s.replace(/_/g, " ") })}
+                      <span
+                        key={s}
+                        className="px-3 py-1 rounded-full border border-gold-deep/30 bg-gold-deep/10 text-wine-deep text-xs font-medium tracking-wide"
+                      >
+                        {t(`marketplace.styles.${s}`, { defaultValue: s.replace(/_/g, " ") })}
                       </span>
                     ))}
                   </div>

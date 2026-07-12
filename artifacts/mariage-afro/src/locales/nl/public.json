@@ -600,6 +600,16 @@
       "haitien": "Haïtiaans",
       "mixte": "Gemengd / Multicultureel"
     },
+    "styles": {
+      "afro": "Afrikaanse huwelijken",
+      "mixte": "Gemengde huwelijken",
+      "traditionnel": "Traditionele ceremonies",
+      "religieux": "Religieuze ceremonies",
+      "destination": "Bestemming België",
+      "luxe": "Luxe-evenementen",
+      "intime": "Intieme huwelijken (<50)",
+      "grand_format": "Grote formaten (200+)"
+    },
     "languages": {
       "fr": "Frans",
       "nl": "Nederlands",

@@ -102,10 +102,14 @@ const COOKIE_OPTS = {
 };
 
 async function getPendingCount(): Promise<number> {
+  // A couple only becomes actionable once they've completed onboarding — an
+  // auto-provisioned Clerk row with no onboarding data is not a "pending
+  // validation" and must not inflate the sidebar badge (see /admin/accounts,
+  // which already applies the same onboardedAt guard for vendor accounts).
   const [[cp], [va]] = await Promise.all([
     db.select({ count: sql<number>`count(*)::int` })
       .from(couplesTable)
-      .where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected"))),
+      .where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected"), isNotNull(couplesTable.onboardedAt))),
     db.select({ count: sql<number>`count(*)::int` })
       .from(vendorAccountsTable)
       .where(and(eq(vendorAccountsTable.status, "pending"), isNotNull(vendorAccountsTable.onboardedAt))),
@@ -863,7 +867,7 @@ router.get("/accounts", adminAuth, async (req, res) => {
       validatedAt: couplesTable.validatedAt,
     })
     .from(couplesTable)
-    .where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected")))
+    .where(and(isNull(couplesTable.validatedAt), ne(couplesTable.status, "rejected"), isNotNull(couplesTable.onboardedAt)))
     .orderBy(desc(couplesTable.createdAt));
 
   const vendors = await db
