@@ -136,6 +136,12 @@ app.use("/admin", (_req, res, next) => {
     "Content-Security-Policy",
     "default-src 'none';script-src 'self' 'unsafe-inline';script-src-attr 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data:;connect-src 'self';form-action 'self';base-uri 'self';frame-ancestors 'none'",
   );
+  // Admin pages embed a CSRF token tied to the current session cookie. If an
+  // intermediary (browser back/forward cache, shared proxy) ever serves a
+  // cached copy, the embedded token can go stale relative to the live
+  // cookie and every save 403s with "Token CSRF invalide" for no visible
+  // reason. Admin responses must never be cached.
+  res.setHeader("Cache-Control", "no-store");
   next();
 });
 app.use("/admin", adminRouter);

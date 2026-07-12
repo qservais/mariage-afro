@@ -18,12 +18,18 @@ import { Request, Response, NextFunction } from "express";
 const CSRF_COOKIE = "__xcsrf";
 export const CSRF_FIELD = "_csrf";
 
+// Must match the admin session cookie's sameSite/maxAge (see ADMIN_COOKIE's
+// COOKIE_OPTS in routes/admin.ts) — a shorter-lived CSRF cookie than the
+// session it protects causes 403s on saves for any admin whose session
+// outlives the CSRF cookie (e.g. an edit page left open past the old 4h
+// expiry, or working across a login that's hours old). "strict" was also
+// stricter than the session cookie's "lax" for no functional benefit here.
 const COOKIE_OPTS = {
   httpOnly: true,
   signed: true,
-  sameSite: "strict" as const,
+  sameSite: "lax" as const,
   secure: process.env.NODE_ENV === "production",
-  maxAge: 4 * 60 * 60 * 1000,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
   path: "/admin",
 };
 
