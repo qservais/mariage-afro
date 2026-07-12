@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   CalendarCheck2,
@@ -16,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/lib/auth";
 import { comparator } from "@/lib/comparator";
 import {
   getCategoryConfig,
@@ -49,6 +51,8 @@ const ACTIONS: Array<{ key: VendorActionType; Icon: typeof Send }> = [
 
 export default function VendorActionPanel({ vendor }: VendorActionPanelProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { isSignedIn } = useUser();
   const [activeAction, setActiveAction] = useState<VendorActionType | null>(null);
   const [inProject, setInProject] = useState<boolean>(false);
   const { toast } = useToast();
@@ -65,6 +69,10 @@ export default function VendorActionPanel({ vendor }: VendorActionPanelProps) {
   }, [vendor.id]);
 
   function toggleProject() {
+    if (!isSignedIn) {
+      navigate("/sign-in");
+      return;
+    }
     const { ids, reachedMax } = comparator.toggle("vendor", vendor.id);
     if (reachedMax) {
       toast({
