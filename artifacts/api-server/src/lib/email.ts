@@ -1,13 +1,55 @@
 import { Resend } from "resend";
 import { logger } from "./logger";
 import { dict, normalizeLocale, pick, type Locale } from "./email/i18n";
-import { escapeHtml as esc, plainText, row, wrap } from "./email/templates";
+import { escapeHtml as esc, formatEmailDate, plainText, row, wrap } from "./email/templates";
 
 export { escapeHtml } from "./email/templates";
 export type { Locale } from "./email/i18n";
 
 const FROM = process.env.EMAIL_FROM || "Mariage Afro <noreply@mariage-afro.com>";
 const ADMIN_TO = process.env.ADMIN_EMAIL || process.env.ADMIN_NOTIFY_EMAIL || "info@mariage-afro.com";
+
+// Labels for enum values entered via the public contact/lead forms
+// (contact.tsx BUDGET_KEYS / wedding_type_options / services_options) — the
+// raw key (e.g. "under_10k") must never leak into an email, only the label.
+const BUDGET_LABELS: Record<string, Record<Locale, string>> = {
+  under_10k: { fr: "Moins de 10 000 €", nl: "Minder dan € 10.000", en: "Under €10,000" },
+  "10k_25k": { fr: "10 000 € – 25 000 €", nl: "€ 10.000 – € 25.000", en: "€10,000 – €25,000" },
+  "25k_50k": { fr: "25 000 € – 50 000 €", nl: "€ 25.000 – € 50.000", en: "€25,000 – €50,000" },
+  over_50k: { fr: "Plus de 50 000 €", nl: "Meer dan € 50.000", en: "Over €50,000" },
+  undecided: { fr: "Pas encore défini", nl: "Nog niet bepaald", en: "Not decided yet" },
+};
+const WEDDING_TYPE_LABELS: Record<string, Record<Locale, string>> = {
+  afro: { fr: "Mariage afro", nl: "Afrikaanse bruiloft", en: "Afro wedding" },
+  mixte: { fr: "Mariage mixte", nl: "Gemengde bruiloft", en: "Mixed wedding" },
+  traditional: { fr: "Cérémonie traditionnelle", nl: "Traditionele ceremonie", en: "Traditional ceremony" },
+  religious: { fr: "Cérémonie religieuse", nl: "Religieuze ceremonie", en: "Religious ceremony" },
+  laique: { fr: "Cérémonie laïque", nl: "Burgerlijke ceremonie", en: "Non-religious ceremony" },
+  civil: { fr: "Mariage civil", nl: "Burgerlijk huwelijk", en: "Civil wedding" },
+  other: { fr: "Autre", nl: "Andere", en: "Other" },
+};
+const SERVICE_LABELS: Record<string, Record<Locale, string>> = {
+  wedding_planning: { fr: "Wedding Planning", nl: "Wedding Planning", en: "Wedding Planning" },
+  decoration: { fr: "Décoration & Scénographie", nl: "Decoratie & Scenografie", en: "Decoration & Styling" },
+  catering: { fr: "Traiteur", nl: "Traiteur", en: "Catering" },
+  photo_video: { fr: "Photo & Vidéo", nl: "Foto & Video", en: "Photo & Video" },
+  dj_music: { fr: "DJ & Animation musicale", nl: "DJ & Muziekanimatie", en: "DJ & Music" },
+  venue_search: { fr: "Recherche de lieu", nl: "Locatie zoeken", en: "Venue search" },
+  coordination: { fr: "Coordination Jour J", nl: "Coördinatie op de dag zelf", en: "Day-of coordination" },
+  other: { fr: "Autre", nl: "Andere", en: "Other" },
+};
+
+function budgetLabel(key: string | null | undefined, locale: Locale): string | null | undefined {
+  if (!key) return key;
+  return BUDGET_LABELS[key]?.[locale] ?? key;
+}
+function weddingTypeLabel(key: string | null | undefined, locale: Locale): string | null | undefined {
+  if (!key) return key;
+  return WEDDING_TYPE_LABELS[key]?.[locale] ?? key;
+}
+function servicesLabel(keys: string[] | null | undefined, locale: Locale): string {
+  return (keys ?? []).map((k) => SERVICE_LABELS[k]?.[locale] ?? k).join(", ");
+}
 
 export function appUrl(): string {
   const explicit = process.env.PUBLIC_APP_URL;
@@ -62,7 +104,7 @@ export interface LeadEmailPayload {
 
 export async function sendLeadEmails(payload: LeadEmailPayload, log = logger): Promise<void> {
   const locale = normalizeLocale(payload.locale);
-  const services = (payload.services ?? []).join(", ");
+  const services = servicesLabel(payload.services, locale);
   const isService = payload.category === "service-request";
   const T = dict.adminNewLead;
   const adminTitle = isService
@@ -72,10 +114,10 @@ export async function sendLeadEmails(payload: LeadEmailPayload, log = logger): P
     row(pick(T.rowName, locale), payload.name) +
     row(pick(T.rowEmail, locale), payload.email) +
     row(pick(T.rowPhone, locale), payload.phone) +
-    row(pick(T.rowDate, locale), payload.weddingDate) +
+    row(pick(T.rowDate, locale), formatEmailDate(payload.weddingDate)) +
     row(pick(T.rowGuests, locale), payload.guestCount ?? undefined) +
-    row(pick(T.rowBudget, locale), payload.budget) +
-    row(pick(T.rowType, locale), payload.weddingType) +
+    row(pick(T.rowBudget, locale), budgetLabel(payload.budget, locale)) +
+    row(pick(T.rowType, locale), weddingTypeLabel(payload.weddingType, locale)) +
     row(pick(T.rowServices, locale), services) +
     row(pick(T.rowMessage, locale), payload.message);
 
@@ -128,7 +170,7 @@ export async function sendVendorRequestEmails(p: VendorRequestEmailPayload, log 
     row(pick(T.rowName, "fr"), p.name) +
     row(pick(T.rowEmail, "fr"), p.email) +
     row(pick(T.rowPhone, "fr"), p.phone) +
-    row(pick(T.rowDate, "fr"), p.weddingDate) +
+    row(pick(T.rowDate, "fr"), formatEmailDate(p.weddingDate)) +
     row(pick(T.rowMessage, "fr"), p.message);
 
   await sendOne({
@@ -184,7 +226,7 @@ export async function notifyQuoteRequestConfirmation(p: NotifyQuoteRequestConfir
   const rows =
     row(pick(T.rowVendor, locale), p.vendorName) +
     row("Type", reqLabel) +
-    row(pick(T.rowDate, locale), p.weddingDate) +
+    row(pick(T.rowDate, locale), formatEmailDate(p.weddingDate)) +
     row(pick(T.rowPhone, locale), p.phone) +
     row(pick(T.rowMessage, locale), p.message);
 
@@ -232,7 +274,7 @@ export async function sendVenueRequestEmails(p: VenueRequestEmailPayload, log = 
     row(pick(T.rowName, "fr"), p.name) +
     row(pick(T.rowEmail, "fr"), p.email) +
     row(pick(T.rowPhone, "fr"), p.phone) +
-    row(pick(T.rowDate, "fr"), p.weddingDate) +
+    row(pick(T.rowDate, "fr"), formatEmailDate(p.weddingDate)) +
     row(pick(T.rowGuests, "fr"), p.guestCount ?? undefined) +
     row(pick(T.rowMessage, "fr"), p.message);
 
@@ -245,7 +287,7 @@ export async function sendVenueRequestEmails(p: VenueRequestEmailPayload, log = 
   const rowsClient =
     row(venueLabel, p.venueName) +
     row(typeLabel, reqLabel) +
-    row(pick(T.rowDate, locale), p.weddingDate) +
+    row(pick(T.rowDate, locale), formatEmailDate(p.weddingDate)) +
     row(pick(T.rowGuests, locale), p.guestCount ?? undefined) +
     row(pick(T.rowMessage, locale), p.message);
   const greeting = pick(dict.greeting(p.name), locale);
@@ -291,7 +333,7 @@ export async function notifyAdminNewLead(p: NotifyAdminLeadPayload, log = logger
     "vendor-request": `Demande prestataire (${p.vendorName ?? "?"})`,
     "venue-request": `Demande lieu (${p.venueName ?? "?"})`,
   };
-  const services = (p.services ?? []).join(", ");
+  const services = servicesLabel(p.services, "fr");
   const rows =
     row("Source", sourceLabel[p.source]) +
     row(pick(T.rowVendor, "fr"), p.vendorName) +
@@ -299,10 +341,10 @@ export async function notifyAdminNewLead(p: NotifyAdminLeadPayload, log = logger
     row(pick(T.rowName, "fr"), p.name) +
     row(pick(T.rowEmail, "fr"), p.email) +
     row(pick(T.rowPhone, "fr"), p.phone) +
-    row(pick(T.rowDate, "fr"), p.weddingDate) +
+    row(pick(T.rowDate, "fr"), formatEmailDate(p.weddingDate)) +
     row(pick(T.rowGuests, "fr"), p.guestCount ?? undefined) +
-    row(pick(T.rowBudget, "fr"), p.budget) +
-    row(pick(T.rowType, "fr"), p.weddingType) +
+    row(pick(T.rowBudget, "fr"), budgetLabel(p.budget, "fr")) +
+    row(pick(T.rowType, "fr"), weddingTypeLabel(p.weddingType, "fr")) +
     row(pick(T.rowServices, "fr"), services) +
     row(pick(T.rowMessage, "fr"), p.message);
 
@@ -341,7 +383,7 @@ export async function notifyVendorNewLead(p: NotifyVendorLeadPayload, log = logg
     row(pick(adminT.rowName, locale), p.contactName) +
     row(pick(adminT.rowEmail, locale), p.contactEmail) +
     row(pick(adminT.rowPhone, locale), p.contactPhone) +
-    row(pick(adminT.rowDate, locale), p.weddingDate) +
+    row(pick(adminT.rowDate, locale), formatEmailDate(p.weddingDate)) +
     row("Type", p.requestType) +
     row(pick(adminT.rowMessage, locale), p.message);
 
