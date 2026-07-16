@@ -19,6 +19,7 @@ import { eq, desc, asc, sql, and, isNull, isNotNull } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
 import { generateCsrfToken, requireCsrf, CSRF_FIELD } from "../middlewares/adminCsrf";
 import { adminContentLayout as contentLayout } from "../lib/adminLayout";
+import { formatPhoneDisplay } from "../lib/phone";
 import { notifyVendorApproved, notifyConversationMessage, notifyVendorInvitation, notifyPartnerApplicationApproved } from "../lib/email";
 
 const router = Router();
@@ -1458,7 +1459,7 @@ router.get("/content/vendor-accounts", async (_req: Request, res: Response) => {
     return `<div class="item">
       <h3>${escHtml(a.businessName || "—")} <span class="badge ${a.status === "approved" ? "active" : "inactive"}">${escHtml(a.status)}</span></h3>
       <p>${escHtml(a.category || "—")} · ${escHtml(a.city || "—")}</p>
-      <p style="font-size:12px;color:#666">${escHtml(a.contactName)} · ${escHtml(a.email)}${a.phone ? ` · ${escHtml(a.phone)}` : ""}</p>
+      <p style="font-size:12px;color:#666">${escHtml(a.contactName)} · ${escHtml(a.email)}${a.phone ? ` · ${escHtml(formatPhoneDisplay(a.phone))}` : ""}</p>
       ${a.website ? `<p style="font-size:12px"><a href="${escHtml(a.website)}" target="_blank" rel="noopener">${escHtml(a.website)}</a></p>` : ""}
       ${a.description ? `<p style="font-size:12px;color:#555;margin-top:8px">${escHtml(a.description)}</p>` : ""}
       <div class="meta" style="margin-top:8px">
@@ -1561,7 +1562,7 @@ router.get("/content/partner-applications", async (req: Request, res: Response) 
     return `<div class="item">
       <h3>${escHtml(a.businessName)} <span class="badge ${statusColor}">${escHtml(a.status)}</span></h3>
       <p style="font-size:13px;color:#555">${escHtml(a.category)}</p>
-      <p style="font-size:12px;color:#666;margin-top:4px">${escHtml(a.contactName)} · <a href="mailto:${escHtml(a.email)}">${escHtml(a.email)}</a>${a.phone ? ` · ${escHtml(a.phone)}` : ""}</p>
+      <p style="font-size:12px;color:#666;margin-top:4px">${escHtml(a.contactName)} · <a href="mailto:${escHtml(a.email)}">${escHtml(a.email)}</a>${a.phone ? ` · ${escHtml(formatPhoneDisplay(a.phone))}` : ""}</p>
       ${a.website ? `<p style="font-size:12px;margin-top:4px"><a href="${escHtml(a.website)}" target="_blank" rel="noopener">${escHtml(a.website)}</a></p>` : ""}
       ${renderSocial(a)}
       ${a.description ? `<p style="font-size:12px;color:#555;margin-top:8px;font-style:italic">${escHtml(a.description)}</p>` : ""}

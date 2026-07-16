@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Loader2, Printer, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatPhoneDisplay } from "@/lib/phone";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -111,7 +112,7 @@ export default function QuoteViewPage() {
               <p className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-1">Devis</p>
               <h1 className="font-display text-2xl text-[#68191e]">{vendor?.businessName ?? "Prestataire"}</h1>
               {vendor?.email && <p className="text-xs text-neutral-500 mt-1">{vendor.email}</p>}
-              {vendor?.phone && <p className="text-xs text-neutral-500">{vendor.phone}</p>}
+              {vendor?.phone && <p className="text-xs text-neutral-500">{formatPhoneDisplay(vendor.phone)}</p>}
             </div>
             <div className="text-right text-xs text-neutral-500 space-y-0.5">
               <p>{t("quote_view.date", { defaultValue: "Date" })} : {fmtDate(quote.sentAt ?? quote.createdAt)}</p>

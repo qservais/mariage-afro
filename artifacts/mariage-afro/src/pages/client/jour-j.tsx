@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import type { JourJEvent, JourJEventCreate, JourJEventPatch, ClientVendor } from "@/lib/clientTypes";
+import { formatPhoneDisplay, formatPhoneHref } from "@/lib/phone";
 
 interface Ev { id: number; time: string; title: string; responsible: string | null; done: boolean; notes: string | null }
 
@@ -155,7 +156,7 @@ export default function JourJPage() {
               <p className="text-sm font-medium">{v.name}</p>
               <p className="text-xs text-neutral-500">{v.category}</p>
             </div>
-            <a href={`tel:${v.contactPhone}`} className="text-primary font-bold text-sm">{v.contactPhone}</a>
+            <a href={`tel:${formatPhoneHref(v.contactPhone)}`} className="text-primary font-bold text-sm">{formatPhoneDisplay(v.contactPhone)}</a>
           </div>
         ))}
         {emergencyContacts.length === 0 && <p className="px-4 py-6 text-center text-neutral-400 text-sm">{t("jour_j.no_contacts")}</p>}
