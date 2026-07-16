@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
+import { GUIDE_GRATUIT_ENABLED } from "@/lib/featureFlags";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/layout/ScrollToTop";
@@ -142,7 +143,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <Header />
       <main id="main-content" className="flex-1">{children}</main>
       <Footer />
-      <ExitIntentPopup />
+      {GUIDE_GRATUIT_ENABLED && <ExitIntentPopup />}
     </div>
   );
 }
