@@ -251,6 +251,10 @@ export const marketplaceVenuesTable = pgTable("marketplace_venues", {
   coverImage: text("cover_image"),
   active: boolean("active").notNull().default(true),
   // LOT 5 — geo, filtres
+  // Task 11: admin now enters a postal address; latitude/longitude are
+  // derived automatically via Nominatim geocoding on save and kept as the
+  // internal source of truth for map/filter logic — no longer hand-typed.
+  address: text("address"),
   latitude: text("latitude"),
   longitude: text("longitude"),
   region: text("region"),

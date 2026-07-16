@@ -20,6 +20,7 @@ import { adminAuth } from "../middlewares/adminAuth";
 import { generateCsrfToken, requireCsrf, CSRF_FIELD } from "../middlewares/adminCsrf";
 import { adminContentLayout as contentLayout } from "../lib/adminLayout";
 import { formatPhoneDisplay } from "../lib/phone";
+import { geocodeAddress } from "../lib/geocode";
 import { notifyVendorApproved, notifyConversationMessage, notifyVendorInvitation, notifyPartnerApplicationApproved } from "../lib/email";
 
 const router = Router();
@@ -501,7 +502,7 @@ function generateVenueSlugAdmin(name: string): string {
     .slice(0, 80);
 }
 
-function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean;latitude?:string|null;longitude?:string|null;coverImage?:string|null}> = {}, error = "", csrfToken = ""): string {
+function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean;address?:string|null;latitude?:string|null;longitude?:string|null;coverImage?:string|null}> = {}, error = "", csrfToken = ""): string {
   const existingImages: string[] = Array.isArray(v.images)
     ? v.images
     : typeof v.images === "string"
@@ -531,10 +532,13 @@ function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:str
         <label>Style (ex: Moderne, Château, Industriel)<input name="style" value="${escHtml(v.style)}"></label>
         <label>Description<textarea name="description">${escHtml(v.description)}</textarea></label>
         <label>Options (une par ligne)<textarea name="options">${(Array.isArray(v.options) ? v.options : typeof v.options === "string" ? (v.options as string).split("\n").map(s => s.trim()).filter(Boolean) : []).join("\n")}</textarea></label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <label>Latitude<input name="latitude" value="${escHtml(v.latitude ?? "")}"></label>
-          <label>Longitude<input name="longitude" value="${escHtml(v.longitude ?? "")}"></label>
-        </div>
+        <label>Adresse *
+          <span style="font-size:11px;color:#888"> — géocodée automatiquement via OpenStreetMap à l'enregistrement</span>
+          <input name="address" required value="${escHtml(v.address ?? "")}" placeholder="ex: Avenue Louise 231, 1050 Bruxelles">
+        </label>
+        ${v.latitude && v.longitude
+          ? `<p style="font-size:11px;color:#888">Position actuelle : ${escHtml(v.latitude)}, ${escHtml(v.longitude)}</p>`
+          : ""}
       </div>
 
       <div class="form-section">
@@ -737,9 +741,15 @@ router.get("/content/venues/new", (_req: Request, res: Response) => {
 
 router.post("/content/venues/new", async (req: Request, res: Response) => {
   const b = req.body as Record<string, string>;
-  if (!b.name || !b.city) {
+  if (!b.name || !b.city || !b.address?.trim()) {
     const csrfToken = generateCsrfToken(req, res);
-    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom et ville sont requis.", csrfToken)}`, "", csrfToken, "/content/venues"));
+    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom, ville et adresse sont requis.", csrfToken)}`, "", csrfToken, "/content/venues"));
+    return;
+  }
+  const geocoded = await geocodeAddress(b.address);
+  if (!geocoded) {
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Adresse introuvable sur OpenStreetMap — vérifiez l'orthographe ou précisez-la (numéro, ville, pays).", csrfToken)}`, "", csrfToken, "/content/venues"));
     return;
   }
   const rawSlug = (b.slug ?? "").trim() || generateVenueSlugAdmin(b.name);
@@ -759,8 +769,9 @@ router.post("/content/venues/new", async (req: Request, res: Response) => {
     images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     coverImage: (b.coverImage && isSafeImagePath(b.coverImage)) ? b.coverImage : null,
     active: b.active === "1",
-    latitude: b.latitude?.trim() || null,
-    longitude: b.longitude?.trim() || null,
+    address: b.address.trim(),
+    latitude: geocoded.latitude,
+    longitude: geocoded.longitude,
   });
   res.redirect("/admin/content/venues");
 });
@@ -775,6 +786,17 @@ router.get("/content/venues/:id/edit", async (req: Request, res: Response) => {
 router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const b = req.body as Record<string, string>;
+  if (!b.address?.trim()) {
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier</h1>${venueForm({ ...b, id }, "L'adresse est requise.", csrfToken)}`, "", csrfToken, "/content/venues"));
+    return;
+  }
+  const geocoded = await geocodeAddress(b.address);
+  if (!geocoded) {
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier</h1>${venueForm({ ...b, id }, "Adresse introuvable sur OpenStreetMap — vérifiez l'orthographe ou précisez-la (numéro, ville, pays).", csrfToken)}`, "", csrfToken, "/content/venues"));
+    return;
+  }
   const [existing] = await db.select({ slug: marketplaceVenuesTable.slug }).from(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.id, id));
   const rawSlug = (b.slug ?? "").trim() || generateVenueSlugAdmin(b.name);
   const baseSlug = rawSlug.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
@@ -794,8 +816,9 @@ router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
     images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     coverImage: (b.coverImage && isSafeImagePath(b.coverImage)) ? b.coverImage : null,
     active: b.active === "1",
-    latitude: b.latitude?.trim() || null,
-    longitude: b.longitude?.trim() || null,
+    address: b.address.trim(),
+    latitude: geocoded.latitude,
+    longitude: geocoded.longitude,
   }).where(eq(marketplaceVenuesTable.id, id));
   res.redirect("/admin/content/venues");
 });
