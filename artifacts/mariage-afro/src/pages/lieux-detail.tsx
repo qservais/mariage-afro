@@ -241,9 +241,9 @@ export default function LieuDetail() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { data: venue, isLoading, isError } = useQuery<VenueDetail>({
-    queryKey: ["venue-detail", slug],
+    queryKey: ["venue-detail", slug, lang],
     queryFn: async () => {
-      const res = await fetch(`/api/marketplace/venues/${encodeURIComponent(slug ?? "")}`, { cache: "no-store" });
+      const res = await fetch(`/api/marketplace/venues/${encodeURIComponent(slug ?? "")}?locale=${lang}`, { cache: "no-store" });
       if (!res.ok) throw new Error("not_found");
       return res.json();
     },

@@ -146,14 +146,15 @@ export default function PrestataireDetail() {
   const { t, i18n } = useTranslation();
   const { id: idParam } = useParams<{ id: string }>();
 
+  const vendorLang = i18n.language?.slice(0, 2) ?? "fr";
   const { data: vendor, isLoading, isError } = useQuery<VendorDetail>({
-    queryKey: ["vendor-detail", idParam],
+    queryKey: ["vendor-detail", idParam, vendorLang],
     enabled: !!idParam,
     retry: 0,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60_000,
     queryFn: async () => {
-      const res = await fetch(`/api/marketplace/vendors/${idParam}`);
+      const res = await fetch(`/api/marketplace/vendors/${idParam}?locale=${vendorLang}`);
       if (!res.ok) throw new Error("not_found");
       return res.json();
     },

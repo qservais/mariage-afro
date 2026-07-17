@@ -479,12 +479,13 @@ function RealisationCard({ r, index }: { r: Realisation; index: number }) {
 /* ─── Page ────────────────────────────────────────────────────────────────── */
 
 export default function Realisations() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.slice(0, 2) ?? "fr";
 
   const { data: apiRealisations = [] } = useQuery({
-    queryKey: ["marketplace-realisations"],
+    queryKey: ["marketplace-realisations", lang],
     queryFn: async () => {
-      const res = await fetch("/api/marketplace/realisations");
+      const res = await fetch(`/api/marketplace/realisations?locale=${lang}`);
       if (!res.ok) return [];
       return res.json();
     },
