@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 const SESSION_KEY = "mariage-afro:exit-intent-shown";
 const MAGNET_ID = "guide-12-etapes";
-const SUPPRESSED_PATHS = ["/sign-in", "/sign-up", "/espace-client", "/espace-pro", "/admin", "/mariage/", "/outils/", "/contact"];
+const SUPPRESSED_PATHS = ["/sign-in", "/sign-up", "/espace-client", "/espace-pro", "/admin", "/mariage/", "/outils/", "/contact", "/invites-checkin/"];
 
 function isMobile(): boolean {
   if (typeof window === "undefined") return false;
