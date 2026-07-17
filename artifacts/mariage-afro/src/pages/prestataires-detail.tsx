@@ -131,6 +131,11 @@ function getYouTubeEmbed(url: string): string | null {
       const id = u.pathname.replace(/^\//, "").split("/")[0];
       if (id && /^\d+$/.test(id)) return `https://player.vimeo.com/video/${id}`;
     }
+    // instagram.com/p/CODE or /reel/CODE — public embed iframe, no API key needed
+    if (u.hostname.includes("instagram.com")) {
+      const m = /\/(p|reel)\/([^/]+)/.exec(u.pathname);
+      if (m) return `https://www.instagram.com/${m[1]}/${m[2]}/embed`;
+    }
     return null;
   } catch {
     return null;
