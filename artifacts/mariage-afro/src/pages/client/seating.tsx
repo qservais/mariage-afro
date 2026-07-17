@@ -10,7 +10,7 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import { Plus, Trash2, Search, Download, X, Pencil, FileText } from "lucide-react";
+import { Plus, Trash2, Search, Download, X, Pencil, FileText, Copy, RefreshCw, CheckCircle2, Circle } from "lucide-react";
 import jsPDF from "jspdf";
 import { clientApi } from "@/lib/clientApi";
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,9 @@ interface DraggableGuestProps {
   inTable?: boolean;
   onRemove?: () => void;
   removeLabel?: string;
-  onToggleArrived?: () => void;
-  arrivedLabel?: string;
 }
 
-function DraggableGuest({ guest, inTable, onRemove, removeLabel, onToggleArrived, arrivedLabel }: DraggableGuestProps) {
+function DraggableGuest({ guest, inTable, onRemove, removeLabel }: DraggableGuestProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `guest-${guest.id}`,
     data: { guestId: guest.id },
@@ -44,20 +42,7 @@ function DraggableGuest({ guest, inTable, onRemove, removeLabel, onToggleArrived
       className={`flex items-center justify-between gap-2 px-3 py-2 text-sm bg-cream border border-wine-deep/10 cursor-grab active:cursor-grabbing select-none ${inTable ? "" : "hover:border-primary"}`}
       data-testid={`guest-card-${guest.id}`}
     >
-      {onToggleArrived && (
-        <input
-          type="checkbox"
-          checked={guest.arrived}
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => { e.stopPropagation(); onToggleArrived(); }}
-          className="w-3.5 h-3.5 shrink-0 accent-primary cursor-pointer"
-          aria-label={arrivedLabel}
-          title={arrivedLabel}
-          data-testid={`arrived-${guest.id}`}
-        />
-      )}
-      <span className={`truncate flex-1 ${guest.arrived ? "line-through text-wine-deep/40" : ""}`}>
+      <span className="truncate flex-1">
         {guest.firstName} {guest.lastName}
       </span>
       {inTable && onRemove && (
@@ -82,7 +67,6 @@ interface DroppableTableProps {
   onShape: (shape: GuestTable["shape"]) => void;
   onDelete: () => void;
   onRemoveGuest: (guestId: number) => void;
-  onToggleArrived: (guestId: number, arrived: boolean) => void;
   shapeLabels: Record<GuestTable["shape"], string>;
   labels: {
     full: string;
@@ -93,11 +77,10 @@ interface DroppableTableProps {
     chairFree: string;
     chairsAria: (s: number, c: number) => string;
     remove: string;
-    arrived: string;
   };
 }
 
-function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete, onRemoveGuest, onToggleArrived, shapeLabels, labels }: DroppableTableProps) {
+function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete, onRemoveGuest, shapeLabels, labels }: DroppableTableProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: `table-${table.id}`,
     data: { tableId: table.id },
@@ -176,8 +159,6 @@ function DroppableTable({ table, seated, onRename, onCapacity, onShape, onDelete
             inTable
             onRemove={() => onRemoveGuest(g.id)}
             removeLabel={labels.remove}
-            onToggleArrived={() => onToggleArrived(g.id, !g.arrived)}
-            arrivedLabel={labels.arrived}
           />
         ))}
         {seated.length === 0 && (
@@ -217,6 +198,163 @@ function UnassignedDropZone({ children }: { children: React.ReactNode }) {
   );
 }
 
+interface CheckinSettings {
+  checkinToken: string;
+  checkinPin: string;
+  checkinUrl: string;
+}
+
+function CheckinLinkPanel() {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const [copied, setCopied] = useState(false);
+  const { data: settings } = useQuery<CheckinSettings>({
+    queryKey: ["client", "checkin-settings"],
+    queryFn: () => clientApi.get<CheckinSettings>("/api/client/checkin-settings"),
+  });
+  const regenerate = useMutation({
+    mutationFn: () => clientApi.post<CheckinSettings>("/api/client/checkin-settings/regenerate", {}),
+    onSuccess: (data) => qc.setQueryData(["client", "checkin-settings"], data),
+  });
+
+  if (!settings) return null;
+
+  return (
+    <div className="bg-cream p-4 border border-wine-deep/10 space-y-3" data-testid="checkin-link-panel">
+      <p className="text-xs uppercase tracking-widest text-wine-deep/50">
+        {t("seating.checkin_share_title", { defaultValue: "Check-in le jour J — lien public, sans compte" })}
+      </p>
+      <p className="text-sm text-wine-deep/70">
+        {t("seating.checkin_share_desc", { defaultValue: "Partagez ce lien et ce code PIN avec la personne qui accueillera vos invités. Ils pourront chercher un nom et cocher sa présence, sans se connecter." })}
+      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex-1 min-w-[240px] flex items-center gap-2 bg-white border border-wine-deep/15 px-3 py-2">
+          <span className="text-sm font-mono truncate flex-1">{settings.checkinUrl}</span>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText(settings.checkinUrl).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              });
+            }}
+            className="text-wine-deep/50 hover:text-primary shrink-0"
+            aria-label={t("seating.checkin_copy", { defaultValue: "Copier le lien" })}
+            data-testid="button-copy-checkin-link"
+          >
+            <Copy className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="flex items-center gap-2 bg-white border border-wine-deep/15 px-3 py-2">
+          <span className="text-xs uppercase text-wine-deep/50">{t("seating.checkin_pin", { defaultValue: "PIN" })}</span>
+          <span className="text-lg font-bold tracking-widest" data-testid="text-checkin-pin">{settings.checkinPin}</span>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="rounded-none uppercase tracking-wider text-xs gap-2"
+          onClick={() => {
+            if (confirm(t("seating.checkin_regenerate_confirm", { defaultValue: "Régénérer le lien et le PIN ? L'ancien lien ne fonctionnera plus." }))) {
+              regenerate.mutate();
+            }
+          }}
+          disabled={regenerate.isPending}
+          data-testid="button-regenerate-checkin"
+        >
+          <RefreshCw className="w-3 h-3" /> {t("seating.checkin_regenerate", { defaultValue: "Régénérer" })}
+        </Button>
+      </div>
+      {copied && <p className="text-xs text-gold-deep">{t("seating.checkin_copied", { defaultValue: "Lien copié !" })}</p>}
+    </div>
+  );
+}
+
+function GuestsCheckinTab({ guests }: { guests: Guest[] }) {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const [search, setSearch] = useState("");
+
+  const toggle = useMutation({
+    mutationFn: ({ guestId, arrived }: { guestId: number; arrived: boolean }) =>
+      clientApi.patch<Guest>(`/api/client/guests/${guestId}`, { arrived }),
+    onMutate: async ({ guestId, arrived }) => {
+      await qc.cancelQueries({ queryKey: ["client", "guests"] });
+      const prev = qc.getQueryData<Guest[]>(["client", "guests"]);
+      qc.setQueryData<Guest[]>(["client", "guests"], (old) =>
+        (old ?? []).map((g) => (g.id === guestId ? { ...g, arrived } : g)),
+      );
+      return { prev };
+    },
+    onError: (_e, _vars, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["client", "guests"], ctx.prev);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
+  });
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const sorted = [...guests].sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
+    if (!q) return sorted;
+    return sorted.filter((g) => `${g.firstName} ${g.lastName}`.toLowerCase().includes(q));
+  }, [guests, search]);
+
+  const presentCount = guests.filter((g) => g.arrived).length;
+
+  return (
+    <div className="space-y-4">
+      <CheckinLinkPanel />
+
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="relative flex-1 min-w-[220px] max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-wine-deep/30" aria-hidden="true" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("seating.guests_search_placeholder", { defaultValue: "Rechercher un invité..." })}
+            className="pl-9"
+            data-testid="input-guests-search"
+          />
+        </div>
+        <p className="text-sm font-semibold text-wine-deep" data-testid="text-checkin-summary">
+          {t("seating.checkin_summary", { present: presentCount, total: guests.length, defaultValue: `${presentCount} présent(s) / ${guests.length} invité(s)` })}
+        </p>
+      </div>
+
+      <div className="bg-cream border border-wine-deep/10 divide-y divide-wine-deep/5">
+        {filtered.length === 0 ? (
+          <p className="text-sm text-wine-deep/40 text-center py-10">{t("seating.guests_empty", { defaultValue: "Aucun invité trouvé." })}</p>
+        ) : (
+          filtered.map((g) => (
+            <button
+              key={g.id}
+              type="button"
+              onClick={() => toggle.mutate({ guestId: g.id, arrived: !g.arrived })}
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-wine-deep/[0.03] transition-colors"
+              data-testid={`checkin-guest-${g.id}`}
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-medium truncate">{g.firstName} {g.lastName}</p>
+                <p className="text-xs text-wine-deep/50">
+                  {g.table ?? t("seating.no_table", { defaultValue: "Sans table" })}
+                </p>
+              </div>
+              {g.arrived ? (
+                <span className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-gold-deep shrink-0">
+                  <CheckCircle2 className="w-5 h-5" /> {t("seating.present", { defaultValue: "Présent" })}
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-wine-deep/30 shrink-0">
+                  <Circle className="w-5 h-5" /> {t("seating.absent", { defaultValue: "Absent" })}
+                </span>
+              )}
+            </button>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function SeatingPage() {
   const { t } = useTranslation();
   const SHAPE_LABEL: Record<GuestTable["shape"], string> = {
@@ -233,7 +371,6 @@ export default function SeatingPage() {
     chairFree: t("seating.chair_free"),
     chairsAria: (s: number, c: number) => t("seating.chairs_aria", { seated: s, capacity: c }),
     remove: t("seating.remove"),
-    arrived: t("seating.arrived", { defaultValue: "Arrivé" }),
   };
   const qc = useQueryClient();
   const { data: tables = [] } = useQuery<GuestTable[]>({
@@ -245,6 +382,7 @@ export default function SeatingPage() {
     queryFn: () => clientApi.get<Guest[]>("/api/client/guests"),
   });
 
+  const [activeTab, setActiveTab] = useState<"seating" | "guests">("seating");
   const [search, setSearch] = useState("");
   const [newTable, setNewTable] = useState<GuestTableCreate>({ name: "", shape: "round", capacity: 8 });
   const [error, setError] = useState<string | null>(null);
@@ -277,23 +415,6 @@ export default function SeatingPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
     onError: (e: Error) => setError(e.message.includes("409") ? t("seating.table_full_error") : e.message),
   });
-  const setArrived = useMutation({
-    mutationFn: ({ guestId, arrived }: { guestId: number; arrived: boolean }) =>
-      clientApi.patch<Guest>(`/api/client/guests/${guestId}`, { arrived }),
-    onMutate: async ({ guestId, arrived }) => {
-      await qc.cancelQueries({ queryKey: ["client", "guests"] });
-      const prev = qc.getQueryData<Guest[]>(["client", "guests"]);
-      qc.setQueryData<Guest[]>(["client", "guests"], (old) =>
-        (old ?? []).map((g) => (g.id === guestId ? { ...g, arrived } : g)),
-      );
-      return { prev };
-    },
-    onError: (_e, _vars, ctx) => {
-      if (ctx?.prev) qc.setQueryData(["client", "guests"], ctx.prev);
-    },
-    onSettled: () => qc.invalidateQueries({ queryKey: ["client", "guests"] }),
-  });
-
   const confirmedGuests = useMemo(() => guests.filter((g) => g.rsvp === "confirmed"), [guests]);
   const unassigned = useMemo(
     () =>
@@ -468,6 +589,33 @@ export default function SeatingPage() {
         </div>
       </div>
 
+      <div className="flex gap-0 border-b border-wine-deep/10" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "seating"}
+          onClick={() => setActiveTab("seating")}
+          className={`px-4 py-2 text-xs uppercase tracking-wider border-b-2 -mb-px ${activeTab === "seating" ? "border-primary text-primary font-semibold" : "border-transparent text-wine-deep/50 hover:text-wine-deep"}`}
+          data-testid="tab-seating"
+        >
+          {t("seating.tab_seating", { defaultValue: "Plan de table" })}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "guests"}
+          onClick={() => setActiveTab("guests")}
+          className={`px-4 py-2 text-xs uppercase tracking-wider border-b-2 -mb-px ${activeTab === "guests" ? "border-primary text-primary font-semibold" : "border-transparent text-wine-deep/50 hover:text-wine-deep"}`}
+          data-testid="tab-guests"
+        >
+          {t("seating.tab_guests", { defaultValue: "Invités" })}
+        </button>
+      </div>
+
+      {activeTab === "guests" ? (
+        <GuestsCheckinTab guests={guests} />
+      ) : (
+      <>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-cream p-4 border border-wine-deep/10">
           <p className="text-xs uppercase text-wine-deep/50 tracking-widest">{t("seating.tables")}</p>
@@ -545,16 +693,7 @@ export default function SeatingPage() {
             <div className="space-y-2">
               {unassigned.map((g) => (
                 <div key={g.id} className="flex items-center justify-between gap-2 text-sm">
-                  <label className="flex items-center gap-1.5 min-w-0 flex-1">
-                    <input
-                      type="checkbox"
-                      checked={g.arrived}
-                      onChange={() => setArrived.mutate({ guestId: g.id, arrived: !g.arrived })}
-                      className="w-3.5 h-3.5 shrink-0 accent-primary cursor-pointer"
-                      aria-label={t("seating.arrived", { defaultValue: "Arrivé" })}
-                    />
-                    <span className={`truncate ${g.arrived ? "line-through text-wine-deep/40" : ""}`}>{g.firstName} {g.lastName}</span>
-                  </label>
+                  <span className="truncate flex-1">{g.firstName} {g.lastName}</span>
                   <select
                     className="border border-wine-deep/20 px-2 py-1 text-xs"
                     value=""
@@ -600,16 +739,7 @@ export default function SeatingPage() {
                 <ul className="space-y-1 text-sm">
                   {seated.map((g) => (
                     <li key={g.id} className="flex justify-between items-center gap-2">
-                      <label className="flex items-center gap-1.5 min-w-0 flex-1">
-                        <input
-                          type="checkbox"
-                          checked={g.arrived}
-                          onChange={() => setArrived.mutate({ guestId: g.id, arrived: !g.arrived })}
-                          className="w-3.5 h-3.5 shrink-0 accent-primary cursor-pointer"
-                          aria-label={t("seating.arrived", { defaultValue: "Arrivé" })}
-                        />
-                        <span className={`truncate ${g.arrived ? "line-through text-wine-deep/40" : ""}`}>{g.firstName} {g.lastName}</span>
-                      </label>
+                      <span className="truncate flex-1">{g.firstName} {g.lastName}</span>
                       <button
                         onClick={() => assignGuest.mutate({ guestId: g.id, tableId: null })}
                         className="text-wine-deep/40"
@@ -659,8 +789,6 @@ export default function SeatingPage() {
                         <DraggableGuest
                           key={g.id}
                           guest={g}
-                          onToggleArrived={() => setArrived.mutate({ guestId: g.id, arrived: !g.arrived })}
-                          arrivedLabel={t("seating.arrived", { defaultValue: "Arrivé" })}
                         />
                       ))}
                     </div>
@@ -691,7 +819,6 @@ export default function SeatingPage() {
                         }
                       }}
                       onRemoveGuest={(guestId) => assignGuest.mutate({ guestId, tableId: null })}
-                      onToggleArrived={(guestId, arrived) => setArrived.mutate({ guestId, arrived })}
                       shapeLabels={SHAPE_LABEL}
                       labels={tableLabels}
                     />
@@ -702,6 +829,8 @@ export default function SeatingPage() {
           </div>
         </DndContext>
       </div>
+      </>
+      )}
     </div>
   );
 }

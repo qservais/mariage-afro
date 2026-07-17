@@ -19,6 +19,8 @@ import { eq, desc, asc, sql, and, isNull, isNotNull } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
 import { generateCsrfToken, requireCsrf, CSRF_FIELD } from "../middlewares/adminCsrf";
 import { adminContentLayout as contentLayout } from "../lib/adminLayout";
+import { formatPhoneDisplay } from "../lib/phone";
+import { geocodeAddress } from "../lib/geocode";
 import { notifyVendorApproved, notifyConversationMessage, notifyVendorInvitation, notifyPartnerApplicationApproved } from "../lib/email";
 
 const router = Router();
@@ -125,7 +127,7 @@ router.post("/content/vendors/:id/invite", async (req: Request, res: Response) =
   res.redirect("/admin/content/vendors?invite_ok=1");
 });
 
-function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:Array<{name:string;price?:number|null;price_unit?:string|null;price_visible:boolean}|string>;images:string[];website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number;instagram:string|null;facebook:string|null;tiktok:string|null;youtube:string|null;pinterest:string|null}> = {}, error = "", csrfToken = ""): string {
+function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:string;description:string;services:Array<{name:string;price?:number|null;price_unit?:string|null;price_visible:boolean}|string>;images:string[];coverImage:string|null;videoUrl:string|null;website:string|null;phone:string|null;email:string|null;verified:boolean;active:boolean;rating:number;instagram:string|null;facebook:string|null;tiktok:string|null;youtube:string|null;pinterest:string|null}> = {}, error = "", csrfToken = ""): string {
   const stdCats = ["Photographie","Vidéo","DJ & Animation","Décoration","Traiteur","Coiffure & Maquillage","Robe de mariée","Transport","Invitations","Autre"];
   const isAutre = v.category ? !stdCats.includes(v.category) || v.category === "Autre" : false;
   const selectVal = isAutre && v.category !== "Autre" ? "Autre" : (v.category ?? "Photographie");
@@ -136,12 +138,18 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
       ? (v.images as string).split("\n").map(s => s.trim()).filter(Boolean)
       : [];
   const imagesJson = JSON.stringify(imagesArr).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
+  const coverImageJson = JSON.stringify(v.coverImage ?? null);
+  const mediaCount = imagesArr.length + (v.videoUrl ? 1 : 0);
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
     <form method="post" id="vendor-form">
       ${csrfInp(csrfToken)}
       <input type="hidden" name="images" id="images-hidden" value="${escHtml(imagesArr.join("\n"))}">
+      <input type="hidden" name="coverImage" id="cover-image-hidden" value="${escHtml(v.coverImage ?? "")}">
+      <p id="media-count-warning" style="display:${mediaCount < 3 ? "block" : "none"};font-size:12px;color:#c0392b;background:#fdecea;border:1px solid #e74c3c;padding:8px 12px;border-radius:4px">
+        ⚠ ${mediaCount} média(s) sur 3 minimum — la fiche ne pourra pas être publiée (Actif) tant que ce seuil n'est pas atteint.
+      </p>
 
       <div class="form-section">
         <div class="form-section-title">Informations générales</div>
@@ -172,8 +180,6 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
         </div>
         <div class="photo-previews" id="photo-previews"></div>
         <div id="upload-status" role="status" aria-live="assertive" aria-atomic="true" class="upload-progress"></div>
-        <p style="font-size:11px;color:#aaa;margin-top:4px">Vous pouvez aussi coller des URLs directement :</p>
-        <label style="font-size:12px">URLs manuelles (une par ligne)<textarea id="images-manual" style="min-height:60px;font-size:12px" placeholder="https://example.com/photo.jpg" onchange="syncManualUrls()">${imagesArr.filter(u => u.startsWith("http")).join("\n")}</textarea></label>
       </div>
 
       <div class="form-section">
@@ -192,6 +198,13 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
         <div class="social-field"><span class="social-icon">🎵</span><label>TikTok<input name="tiktok" placeholder="https://tiktok.com/@…" value="${escHtml(v.tiktok)}"></label></div>
         <div class="social-field"><span class="social-icon">▶️</span><label>YouTube<input name="youtube" placeholder="https://youtube.com/…" value="${escHtml(v.youtube)}"></label></div>
         <div class="social-field"><span class="social-icon">📌</span><label>Pinterest<input name="pinterest" placeholder="https://pinterest.com/…" value="${escHtml(v.pinterest)}"></label></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Vidéo (compte pour le minimum de 3 médias)</div>
+        <label>Lien Instagram (post/reel) ou YouTube
+          <input name="videoUrl" placeholder="https://youtube.com/watch?v=… ou https://instagram.com/reel/…" value="${escHtml(v.videoUrl)}">
+        </label>
       </div>
 
       <div class="form-section">
@@ -222,21 +235,27 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
       else { wrap.style.display = "none"; inp.required = false; }
     }
 
-    // --- Photo upload state ---
-    var uploadedPaths = ${imagesJson}.filter(function(u){ return !u.startsWith("http"); });
-    var manualUrls = ${imagesJson}.filter(function(u){ return u.startsWith("http"); });
+    // --- Photo state — one array for both uploaded and already-stored (legacy
+    // http://) images. No raw-URL input: new media only ever comes from the
+    // upload zone (Task 5); pre-existing http(s) entries stay visible/removable.
+    var allPaths = ${imagesJson}.slice();
+    var coverImagePath = ${coverImageJson};
 
     function getAllImages() {
-      return uploadedPaths.concat(manualUrls);
+      return allPaths;
     }
     function syncHiddenField() {
       document.getElementById("images-hidden").value = getAllImages().join("\\n");
+      document.getElementById("cover-image-hidden").value = coverImagePath || "";
+      updateMediaCountWarning();
     }
-    function syncManualUrls() {
-      var raw = document.getElementById("images-manual").value;
-      manualUrls = raw.split("\\n").map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
-      syncHiddenField();
+    function updateMediaCountWarning() {
+      var count = getAllImages().length + (document.querySelector("[name=videoUrl]").value.trim() ? 1 : 0);
+      var warn = document.getElementById("media-count-warning");
+      warn.style.display = count < 3 ? "block" : "none";
+      warn.textContent = "⚠ " + count + " média(s) sur 3 minimum — la fiche ne pourra pas être publiée (Actif) tant que ce seuil n'est pas atteint.";
     }
+    document.querySelector("[name=videoUrl]").addEventListener("input", updateMediaCountWarning);
     function safeImgUrl(path) {
       // Only allow /objects/ paths and https:// URLs — block everything else
       if (path.startsWith("/objects/")) return window.location.origin + "/api/storage" + path;
@@ -246,26 +265,45 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
     function renderPreviews() {
       var container = document.getElementById("photo-previews");
       container.innerHTML = "";
-      uploadedPaths.forEach(function(path, i) {
+      allPaths.forEach(function(path, i) {
         var safeUrl = safeImgUrl(path);
         if (!safeUrl) return;
+        var isCover = (coverImagePath === path);
         var thumb = document.createElement("div");
         thumb.className = "photo-thumb";
+        thumb.style.position = "relative";
         var img = document.createElement("img");
         img.src = safeUrl;
         img.onerror = function(){ img.style.display = "none"; };
+        if (isCover) {
+          var badge = document.createElement("span");
+          badge.className = "venue-cover-badge";
+          badge.style.cssText = "position:absolute;top:4px;left:4px;background:#b8860b;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;pointer-events:none";
+          badge.textContent = "⭐ Couverture";
+          thumb.appendChild(badge);
+        }
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "remove-btn";
         btn.textContent = "×";
         (function(idx){ btn.addEventListener("click", function(){ removeUploaded(idx); }); })(i);
+        var coverBtn = document.createElement("button");
+        coverBtn.type = "button";
+        coverBtn.textContent = isCover ? "⭐ Couverture" : "⭐ Définir couverture";
+        coverBtn.style.cssText = "display:block;width:100%;font-size:10px;padding:2px 4px;margin-top:2px;border:1px solid #ccc;background:" + (isCover ? "#b8860b" : "#fff") + ";color:" + (isCover ? "#fff" : "#333") + ";cursor:pointer;border-radius:3px";
+        (function(p){ coverBtn.addEventListener("click", function(){ coverImagePath = p; renderPreviews(); syncHiddenField(); }); })(path);
         thumb.appendChild(img);
         thumb.appendChild(btn);
-        container.appendChild(thumb);
+        var wrap = document.createElement("div");
+        wrap.style.cssText = "display:inline-flex;flex-direction:column;width:80px";
+        wrap.appendChild(thumb);
+        wrap.appendChild(coverBtn);
+        container.appendChild(wrap);
       });
     }
     function removeUploaded(i) {
-      uploadedPaths.splice(i, 1);
+      if (coverImagePath === allPaths[i]) coverImagePath = null;
+      allPaths.splice(i, 1);
       renderPreviews();
       syncHiddenField();
     }
@@ -291,7 +329,8 @@ function vendorForm(v: Partial<{name:string;category:string;city:string;tagline:
       xhr.onload = function() {
         if (xhr.status === 200) {
           var data = JSON.parse(xhr.responseText);
-          uploadedPaths.push(data.objectPath);
+          allPaths.push(data.objectPath);
+          if (!coverImagePath) coverImagePath = data.objectPath;
           renderPreviews();
           syncHiddenField();
           status.textContent = "Photo ajoutée avec succès.";
@@ -380,6 +419,8 @@ function parseVendorBody(b: Record<string, string>) {
     images: b.images
       ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s))
       : [],
+    coverImage: (b.coverImage?.trim() && isSafeImagePath(b.coverImage.trim())) ? b.coverImage.trim() : null,
+    videoUrl: b.videoUrl?.trim() && isSafeUrl(b.videoUrl.trim()) ? b.videoUrl.trim() : null,
     website: b.website?.trim() && isSafeUrl(b.website.trim()) ? b.website.trim() : null,
     phone: b.phone || null,
     email: b.email || null,
@@ -392,6 +433,11 @@ function parseVendorBody(b: Record<string, string>) {
     youtube: rawSocial("youtube"),
     pinterest: rawSocial("pinterest"),
   };
+}
+
+/** Task 4 hard gate: a profile needs >=3 total media (photos + video link) to go live. */
+function mediaCount(parsed: { images: string[]; videoUrl: string | null }): number {
+  return parsed.images.length + (parsed.videoUrl ? 1 : 0);
 }
 
 router.get("/content/vendors/new", (_req: Request, res: Response) => {
@@ -412,6 +458,9 @@ router.post("/content/vendors/new", async (req: Request, res: Response) => {
     res.type("html").send(contentLayout("Nouveau partenaire", `<h1>Nouveau partenaire</h1>${vendorForm(b, "Ajoutez au moins une photo de couverture avant d'enregistrer.", csrfToken)}`, "", csrfToken, "/content/vendors"));
     return;
   }
+  // Task 4: <3 media items can be saved as a draft, but never published live.
+  if (mediaCount(parsed) < 3) parsed.active = false;
+  if (!parsed.coverImage) parsed.coverImage = parsed.images[0] ?? null;
   await db.insert(marketplaceVendorsTable).values(parsed);
   res.redirect("/admin/content/vendors?saved=1");
 });
@@ -432,6 +481,9 @@ router.post("/content/vendors/:id/edit", async (req: Request, res: Response) => 
     res.type("html").send(contentLayout("Modifier partenaire", `<h1>Modifier</h1>${vendorForm(b, "Ajoutez au moins une photo de couverture avant d'enregistrer.", csrfToken)}`, "", csrfToken, "/content/vendors"));
     return;
   }
+  // Task 4: <3 media items can be saved as a draft, but never published live.
+  if (mediaCount(parsed) < 3) parsed.active = false;
+  if (!parsed.coverImage) parsed.coverImage = parsed.images[0] ?? null;
   await db.update(marketplaceVendorsTable).set(parsed).where(eq(marketplaceVendorsTable.id, id));
   res.redirect("/admin/content/vendors?saved=1");
 });
@@ -500,14 +552,13 @@ function generateVenueSlugAdmin(name: string): string {
     .slice(0, 80);
 }
 
-function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean;latitude?:string|null;longitude?:string|null;coverImage?:string|null}> = {}, error = "", csrfToken = ""): string {
+function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:string;capacity:string;style:string;description:string;options:string[];images:string[];active:boolean;address?:string|null;latitude?:string|null;longitude?:string|null;coverImage?:string|null}> = {}, error = "", csrfToken = ""): string {
   const existingImages: string[] = Array.isArray(v.images)
     ? v.images
     : typeof v.images === "string"
       ? (v.images as string).split("\n").map(s => s.trim()).filter(Boolean)
       : [];
-  const uploadedPathsJson = JSON.stringify(existingImages.filter(u => !u.startsWith("http")));
-  const manualUrlsText = existingImages.filter(u => u.startsWith("http")).join("\n");
+  const existingImagesJson = JSON.stringify(existingImages);
   const allImagesValue = existingImages.join("\n");
   const coverImageJson = JSON.stringify(v.coverImage ?? null);
 
@@ -530,10 +581,13 @@ function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:str
         <label>Style (ex: Moderne, Château, Industriel)<input name="style" value="${escHtml(v.style)}"></label>
         <label>Description<textarea name="description">${escHtml(v.description)}</textarea></label>
         <label>Options (une par ligne)<textarea name="options">${(Array.isArray(v.options) ? v.options : typeof v.options === "string" ? (v.options as string).split("\n").map(s => s.trim()).filter(Boolean) : []).join("\n")}</textarea></label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <label>Latitude<input name="latitude" value="${escHtml(v.latitude ?? "")}"></label>
-          <label>Longitude<input name="longitude" value="${escHtml(v.longitude ?? "")}"></label>
-        </div>
+        <label>Adresse *
+          <span style="font-size:11px;color:#888"> — géocodée automatiquement via OpenStreetMap à l'enregistrement</span>
+          <input name="address" required value="${escHtml(v.address ?? "")}" placeholder="ex: Avenue Louise 231, 1050 Bruxelles">
+        </label>
+        ${v.latitude && v.longitude
+          ? `<p style="font-size:11px;color:#888">Position actuelle : ${escHtml(v.latitude)}, ${escHtml(v.longitude)}</p>`
+          : ""}
       </div>
 
       <div class="form-section">
@@ -547,10 +601,6 @@ function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:str
         <input type="file" id="venue-photo-input" accept="image/*" multiple style="display:none">
         <div class="photo-previews" id="venue-photo-previews"></div>
         <div id="venue-upload-status" role="status" aria-live="assertive" aria-atomic="true" class="upload-progress"></div>
-        <p style="font-size:11px;color:#aaa;margin-top:6px">Vous pouvez aussi coller des URLs directement :</p>
-        <label style="font-size:12px">URLs manuelles (une par ligne)
-          <textarea id="venue-images-manual" style="min-height:55px;font-size:12px" placeholder="https://example.com/photo.jpg" onchange="venueSyncManual()">${escHtml(manualUrlsText)}</textarea>
-        </label>
         <input type="hidden" name="images" id="venue-images-hidden" value="${escHtml(allImagesValue)}">
         <input type="hidden" name="coverImage" id="venue-cover-hidden" value="${escHtml(v.coverImage ?? "")}">
       </div>
@@ -580,8 +630,9 @@ function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:str
 
     <script>
     (function() {
-      var uploadedPaths = ${uploadedPathsJson};
-      var manualUrls = ${JSON.stringify(manualUrlsText ? manualUrlsText.split("\n").filter(Boolean) : [])};
+      // One array for both uploaded and already-stored (legacy http://) images.
+      // No raw-URL input: new media only ever comes from the upload zone (Task 5).
+      var uploadedPaths = ${existingImagesJson};
       var coverImagePath = ${coverImageJson};
 
       function safeImgUrl(path) {
@@ -590,14 +641,9 @@ function venueForm(v: Partial<{id?:number;slug?:string|null;name:string;city:str
         return "";
       }
       function syncHidden() {
-        document.getElementById("venue-images-hidden").value = uploadedPaths.concat(manualUrls).join("\\n");
+        document.getElementById("venue-images-hidden").value = uploadedPaths.join("\\n");
         document.getElementById("venue-cover-hidden").value = coverImagePath || "";
       }
-      window.venueSyncManual = function() {
-        var raw = document.getElementById("venue-images-manual").value;
-        manualUrls = raw.split("\\n").map(function(s){ return s.trim(); }).filter(Boolean);
-        syncHidden();
-      };
       function renderPreviews() {
         var c = document.getElementById("venue-photo-previews");
         c.innerHTML = "";
@@ -736,9 +782,15 @@ router.get("/content/venues/new", (_req: Request, res: Response) => {
 
 router.post("/content/venues/new", async (req: Request, res: Response) => {
   const b = req.body as Record<string, string>;
-  if (!b.name || !b.city) {
+  if (!b.name || !b.city || !b.address?.trim()) {
     const csrfToken = generateCsrfToken(req, res);
-    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom et ville sont requis.", csrfToken)}`, "", csrfToken, "/content/venues"));
+    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Nom, ville et adresse sont requis.", csrfToken)}`, "", csrfToken, "/content/venues"));
+    return;
+  }
+  const geocoded = await geocodeAddress(b.address);
+  if (!geocoded) {
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Nouveau lieu", `<h1>Nouveau lieu</h1>${venueForm(b, "Adresse introuvable sur OpenStreetMap — vérifiez l'orthographe ou précisez-la (numéro, ville, pays).", csrfToken)}`, "", csrfToken, "/content/venues"));
     return;
   }
   const rawSlug = (b.slug ?? "").trim() || generateVenueSlugAdmin(b.name);
@@ -758,8 +810,9 @@ router.post("/content/venues/new", async (req: Request, res: Response) => {
     images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     coverImage: (b.coverImage && isSafeImagePath(b.coverImage)) ? b.coverImage : null,
     active: b.active === "1",
-    latitude: b.latitude?.trim() || null,
-    longitude: b.longitude?.trim() || null,
+    address: b.address.trim(),
+    latitude: geocoded.latitude,
+    longitude: geocoded.longitude,
   });
   res.redirect("/admin/content/venues");
 });
@@ -774,6 +827,17 @@ router.get("/content/venues/:id/edit", async (req: Request, res: Response) => {
 router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const b = req.body as Record<string, string>;
+  if (!b.address?.trim()) {
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier</h1>${venueForm({ ...b, id }, "L'adresse est requise.", csrfToken)}`, "", csrfToken, "/content/venues"));
+    return;
+  }
+  const geocoded = await geocodeAddress(b.address);
+  if (!geocoded) {
+    const csrfToken = generateCsrfToken(req, res);
+    res.type("html").send(contentLayout("Modifier lieu", `<h1>Modifier</h1>${venueForm({ ...b, id }, "Adresse introuvable sur OpenStreetMap — vérifiez l'orthographe ou précisez-la (numéro, ville, pays).", csrfToken)}`, "", csrfToken, "/content/venues"));
+    return;
+  }
   const [existing] = await db.select({ slug: marketplaceVenuesTable.slug }).from(marketplaceVenuesTable).where(eq(marketplaceVenuesTable.id, id));
   const rawSlug = (b.slug ?? "").trim() || generateVenueSlugAdmin(b.name);
   const baseSlug = rawSlug.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
@@ -793,8 +857,9 @@ router.post("/content/venues/:id/edit", async (req: Request, res: Response) => {
     images: b.images ? b.images.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     coverImage: (b.coverImage && isSafeImagePath(b.coverImage)) ? b.coverImage : null,
     active: b.active === "1",
-    latitude: b.latitude?.trim() || null,
-    longitude: b.longitude?.trim() || null,
+    address: b.address.trim(),
+    latitude: geocoded.latitude,
+    longitude: geocoded.longitude,
   }).where(eq(marketplaceVenuesTable.id, id));
   res.redirect("/admin/content/venues");
 });
@@ -892,10 +957,13 @@ router.get("/content/realisations", async (_req: Request, res: Response) => {
 });
 
 function realisationForm(r: Partial<{brideName:string;groomName:string;weddingType:string;venueName:string;city:string;weddingDate:string|null;description:string;coverImage:string|null;gallery:string[];videoCouple:string|null;videoTeaser:string|null;active:boolean;featured:boolean}> = {}, error = "", csrfToken = ""): string {
+  const galleryArr: string[] = Array.isArray(r.gallery) ? r.gallery : [];
+  const galleryJson = JSON.stringify(galleryArr).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
+  const realCoverJson = JSON.stringify(r.coverImage ?? null);
   return `
     ${error ? `<div class="err">${escHtml(error)}</div>` : ""}
     <div class="card">
-    <form method="post">
+    <form method="post" id="realisation-form">
       ${csrfInp(csrfToken)}
       <label>Prénom mariée *<input name="brideName" required value="${escHtml(r.brideName)}"></label>
       <label>Prénom marié *<input name="groomName" required value="${escHtml(r.groomName)}"></label>
@@ -904,8 +972,22 @@ function realisationForm(r: Partial<{brideName:string;groomName:string;weddingTy
       <label>Ville<input name="city" value="${escHtml(r.city)}"></label>
       <label>Date (ex: Mai 2024)<input name="weddingDate" value="${escHtml(r.weddingDate)}"></label>
       <label>Description (storytelling)<textarea name="description" style="min-height:120px">${escHtml(r.description)}</textarea></label>
-      <label>URL photo de couverture<input name="coverImage" value="${escHtml(r.coverImage)}"></label>
-      <label>Galerie (une URL par ligne)<textarea name="gallery">${(r.gallery ?? []).join("\n")}</textarea></label>
+
+      <div class="form-section">
+        <div class="form-section-title">Photos</div>
+        <p style="font-size:12px;color:#888;margin-bottom:10px">Marquez une photo comme couverture avec ⭐.</p>
+        <label for="real-photo-input" class="upload-zone" id="real-upload-zone" style="display:block">
+          <div style="font-size:28px">💍</div>
+          <p>Cliquez pour ajouter des photos, ou glissez-déposez ici</p>
+          <p style="font-size:11px;color:#aaa">JPG, PNG, WEBP — max 10 Mo par fichier</p>
+        </label>
+        <input type="file" id="real-photo-input" accept="image/*" multiple style="display:none">
+        <div class="photo-previews" id="real-photo-previews"></div>
+        <div id="real-upload-status" role="status" aria-live="assertive" aria-atomic="true" class="upload-progress"></div>
+        <input type="hidden" name="gallery" id="real-gallery-hidden" value="${escHtml(galleryArr.join("\n"))}">
+        <input type="hidden" name="coverImage" id="real-cover-hidden" value="${escHtml(r.coverImage ?? "")}">
+      </div>
+
       <hr style="border:none;border-top:1px solid #e5e5e5;margin:4px 0">
       <p style="font-size:12px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Vidéos (YouTube, Vimeo, ou URL directe)</p>
       <label>🎥 Vidéo portrait du couple (gauche)<input name="videoCouple" type="url" placeholder="https://youtube.com/embed/..." value="${escHtml(r.videoCouple)}"></label>
@@ -921,8 +1003,135 @@ function realisationForm(r: Partial<{brideName:string;groomName:string;weddingTy
         <a class="btn secondary" href="/admin/content/realisations">Annuler</a>
       </div>
     </form>
-    </div>`;
+    </div>
+
+    <script>
+    (function() {
+      var galleryPaths = ${galleryJson};
+      var coverImagePath = ${realCoverJson};
+
+      function safeImgUrl(path) {
+        if (path.startsWith("/objects/")) return window.location.origin + "/api/storage" + path;
+        if (/^https:\\/\\//i.test(path)) return path;
+        return "";
+      }
+      function syncHidden() {
+        document.getElementById("real-gallery-hidden").value = galleryPaths.join("\\n");
+        document.getElementById("real-cover-hidden").value = coverImagePath || "";
+      }
+      function renderPreviews() {
+        var c = document.getElementById("real-photo-previews");
+        c.innerHTML = "";
+        galleryPaths.forEach(function(path, i) {
+          var url = safeImgUrl(path);
+          if (!url) return;
+          var isCover = (coverImagePath === path);
+          var wrap = document.createElement("div");
+          wrap.style.cssText = "display:inline-flex;flex-direction:column;width:80px";
+          var thumb = document.createElement("div");
+          thumb.className = "photo-thumb";
+          thumb.style.position = "relative";
+          var img = document.createElement("img");
+          img.src = url;
+          img.onerror = function(){ img.style.display = "none"; };
+          if (isCover) {
+            var badge = document.createElement("span");
+            badge.style.cssText = "position:absolute;top:4px;left:4px;background:#b8860b;color:#fff;font-size:10px;padding:1px 5px;border-radius:2px;pointer-events:none";
+            badge.textContent = "⭐ Couverture";
+            thumb.appendChild(badge);
+          }
+          var btn = document.createElement("button");
+          btn.type = "button"; btn.className = "remove-btn"; btn.textContent = "×";
+          (function(idx){
+            btn.addEventListener("click", function(){
+              if (coverImagePath === galleryPaths[idx]) coverImagePath = null;
+              galleryPaths.splice(idx, 1);
+              renderPreviews(); syncHidden();
+            });
+          })(i);
+          var coverBtn = document.createElement("button");
+          coverBtn.type = "button";
+          coverBtn.textContent = isCover ? "⭐ Couverture" : "⭐ Définir couverture";
+          coverBtn.style.cssText = "display:block;width:100%;font-size:10px;padding:2px 4px;margin-top:2px;border:1px solid #ccc;background:" + (isCover ? "#b8860b" : "#fff") + ";color:" + (isCover ? "#fff" : "#333") + ";cursor:pointer;border-radius:3px";
+          (function(p){ coverBtn.addEventListener("click", function(){ coverImagePath = p; renderPreviews(); syncHidden(); }); })(path);
+          thumb.appendChild(img); thumb.appendChild(btn);
+          wrap.appendChild(thumb); wrap.appendChild(coverBtn);
+          c.appendChild(wrap);
+        });
+      }
+      function uploadFile(file) {
+        var status = document.getElementById("real-upload-status");
+        status.textContent = "Upload en cours…";
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/admin/content/realisations/upload-photo");
+        xhr.setRequestHeader("x-content-type", file.type || "image/jpeg");
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+            galleryPaths.push(data.objectPath);
+            if (!coverImagePath) coverImagePath = data.objectPath;
+            renderPreviews(); syncHidden();
+            status.textContent = "Photo ajoutée.";
+            setTimeout(function(){ status.textContent = ""; }, 3000);
+          } else {
+            status.textContent = "Erreur lors de l'upload (" + xhr.status + ").";
+          }
+        };
+        xhr.onerror = function(){ status.textContent = "Erreur réseau."; };
+        xhr.send(file);
+      }
+      function handleFiles(files) {
+        if (!files || !files.length) return;
+        Array.from(files).forEach(function(f){ uploadFile(f); });
+      }
+      var zone = document.getElementById("real-upload-zone");
+      var fileInput = document.getElementById("real-photo-input");
+      fileInput.addEventListener("change", function() { handleFiles(this.files); });
+      zone.addEventListener("dragover", function(e){ e.preventDefault(); zone.classList.add("drag"); });
+      zone.addEventListener("dragleave", function(){ zone.classList.remove("drag"); });
+      zone.addEventListener("drop", function(e){ e.preventDefault(); zone.classList.remove("drag"); handleFiles(e.dataTransfer.files); });
+      renderPreviews();
+      syncHidden();
+    })();
+    </script>`;
 }
+
+// ---- Réalisation photo upload ----
+router.post(
+  "/content/realisations/upload-photo",
+  express.raw({ type: "*/*", limit: "50mb" }),
+  async (req: Request, res: Response) => {
+    const body = req.body as Buffer;
+    if (!Buffer.isBuffer(body) || body.length === 0) {
+      res.status(400).json({ error: "Empty body" });
+      return;
+    }
+    const contentType = (req.headers["x-content-type"] as string) || "image/jpeg";
+    try {
+      const uploadURL = await _objectStorageService.getObjectEntityUploadURL();
+      const objectPath = _objectStorageService.normalizeObjectEntityPath(uploadURL);
+      await recordUploadIntent(objectPath, "admin");
+      const gcsRes = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": contentType },
+        body,
+      });
+      if (!gcsRes.ok) {
+        req.log.error({ status: gcsRes.status }, "Realisation photo upload: GCS failed");
+        res.status(502).json({ error: "Storage upload failed" });
+        return;
+      }
+      const finalPath = await _objectStorageService.trySetObjectEntityAclPolicy(objectPath, {
+        owner: "admin",
+        visibility: "public",
+      });
+      res.json({ objectPath: finalPath });
+    } catch (err) {
+      req.log.error({ err }, "Realisation photo upload error");
+      res.status(500).json({ error: "Upload failed" });
+    }
+  },
+);
 
 router.get("/content/realisations/new", (_req: Request, res: Response) => {
   const csrfToken = generateCsrfToken(_req, res);
@@ -941,8 +1150,8 @@ router.post("/content/realisations/new", async (req: Request, res: Response) => 
     weddingType: b.weddingType ?? "", venueName: b.venueName ?? "",
     city: b.city ?? "", weddingDate: b.weddingDate || null,
     description: b.description ?? "",
-    coverImage: b.coverImage || null,
-    gallery: b.gallery ? b.gallery.split("\n").map(s=>s.trim()).filter(Boolean) : [],
+    coverImage: (b.coverImage?.trim() && isSafeImagePath(b.coverImage.trim())) ? b.coverImage.trim() : null,
+    gallery: b.gallery ? b.gallery.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     videoCouple: b.videoCouple || null,
     videoTeaser: b.videoTeaser || null,
     featured: b.featured === "1", active: b.active === "1",
@@ -965,8 +1174,8 @@ router.post("/content/realisations/:id/edit", async (req: Request, res: Response
     weddingType: b.weddingType ?? "", venueName: b.venueName ?? "",
     city: b.city ?? "", weddingDate: b.weddingDate || null,
     description: b.description ?? "",
-    coverImage: b.coverImage || null,
-    gallery: b.gallery ? b.gallery.split("\n").map(s=>s.trim()).filter(Boolean) : [],
+    coverImage: (b.coverImage?.trim() && isSafeImagePath(b.coverImage.trim())) ? b.coverImage.trim() : null,
+    gallery: b.gallery ? b.gallery.split("\n").map(s=>s.trim()).filter(s => s && isSafeImagePath(s)) : [],
     videoCouple: b.videoCouple || null,
     videoTeaser: b.videoTeaser || null,
     featured: b.featured === "1", active: b.active === "1",
@@ -1458,7 +1667,7 @@ router.get("/content/vendor-accounts", async (_req: Request, res: Response) => {
     return `<div class="item">
       <h3>${escHtml(a.businessName || "—")} <span class="badge ${a.status === "approved" ? "active" : "inactive"}">${escHtml(a.status)}</span></h3>
       <p>${escHtml(a.category || "—")} · ${escHtml(a.city || "—")}</p>
-      <p style="font-size:12px;color:#666">${escHtml(a.contactName)} · ${escHtml(a.email)}${a.phone ? ` · ${escHtml(a.phone)}` : ""}</p>
+      <p style="font-size:12px;color:#666">${escHtml(a.contactName)} · ${escHtml(a.email)}${a.phone ? ` · ${escHtml(formatPhoneDisplay(a.phone))}` : ""}</p>
       ${a.website ? `<p style="font-size:12px"><a href="${escHtml(a.website)}" target="_blank" rel="noopener">${escHtml(a.website)}</a></p>` : ""}
       ${a.description ? `<p style="font-size:12px;color:#555;margin-top:8px">${escHtml(a.description)}</p>` : ""}
       <div class="meta" style="margin-top:8px">
@@ -1561,7 +1770,7 @@ router.get("/content/partner-applications", async (req: Request, res: Response) 
     return `<div class="item">
       <h3>${escHtml(a.businessName)} <span class="badge ${statusColor}">${escHtml(a.status)}</span></h3>
       <p style="font-size:13px;color:#555">${escHtml(a.category)}</p>
-      <p style="font-size:12px;color:#666;margin-top:4px">${escHtml(a.contactName)} · <a href="mailto:${escHtml(a.email)}">${escHtml(a.email)}</a>${a.phone ? ` · ${escHtml(a.phone)}` : ""}</p>
+      <p style="font-size:12px;color:#666;margin-top:4px">${escHtml(a.contactName)} · <a href="mailto:${escHtml(a.email)}">${escHtml(a.email)}</a>${a.phone ? ` · ${escHtml(formatPhoneDisplay(a.phone))}` : ""}</p>
       ${a.website ? `<p style="font-size:12px;margin-top:4px"><a href="${escHtml(a.website)}" target="_blank" rel="noopener">${escHtml(a.website)}</a></p>` : ""}
       ${renderSocial(a)}
       ${a.description ? `<p style="font-size:12px;color:#555;margin-top:8px;font-style:italic">${escHtml(a.description)}</p>` : ""}

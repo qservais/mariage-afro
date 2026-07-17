@@ -10,6 +10,15 @@ export function escapeHtml(str: string | null | undefined): string {
     .replace(/'/g, "&#039;");
 }
 
+/** Renders a stored "YYYY-MM-DD" (or full ISO) date as European DD/MM/YYYY for emails. */
+export function formatEmailDate(iso: string | null | undefined): string | null | undefined {
+  if (!iso) return iso;
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!m) return iso;
+  const [, year, month, day] = m;
+  return `${day}/${month}/${year}`;
+}
+
 export function row(label: string, value: string | number | null | undefined): string {
   if (value == null || value === "") return "";
   return `<tr><td style="padding:8px 16px;border-bottom:1px solid #eee;font-weight:600;color:#68191e;width:200px;vertical-align:top;">${escapeHtml(label)}</td><td style="padding:8px 16px;border-bottom:1px solid #eee;color:#1f1416;">${escapeHtml(String(value))}</td></tr>`;

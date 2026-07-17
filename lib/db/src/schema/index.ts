@@ -86,10 +86,17 @@ export const couplesTable = pgTable("couples", {
   onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
   validatedAt: timestamp("validated_at", { withTimezone: true }),
   validatedBy: text("validated_by"),
+  // Task 8 — guest check-in: per-wedding public link (opaque token, in the
+  // URL) + a short numeric PIN (second gate). Both generated lazily on first
+  // use; regenerable by the couple. Not a login — deliberately low-friction,
+  // protected instead by PIN rate-limiting (see checkin-public.ts).
+  checkinToken: text("checkin_token"),
+  checkinPin: text("checkin_pin"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({
   userIdIdx: uniqueIndex("couples_user_id_idx").on(t.userId),
+  checkinTokenIdx: uniqueIndex("couples_checkin_token_idx").on(t.checkinToken),
 }));
 
 export const budgetItemsTable = pgTable("budget_items", {
@@ -117,6 +124,7 @@ export const guestsTable = pgTable("guests", {
   email: text("email"),
   notes: text("notes"),
   arrived: boolean("arrived").notNull().default(false), // day-of check-in
+  checkedInAt: timestamp("checked_in_at", { withTimezone: true }), // Task 8: when `arrived` was last toggled true
   source: text("source").notNull().default("manual"), // manual | personal_invite | from_rsvp
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -251,6 +259,10 @@ export const marketplaceVenuesTable = pgTable("marketplace_venues", {
   coverImage: text("cover_image"),
   active: boolean("active").notNull().default(true),
   // LOT 5 — geo, filtres
+  // Task 11: admin now enters a postal address; latitude/longitude are
+  // derived automatically via Nominatim geocoding on save and kept as the
+  // internal source of truth for map/filter logic — no longer hand-typed.
+  address: text("address"),
   latitude: text("latitude"),
   longitude: text("longitude"),
   region: text("region"),

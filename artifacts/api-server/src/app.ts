@@ -9,6 +9,7 @@ import adminRouter from "./routes/admin";
 import adminContentRouter from "./routes/admin-content";
 import marketplaceRouter from "./routes/marketplace";
 import weddingPublicRouter from "./routes/wedding-public";
+import checkinPublicRouter from "./routes/checkin-public";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -124,6 +125,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", authRouter);
 app.use("/", weddingPublicRouter);
 app.use("/api", marketplaceRouter);
+app.use("/api", checkinPublicRouter);
 
 // Auth-protected routes
 app.use("/api", router);

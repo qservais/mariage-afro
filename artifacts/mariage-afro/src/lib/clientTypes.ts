@@ -29,6 +29,7 @@ export interface Guest {
   email: string | null;
   notes: string | null;
   arrived: boolean;
+  checkedInAt: string | null;
   source: "manual" | "personal_invite" | "from_rsvp";
 }
 export interface GuestCreate {

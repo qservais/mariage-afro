@@ -224,6 +224,9 @@ router.patch("/client/guests/:id", async (req, res) => {
   const parsed = guestSchema.partial().safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid", issues: parsed.error.issues }); return; }
   const patch: Record<string, unknown> = { ...parsed.data };
+  if (Object.prototype.hasOwnProperty.call(parsed.data, "arrived")) {
+    patch.checkedInAt = parsed.data.arrived ? new Date() : null;
+  }
   if (Object.prototype.hasOwnProperty.call(parsed.data, "tableId")) {
     const newTableId = parsed.data.tableId;
     if (newTableId == null) {
@@ -256,6 +259,39 @@ router.delete("/client/guests/:id", async (req, res) => {
   await db.delete(guestsTable)
     .where(and(eq(guestsTable.id, id), eq(guestsTable.coupleId, r.coupleId)));
   res.json({ success: true });
+});
+
+// ---------- Guest check-in (Task 8): public-link + PIN settings ----------
+function generateCheckinPin(): string {
+  return String(Math.floor(1000 + Math.random() * 9000)); // 4 digits
+}
+
+router.get("/client/checkin-settings", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const [couple] = await db.select({ checkinToken: couplesTable.checkinToken, checkinPin: couplesTable.checkinPin })
+    .from(couplesTable).where(eq(couplesTable.id, r.coupleId));
+  if (!couple) { res.status(404).json({ error: "Not found" }); return; }
+  // Lazily provision on first read so every couple gets one without a migration backfill.
+  if (!couple.checkinToken || !couple.checkinPin) {
+    const checkinToken = nanoid(16);
+    const checkinPin = generateCheckinPin();
+    await db.update(couplesTable).set({ checkinToken, checkinPin }).where(eq(couplesTable.id, r.coupleId));
+    res.json({ checkinToken, checkinPin, checkinUrl: `${appUrl()}/invites-checkin/${checkinToken}` });
+    return;
+  }
+  res.json({
+    checkinToken: couple.checkinToken,
+    checkinPin: couple.checkinPin,
+    checkinUrl: `${appUrl()}/invites-checkin/${couple.checkinToken}`,
+  });
+});
+
+router.post("/client/checkin-settings/regenerate", async (req, res) => {
+  const r = req as unknown as AuthedRequest;
+  const checkinToken = nanoid(16);
+  const checkinPin = generateCheckinPin();
+  await db.update(couplesTable).set({ checkinToken, checkinPin }).where(eq(couplesTable.id, r.coupleId));
+  res.json({ checkinToken, checkinPin, checkinUrl: `${appUrl()}/invites-checkin/${checkinToken}` });
 });
 
 // ---------- Personal invitation ----------

@@ -154,9 +154,9 @@ interface Dictionary {
 
 export const dict: Dictionary = {
   brandTagline: {
-    fr: "Plateforme premium pour mariages afro & mixtes en Belgique",
-    nl: "Premium platform voor Afrikaanse & gemengde bruiloften in België",
-    en: "Premium platform for Afro & mixed weddings in Belgium",
+    fr: "Plateforme premium internationale pour mariages afro & mixtes",
+    nl: "Internationaal premium platform voor Afrikaanse & gemengde bruiloften",
+    en: "Premium international platform for Afro & mixed weddings",
   },
   greeting: (name) => ({
     fr: `Bonjour ${name},`,

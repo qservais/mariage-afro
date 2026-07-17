@@ -20,6 +20,7 @@ import {
 import crypto from "node:crypto";
 import { eq, and, asc, desc, gte, lte, sql, inArray, or, ilike } from "drizzle-orm";
 import { notifyAdminNewLead, notifyVendorNewLead, notifyQuoteRequestConfirmation } from "../lib/email";
+import { translateContent } from "../lib/onTheFlyTranslate";
 
 const router = Router();
 
@@ -407,6 +408,16 @@ router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
   }
   if (!vendor) { res.status(404).json({ error: "Not found" }); return; }
   const id = vendor.id;
+  // Task 2: only translate the admin-entered `description` on the fly when
+  // the vendor's own self-service localized column (descriptionFr/Nl/En) for
+  // this locale isn't already set — that existing mechanism takes priority.
+  const locale = typeof req.query.locale === "string" ? req.query.locale.slice(0, 2) : "fr";
+  const hasLocalizedCopy = locale === "fr" ? !!vendor.descriptionFr
+    : locale === "nl" ? !!vendor.descriptionNl
+    : locale === "en" ? !!vendor.descriptionEn
+    : false;
+  const description = hasLocalizedCopy || locale === "fr" ? vendor.description : await translateContent(vendor.description, locale);
+  const tagline = locale === "fr" ? vendor.tagline : await translateContent(vendor.tagline, locale);
   const aggregates = await aggregateForVendors([id]);
   const recent = await db
     .select({
@@ -425,6 +436,8 @@ router.get("/marketplace/vendors/:id", async (req: Request, res: Response) => {
   res.set("Cache-Control", "public, max-age=30, stale-while-revalidate=120");
   res.json({
     ...vendor,
+    description,
+    tagline,
     services: toPublicServices(vendor.services),
     packages: toPublicPackages(vendor.packages),
     reviewCount: aggregates.get(id)?.count ?? 0,
@@ -549,8 +562,13 @@ router.get("/marketplace/venues/:id", async (req: Request, res: Response) => {
   }
 
   if (!venue) { res.status(404).json({ error: "Not found" }); return; }
+  // Task 2: admin-entered description has no per-locale column (unlike
+  // vendors) — translate on the fly for non-French visitors. `locale` is
+  // part of the URL, so it naturally participates in any shared cache key.
+  const locale = typeof req.query.locale === "string" ? req.query.locale.slice(0, 2) : "fr";
+  const description = locale === "fr" ? venue.description : await translateContent(venue.description, locale);
   res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
-  res.json(venue);
+  res.json({ ...venue, description });
 });
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -584,21 +602,27 @@ router.get("/marketplace/vendors/:id/availability", async (req: Request, res: Re
   res.json(rows);
 });
 
-router.get("/marketplace/realisations", async (_req: Request, res: Response) => {
+router.get("/marketplace/realisations", async (req: Request, res: Response) => {
   const rows = await db
     .select()
     .from(realisationsTable)
     .where(eq(realisationsTable.active, true))
     .orderBy(asc(realisationsTable.createdAt));
+  // Task 2: `description` (storytelling) has no per-locale column — translate
+  // on the fly. `locale` is part of the URL, so it stays a valid cache key.
+  const locale = typeof req.query.locale === "string" ? req.query.locale.slice(0, 2) : "fr";
+  const stories = await Promise.all(
+    rows.map((r) => (locale === "fr" ? Promise.resolve(r.description ?? null) : translateContent(r.description, locale))),
+  );
   res.set("Cache-Control", "public, max-age=120, stale-while-revalidate=600");
   res.json(
-    rows.map((r) => ({
+    rows.map((r, i) => ({
       id: r.id,
       coupleName: `${r.brideName} & ${r.groomName}`,
       weddingDate: r.weddingDate ?? null,
       location: r.city ?? null,
       type: r.weddingType ?? null,
-      story: r.description ?? null,
+      story: stories[i] ?? null,
       coverImage: r.coverImage ?? null,
       gallery: r.gallery ?? [],
       videoUrl: null,

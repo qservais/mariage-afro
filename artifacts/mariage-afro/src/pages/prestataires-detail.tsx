@@ -11,6 +11,7 @@ import VendorActionPanel from "@/components/marketplace/VendorActionPanel";
 import VendorAvailabilityCalendar from "@/components/VendorAvailabilityCalendar";
 import { SEO } from "@/components/SEO";
 import { getCategoryConfig, getCategoryHeroUrl } from "@/lib/vendorCategoryConfig";
+import { formatPhoneDisplay, formatPhoneHref } from "@/lib/phone";
 
 interface VendorDetail {
   id: number;
@@ -130,6 +131,11 @@ function getYouTubeEmbed(url: string): string | null {
       const id = u.pathname.replace(/^\//, "").split("/")[0];
       if (id && /^\d+$/.test(id)) return `https://player.vimeo.com/video/${id}`;
     }
+    // instagram.com/p/CODE or /reel/CODE — public embed iframe, no API key needed
+    if (u.hostname.includes("instagram.com")) {
+      const m = /\/(p|reel)\/([^/]+)/.exec(u.pathname);
+      if (m) return `https://www.instagram.com/${m[1]}/${m[2]}/embed`;
+    }
     return null;
   } catch {
     return null;
@@ -140,14 +146,15 @@ export default function PrestataireDetail() {
   const { t, i18n } = useTranslation();
   const { id: idParam } = useParams<{ id: string }>();
 
+  const vendorLang = i18n.language?.slice(0, 2) ?? "fr";
   const { data: vendor, isLoading, isError } = useQuery<VendorDetail>({
-    queryKey: ["vendor-detail", idParam],
+    queryKey: ["vendor-detail", idParam, vendorLang],
     enabled: !!idParam,
     retry: 0,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60_000,
     queryFn: async () => {
-      const res = await fetch(`/api/marketplace/vendors/${idParam}`);
+      const res = await fetch(`/api/marketplace/vendors/${idParam}?locale=${vendorLang}`);
       if (!res.ok) throw new Error("not_found");
       return res.json();
     },
@@ -302,7 +309,7 @@ export default function PrestataireDetail() {
 
   const whatsappHref = useMemo(() => {
     if (!vendor?.phone) return null;
-    const cleaned = vendor.phone.replace(/\D/g, "");
+    const cleaned = formatPhoneHref(vendor.phone).replace(/\D/g, "");
     if (!cleaned) return null;
     return `https://wa.me/${cleaned}`;
   }, [vendor?.phone]);
@@ -679,11 +686,11 @@ export default function PrestataireDetail() {
           <div className="bg-cream border border-wine-deep/10 p-5 space-y-3">
             {vendor.phone && (
               <a
-                href={`tel:${vendor.phone.replace(/\s/g, "")}`}
+                href={`tel:${formatPhoneHref(vendor.phone)}`}
                 className="flex items-center gap-2.5 px-4 py-2.5 border border-wine-deep/15 text-wine-deep hover:bg-wine-deep hover:text-cream transition-colors text-sm font-medium group"
               >
                 <Phone className="w-4 h-4 shrink-0" aria-hidden="true" />
-                <span>{vendor.phone}</span>
+                <span>{formatPhoneDisplay(vendor.phone)}</span>
               </a>
             )}
             {whatsappHref && (

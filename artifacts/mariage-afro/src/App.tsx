@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
+import { GUIDE_GRATUIT_ENABLED } from "@/lib/featureFlags";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/layout/ScrollToTop";
@@ -31,6 +32,7 @@ const Contact = lazy(() => import("@/pages/contact"));
 const OutilsBudget = lazy(() => import("@/pages/outils-budget"));
 const OutilsQuiz = lazy(() => import("@/pages/outils-quiz"));
 const GuidePage = lazy(() => import("@/pages/guide"));
+const InvitesCheckinPage = lazy(() => import("@/pages/invites-checkin"));
 const GuideInternePage = lazy(() => import("@/pages/guide-interne"));
 const MentionsLegalesPage = lazy(() => import("@/pages/legal/mentions-legales"));
 const ConfidentialitePage = lazy(() => import("@/pages/legal/confidentialite"));
@@ -142,7 +144,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <Header />
       <main id="main-content" className="flex-1">{children}</main>
       <Footer />
-      <ExitIntentPopup />
+      {GUIDE_GRATUIT_ENABLED && <ExitIntentPopup />}
     </div>
   );
 }
@@ -316,6 +318,7 @@ function AppRoutes() {
           <Route path="/outils/budget" element={<OutilsBudget />} />
           <Route path="/outils/quiz" element={<OutilsQuiz />} />
           <Route path="/guide" element={<GuidePage />} />
+          <Route path="/invites-checkin/:token" element={<InvitesCheckinPage />} />
           <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
           <Route path="/confidentialite" element={<ConfidentialitePage />} />
           <Route path="/cookies" element={<CookiesPage />} />

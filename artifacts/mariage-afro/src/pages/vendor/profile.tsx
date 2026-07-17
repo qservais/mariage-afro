@@ -294,7 +294,9 @@ export default function VendorProfilePage() {
             videoUrl: videoUrl || null,
             indicativePrice: indicativePrice || null,
             website: website || null,
-            phone: phoneNumber.trim() ? `${phonePrefix} ${phoneNumber.trim()}` : null,
+            phone: phoneNumber.trim()
+              ? `${phonePrefix} ${phoneNumber.trim().replace(/^0+/, "")}`
+              : null,
             email: email || undefined,
             logoUrl: logoUrl || null,
             instagram: instagram || null,
