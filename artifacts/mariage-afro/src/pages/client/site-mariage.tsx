@@ -104,7 +104,7 @@ export default function SiteMariagePage() {
 
   const saveMutation = useMutation({
     mutationFn: () =>
-      clientFetch("/api/client/wedding-website", {
+      clientFetch<{ publishBlocked?: boolean }>("/api/client/wedding-website", {
         method: "PATCH",
         body: JSON.stringify({
           ...form,
@@ -115,9 +115,18 @@ export default function SiteMariagePage() {
           coverImage: form.coverImage || null,
         }),
       }),
-    onSuccess: () => {
+    onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ["wedding-website"] });
-      toast({ title: t("site_mariage.saved_toast") });
+      if (data.publishBlocked) {
+        setForm((f) => ({ ...f, active: false }));
+        toast({
+          title: t("site_mariage.saved_not_published_toast", {
+            defaultValue: "Enregistré. La publication attend la validation de votre compte par l'équipe Mariage Afro.",
+          }),
+        });
+      } else {
+        toast({ title: t("site_mariage.saved_toast") });
+      }
     },
     onError: (e: Error) => toast({ title: e.message, variant: "destructive" }),
   });
