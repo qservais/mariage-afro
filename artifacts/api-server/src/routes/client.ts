@@ -1049,22 +1049,27 @@ router.patch("/client/wedding-website", async (req, res) => {
     }
   }
 
-  if (parsed.data.active === true) {
+  // Publication readiness must never block saving the rest of the form — a
+  // couple editing their welcome message with the "Publier" switch already
+  // on (but not yet admin-validated) needs that edit to persist even though
+  // `active` itself can't flip to true yet. Drop just that one field instead
+  // of rejecting the whole request, and tell the frontend why.
+  let publishBlocked = false;
+  const data = { ...parsed.data };
+  if (data.active === true) {
     const [coupleRow] = await db
       .select({ validatedAt: couplesTable.validatedAt })
       .from(couplesTable)
       .where(eq(couplesTable.id, r.coupleId))
       .limit(1);
     if (!coupleRow?.validatedAt) {
-      res.status(403).json({ error: "Votre compte doit être validé par l'administrateur avant de publier votre mini-site." });
-      return;
+      publishBlocked = true;
+      delete data.active;
     }
   }
 
   const [current] = await db.select().from(weddingWebsitesTable)
     .where(eq(weddingWebsitesTable.coupleId, r.coupleId));
-
-  const data = { ...parsed.data };
   if (typeof data.coverImage === "string" && data.coverImage.startsWith("/objects/")) {
     const isNew = data.coverImage !== current?.coverImage;
     if (isNew) {
@@ -1094,13 +1099,13 @@ router.patch("/client/wedding-website", async (req, res) => {
       slug,
       ...data,
     }).returning();
-    res.status(201).json(row);
+    res.status(201).json({ ...row, publishBlocked });
   } else {
     const [row] = await db.update(weddingWebsitesTable)
       .set(data)
       .where(eq(weddingWebsitesTable.coupleId, r.coupleId))
       .returning();
-    res.json(row);
+    res.json({ ...row, publishBlocked });
   }
 });
 

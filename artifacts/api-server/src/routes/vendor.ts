@@ -536,15 +536,13 @@ router.patch("/vendor/profile", async (req, res) => {
     return;
   }
 
-  // Enforce cover photo requirement — reject profile saves when vendor has no gallery photos
-  const vendorImages = (vendor.images as string[] | null) ?? [];
-  if (vendorImages.length === 0 && !vendor.coverImage) {
-    res.status(422).json({
-      error: "cover_required",
-      message: "Ajoutez au moins une photo de couverture dans la Galerie avant de sauvegarder votre profil.",
-    });
-    return;
-  }
+  // NOTE: a missing gallery photo must never block saving routine profile
+  // fields (name, phone, description, social links, etc). Publication
+  // readiness (at least one photo) is enforced where the profile actually
+  // goes live — at admin approval — not on every edit here. A prior version
+  // of this route 422'd every single save for any vendor with zero photos,
+  // which made basic edits (e.g. updating a phone number) impossible until
+  // they separately visited the Galerie tab first.
 
   // Auto-translate description to FR/NL/EN when it has changed
   if (typeof data.description === "string" && data.description !== vendor.description) {
